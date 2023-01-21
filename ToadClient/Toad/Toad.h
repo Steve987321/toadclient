@@ -1,0 +1,46 @@
+#pragma once
+
+#include "Toad/Types/Types.h"
+#include "Toad/Logger.h"
+#include "Toad/MC/mappings.h"
+#include "Toad/MC/Entity/Entity.h"
+#include "Toad/MC/Utils/utils.h"
+#include "Toad/MC/Minecraft.h"
+
+// global vars and functions 
+namespace toadll
+{
+	inline minecraft_client curr_client = minecraft_client::Lunar;
+
+	inline std::atomic_bool is_running = false;
+
+	inline HMODULE hMod;
+
+	inline JNIEnv* env = nullptr;
+	inline JavaVM* jvm = nullptr;
+
+	namespace aa
+	{
+		inline bool enabled = false;
+		inline int key = VK_LBUTTON; // shared mem
+		inline bool predict = false;
+		inline float reaction_speed = 100.f; // reaction in ms
+		inline float speed = 5.0f;
+		inline float distance = 4.0f;
+	}
+
+	namespace visuals
+	{
+		inline bool esp_enabled = false;
+		inline bool show_name = false;
+	}
+
+	// called when dll has injected
+	void init();
+
+	// the main loop when init was succesfull
+	void update();
+
+	// called when wanting to uninject and cleans up
+	void clean_up();
+}
