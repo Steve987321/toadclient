@@ -39,7 +39,10 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getPos, "getPositionVector" });
 			methodsigs.insert({ mapping::getPos, "()Lnet/minecraft/util/Vec3;" });
 
-			// vec3
+			// TODO: test this and add for scaffold arg = Vec3i 
+			//name: isAirBlock sig: (Lnet/minecraft/util/BlockPos;)Z args size: 2
+
+			// Vec3 class
 			methodnames.insert({ mapping::Vec3X, "bridge$xCoord" });
 			methodsigs.insert({ mapping::Vec3X, "()D" });
 			methodnames.insert({ mapping::Vec3Y, "bridge$yCoord" });

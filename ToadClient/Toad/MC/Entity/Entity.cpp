@@ -6,7 +6,6 @@ toadll::c_Entity::~c_Entity()
 {
 	if (*this->obj != nullptr)
 		env->DeleteLocalRef(*this->obj);
-	std::cout << "deletus" << std::endl;
 }
 
 toadll::vec3 toadll::c_Entity::get_position() const

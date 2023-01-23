@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Toad/Types/Types.h"
+#include "Toad/Types.h"
 
 namespace toadll
 {
@@ -64,10 +64,10 @@ namespace toadll
 
     // jvm functions end
 
-    // function to find classes on any minecraft client
+    // function to find classes on (any) minecraft client
     jclass findclass(const char* clsName);
 
-    // get jmethodID from obj or class
+    // get jmethodID from obj or class from the given mapping
     jmethodID get_mid(const jclass& cls, const mapping& name);
     jmethodID get_mid(const jobject& obj, const mapping& name);
 

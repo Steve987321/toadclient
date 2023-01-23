@@ -22,26 +22,36 @@ namespace toadll
         jmethodID mid_getname = env->GetMethodID(thread_clazz, "getName", "()Ljava/lang/String;");
         jobject array_elements = env->GetObjectArrayElement(arrayD, 0);
         jmethodID threadclassloader = env->GetMethodID(thread_clazz, "getContextClassLoader", "()Ljava/lang/ClassLoader;");
-        if (threadclassloader != NULL)
+        if (!threadclassloader)
         {
             auto class_loader = env->CallObjectMethod(array_elements, threadclassloader);
-            jclass launch_clazz = env->FindClass(/*"WWWWWNNNNWMWNNNNWNNNNMMWW"*/ "net/minecraft/launchwrapper/Launch");
+            jclass launch_clazz = env->FindClass("net/minecraft/launchwrapper/Launch");
 
-            auto find_class_id = env->GetMethodID(env->GetObjectClass(class_loader), /*"loadClass", "(Ljava/lang/String;)Ljava/lang/Class;"*/ "findClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+            auto find_class_id = env->GetMethodID(env->GetObjectClass(class_loader), "findClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 
             env->DeleteLocalRef(launch_clazz);
             jstring name = env->NewStringUTF(clsName);
+
+            env->DeleteLocalRef(array_elements);
+            env->DeleteLocalRef(thread_clazz);
+            env->DeleteLocalRef(thread);
+            env->DeleteLocalRef(threadgroup_clazz);
+            env->DeleteLocalRef(threadgroup_obj);
+            env->DeleteLocalRef(arrayD);
+
             return jclass(env->CallObjectMethod(class_loader, find_class_id, name));
         }
+        else
+        {
+            env->DeleteLocalRef(array_elements);
+            env->DeleteLocalRef(thread_clazz);
+            env->DeleteLocalRef(thread);
+            env->DeleteLocalRef(threadgroup_clazz);
+            env->DeleteLocalRef(threadgroup_obj);
+            env->DeleteLocalRef(arrayD);
 
-        env->DeleteLocalRef(array_elements);
-        env->DeleteLocalRef(thread_clazz);
-        env->DeleteLocalRef(thread);
-        env->DeleteLocalRef(threadgroup_clazz);
-        env->DeleteLocalRef(threadgroup_obj);
-        env->DeleteLocalRef(arrayD);
-
-        return nullptr;
+            return env->FindClass(clsName);
+        }
     }
 
 

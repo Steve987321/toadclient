@@ -156,7 +156,7 @@
     <ClInclude Include="Toad\MC\Minecraft.h" />
     <ClInclude Include="Toad\MC\Utils\utils.h" />
     <ClInclude Include="Toad\Toad.h" />
-    <ClInclude Include="Toad\Types\Types.h" />
+    <ClInclude Include="Toad\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

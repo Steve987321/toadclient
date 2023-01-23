@@ -30,28 +30,27 @@ namespace toadll
         }
     };
 
-    const enum class minecraft_client
+    enum class minecraft_client
     {
         Lunar,
         Vanilla,
         Forge
     };
 
-    const enum class mapping
+    enum class mapping
     {
-        // Minecraft
+        // .Minecraft
         getMinecraft,
         getWorld,
         getPlayer,
 
-        // Entity
+        // .Entity
         getPos,
 
-        // Vec3
+        // .Vec3
         Vec3X,
         Vec3Y,
         Vec3Z
-
     };
 
 

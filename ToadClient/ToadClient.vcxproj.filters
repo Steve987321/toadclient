@@ -30,7 +30,7 @@
     <ClInclude Include="Toad\Toad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Types\Types.h">
+    <ClInclude Include="Toad\Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Toad\MC\Entity\Entity.h">

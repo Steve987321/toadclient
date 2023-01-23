@@ -10,6 +10,7 @@ namespace toadll
 	public:
 		[[nodiscard]] jobject get_mc() const;
 		[[nodiscard]] jobject get_localplayer() const;
+		[[nodiscard]] jobject get_world() const;
 
 	public:
 		void clean_up();

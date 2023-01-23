@@ -14,6 +14,7 @@ private:
 	std::shared_mutex m_mutex;
 	HANDLE m_hOutput;
 	FILE* m_f = nullptr;
+	bool m_closed = false;
 
 private:
 	static std::string get_time()
@@ -21,7 +22,7 @@ private:
 		std::ostringstream ss;
 		std::string time;
 
-		auto t = std::time(0);
+		auto t = std::time(nullptr);
 		tm newtime{};
 		localtime_s(&newtime, &t);
 
@@ -30,7 +31,7 @@ private:
 	}
 
 public:
-	inline enum class log_type
+	enum class log_type
 	{
 		LOK = 10,	    // green
 		LERROR = 12,	// red
@@ -38,6 +39,7 @@ public:
 		LWARNING = 14	// yellow
 	};
 
+public:
 	c_Logger()
 	{
 		AllocConsole();
@@ -46,13 +48,16 @@ public:
 	}
 	~c_Logger()
 	{
-		dispose_console();
+		if (!m_closed)
+			dispose_console();
 	}
 
-	void dispose_console() const
+public:
+	void dispose_console()
 	{
 		FreeConsole();
 		fclose(m_f);
+		m_closed = true;
 	}
 
 	template <typename ... args>

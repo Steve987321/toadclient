@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Toad/Types/Types.h"
+#include "Toad/Types.h"
 #include "Toad/Logger.h"
 #include "Toad/MC/mappings.h"
 #include "Toad/MC/Entity/Entity.h"

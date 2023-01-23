@@ -17,7 +17,13 @@ jobject toadll::c_Minecraft::get_mc() const
 jobject toadll::c_Minecraft::get_localplayer() const
 {
 	auto playermid = get_mid(this->mcclass, mapping::getPlayer);
-	return env->CallObjectMethod(this->get_mc(), playermid);
+	return !playermid ? nullptr : env->CallObjectMethod(this->get_mc(), playermid);
+}
+
+jobject toadll::c_Minecraft::get_world() const
+{
+	auto worldmid = get_mid(this->mcclass, mapping::getWorld);
+	return !worldmid ? nullptr : env->CallObjectMethod(this->get_mc(), worldmid);
 }
 
 void toadll::c_Minecraft::clean_up()
