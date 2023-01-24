@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-
 namespace toadll
 {
     struct vec3 {

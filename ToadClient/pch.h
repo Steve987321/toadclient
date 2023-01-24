@@ -13,6 +13,9 @@
 #include <windows.h>
 #include <iostream>
 #include <unordered_map>
+#include <thread>
+#include <cmath>
+#include <vector>
 
 #include "jni.h"
 

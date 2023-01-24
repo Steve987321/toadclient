@@ -10,14 +10,7 @@ toadll::c_Entity::~c_Entity()
 
 toadll::vec3 toadll::c_Entity::get_position() const
 {
-	std::cout << "f S: " <<  env->GetObjectClass(*obj) << std::endl;
-	Sleep(1000);
-	std::cout << "this is : " << env->GetMethodID(env->GetObjectClass(*obj), "getPositionVector", "()Lnet/minecraft/util/Vec3;");
-	Sleep(2000);
-	auto position = env->CallObjectMethod(*obj, get_mid(*obj, mapping::getPos));
-	std::cout << "position obj vector3: " << position << std::endl;
-	Sleep(2000);
-	return to_vec3(position);
+	return to_vec3(env->CallObjectMethod(*obj, get_mid(*obj, mapping::getPos)));
 }
 
 float toadll::c_Entity::get_rotationYaw() const

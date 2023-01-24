@@ -4,65 +4,67 @@
 
 namespace toadll
 {
-    typedef jint
-    (*hJNI_GetCreatedJavaVMs)(JavaVM** vmBuf, jsize bufLen, jsize* nVMs);
-    inline hJNI_GetCreatedJavaVMs oJNI_GetCreatedJavaVMs;
-
     // jvm functions
+    namespace jvmfunc
+    {
 
-    /*
-     * Returns the number of *declared* fields or methods.
-     */
-    typedef jint
-    (*hJVM_GetClassFieldsCount)(JNIEnv* env, jclass cb);
-    inline hJVM_GetClassFieldsCount oJVM_GetClassFieldsCount;
+        typedef jint
+        (*hJNI_GetCreatedJavaVMs)(JavaVM** vmBuf, jsize bufLen, jsize* nVMs);
+        inline hJNI_GetCreatedJavaVMs oJNI_GetCreatedJavaVMs;
 
-    typedef jint
-    (*hJVM_GetClassMethodsCount)(JNIEnv* env, jclass cb);
-    inline hJVM_GetClassMethodsCount oJVM_GetClassMethodsCount;
+        /*
+         * Returns the number of *declared* fields or methods.
+         */
+        typedef jint
+        (*hJVM_GetClassFieldsCount)(JNIEnv* env, jclass cb);
+        inline hJVM_GetClassFieldsCount oJVM_GetClassFieldsCount;
 
-    /*
-     * Returns the name of a given method in UTF format.
-     * The result remains valid until JVM_ReleaseUTF is called.
-     *
-     * The caller must treat the string as a constant and not modify it
-     * in any way.
-     */
-    typedef const char*
-        (*hJVM_GetMethodIxNameUTF)(JNIEnv* env, jclass klass, jint index);
-    inline hJVM_GetMethodIxNameUTF oJVM_GetMethodIxNameUTF;
+        typedef jint
+        (*hJVM_GetClassMethodsCount)(JNIEnv* env, jclass cb);
+        inline hJVM_GetClassMethodsCount oJVM_GetClassMethodsCount;
 
-    /*
-     * Returns the signature of the method referred to at a given constant pool
-     * index.
-     *
-     * The result is in UTF format and remains valid until JVM_ReleaseUTF
-     * is called.
-     *
-     * The caller must treat the string as a constant and not modify it
-     * in any way.
-     */
-    typedef const char*
-        (*hJVM_GetMethodIxSignatureUTF)(JNIEnv* env, jclass cb, jint index);
-    inline hJVM_GetMethodIxSignatureUTF oJVM_GetMethodIxSignatureUTF;
+        /*
+         * Returns the name of a given method in UTF format.
+         * The result remains valid until JVM_ReleaseUTF is called.
+         *
+         * The caller must treat the string as a constant and not modify it
+         * in any way.
+         */
+        typedef const char*
+            (*hJVM_GetMethodIxNameUTF)(JNIEnv* env, jclass klass, jint index);
+        inline hJVM_GetMethodIxNameUTF oJVM_GetMethodIxNameUTF;
 
-    typedef jobjectArray
-    (*hJVM_GetClassDeclaredFields)(JNIEnv* env, jclass ofClass, jboolean publicOnly);
-    inline hJVM_GetClassDeclaredFields oJVM_GetClassDeclaredFields;
+        /*
+         * Returns the signature of the method referred to at a given constant pool
+         * index.
+         *
+         * The result is in UTF format and remains valid until JVM_ReleaseUTF
+         * is called.
+         *
+         * The caller must treat the string as a constant and not modify it
+         * in any way.
+         */
+        typedef const char*
+            (*hJVM_GetMethodIxSignatureUTF)(JNIEnv* env, jclass cb, jint index);
+        inline hJVM_GetMethodIxSignatureUTF oJVM_GetMethodIxSignatureUTF;
 
-    typedef jint
-    (*hJVM_GetArrayLength)(JNIEnv* env, jobject arr);
-    inline hJVM_GetArrayLength oJVM_GetArrayLength;
+        typedef jobjectArray
+        (*hJVM_GetClassDeclaredFields)(JNIEnv* env, jclass ofClass, jboolean publicOnly);
+        inline hJVM_GetClassDeclaredFields oJVM_GetClassDeclaredFields;
 
-    typedef jobject
-    (*hJVM_GetArrayElement)(JNIEnv* env, jobject arr, jint index);
-    inline hJVM_GetArrayElement oJVM_GetArrayElement;
+        typedef jint
+        (*hJVM_GetArrayLength)(JNIEnv* env, jobject arr);
+        inline hJVM_GetArrayLength oJVM_GetArrayLength;
 
-    typedef jint
-    (*hJVM_GetMethodIxArgsSize)(JNIEnv* env, jclass cb, int index);
-    inline hJVM_GetMethodIxArgsSize oJVM_GetMethodIxArgsSize;
+        typedef jobject
+        (*hJVM_GetArrayElement)(JNIEnv* env, jobject arr, jint index);
+        inline hJVM_GetArrayElement oJVM_GetArrayElement;
 
-    // jvm functions end
+        typedef jint
+        (*hJVM_GetMethodIxArgsSize)(JNIEnv* env, jclass cb, int index);
+        inline hJVM_GetMethodIxArgsSize oJVM_GetMethodIxArgsSize;
+
+    }
 
     // function to find classes on (any) minecraft client
     jclass findclass(const char* clsName);

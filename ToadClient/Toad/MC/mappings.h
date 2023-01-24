@@ -15,8 +15,9 @@ namespace toadll::mappings
 		return methodsigs.find(name)->second;
 	}
 
-	inline void init_map(const minecraft_client& client)
+	inline void init_map(/*JNIEnv* env,*/ const minecraft_client& client)
 	{
+		
 		if (client == minecraft_client::Vanilla)
 		{
 
@@ -30,7 +31,12 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getMinecraft, "getMinecraft" });
 			methodsigs.insert({ mapping::getMinecraft, "()Lnet/minecraft/client/Minecraft;" });
 
+			
 			methodnames.insert({ mapping::getWorld, "bridge$getWorld" });
+			/*for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, findclass("net.")); i++)
+			{
+			}*/
+
 			methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
 			methodnames.insert({ mapping::getPlayer, "bridge$getPlayer" });

@@ -22,17 +22,19 @@ namespace toadll
 			clean_up(1);
 			return;
 		}
-		oJNI_GetCreatedJavaVMs = reinterpret_cast<hJNI_GetCreatedJavaVMs>(GetProcAddress(jvmHandle, "JNI_GetCreatedJavaVMs"));
-		oJVM_GetMethodIxNameUTF = reinterpret_cast<hJVM_GetMethodIxNameUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxNameUTF"));
-		oJVM_GetMethodIxSignatureUTF = reinterpret_cast<hJVM_GetMethodIxSignatureUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxSignatureUTF"));
-		oJVM_GetClassMethodsCount = reinterpret_cast<hJVM_GetClassMethodsCount>(GetProcAddress(jvmHandle, "JVM_GetClassMethodsCount"));
-		oJVM_GetClassFieldsCount = reinterpret_cast<hJVM_GetClassFieldsCount>(GetProcAddress(jvmHandle, "JVM_GetClassFieldsCount"));
-		oJVM_GetClassDeclaredFields = reinterpret_cast<hJVM_GetClassDeclaredFields>(GetProcAddress(jvmHandle, "JVM_GetClassDeclaredFields"));
-		oJVM_GetArrayElement = reinterpret_cast<hJVM_GetArrayElement>(GetProcAddress(jvmHandle, "JVM_GetArrayElement"));
-		oJVM_GetArrayLength = reinterpret_cast<hJVM_GetArrayLength>(GetProcAddress(jvmHandle, "JVM_GetArrayLength"));
-		oJVM_GetMethodIxArgsSize = reinterpret_cast<hJVM_GetMethodIxArgsSize>(GetProcAddress(jvmHandle, "JVM_GetMethodIxArgsSize"));
+		
+		jvmfunc::oJNI_GetCreatedJavaVMs = reinterpret_cast<jvmfunc::hJNI_GetCreatedJavaVMs>(GetProcAddress(jvmHandle, "JNI_GetCreatedJavaVMs"));
+		jvmfunc::oJVM_GetMethodIxNameUTF = reinterpret_cast<jvmfunc::hJVM_GetMethodIxNameUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxNameUTF"));
+		jvmfunc::oJVM_GetMethodIxSignatureUTF = reinterpret_cast<jvmfunc::hJVM_GetMethodIxSignatureUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxSignatureUTF"));
+		jvmfunc::oJVM_GetClassMethodsCount = reinterpret_cast<jvmfunc::hJVM_GetClassMethodsCount>(GetProcAddress(jvmHandle, "JVM_GetClassMethodsCount"));
+		jvmfunc::oJVM_GetClassFieldsCount = reinterpret_cast<jvmfunc::hJVM_GetClassFieldsCount>(GetProcAddress(jvmHandle, "JVM_GetClassFieldsCount"));
+		jvmfunc::oJVM_GetClassDeclaredFields = reinterpret_cast<jvmfunc::hJVM_GetClassDeclaredFields>(GetProcAddress(jvmHandle, "JVM_GetClassDeclaredFields"));
+		jvmfunc::oJVM_GetArrayElement = reinterpret_cast<jvmfunc::hJVM_GetArrayElement>(GetProcAddress(jvmHandle, "JVM_GetArrayElement"));
+		jvmfunc::oJVM_GetArrayLength = reinterpret_cast<jvmfunc::hJVM_GetArrayLength>(GetProcAddress(jvmHandle, "JVM_GetArrayLength"));
+		jvmfunc::oJVM_GetMethodIxArgsSize = reinterpret_cast<jvmfunc::hJVM_GetMethodIxArgsSize>(GetProcAddress(jvmHandle, "JVM_GetMethodIxArgsSize"));
 
-		oJNI_GetCreatedJavaVMs(&jvm, 1, 0);
+		jvmfunc::oJNI_GetCreatedJavaVMs(&jvm, 1, 0);
+
 		jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), NULL);
 
 		if (!env)
@@ -42,10 +44,16 @@ namespace toadll
 		}
 
 		p_Minecraft = std::make_unique<c_Minecraft>();
+		p_Hooks = std::make_unique<c_Hooks>();
+		if (!p_Hooks->init())
+		{
+			clean_up(3);
+			return;
+		}
 
 		if (!p_Minecraft->init())
 		{
-			clean_up(3);
+			clean_up(4);
 			return;
 		}
 
@@ -53,26 +61,22 @@ namespace toadll
 
 		is_running = true;
 
+		p_Hooks->enable();
+
 		while (is_running)
 		{
-			update();
+			//update();
 			if (GetAsyncKeyState(VK_END)) break;
 		}
 		clean_up(0);
-		//if (MH_Initialize() != MH_OK)
-		//	; // do something 
-
-		//auto AddressToHook = reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle(L"opengl32.dll"), "wglSwapBuffers"));
-
-		//MH_CreateHookApi(L"opengl32.dll", "wglSwapBuffers", nullptr, nullptr); // use this api hook?  instead of normal ?  
-
+		
 	}
 
 	void update()
 	{
 		std::cout << "update:\n";
-		Sleep(1000);
 		auto entities = p_Minecraft->get_playerList();
+		auto lplayer = std::make_unique<c_Entity>(std::make_unique<jobject>(p_Minecraft->get_localplayer()));
 		for (const auto& player : entities)
 		{
 			std::cout << "X: " << player->get_position().x << " Y: " << player->get_position().y << " Z: " << player->get_position().z << std::endl;
@@ -83,15 +87,18 @@ namespace toadll
 		*/
 	}
 
-	void clean_up(int exit_code)
+	void clean_up(int exitcode)
 	{
-		log_Debug("closing: %d", exit_code);
+		log_Debug("closing: %d", exitcode);
 		Sleep(1000);
 		if (jvm != nullptr)
 		{
 			jvm->DetachCurrentThread();
 			jvm->DestroyJavaVM();
 		}
+
+		if (p_Hooks != nullptr)
+			p_Hooks->dispose();
 
 		env = nullptr;
 		jvm = nullptr;

@@ -29,6 +29,7 @@ jobject toadll::c_Minecraft::get_world() const
 std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerList() const
 {
     auto theWorld = get_world();
+    if (theWorld == nullptr) return {};
 
     auto getPlayerEtitiesMid = get_mid(env->GetObjectClass(theWorld), mapping::getPlayerEntities);
 

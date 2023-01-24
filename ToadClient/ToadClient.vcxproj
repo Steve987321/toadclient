@@ -74,6 +74,10 @@
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-Inter\$(Configuration)\</IntDir>
     <IncludePath>D:\JDK\include\win32;D:\JDK\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)MinHook\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LibraryPath>$(ProjectDir)MinHook\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,6 +129,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,13 +150,15 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\Hooks\Hooks.h" />
+    <ClInclude Include="Toad\aa.h" />
     <ClInclude Include="Toad\Logger.h" />
     <ClInclude Include="Toad\MC\mappings.h" />
     <ClInclude Include="Toad\MC\Entity\Entity.h" />
-    <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Toad\MC\Minecraft.h" />
     <ClInclude Include="Toad\MC\Utils\utils.h" />
@@ -160,6 +167,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Toad\Hooks\Hooks.cpp" />
+    <ClCompile Include="Toad\aa.cpp" />
     <ClCompile Include="Toad\MC\Entity\Entity.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,6 +39,12 @@
     <ClInclude Include="Toad\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Toad\aa.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Toad\Hooks\Hooks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -60,6 +63,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\MC\Entity\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\aa.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Hooks\Hooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
