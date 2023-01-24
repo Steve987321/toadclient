@@ -44,8 +44,20 @@ namespace toadll
         getWorld,
         getPlayer,
 
+        //.World
+        getPlayerEntities,
+
         // .Entity
         getPos,
+        getRotationYaw,
+        getRotationPitch,
+
+        setRotationYaw,
+        setRotationPitch,
+
+        getMotionX,
+        getMotionY,
+        getMotionZ,
 
         // .Vec3
         Vec3X,

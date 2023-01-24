@@ -67,9 +67,11 @@ namespace toadll
     // function to find classes on (any) minecraft client
     jclass findclass(const char* clsName);
 
+    std::string jstring2string(const jstring& jStr);
+
     // get jmethodID from obj or class from the given mapping
-    jmethodID get_mid(const jclass& cls, const mapping& name);
-    jmethodID get_mid(const jobject& obj, const mapping& name);
+    jmethodID get_mid(const jclass& cls, mapping name);
+    jmethodID get_mid(const jobject& obj, mapping name);
 
     jmethodID get_static_mid(const jclass& cls, const mapping& name);
 

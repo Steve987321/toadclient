@@ -42,5 +42,5 @@ namespace toadll
 	void update();
 
 	// called when wanting to uninject and cleans up
-	void clean_up();
+	void clean_up(int exitcode = 0);
 }

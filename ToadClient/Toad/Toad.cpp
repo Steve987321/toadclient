@@ -17,6 +17,11 @@ namespace toadll
 		// get functions from jvm.dll
 		auto jvmHandle = GetModuleHandleA("jvm.dll");
 
+		if (jvmHandle == nullptr)
+		{
+			clean_up(1);
+			return;
+		}
 		oJNI_GetCreatedJavaVMs = reinterpret_cast<hJNI_GetCreatedJavaVMs>(GetProcAddress(jvmHandle, "JNI_GetCreatedJavaVMs"));
 		oJVM_GetMethodIxNameUTF = reinterpret_cast<hJVM_GetMethodIxNameUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxNameUTF"));
 		oJVM_GetMethodIxSignatureUTF = reinterpret_cast<hJVM_GetMethodIxSignatureUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxSignatureUTF"));
@@ -31,12 +36,18 @@ namespace toadll
 		jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), NULL);
 
 		if (!env)
-			clean_up();
+		{
+			clean_up(2);
+			return;
+		}
 
 		p_Minecraft = std::make_unique<c_Minecraft>();
 
-		if (!p_Minecraft->init()) 
-			clean_up();
+		if (!p_Minecraft->init())
+		{
+			clean_up(3);
+			return;
+		}
 
 		mappings::init_map(curr_client);
 
@@ -47,8 +58,7 @@ namespace toadll
 			update();
 			if (GetAsyncKeyState(VK_END)) break;
 		}
-		clean_up();
-
+		clean_up(0);
 		//if (MH_Initialize() != MH_OK)
 		//	; // do something 
 
@@ -58,16 +68,25 @@ namespace toadll
 
 	}
 
-	// main loop
 	void update()
 	{
-		auto player = p_Minecraft->get_localplayer();
+		std::cout << "update:\n";
+		Sleep(1000);
+		auto entities = p_Minecraft->get_playerList();
+		for (const auto& player : entities)
+		{
+			std::cout << "X: " << player->get_position().x << " Y: " << player->get_position().y << " Z: " << player->get_position().z << std::endl;
+		}
+		/*auto player = p_Minecraft->get_localplayer();
 		c_Entity entity(&player);
 		std::cout << "X: " << entity.get_position().x << " Y: " << entity.get_position().y << " Z: " << entity.get_position().z << std::endl;
+		*/
 	}
 
-	void clean_up()
+	void clean_up(int exit_code)
 	{
+		log_Debug("closing: %d", exit_code);
+		Sleep(1000);
 		if (jvm != nullptr)
 		{
 			jvm->DetachCurrentThread();
@@ -78,7 +97,6 @@ namespace toadll
 		jvm = nullptr;
 
 		p_Log->dispose_console();
-		//FreeConsole();
 		FreeLibraryAndExitThread(hMod, 0);
 		//MH_Uninitialize();
 	}

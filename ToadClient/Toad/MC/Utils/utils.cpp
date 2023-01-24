@@ -22,7 +22,7 @@ namespace toadll
         jmethodID mid_getname = env->GetMethodID(thread_clazz, "getName", "()Ljava/lang/String;");
         jobject array_elements = env->GetObjectArrayElement(arrayD, 0);
         jmethodID threadclassloader = env->GetMethodID(thread_clazz, "getContextClassLoader", "()Ljava/lang/ClassLoader;");
-        if (!threadclassloader)
+        if (threadclassloader != 0)
         {
             auto class_loader = env->CallObjectMethod(array_elements, threadclassloader);
             jclass launch_clazz = env->FindClass("net/minecraft/launchwrapper/Launch");
@@ -47,30 +47,46 @@ namespace toadll
             env->DeleteLocalRef(thread_clazz);
             env->DeleteLocalRef(thread);
             env->DeleteLocalRef(threadgroup_clazz);
-            env->DeleteLocalRef(threadgroup_obj);
             env->DeleteLocalRef(arrayD);
+            env->DeleteLocalRef(threadgroup_obj);
 
             return env->FindClass(clsName);
         }
     }
 
+    std::string jstring2string(const jstring& jStr) {
+        if (!jStr)
+            return "";
 
-    jmethodID get_mid(const jclass& cls, const mapping& name)
+        const jclass stringClass = env->GetObjectClass(jStr);
+        const jmethodID getBytes = env->GetMethodID(stringClass, "getBytes", "(Ljava/lang/String;)[B");
+        const auto stringJbytes = (jbyteArray)env->CallObjectMethod(jStr, getBytes, env->NewStringUTF("UTF-8"));
+
+        auto length = (size_t)env->GetArrayLength(stringJbytes);
+        jbyte* pBytes = env->GetByteArrayElements(stringJbytes, NULL);
+
+        auto ret = std::string(reinterpret_cast<char*>(pBytes), length);
+        env->ReleaseByteArrayElements(stringJbytes, pBytes, JNI_ABORT);
+
+        env->DeleteLocalRef(stringJbytes);
+        env->DeleteLocalRef(stringClass);
+        return ret;
+    }
+
+    jmethodID get_mid(const jclass& cls, mapping name)
     {
         return env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
     }
 
-    jmethodID get_mid(const jobject& obj, const mapping& name)
+    jmethodID get_mid(const jobject& obj, mapping name)
     {
-        return env->GetMethodID(env->GetObjectClass(obj), mappings::findName(name), mappings::findSig(name));
+        return get_mid(env->GetObjectClass(obj), name);
     }
 
     jmethodID get_static_mid(const jclass& cls, const mapping& name)
     {
         return env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
-    }
-
-  
+    }  
 
     vec3 to_vec3(const jobject& vecObj)
     {

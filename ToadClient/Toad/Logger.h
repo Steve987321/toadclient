@@ -109,7 +109,7 @@ inline std::unique_ptr<c_Logger> p_Log;
 }
 
 
-#define log_Ok(msg, ...) sim::p_Log->Print(sim::Logger::log_type::LOK, msg, __VA_ARGS__); 
-#define log_Debug(msg, ...) sim::p_Log->Print(sim::Logger::log_type::LDEBUG, msg, __VA_ARGS__); 
-#define log_Error(msg, ...) sim::p_Log->Print(sim::Logger::log_type::LERROR, msg, __VA_ARGS__); 
-#define log_Warn(msg, ...) sim::p_Log->Print(sim::Logger::log_type::LWARNING, msg, __VA_ARGS__); 
+#define log_Ok(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LOK, msg, __VA_ARGS__) 
+#define log_Debug(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LDEBUG, msg, __VA_ARGS__) 
+#define log_Error(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LERROR, msg, __VA_ARGS__) 
+#define log_Warn(msg, ...) simtoadll::p_Log->Print(toadll::c_Logger::log_type::LWARNING, msg, __VA_ARGS__) 
