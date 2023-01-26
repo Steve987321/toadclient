@@ -15,7 +15,7 @@ namespace toadll::mappings
 		return methodsigs.find(name)->second;
 	}
 
-	inline void init_map(/*JNIEnv* env,*/ const minecraft_client& client)
+	inline void init_map(JNIEnv* env, const jclass mcclass, const minecraft_client& client)
 	{
 		
 		if (client == minecraft_client::Vanilla)
@@ -28,19 +28,30 @@ namespace toadll::mappings
 		}
 		else if (client == minecraft_client::Lunar)
 		{
+			const auto getsig = [&](mapping map, const char* name) -> bool
+			{
+				for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, mcclass); i++)
+				{
+					if (std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, mcclass, i)) == name)
+					{
+						//std::cout << name << " = " << std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, mcclass, i)) << " sig: " << jvmfunc::oJVM_GetMethodIxSignatureUTF(env, mcclass, i) << std::endl;
+						methodsigs.insert({ map, jvmfunc::oJVM_GetMethodIxSignatureUTF(env, mcclass, i)});
+						return true;
+					}
+				}
+				return false;
+			};
+
 			methodnames.insert({ mapping::getMinecraft, "getMinecraft" });
 			methodsigs.insert({ mapping::getMinecraft, "()Lnet/minecraft/client/Minecraft;" });
-
 			
 			methodnames.insert({ mapping::getWorld, "bridge$getWorld" });
-			/*for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, findclass("net.")); i++)
-			{
-			}*/
-
-			methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
+			if (!getsig(mapping::getWorld, "bridge$getWorld"))
+				methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
 			methodnames.insert({ mapping::getPlayer, "bridge$getPlayer" });
-			methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/OCIROORRIRIOHIIIRRIORCIHI/RCHHIHHRCCIHIRCCCRHIOCCHR/OCRHRIOCIICCRHCHHHOHHCROC/OIOORRORCRHOOCICORRCHOHRC;" });
+			if (!getsig(mapping::getPlayer, "bridge$getPlayer"))
+				methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
 			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
 			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });
@@ -64,6 +75,8 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::setRotationYaw, "(D)V" });
 			methodnames.insert({ mapping::setRotationPitch, "bridge$setRotationYaw" });
 			methodsigs.insert({ mapping::setRotationPitch, "(D)V" });
+			methodnames.insert({ mapping::setRotation, "setRotation"});
+			methodsigs.insert({ mapping::setRotation, "(FF)V"});
 
 			// TODO: test this and add for scaffold arg = Vec3i 
 			//name: isAirBlock sig: (Lnet/minecraft/util/BlockPos;)Z args size: 2

@@ -15,12 +15,12 @@ toadll::vec3 toadll::c_Entity::get_position() const
 
 float toadll::c_Entity::get_rotationYaw() const
 {
-	return env->CallFloatMethod(*obj, get_mid(*obj, mapping::getRotationYaw));
+	return env->CallDoubleMethod(*obj, get_mid(*obj, mapping::getRotationYaw));
 }
 
 float toadll::c_Entity::get_rotationPitch() const
 {
-	return env->CallFloatMethod(*obj, get_mid(*obj, mapping::getRotationPitch));
+	return env->CallDoubleMethod(*obj, get_mid(*obj, mapping::getRotationPitch));
 }
 
 void toadll::c_Entity::set_rotationYaw(float newYaw) const
@@ -31,4 +31,9 @@ void toadll::c_Entity::set_rotationYaw(float newYaw) const
 void toadll::c_Entity::set_rotationPitch(float newPitch) const
 {
 	env->CallVoidMethod(*obj, get_mid(*obj, mapping::setRotationPitch), newPitch);
+}
+
+void toadll::c_Entity::set_rotation(float yaw, float pitch) const
+{
+	env->CallVoidMethod(*obj, get_mid(*obj, mapping::setRotation), yaw, pitch);
 }

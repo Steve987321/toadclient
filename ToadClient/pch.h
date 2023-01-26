@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <thread>
 #include <cmath>
+#include <algorithm>
 #include <vector>
 
 #include "jni.h"

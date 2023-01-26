@@ -106,4 +106,25 @@ namespace toadll
             (float)env->CallDoubleMethod(vecObj, zposid)
         );
     }
+
+    std::pair<float, float> toadll::get_angles(const vec3& pos1, const vec3& pos2)
+    {
+        float d_x = pos2.x - pos1.x;
+        float d_y = pos2.y - pos1.y;
+        float d_z = pos2.z - pos1.z;
+
+        float hypothenuse = sqrt(d_x * d_x + d_z * d_z);
+        float yaw = atan2(d_z, d_x) * 180.f / PI - 90.f;
+        float pitch = -atan2(d_y, hypothenuse) * 180 / PI;
+
+        return std::make_pair(yaw, pitch);
+    }
+
+    float toadll::wrap_to_180(float value)
+    {
+        float res = std::fmod(value + 180, 360);
+        if (res < 0)
+            res += 360;
+        return res - 180;
+    }
 }

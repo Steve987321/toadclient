@@ -8,8 +8,10 @@ namespace toadll
 	public:
 		bool init();
 	public:
+		[[nodiscard]] jclass get_mcclass() const;
 		[[nodiscard]] jobject get_mc() const;
-		[[nodiscard]] jobject get_localplayer() const;
+		[[nodiscard]] std::shared_ptr<c_Entity> get_localplayer() const;
+		[[nodiscard]] jobject get_localplayerobj() const;
 		[[nodiscard]] jobject get_world() const;
 		[[nodiscard]] std::vector<std::shared_ptr<toadll::c_Entity>> get_playerList() const;
 

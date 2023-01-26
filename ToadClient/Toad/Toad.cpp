@@ -45,6 +45,8 @@ namespace toadll
 
 		p_Minecraft = std::make_unique<c_Minecraft>();
 		p_Hooks = std::make_unique<c_Hooks>();
+		p_AimAssist = std::make_unique<c_AimAssist>();
+
 		if (!p_Hooks->init())
 		{
 			clean_up(3);
@@ -57,15 +59,43 @@ namespace toadll
 			return;
 		}
 
-		mappings::init_map(curr_client);
+		mappings::init_map(env, p_Minecraft->get_mcclass(), curr_client);
 
 		is_running = true;
 
 		p_Hooks->enable();
 
+		//p_AimAssist->start_thread();
+
 		while (is_running)
 		{
 			//update();
+			if (GetAsyncKeyState(aa::key))
+			{
+				std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
+				auto lPlayer = p_Minecraft->get_localplayer();
+
+				for (const auto& player : p_Minecraft->get_playerList())
+				{
+					if (player->obj == lPlayer->obj) continue;
+					distances.emplace_back(lPlayer->get_position().dist(player->get_position()), player);
+				}
+				if (distances.size() < 2) continue;
+				auto t = std::min_element(distances.begin(), distances.end());
+				auto target = t->second;
+
+				auto [yaw, pitch] = get_angles(lPlayer->get_position(), target->get_position());
+
+				auto lyaw = lPlayer->get_rotationYaw();
+				auto lpitch = lPlayer->get_rotationPitch();
+
+				float difference = wrap_to_180(-(lyaw - yaw));
+				float difference2 = wrap_to_180(-(lpitch - pitch));
+				log_Debug("yaw: %f pitchf %f", lPlayer->get_rotationYaw(), lPlayer->get_rotationPitch());
+				log_Debug("diff yaw %f pitch %f ", difference, difference2);
+
+				lPlayer->set_rotation( lyaw + difference, lpitch + difference2);
+			}
 			if (GetAsyncKeyState(VK_END)) break;
 		}
 		clean_up(0);
@@ -76,7 +106,6 @@ namespace toadll
 	{
 		std::cout << "update:\n";
 		auto entities = p_Minecraft->get_playerList();
-		auto lplayer = std::make_unique<c_Entity>(std::make_unique<jobject>(p_Minecraft->get_localplayer()));
 		for (const auto& player : entities)
 		{
 			std::cout << "X: " << player->get_position().x << " Y: " << player->get_position().y << " Z: " << player->get_position().z << std::endl;
@@ -90,7 +119,9 @@ namespace toadll
 	void clean_up(int exitcode)
 	{
 		log_Debug("closing: %d", exitcode);
-		Sleep(1000);
+
+		p_AimAssist->stop_thread();
+
 		if (jvm != nullptr)
 		{
 			jvm->DetachCurrentThread();

@@ -52,6 +52,7 @@ namespace toadll
 
         setRotationYaw,
         setRotationPitch,
+        setRotation,
 
         getMotionX,
         getMotionY,
@@ -63,5 +64,6 @@ namespace toadll
         Vec3Z
     };
 
+    constexpr static auto PI = 3.14159265358979323846f;
 
 }

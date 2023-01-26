@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 namespace toadll
 {
 	class c_AimAssist
@@ -9,7 +11,7 @@ namespace toadll
 		std::atomic_bool m_thread_running = false;
 
 	private:
-		void thread();
+		void thread() const;
 
 	public:
 		void start_thread();

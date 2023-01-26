@@ -7,10 +7,34 @@ twglSwapBuffers owglSwapBuffers = nullptr;
 
 BOOL hwglSwapBuffers(HDC hDc)
 {
-	std::cout << "we are in \n";
-	GLint viewport[4];
+	/*GLint viewport[16];
+	GLfloat modelview[16];
+	GLfloat projection[16];
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	std::cout << viewport[0] << " " << viewport[1] << " " << viewport[2] << " " << viewport[3] << std::endl;
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelview );
+	glGetFloatv(GL_PROJECTION_MATRIX, projection);
+
+	std::cout << "viewport ";
+	for (int i = 0; i < 4; i++)
+	{
+		std::cout << viewport[i] << " ";
+	}
+	std::cout << std::endl;
+
+	std::cout << "modelview ";
+	for (int i = 0; i < 16; i++)
+	{
+		std::cout << modelview[i] << " ";
+	}
+	std::cout << std::endl;
+
+	std::cout << "projection ";
+	for (int i = 0; i < 16; i++)
+	{
+		std::cout << projection[i] << " ";
+	}
+	std::cout << std::endl;*/
+
 	return owglSwapBuffers(hDc);
 }
 

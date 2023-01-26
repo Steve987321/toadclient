@@ -9,15 +9,26 @@ bool toadll::c_Minecraft::init()
 	return mcclass != nullptr;
 }
 
+jclass toadll::c_Minecraft::get_mcclass() const
+{
+    return this->mcclass;
+}
+
 jobject toadll::c_Minecraft::get_mc() const
 {
 	return env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));
 }
 
-jobject toadll::c_Minecraft::get_localplayer() const
+std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_localplayer() const
 {
-	auto playermid = get_mid(this->mcclass, mapping::getPlayer);
-	return !playermid ? nullptr : env->CallObjectMethod(this->get_mc(), playermid);
+	auto playermid = env->GetMethodID(this->mcclass, mappings::findName(mapping::getPlayer), mappings::findSig(mapping::getPlayer));
+    return !playermid ? nullptr : std::make_shared<c_Entity>(std::make_shared<jobject>(env->CallObjectMethod(this->get_mc(), playermid)));
+}
+
+jobject toadll::c_Minecraft::get_localplayerobj() const
+{
+    auto playermid = get_mid(this->mcclass, mapping::getPlayer);
+    return env->CallObjectMethod(this->get_mc(), playermid);
 }
 
 jobject toadll::c_Minecraft::get_world() const
