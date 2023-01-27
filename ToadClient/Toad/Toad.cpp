@@ -14,6 +14,8 @@ namespace toadll
 		p_Log = std::make_unique<c_Logger>();
 #endif
 
+		SetConsoleCtrlHandler(NULL, true);
+
 		// get functions from jvm.dll
 		auto jvmHandle = GetModuleHandleA("jvm.dll");
 
@@ -45,7 +47,6 @@ namespace toadll
 
 		p_Minecraft = std::make_unique<c_Minecraft>();
 		p_Hooks = std::make_unique<c_Hooks>();
-		p_AimAssist = std::make_unique<c_AimAssist>();
 
 		if (!p_Hooks->init())
 		{
@@ -74,10 +75,11 @@ namespace toadll
 			{
 				std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
 				auto lPlayer = p_Minecraft->get_localplayer();
+				auto lPlayername = lPlayer->get_name();
 
 				for (const auto& player : p_Minecraft->get_playerList())
 				{
-					if (player->obj == lPlayer->obj) continue;
+					if (player->get_name() == lPlayername) continue;
 					distances.emplace_back(lPlayer->get_position().dist(player->get_position()), player);
 				}
 				if (distances.size() < 2) continue;
@@ -91,36 +93,17 @@ namespace toadll
 
 				float difference = wrap_to_180(-(lyaw - yaw));
 				float difference2 = wrap_to_180(-(lpitch - pitch));
-				log_Debug("yaw: %f pitchf %f", lPlayer->get_rotationYaw(), lPlayer->get_rotationPitch());
-				log_Debug("diff yaw %f pitch %f ", difference, difference2);
 
-				lPlayer->set_rotation( lyaw + difference, lpitch + difference2);
+				lPlayer->set_rotation(lyaw + difference / 10, lpitch + difference2 / 10);
 			}
 			if (GetAsyncKeyState(VK_END)) break;
 		}
-		clean_up(0);
-		
-	}
-
-	void update()
-	{
-		std::cout << "update:\n";
-		auto entities = p_Minecraft->get_playerList();
-		for (const auto& player : entities)
-		{
-			std::cout << "X: " << player->get_position().x << " Y: " << player->get_position().y << " Z: " << player->get_position().z << std::endl;
-		}
-		/*auto player = p_Minecraft->get_localplayer();
-		c_Entity entity(&player);
-		std::cout << "X: " << entity.get_position().x << " Y: " << entity.get_position().y << " Z: " << entity.get_position().z << std::endl;
-		*/
+		clean_up(0);		
 	}
 
 	void clean_up(int exitcode)
 	{
 		log_Debug("closing: %d", exitcode);
-
-		p_AimAssist->stop_thread();
 
 		if (jvm != nullptr)
 		{

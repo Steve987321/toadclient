@@ -155,20 +155,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Toad\Hooks\Hooks.h" />
-    <ClInclude Include="Toad\aa.h" />
     <ClInclude Include="Toad\Logger.h" />
     <ClInclude Include="Toad\MC\mappings.h" />
     <ClInclude Include="Toad\MC\Entity\Entity.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Toad\MC\Minecraft.h" />
     <ClInclude Include="Toad\MC\Utils\utils.h" />
+    <ClInclude Include="Toad\Modules\modules.h" />
     <ClInclude Include="Toad\Toad.h" />
     <ClInclude Include="Toad\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Toad\Hooks\Hooks.cpp" />
-    <ClCompile Include="Toad\aa.cpp" />
     <ClCompile Include="Toad\MC\Entity\Entity.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -178,6 +177,7 @@
     </ClCompile>
     <ClCompile Include="Toad\MC\Minecraft.cpp" />
     <ClCompile Include="Toad\MC\Utils\utils.cpp" />
+    <ClCompile Include="Toad\Modules\modules.cpp" />
     <ClCompile Include="Toad\Toad.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

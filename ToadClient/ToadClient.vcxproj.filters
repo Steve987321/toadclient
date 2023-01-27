@@ -39,10 +39,10 @@
     <ClInclude Include="Toad\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\aa.h">
+    <ClInclude Include="Toad\Hooks\Hooks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Hooks\Hooks.h">
+    <ClInclude Include="Toad\Modules\modules.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,10 +65,10 @@
     <ClCompile Include="Toad\MC\Entity\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\aa.cpp">
+    <ClCompile Include="Toad\Hooks\Hooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Hooks\Hooks.cpp">
+    <ClCompile Include="Toad\Modules\modules.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

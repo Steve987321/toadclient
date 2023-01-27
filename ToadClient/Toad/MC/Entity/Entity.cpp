@@ -23,6 +23,11 @@ float toadll::c_Entity::get_rotationPitch() const
 	return env->CallDoubleMethod(*obj, get_mid(*obj, mapping::getRotationPitch));
 }
 
+std::string toadll::c_Entity::get_name() const
+{
+	return jstring2string((jstring)env->CallObjectMethod(*obj, get_mid(*obj, mapping::getName)));
+}
+
 void toadll::c_Entity::set_rotationYaw(float newYaw) const
 {
 	env->CallVoidMethod(*obj, get_mid(*obj, mapping::setRotationYaw), newYaw);

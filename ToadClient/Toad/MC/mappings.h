@@ -17,7 +17,6 @@ namespace toadll::mappings
 
 	inline void init_map(JNIEnv* env, const jclass mcclass, const minecraft_client& client)
 	{
-		
 		if (client == minecraft_client::Vanilla)
 		{
 
@@ -64,6 +63,9 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::getRotationYaw, "()D" });
 			methodsigs.insert({ mapping::getRotationPitch, "()D" });
 
+			methodnames.insert({ mapping::getName, "getName" });
+			methodsigs.insert({ mapping::getName, "()Ljava/lang/String;" });
+
 			methodnames.insert({ mapping::getMotionX, "bridge$getMotionX" });
 			methodnames.insert({ mapping::getMotionY, "bridge$getMotionY" });
 			methodnames.insert({ mapping::getMotionZ, "bridge$getMotionZ" });
@@ -78,8 +80,12 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::setRotation, "setRotation"});
 			methodsigs.insert({ mapping::setRotation, "(FF)V"});
 
-			// TODO: test this and add for scaffold arg = Vec3i 
-			//name: isAirBlock sig: (Lnet/minecraft/util/BlockPos;)Z args size: 2
+			// TODO: test this and add for scaffold arg = Vec3i
+			// args size: 2
+			// type: Vec3i
+			// return type: boolean
+			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
+			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
 
 			// Vec3 class
 			methodnames.insert({ mapping::Vec3X, "bridge$xCoord" });

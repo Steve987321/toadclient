@@ -86,7 +86,7 @@ namespace toadll
     jmethodID get_static_mid(const jclass& cls, const mapping& name)
     {
         return env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
-    }  
+    }
 
     vec3 to_vec3(const jobject& vecObj)
     {
@@ -100,11 +100,11 @@ namespace toadll
 
         env->DeleteLocalRef(posclass);
 
-        return vec3(
-            (float)env->CallDoubleMethod(vecObj, xposid), 
+        return {
+	        (float)env->CallDoubleMethod(vecObj, xposid), 
             (float)env->CallDoubleMethod(vecObj, yposid),
             (float)env->CallDoubleMethod(vecObj, zposid)
-        );
+        };
     }
 
     std::pair<float, float> toadll::get_angles(const vec3& pos1, const vec3& pos2)
@@ -126,5 +126,29 @@ namespace toadll
         if (res < 0)
             res += 360;
         return res - 180;
+    }
+
+    bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[16], GLfloat projection[16], GLfloat viewPort[4])
+    {
+        const auto Multiply = [](const vec4& vec, const GLfloat mat[16]) -> vec4
+        {
+            return {
+	            vec.x * mat[0] + vec.y * mat[4] + vec.z * mat[8] + vec.w * mat[12],
+                vec.x * mat[1] + vec.y * mat[5] + vec.z * mat[9] + vec.w * mat[13],
+                vec.x * mat[2] + vec.y * mat[6] + vec.z * mat[10] + vec.w * mat[14],
+                vec.x * mat[3] + vec.y * mat[7] + vec.z * mat[11] + vec.w * mat[15]
+            };
+        };
+        auto clipSpacePos = Multiply(Multiply(vec4(worldpos.x, worldpos.y, worldpos.z, 1.0f), modelView), projection);
+        auto ndcSpacePos = vec3(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w);
+
+        if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0)
+        {
+            return false;
+        }
+
+        screen.x = (ndcSpacePos.x + 1.0f) / 2.0f * viewPort[2];
+        screen.y = (1.0f - ndcSpacePos.y) / 2.0f * viewPort[3];
+        return true;
     }
 }

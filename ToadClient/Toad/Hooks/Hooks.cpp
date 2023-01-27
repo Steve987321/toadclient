@@ -7,13 +7,18 @@ twglSwapBuffers owglSwapBuffers = nullptr;
 
 BOOL hwglSwapBuffers(HDC hDc)
 {
-	/*GLint viewport[16];
-	GLfloat modelview[16];
-	GLfloat projection[16];
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	glGetFloatv(GL_MODELVIEW_MATRIX, modelview );
-	glGetFloatv(GL_PROJECTION_MATRIX, projection);
+	//GLint viewport[4];
+	//GLfloat modelview[16];
+	//GLfloat projection[16];
+	//glGetIntegerv(GL_VIEWPORT, viewport);
+	//glGetFloatv(GL_MODELVIEW_MATRIX, modelview );
+	//glGetFloatv(GL_PROJECTION_MATRIX, projection);
 
+	//for (auto player : toadll::p_Minecraft->get_playerList())
+	//{
+	//}
+	
+	/*
 	std::cout << "viewport ";
 	for (int i = 0; i < 4; i++)
 	{

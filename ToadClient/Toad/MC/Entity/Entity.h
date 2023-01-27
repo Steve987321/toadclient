@@ -16,6 +16,7 @@ namespace toadll
 		[[nodiscard]] vec3 get_position() const;
 		[[nodiscard]] float get_rotationYaw() const;
 		[[nodiscard]] float get_rotationPitch() const;
+		[[nodiscard]] std::string get_name() const;
 		
 
 	public:

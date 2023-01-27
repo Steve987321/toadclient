@@ -2,7 +2,33 @@
 
 namespace toadll
 {
-    struct vec3 {
+    struct vec2 {
+        vec2(float x, float y) : x(x), y(y) {}
+
+        float x, y;
+
+        vec2 operator+(const vec2& v) const {
+            return { x + v.x, y + v.y };
+        }
+
+        vec2 operator-(const vec2& v) const {
+            return { x - v.x, y - v.y };
+        }
+
+        vec2 operator*(float s) const {
+            return { x * s, y * s};
+        }
+
+        vec2 operator/(float s) const {
+            return { x / s, y / s};
+        }
+
+        [[nodiscard]] float dist(const vec2& v) const {
+            return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
+        }
+    };
+
+	struct vec3 {
         vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
         float x, y, z;
@@ -25,6 +51,28 @@ namespace toadll
 
         [[nodiscard]] float dist(const vec3& v) const {
             return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
+        }
+    };
+
+	struct vec4 {
+        vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+
+        float x, y, z, w;
+
+        vec4 operator+(const vec4& v) const {
+            return { x + v.x, y + v.y, z + v.z, w + v.w};
+        }
+
+        vec4 operator-(const vec4& v) const {
+            return { x - v.x, y - v.y, z - v.z, w - v.w};
+        }
+
+        vec4 operator*(float s) const {
+            return { x * s, y * s, z * s, w * s };
+        }
+
+        vec4 operator/(float s) const {
+            return { x / s, y / s, z / s, w/ s };
         }
     };
 
@@ -54,9 +102,14 @@ namespace toadll
         setRotationPitch,
         setRotation,
 
+        getName,
+
         getMotionX,
         getMotionY,
         getMotionZ,
+
+        //. World
+        isAirBlock,
 
         // .Vec3
         Vec3X,

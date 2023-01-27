@@ -17,6 +17,7 @@
 #include <cmath>
 #include <algorithm>
 #include <vector>
+#include <gl/GL.h>
 
 #include "jni.h"
 
