@@ -81,6 +81,7 @@ namespace toadll
 
 	// minecraft Vec3 object to vec3
 	vec3 to_vec3(const jobject& vecObj);
+	vec3 to_vec3i(const jobject& vecObj);
 
     std::pair<float, float> get_angles(const vec3& pos1, const vec3& pos2);
     float wrap_to_180(float value);

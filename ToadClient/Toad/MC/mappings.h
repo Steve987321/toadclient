@@ -27,6 +27,7 @@ namespace toadll::mappings
 		}
 		else if (client == minecraft_client::Lunar)
 		{
+			// use only on the minecraft class for now
 			const auto getsig = [&](mapping map, const char* name) -> bool
 			{
 				for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, mcclass); i++)
@@ -52,11 +53,24 @@ namespace toadll::mappings
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer"))
 				methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
+			methodnames.insert({ mapping::getObjectMouseOver, "bridge$getObjectMouseOver" });
+			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver"))
+				methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
+
 			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
 			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });
 
+			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
+			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
+
 			methodnames.insert({ mapping::getPos, "getPositionVector" });
 			methodsigs.insert({ mapping::getPos, "()Lnet/minecraft/util/Vec3;" });
+
+			methodnames.insert({ mapping::getBlockPosition, "getPosition" });
+			methodsigs.insert({ mapping::getBlockPosition, "()Lnet/minecraft/util/BlockPos;" });
+
+			methodnames.insert({ mapping::getBlockPos, "getBlockPos" });
+			methodsigs.insert({ mapping::getBlockPos, "()Lnet/minecraft/util/BlockPos;" });
 
 			methodnames.insert({ mapping::getRotationYaw, "bridge$getRotationYaw" });
 			methodnames.insert({ mapping::getRotationPitch, "bridge$getRotationPitch" });
@@ -80,13 +94,6 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::setRotation, "setRotation"});
 			methodsigs.insert({ mapping::setRotation, "(FF)V"});
 
-			// TODO: test this and add for scaffold arg = Vec3i
-			// args size: 2
-			// type: Vec3i
-			// return type: boolean
-			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
-			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
-
 			// Vec3 class
 			methodnames.insert({ mapping::Vec3X, "bridge$xCoord" });
 			methodsigs.insert({ mapping::Vec3X, "()D" });
@@ -94,6 +101,14 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::Vec3Y, "()D" });
 			methodnames.insert({ mapping::Vec3Z, "bridge$zCoord" });
 			methodsigs.insert({ mapping::Vec3Z, "()D" });
+
+			// Vec3I class
+			methodnames.insert({ mapping::Vec3IX, "getX" });
+			methodsigs.insert({ mapping::Vec3IX, "()I" });
+			methodnames.insert({ mapping::Vec3IY, "getY" });
+			methodsigs.insert({ mapping::Vec3IY, "()I" });
+			methodnames.insert({ mapping::Vec3IZ, "getZ" });
+			methodsigs.insert({ mapping::Vec3IZ, "()I" });
 		}
 	}
 }

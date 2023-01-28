@@ -3,7 +3,7 @@
 // all cheat functions 
 namespace toadll::modules
 {
-	void init();
+	void update();
 
 	void aa();
 	void esp();

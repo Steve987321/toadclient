@@ -89,14 +89,19 @@ namespace toadll
         getMinecraft,
         getWorld,
         getPlayer,
+        getObjectMouseOver,
 
-        //.World
+        // .World
         getPlayerEntities,
+        isAirBlock,
 
         // .Entity
         getPos,
         getRotationYaw,
         getRotationPitch,
+
+        getBlockPosition,
+        getBlockPos,
 
         setRotationYaw,
         setRotationPitch,
@@ -108,13 +113,15 @@ namespace toadll
         getMotionY,
         getMotionZ,
 
-        //. World
-        isAirBlock,
-
         // .Vec3
         Vec3X,
         Vec3Y,
-        Vec3Z
+        Vec3Z,
+
+        //. Vec3I
+    	Vec3IX,
+        Vec3IY,
+        Vec3IZ
     };
 
     constexpr static auto PI = 3.14159265358979323846f;

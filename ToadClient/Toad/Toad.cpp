@@ -70,32 +70,7 @@ namespace toadll
 
 		while (is_running)
 		{
-			//update();
-			if (GetAsyncKeyState(aa::key))
-			{
-				std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
-				auto lPlayer = p_Minecraft->get_localplayer();
-				auto lPlayername = lPlayer->get_name();
-
-				for (const auto& player : p_Minecraft->get_playerList())
-				{
-					if (player->get_name() == lPlayername) continue;
-					distances.emplace_back(lPlayer->get_position().dist(player->get_position()), player);
-				}
-				if (distances.size() < 2) continue;
-				auto t = std::min_element(distances.begin(), distances.end());
-				auto target = t->second;
-
-				auto [yaw, pitch] = get_angles(lPlayer->get_position(), target->get_position());
-
-				auto lyaw = lPlayer->get_rotationYaw();
-				auto lpitch = lPlayer->get_rotationPitch();
-
-				float difference = wrap_to_180(-(lyaw - yaw));
-				float difference2 = wrap_to_180(-(lpitch - pitch));
-
-				lPlayer->set_rotation(lyaw + difference / 10, lpitch + difference2 / 10);
-			}
+			modules::update();
 			if (GetAsyncKeyState(VK_END)) break;
 		}
 		clean_up(0);		

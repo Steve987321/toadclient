@@ -107,6 +107,25 @@ namespace toadll
         };
     }
 
+	vec3 to_vec3i(const jobject& vecObj)
+    {
+        auto posclass = env->GetObjectClass(vecObj);
+
+        auto xposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IX), "()I");
+        if (!xposid) return {-1, 0, 0};
+
+        auto yposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IY), "()I");
+        auto zposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IZ), "()I");
+
+        env->DeleteLocalRef(posclass);
+
+        return {
+	        (float)env->CallIntMethod(vecObj, xposid), 
+            (float)env->CallIntMethod(vecObj, yposid),
+            (float)env->CallIntMethod(vecObj, zposid)
+        };
+    }
+
     std::pair<float, float> toadll::get_angles(const vec3& pos1, const vec3& pos2)
     {
         float d_x = pos2.x - pos1.x;
