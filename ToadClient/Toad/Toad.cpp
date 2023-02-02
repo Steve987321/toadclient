@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Toad.h"
 
+#include "nlohmann/json.hpp"
+
 //#include <glew-2.1.0/include/GL/glew.h>
 //#include <gl/GL.h>
 
@@ -8,6 +10,33 @@ int stage = 0;
 
 namespace toadll
 {
+	void update_settings()
+	{
+		constexpr static size_t bufsize = 1000;
+		HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"Global\\Toad");
+		if (hMapFile == NULL)
+			clean_up(11);
+		auto buf = (LPCSTR)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, bufsize);
+		if (buf == NULL)
+		{
+			clean_up(12);
+			CloseHandle(hMapFile);
+		}
+
+		// parse buf as json and read them and set them and yes
+
+		using json = nlohmann::json;
+
+		json data = json::parse(buf);
+
+		aa::enabled = data["aaenabled"];
+		aa::distance = data["aadistance"];
+		aa::speed = data["aaspeed"];
+
+		UnmapViewOfFile(buf);
+		CloseHandle(hMapFile);
+	}
+
 	void init()
 	{
 #ifdef _DEBUG
@@ -35,9 +64,9 @@ namespace toadll
 		jvmfunc::oJVM_GetArrayLength = reinterpret_cast<jvmfunc::hJVM_GetArrayLength>(GetProcAddress(jvmHandle, "JVM_GetArrayLength"));
 		jvmfunc::oJVM_GetMethodIxArgsSize = reinterpret_cast<jvmfunc::hJVM_GetMethodIxArgsSize>(GetProcAddress(jvmHandle, "JVM_GetMethodIxArgsSize"));
 
-		jvmfunc::oJNI_GetCreatedJavaVMs(&jvm, 1, 0);
+		jvmfunc::oJNI_GetCreatedJavaVMs(&jvm, 1, nullptr);
 
-		jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), NULL);
+		jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), nullptr);
 
 		if (!env)
 		{
@@ -66,10 +95,9 @@ namespace toadll
 
 		p_Hooks->enable();
 
-		//p_AimAssist->start_thread();
-
 		while (is_running)
 		{
+			//update_settings();
 			modules::update();
 			if (GetAsyncKeyState(VK_END)) break;
 		}
@@ -94,6 +122,5 @@ namespace toadll
 
 		p_Log->dispose_console();
 		FreeLibraryAndExitThread(hMod, 0);
-		//MH_Uninitialize();
 	}
 }

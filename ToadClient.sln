@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToadClient", "ToadClient\ToadClient.vcxproj", "{3A854E09-05E7-4B2F-BE40-BA9E21497298}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Loader", "Loader\Loader.vcxproj", "{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{3A854E09-05E7-4B2F-BE40-BA9E21497298}.Release|x64.Build.0 = Release|x64
 		{3A854E09-05E7-4B2F-BE40-BA9E21497298}.Release|x86.ActiveCfg = Release|Win32
 		{3A854E09-05E7-4B2F-BE40-BA9E21497298}.Release|x86.Build.0 = Release|Win32
+		{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}.Debug|x64.ActiveCfg = Debug|x64
+		{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}.Debug|x64.Build.0 = Debug|x64
+		{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}.Debug|x86.ActiveCfg = Debug|Win32
+		{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}.Debug|x86.Build.0 = Debug|Win32
+		{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}.Release|x64.ActiveCfg = Release|x64
+		{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}.Release|x64.Build.0 = Release|x64
+		{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}.Release|x86.ActiveCfg = Release|Win32
+		{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,12 +1,99 @@
 #include "pch.h"
 #include "Hooks.h"
+
+#include "imgui/imgui_impl_opengl2.h"
+#include "imgui/imgui_impl_win32.h"
 #include "Toad/Toad.h"
 
 typedef BOOL(__fastcall* twglSwapBuffers) (_In_ HDC hDc);
 twglSwapBuffers owglSwapBuffers = nullptr;
 
+int init = 0;
+bool showMenu = false;
+
+HWND hwnd;
+HGLRC ctx = nullptr;
+
 BOOL hwglSwapBuffers(HDC hDc)
 {
+	
+	//if (toadll::modules::entitiepositions.empty())
+	//	return owglSwapBuffers(hDc);
+
+	/*GLint viewport[4];
+	GLfloat modelview[16];
+	GLfloat projection[16];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+	glGetFloatv(GL_PROJECTION_MATRIX, projection);
+
+	for (const auto& player : toadll::modules::entitiepositions)
+	{
+		toadll::vec2 vec2{0,0};
+
+		if (WorldToScreen(player, vec2, modelview, projection, viewport))
+		{
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(vec2.x - 10, vec2.y - 10);
+			glVertex2f(vec2.x + 10, vec2.y - 10);
+			glVertex2f(vec2.x + 10, vec2.y + 10);
+			glVertex2f(vec2.x - 10, vec2.y + 10);
+			glEnd();
+			std::cout << vec2.x << " " << vec2.y << std::endl;
+		}
+	}*/
+	
+
+	/*hwnd = WindowFromDC(hDc);
+	HGLRC oCtx = wglGetCurrentContext();
+
+	if (init==0)
+	{
+		ctx = wglCreateContext(hDc);
+		wglMakeCurrent(hDc, ctx);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		GLint m_viewport[4];
+		glGetIntegerv(GL_VIEWPORT, m_viewport);
+
+		glOrtho(0, m_viewport[2], m_viewport[3], 0, 1, -1);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glClearColor(0, 0, 0, 1);
+
+		init = 1;
+	}
+
+	wglMakeCurrent(hDc, ctx);
+
+	if (init == 1)
+	{
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui_ImplWin32_Init(hwnd);
+		ImGui_ImplOpenGL2_Init();
+		init = 3;
+	}
+
+	ImGui_ImplOpenGL2_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("nigga client v0.1");
+
+	ImGui::Text("Black af?");
+
+	ImGui::End();
+
+	ImGui::EndFrame();
+	ImGui::Render();
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
+	wglMakeCurrent(hDc, oCtx);
+	*/
+
+	//glReadPixels()
 	//GLint viewport[4];
 	//GLfloat modelview[16];
 	//GLfloat projection[16];
@@ -40,6 +127,8 @@ BOOL hwglSwapBuffers(HDC hDc)
 	}
 	std::cout << std::endl;*/
 
+
+	
 	return owglSwapBuffers(hDc);
 }
 

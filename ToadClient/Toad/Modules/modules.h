@@ -3,10 +3,13 @@
 // all cheat functions 
 namespace toadll::modules
 {
+	inline std::vector<vec3> entitiepositions;
+	inline double renderposX, renderposY, renderposZ;
+
 	void update();
 
 	void aa();
 	void esp();
-	void edge_sneak();
+	void auto_bridge();
 
 }

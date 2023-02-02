@@ -19,6 +19,11 @@ jobject toadll::c_Minecraft::get_mc() const
 	return env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));
 }
 
+jobject toadll::c_Minecraft::get_rendermanager() const
+{
+    return env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getRenderManager));
+}
+
 std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_localplayer() const
 {
 	auto playermid = env->GetMethodID(this->mcclass, mappings::findName(mapping::getPlayer), mappings::findSig(mapping::getPlayer));

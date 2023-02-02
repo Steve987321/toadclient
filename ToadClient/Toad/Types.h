@@ -93,6 +93,7 @@ namespace toadll
 
         // .World
         getPlayerEntities,
+        getRenderManager,
         isAirBlock,
 
         // .Entity
@@ -107,11 +108,18 @@ namespace toadll
         setRotationPitch,
         setRotation,
 
+        getInventory,
+
         getName,
 
         getMotionX,
         getMotionY,
         getMotionZ,
+
+        // .rendermanager
+        getRenderPosX,
+        getRenderPosY,
+        getRenderPosZ,
 
         // .Vec3
         Vec3X,

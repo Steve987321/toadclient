@@ -147,7 +147,7 @@ namespace toadll
         return res - 180;
     }
 
-    bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[16], GLfloat projection[16], GLfloat viewPort[4])
+    bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[16], GLfloat projection[16], GLint viewPort[4])
     {
         const auto Multiply = [](const vec4& vec, const GLfloat mat[16]) -> vec4
         {
@@ -169,5 +169,18 @@ namespace toadll
         screen.x = (ndcSpacePos.x + 1.0f) / 2.0f * viewPort[2];
         screen.y = (1.0f - ndcSpacePos.y) / 2.0f * viewPort[3];
         return true;
+    }
+
+    void loop_through_class(const jclass klass)
+    {
+#ifndef _DEBUG
+        return;
+#endif
+
+        for (auto i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
+        {
+            std::cout << "name: " << jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i) << " sig: " << jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i) << " args size: " << jvmfunc::oJVM_GetMethodIxArgsSize(env, klass, i) << std::endl;
+		}
+
     }
 }

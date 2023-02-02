@@ -57,17 +57,25 @@ namespace toadll::mappings
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver"))
 				methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
 
+			// WORLD
 			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
 			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });
+
+			methodnames.insert({ mapping::getRenderManager, "getRenderManager" });
+			methodsigs.insert({ mapping::getRenderManager, "()Lnet/minecraft/client/renderer/entity/RenderManager;" });
 
 			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
 			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
 
+			// ENTITY
 			methodnames.insert({ mapping::getPos, "getPositionVector" });
 			methodsigs.insert({ mapping::getPos, "()Lnet/minecraft/util/Vec3;" });
 
 			methodnames.insert({ mapping::getBlockPosition, "getPosition" });
 			methodsigs.insert({ mapping::getBlockPosition, "()Lnet/minecraft/util/BlockPos;" });
+
+			methodnames.insert({ mapping::getInventory, "getInventory" });
+			methodsigs.insert({ mapping::getInventory, "()[Lnet/minecraft/item/ItemStack;" });
 
 			methodnames.insert({ mapping::getBlockPos, "getBlockPos" });
 			methodsigs.insert({ mapping::getBlockPos, "()Lnet/minecraft/util/BlockPos;" });
@@ -76,6 +84,9 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getRotationPitch, "bridge$getRotationPitch" });
 			methodsigs.insert({ mapping::getRotationYaw, "()D" });
 			methodsigs.insert({ mapping::getRotationPitch, "()D" });
+
+			/*methodnames.insert({ mapping::setSneaking, "setSneaking" });
+			methodsigs.insert({ mapping::setSneaking, "(Z)V" });*/
 
 			methodnames.insert({ mapping::getName, "getName" });
 			methodsigs.insert({ mapping::getName, "()Ljava/lang/String;" });
@@ -93,6 +104,13 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::setRotationPitch, "(D)V" });
 			methodnames.insert({ mapping::setRotation, "setRotation"});
 			methodsigs.insert({ mapping::setRotation, "(FF)V"});
+
+			methodnames.insert({ mapping::getRenderPosX, "getRenderPosX" });
+			methodnames.insert({ mapping::getRenderPosY, "getRenderPosY" });
+			methodnames.insert({ mapping::getRenderPosZ, "getRenderPosZ" });
+			methodsigs.insert({ mapping::getRenderPosX, "()D" });
+			methodsigs.insert({ mapping::getRenderPosY, "()D" });
+			methodsigs.insert({ mapping::getRenderPosZ, "()D" });
 
 			// Vec3 class
 			methodnames.insert({ mapping::Vec3X, "bridge$xCoord" });

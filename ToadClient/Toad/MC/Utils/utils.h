@@ -86,6 +86,8 @@ namespace toadll
     std::pair<float, float> get_angles(const vec3& pos1, const vec3& pos2);
     float wrap_to_180(float value);
 
-    bool WorldToScreen(vec3 worldpos, vec2& screen, GLfloat modelView[16], GLfloat projection[16], GLfloat viewPort[4]);
+    bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[16], GLfloat projection[16], GLint viewPort[4]);
+
+    void loop_through_class(const jclass klass);
 
 }
