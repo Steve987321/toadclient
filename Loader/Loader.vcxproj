@@ -73,10 +73,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-inter\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)src\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-inter\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)src\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,6 +115,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +131,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,11 +141,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\Application\Application.h" />
+    <ClInclude Include="src\toad.h" />
+    <ClInclude Include="src\utils\utils.h" />
+    <ClInclude Include="vendor\imgui\backends\imgui_impl_dx9.h" />
+    <ClInclude Include="vendor\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="vendor\imgui\imconfig.h" />
+    <ClInclude Include="vendor\imgui\imgui.h" />
+    <ClInclude Include="vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Application\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\toad.cpp" />
+    <ClCompile Include="src\Application\ui.cpp" />
+    <ClCompile Include="src\utils\utils.cpp" />
+    <ClCompile Include="vendor\imgui\backends\imgui_impl_dx9.cpp" />
+    <ClCompile Include="vendor\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="vendor\imgui\imgui.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

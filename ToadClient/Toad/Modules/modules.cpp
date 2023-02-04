@@ -5,22 +5,22 @@
 
 void toadll::modules::update()
 {
-	/*renderposX = env->CallDoubleMethod(p_Minecraft->get_rendermanager(), get_mid(p_Minecraft->get_rendermanager(), mapping::getRenderPosX));
-	renderposY = env->CallDoubleMethod(p_Minecraft->get_rendermanager(), get_mid(p_Minecraft->get_rendermanager(), mapping::getRenderPosY));
-	renderposZ = env->CallDoubleMethod(p_Minecraft->get_rendermanager(), get_mid(p_Minecraft->get_rendermanager(), mapping::getRenderPosZ));
-	
-	for (const auto& f : p_Minecraft->get_playerList())
+	lPlayer = p_Minecraft->get_localplayer();
+	if (lPlayer == nullptr) return;
+
+	auto heldItem = lPlayer->get_heldItem();
+	if (heldItem != NULL)
 	{
-		entitiepositions.clear();
-		auto vec = f->get_position();
-		vec.x -= renderposX;
-		vec.y -= renderposY;
-		vec.z -= renderposZ;
-		entitiepositions.emplace_back(vec);
-	}*/
+		log_Debug("%s", jstring2string(jstring(env->CallObjectMethod(heldItem, env->GetMethodID(env->GetObjectClass(heldItem), "toString", "()Ljava/lang/String;")))).c_str());
+		env->DeleteLocalRef(heldItem);
+	}
+	else
+	{
+		log_Debug("no");
+	}
+
 	aa();
-	//esp();
-	scaffold();
+	auto_bridge();
 }
 
 void toadll::modules::aa()
@@ -30,7 +30,6 @@ void toadll::modules::aa()
 	if (GetAsyncKeyState(aa::key))
 	{
 		std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
-		auto lPlayer = p_Minecraft->get_localplayer();
 
 		if (lPlayer->obj == NULL) return;
 		
@@ -60,14 +59,94 @@ void toadll::modules::aa()
 	}
 }
 
-void toadll::modules::esp()
+void toadll::modules::esp(const vec3& ePos)
 {
+	/*vec2 vec2t{0,0};
+
+	GLint viewport[4];
+	GLfloat modelview[16];
+	GLfloat projection[16];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+	glGetFloatv(GL_PROJECTION_MATRIX, projection);
+
+	if (WorldToScreen(ePos, vec2t, modelview, projection, viewport))
+	{
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(vec2t.x - 10, vec2t.y - 10);
+		glVertex2f(vec2t.x + 10, vec2t.y - 10);
+		glVertex2f(vec2t.x + 10, vec2t.y + 10);
+		glVertex2f(vec2t.x - 10, vec2t.y + 10);
+		glEnd();
+	}*/
+
+
+	// Projection (only needs to be set once in most cases)
+	//glMatrixMode(GL_PROJECTION);        // Select projection matrix
+	//glLoadIdentity();                        // Clear it
+	//glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);  // Set your projection
+
+	//// model/view transforms
+	//glMatrixMode(GL_MODELVIEW);  // Select modelview matrix
+	//glLoadIdentity();                 // Clear it
+
+	//// Draw (shortcut)
+	//glRectf(0.1f, 0.1f, 0.9f, 0.9f);
+	//glPushMatrix();
+	//// Translate to the entities position
+	//glTranslated(
+	//	// Add 0.5 for tile entities
+	//	// There's gotta be a better way to do this, though...
+	//	ePos.z - renderposX,
+	//	ePos.y - renderposY + /*(e.height / 2),*/ 0.5 ,
+	//	ePos.z - renderposZ
+	//);
+
+	//glNormal3f(0.0F, 1.0F, 0.0F);
+
+
+	//// Rotate the ESP "plate" to always be facing the player
+	//glRotatef(-yaw, 0.0F, 1.0F, 0.0F);
+	//glRotatef(pitch, 1.0F, 0.0F, 0.0F);
+
+	////p_Minecraft->disableLightMap();
+	//glDisable(GL_DEPTH_TEST);
+	//
+	//double extraDist = 0.2;
+	//// Main rectangle
+	//// TODO: Add a parameter that 'toggles' this?
+
+	//auto width = 1;
+	//auto height = 2;
+
+	//glRectf(0.1f, 0.1f, 0.9f, 0.9f);
+
+	////log_Debug(" RENDERPOS(%f,%f,%f) ENTITYPOS(%f,%f,%f)", renderposX, renderposY, renderposZ, ePos.x, ePos.y, ePos.z);
+
+	////draw::drawRect(-width, -height / 2 - extraDist, width * 2, height + extraDist * 2);
+
+	////// Bottom right
+	////draw::drawRect(-width, -height / 2 - extraDist, extraDist, extraDist / 10);
+	////draw::drawRect(-width, -height / 2 - extraDist, extraDist / 10, extraDist);
+	////// Bottom left
+	////draw::drawRect(width - extraDist * 1.1, -height / 2 - extraDist, extraDist, extraDist / 10);
+	////draw::drawRect(width - extraDist / 10, -height / 2 - extraDist, extraDist / 10, extraDist);
+	////// Top right
+	////draw::drawRect(-width, height / 2 + extraDist * 0.9, extraDist, extraDist / 10);
+	////draw::drawRect(-width, height / 2, extraDist / 10, extraDist);
+	////// Top left
+	////draw::drawRect(width - extraDist, height / 2 + extraDist * 0.9, extraDist, extraDist / 10);
+	////draw::drawRect(width - extraDist / 10, height / 2, extraDist / 10, extraDist * 0.9);
+
+	//glEnable(GL_DEPTH_TEST);
+	////p_Minecraft->enableLightMap();
+	//glPopMatrix();
 	
 }
 
 INPUT ip{};
 std::once_flag onceFlag;
-void toadll::modules::scaffold()
+void toadll::modules::auto_bridge()
 {
 	// TODO: check if enabled
 
@@ -84,13 +163,7 @@ void toadll::modules::scaffold()
 
 	auto world = p_Minecraft->get_world();
 	if (world == NULL) return;
-	auto lplayer = p_Minecraft->get_localplayer();
-	if (lplayer == nullptr)
-	{
-		env->DeleteLocalRef(world);
-		return;
-	}
-	auto lplayerpos = lplayer->get_position();
+	auto lplayerpos = lPlayer->get_position();
 
 	//auto lplayer = p_Minecraft->get_localplayer();
 	/*auto blockpos = env->CallObjectMethod(*lplayer->obj, get_mid(*lplayer->obj, mapping::getBlockPosition));
@@ -194,12 +267,6 @@ void toadll::modules::scaffold()
 	}
 
 	//log_Debug("pos{x=%f, y=%f, z=%f} isairblock %s edge %s", jo.x, jo.y, jo.z, env->CallBooleanMethod(world, get_mid(world, mapping::isAirBlock), vec3i) ? "yes" : "no", isEdge ? "yes" : "no");
-
-	//env->DeleteLocalRef(blokpoz);
-	//env->DeleteLocalRef(lookatobj);
-	//env->DeleteLocalRef(vec3iClass);
-	//env->DeleteLocalRef(world);
-	//env->DeleteGlobalRef(vec3i);
 
 	//Sleep(1);
 }

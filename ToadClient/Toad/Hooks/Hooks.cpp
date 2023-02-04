@@ -16,9 +16,15 @@ HGLRC ctx = nullptr;
 
 BOOL hwglSwapBuffers(HDC hDc)
 {
-	
 	//if (toadll::modules::entitiepositions.empty())
 	//	return owglSwapBuffers(hDc);
+	//auto players = toadll::modules::entitiepositions;
+	//toadll::draw::drawRect(470, 700, 490, 510);
+	//if (players.empty())
+	//	return owglSwapBuffers(hDc);
+
+	//for (const auto& e : players)
+	//	toadll::modules::esp(e);
 
 	/*GLint viewport[4];
 	GLfloat modelview[16];

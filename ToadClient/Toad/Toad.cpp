@@ -90,6 +90,14 @@ namespace toadll
 		}
 
 		mappings::init_map(env, p_Minecraft->get_mcclass(), curr_client);
+		std::thread([]()
+			{
+				while (true)
+				{
+					log_Debug("yo");
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				}
+			}).detach();
 
 		is_running = true;
 

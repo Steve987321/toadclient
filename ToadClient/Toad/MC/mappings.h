@@ -1,4 +1,5 @@
 #pragma once
+#include "Toad/Types.h"
 
 namespace toadll::mappings
 {
@@ -57,6 +58,10 @@ namespace toadll::mappings
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver"))
 				methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
 
+			methodnames.insert({ mapping::getEntityRenderer, "bridge$getEntityRenderer" });
+			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer"))
+				methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
+
 			// WORLD
 			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
 			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });
@@ -105,12 +110,23 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::setRotation, "setRotation"});
 			methodsigs.insert({ mapping::setRotation, "(FF)V"});
 
+			// .EntityBaseLiving
+			methodnames.insert({ mapping::getHeldItem, "getHeldItem" });
+			methodsigs.insert({ mapping::getHeldItem, "()Lnet/minecraft/item/ItemStack;" });
+
+			// rendermanager
 			methodnames.insert({ mapping::getRenderPosX, "getRenderPosX" });
 			methodnames.insert({ mapping::getRenderPosY, "getRenderPosY" });
 			methodnames.insert({ mapping::getRenderPosZ, "getRenderPosZ" });
 			methodsigs.insert({ mapping::getRenderPosX, "()D" });
 			methodsigs.insert({ mapping::getRenderPosY, "()D" });
 			methodsigs.insert({ mapping::getRenderPosZ, "()D" });
+
+			// ENTITY RENDERER
+			methodnames.insert({ mapping::enableLightmap, "enableLightmap" });
+			methodsigs.insert({ mapping::enableLightmap, "()V" });
+			methodnames.insert({ mapping::disableLightmap, "disableLightmap" });
+			methodsigs.insert({ mapping::disableLightmap, "()V" });
 
 			// Vec3 class
 			methodnames.insert({ mapping::Vec3X, "bridge$xCoord" });

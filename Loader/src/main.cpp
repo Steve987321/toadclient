@@ -1,7 +1,19 @@
-#include "Application.h"
+#include "toad.h"
+#include "Application/Application.h"
 
-int main(void)
+int main()
 {
+	toad::p_App = std::make_unique<toad::c_Application>();
+
+	// init window & toad
+	if (!toad::p_App->Init())
+		return 1;
+
+	// main loop 
+	toad::p_App->Run();
+
+	// clean up 
+	toad::p_App->Dispose();
 
 	return 0;
 }

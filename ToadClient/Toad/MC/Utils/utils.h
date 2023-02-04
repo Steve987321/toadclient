@@ -68,6 +68,11 @@ namespace toadll
 
     }
 
+    namespace draw
+    {
+        void drawRect(float x1, float y1, float x2, float y2);
+    }
+
     // function to find classes on (any) minecraft client
     jclass findclass(const char* clsName);
 

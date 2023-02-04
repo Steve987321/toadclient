@@ -28,6 +28,14 @@ std::string toadll::c_Entity::get_name() const
 	return jstring2string((jstring)env->CallObjectMethod(*obj, get_mid(*obj, mapping::getName)));
 }
 
+jobject toadll::c_Entity::get_heldItem() const
+{
+	auto mid = get_mid(*obj, mapping::getHeldItem);
+	if (mid == NULL) // no item held 
+		return nullptr;
+	return env->CallObjectMethod(*obj, mid);
+}
+
 void toadll::c_Entity::set_rotationYaw(float newYaw) const
 {
 	env->CallVoidMethod(*obj, get_mid(*obj, mapping::setRotationYaw), newYaw);

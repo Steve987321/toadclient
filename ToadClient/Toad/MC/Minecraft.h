@@ -16,6 +16,9 @@ namespace toadll
 		[[nodiscard]] std::vector<std::shared_ptr<toadll::c_Entity>> get_playerList() const;
 		[[nodiscard]] std::shared_ptr<c_Entity> get_localplayer() const;
 
+		void disableLightMap() const;
+		void enableLightMap() const;
+
 	public:
 		void clean_up();
 	};

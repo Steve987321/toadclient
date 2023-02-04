@@ -90,6 +90,7 @@ namespace toadll
         getWorld,
         getPlayer,
         getObjectMouseOver,
+        getEntityRenderer,
 
         // .World
         getPlayerEntities,
@@ -115,6 +116,14 @@ namespace toadll
         getMotionX,
         getMotionY,
         getMotionZ,
+
+        // .EntityRenderer
+        disableLightmap,
+        enableLightmap,
+
+        // .EntityLivingBase
+        getHeldItem,
+
 
         // .rendermanager
         getRenderPosX,

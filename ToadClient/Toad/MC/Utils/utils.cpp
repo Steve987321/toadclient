@@ -5,6 +5,16 @@
 
 namespace toadll
 {
+	void draw::drawRect(float x1, float y1, float x2, float y2)
+	{
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x1, y2);
+        glVertex2f(x2, y2 );
+        glEnd();
+	}
+
     jclass findclass(const char* clsName)
     {
         jclass thread_clazz = env->FindClass("java/lang/Thread");

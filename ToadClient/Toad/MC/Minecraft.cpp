@@ -30,6 +30,20 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_localplayer() const
     return !playermid ? nullptr : std::make_shared<c_Entity>(std::make_shared<jobject>(env->CallObjectMethod(this->get_mc(), playermid)));
 }
 
+void toadll::c_Minecraft::disableLightMap() const
+{
+    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
+    env->CallObjectMethod(EntityRenderer, get_mid(EntityRenderer, mapping::disableLightmap));
+    env->DeleteLocalRef(EntityRenderer);
+}
+
+void toadll::c_Minecraft::enableLightMap() const
+{
+    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
+    env->CallObjectMethod(EntityRenderer, get_mid(EntityRenderer, mapping::enableLightmap));
+    env->DeleteLocalRef(EntityRenderer);
+}
+
 jobject toadll::c_Minecraft::get_localplayerobj() const
 {
     auto playermid = get_mid(this->mcclass, mapping::getPlayer);
