@@ -2,12 +2,12 @@
 
 bool toad::init_toad()
 {
-	utils::twin_scan = std::thread(utils::fwin_scan_thread);
+	utils::Twin_scan = std::thread(utils::Fwin_scan);
 	return true;
 }
 
 void toad::stop_all_threads()
 {
-	if (utils::twin_scan.joinable()) utils::twin_scan.join();
+	if (utils::Twin_scan.joinable()) utils::Twin_scan.join();
 }
 

@@ -10,6 +10,8 @@
 
 #include "Application.h"
 
+#include "Fonts/fa-solid-900Font.h"
+
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -116,6 +118,10 @@ namespace toad
 
         io = &ImGui::GetIO(); (void)io;
         io->ConfigWindowsMoveFromTitleBarOnly = true;
+        io->Fonts->AddFontDefault();
+        static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+        ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+        io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 16, &icons_config, icons_ranges);
        
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
@@ -213,7 +219,7 @@ namespace toad
         return true;
     }
 
-    void c_Application::Run()
+    void c_Application::MainLoop()
     {
         while (is_running)
         {

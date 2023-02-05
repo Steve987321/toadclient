@@ -1,8 +1,6 @@
 #include "toad.h"
 #include "Application.h"
 
-#include "imgui/imgui.h"
-
 namespace toad
 {
     void ui_main(ImGuiIO* io)
@@ -33,23 +31,57 @@ namespace toad
             utils::center_textX(ImVec4(0.3f, 0.3f, 0.3f, 1), "please select the minecraft window");
             ImGui::BeginChild("mc windows", ImVec2(0, 0), true);
             {
-	            if (utils::winList.empty())
+                // for the flickering of the possible minecraft windows 
+                static std::vector<utils::window> shownWindowList = {};
+                static float timer = 0;
+                static bool count = false;
+                if (count)
+                {
+                    timer += io->DeltaTime;
+                    if (timer > 1)
+                    {
+                        if (shownWindowList.size() != utils::winListVec.size())
+                            shownWindowList = utils::winListVec;
+
+                        count = false;
+                    }
+                }
+                if (shownWindowList.size() != utils::winListVec.size() && !count)
+                {
+                    timer = 0;
+                    count = true;
+                }
+
+	            if (shownWindowList.empty())
 	            {
-                    utils::center_text(ImVec4(0.2f, 0.2f, 0.2f, 1), "make sure minecraft is opened (Lunar Client, Forge or Vanilla)");
+                    utils::center_text_Multi(ImVec4(0.2f, 0.2f, 0.2f, 1), "make sure minecraft is opened. \n Supported clients: (Lunar Client, Forge or Vanilla)");
 	            }
 	            else
 	            {
-                    for (const auto& window : utils::winList)
+                    for (const auto& window : shownWindowList)
                     {
                         auto btn_name = std::string(window.title + " [" + std::to_string(window.pid) + ']');
                         if (btn_name.empty()) btn_name = "##";
                         if (ImGui::Selectable(btn_name.c_str(), true))
                         {
+                            if (ImGui::IsMouseDoubleClicked(0))
+                            {
+	                            
+                            }
                             // well do our injection
                         }
                     }
                 }
-            }            
+                static bool uok = false;
+                if (ImGui::Button("ok"))
+                {
+                    uok = true;
+                }
+                if (uok)
+                {
+                    utils::show_mBox("ok boomer ", "testing the boomer mic\n ok boom boom boom", uok);
+                }
+            }
             ImGui::EndChild(); // mc windows
         }
         ImGui::End(); // main window

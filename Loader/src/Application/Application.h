@@ -1,10 +1,12 @@
 #pragma once
 
 #include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
+#include "messageBox.h"
+#include "Fonts/Icons.h"
 
 namespace toad
 {
-
 	class c_Application
 	{
 	private:
@@ -29,6 +31,7 @@ namespace toad
 		//void UpdateCursorInfo();
 
 	private:
+		// defined in ui.cpp
 		void render_UI(ImGuiIO* io);
 
 	public:
@@ -36,7 +39,7 @@ namespace toad
 
 	public:
 		[[nodiscard]] bool Init();
-		void Run();
+		void MainLoop();
 		void Dispose() const;
 
 	public:

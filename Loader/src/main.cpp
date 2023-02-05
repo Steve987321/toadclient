@@ -10,9 +10,9 @@ int main()
 		return 1;
 
 	// main loop 
-	toad::p_App->Run();
+	toad::p_App->MainLoop();
 
-	// clean up 
+	// clean up and exit 
 	toad::p_App->Dispose();
 
 	return 0;
