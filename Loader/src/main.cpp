@@ -13,7 +13,7 @@ int main()
 	toad::p_App->MainLoop();
 
 	// clean up and exit 
-	toad::p_App->Dispose();
+	toad::p_App->Exit();
 
 	return 0;
 }

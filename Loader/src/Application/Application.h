@@ -2,7 +2,6 @@
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
-#include "messageBox.h"
 #include "Fonts/Icons.h"
 
 namespace toad
@@ -40,7 +39,7 @@ namespace toad
 	public:
 		[[nodiscard]] bool Init();
 		void MainLoop();
-		void Dispose() const;
+		void Exit() const;
 
 	public:
 		[[nodiscard]] HWND get_window() const

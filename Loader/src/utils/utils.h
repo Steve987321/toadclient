@@ -7,6 +7,7 @@
 // make enum work as flags
 #define ENUM_FLAG(e) inline constexpr e operator | (e a, e b) { return static_cast<e>(static_cast<int>(a) | static_cast<int>(b)); }
 
+// extra functions
 namespace toad::utils
 {
 	struct window
@@ -125,10 +126,9 @@ namespace toad::utils
 		}
 	}
 
-	inline void show_mBox(const char* title, const char* msg, bool & condition, mboxType type = mboxType::NONE, float anim_speed = 12.f)
+	inline void show_mBox(const char* title, const char* msg, bool & condition, bool can_close = true, mboxType type = mboxType::NONE, float anim_speed = 12.f)
 	{
 		auto io = &ImGui::GetIO();
-
 
 #ifdef IMGUI_HAS_VIEWPORT
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -141,7 +141,7 @@ namespace toad::utils
 #endif
 		static float wBgAlpha = 0;
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.1f,0.1f,0.1f, wBgAlpha });
-		ImGui::Begin("overlay", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+		ImGui::Begin("overlay", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings);
 
 		auto mid = get_middle_point();
 		const std::string id = "##" + std::string(title);
@@ -186,17 +186,22 @@ namespace toad::utils
 				ImGui::Text(ICON_FA_EXCLAMATION);
 			else if (type == utils::mboxType::ERR)
 				ImGui::Text(ICON_FA_CROSS);
+			else
+				ImGui::Text("");
 
-			ImGui::SameLine();
-			if (ImGui::Button("X"))
+			if (can_close)
 			{
-				col = { 0,0,0,0 };
-				colBorder = { 0,0,0,0 };
-				colText = { 0,0,0,0 };
-				colText2 = { 0,0,0,0 };
-				m_boxSize = { mid.x + 15, mid.y + 15 };
-				wBgAlpha = 0;
-				condition = false;
+				ImGui::SameLine();
+				if (ImGui::Button("X"))
+				{
+					col = { 0,0,0,0 };
+					colBorder = { 0,0,0,0 };
+					colText = { 0,0,0,0 };
+					colText2 = { 0,0,0,0 };
+					m_boxSize = { mid.x + 15, mid.y + 15 };
+					wBgAlpha = 0;
+					condition = false;
+				}
 			}
 			ImGui::Separator();
 			center_text_Multi(colText2, msg, TEXT_MIDDLEX);
@@ -206,7 +211,58 @@ namespace toad::utils
 		ImGui::PopStyleColor(2);
 
 		ImGui::End();
-		ImGui::PopStyleColor(1);
+		ImGui::PopStyleColor();
+	}
+
+	/**
+	 * \brief wrapper for drawing begging a group box, Don't forget to call ImGui::EndChild();
+	 * \param strID id
+	 */
+	inline void groupBox(const char* strID)
+	{
+		ImGui::BeginChild(strID, { 0,0 }, true, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings);
+		center_textX({0.8f, 0.8f, 0.8f, 1}, strID);
+		ImGui::Separator();
+	}
+
+	// cool loading spinner
+	inline bool load_spinner(const char* label, float radius, int thickness, const ImU32& color) {
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems)
+			return false;
+
+		ImGuiContext& g = *GImGui;
+		const ImGuiStyle& style = g.Style;
+		const ImGuiID id = window->GetID(label);
+
+		ImVec2 pos = window->DC.CursorPos;
+		ImVec2 size((radius) * 2, (radius + style.FramePadding.y) * 2);
+
+		const ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
+		ImGui::ItemSize(bb, style.FramePadding.y);
+		if (!ImGui::ItemAdd(bb, id))
+			return false;
+
+		// Render
+		auto draw = ImGui::GetForegroundDrawList();
+		draw->PathClear();// window->DrawList->PathClear();
+
+		int num_segments = 30;
+		int start = abs(ImSin(g.Time * 1.8f) * (num_segments - 5));
+
+		const float a_min = IM_PI * 2.0f * ((float)start) / (float)num_segments;
+		const float a_max = IM_PI * 2.0f * ((float)num_segments - 3) / (float)num_segments;
+
+		const auto centre = ImVec2(pos.x + radius, pos.y + radius + style.FramePadding.y);
+
+		for (int i = 0; i < num_segments; i++) {
+			const float a = a_min + ((float)i / (float)num_segments) * (a_max - a_min);
+			draw->PathLineTo(ImVec2(centre.x + ImCos(a + g.Time * 8) * radius,
+				centre.y + ImSin(a + g.Time * 8) * radius));
+		}
+
+		draw->PathStroke(color, false, thickness);
+		return true;
 	}
 
 }

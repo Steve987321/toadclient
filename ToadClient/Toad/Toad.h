@@ -17,12 +17,17 @@
 #pragma comment(lib, "minhook.x64.lib")
 #include "Hooks/Hooks.h"
 
+// use this when precision isn't required but the CPU should be saved
+#define SLOW_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
+
 // global vars and functions 
 namespace toadll
 {
 	inline minecraft_client curr_client = minecraft_client::Lunar;
 
 	inline std::atomic_bool is_running = false;
+
+	inline std::thread Tupdate_settings;
 
 	inline HMODULE hMod;
 

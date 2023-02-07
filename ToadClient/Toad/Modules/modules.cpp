@@ -8,7 +8,7 @@ void toadll::modules::update()
 	lPlayer = p_Minecraft->get_localplayer();
 	if (lPlayer == nullptr) return;
 
-	auto heldItem = lPlayer->get_heldItem();
+	/*auto heldItem = lPlayer->get_heldItem();
 	if (heldItem != NULL)
 	{
 		log_Debug("%s", jstring2string(jstring(env->CallObjectMethod(heldItem, env->GetMethodID(env->GetObjectClass(heldItem), "toString", "()Ljava/lang/String;")))).c_str());
@@ -17,15 +17,15 @@ void toadll::modules::update()
 	else
 	{
 		log_Debug("no");
-	}
+	}*/
 
 	aa();
-	auto_bridge();
+	//auto_bridge();
 }
 
 void toadll::modules::aa()
 {
-	//if (!toadll::aa::enabled) return;
+	if (!toadll::aa::enabled) return;
 
 	if (GetAsyncKeyState(aa::key))
 	{
@@ -55,7 +55,7 @@ void toadll::modules::aa()
 		float difference = wrap_to_180(-(lyaw - yaw));
 		float difference2 = wrap_to_180(-(lpitch - pitch));
 
-		lPlayer->set_rotation(lyaw + difference / 10000.f, lpitch + difference2 / 10000.f);
+		lPlayer->set_rotation(lyaw + difference / (10000.f / aa::speed), lpitch + difference2 / (10000.f / aa::speed));
 	}
 }
 

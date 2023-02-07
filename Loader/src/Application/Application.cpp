@@ -1,4 +1,5 @@
 #include "toad.h"
+
 #include "imgui/imgui.h"
 
 #include <d3d9.h>
@@ -121,7 +122,7 @@ namespace toad
         io->Fonts->AddFontDefault();
         static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
         ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
-        io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 16, &icons_config, icons_ranges);
+        io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 24, &icons_config, icons_ranges);
        
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
@@ -186,9 +187,6 @@ namespace toad
             // Handle loss of D3D9 device
             if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
                 ResetDevice();
-
-            // TODO: DELETUS? 
-            SLOW_SLEEP(1);
         }
     }
 
@@ -209,11 +207,13 @@ namespace toad
 
     bool c_Application::Init()
     {
+#ifdef _DEBUG
         InitConsole();
+#endif
         if (!SetupMenu()) return false;
-        if (!init_toad()) return false;
+        if (!pre_init()) return false;
 #ifndef _DEBUG
-        ShowWindow(GetConsoleWindow(), SW_HIDE);
+        //ShowWindow(GetConsoleWindow(), SW_HIDE);
 #endif
         is_running = true;
         return true;
@@ -226,14 +226,19 @@ namespace toad
             //cpu 
             //if (GetActiveWindow() == FindWindowA(NULL, "ToadClient.exe")) std::this_thread::sleep_for(std::chrono::milliseconds(100));
             MenuLoop();
+            // TODO: DELETUS? 
+			//SLOW_SLEEP(1);
         }
     }
 
-    void c_Application::Dispose() const
+    std::shared_mutex mutex;
+    void c_Application::Exit() const
     {
+        std::unique_lock lock(mutex);
         std::cout << "closing\n";
         is_running = false;
 
+        clean_up();
         stop_all_threads();
 
         ImGui_ImplDX9_Shutdown();
@@ -244,7 +249,9 @@ namespace toad
         ::DestroyWindow(hwnd);
         ::UnregisterClass(wc.lpszClassName, wc.hInstance);
 
+#ifdef _DEBUG
         fclose(f);
         FreeConsole();
+#endif
     }
 }

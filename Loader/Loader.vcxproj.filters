@@ -54,7 +54,7 @@
     <ClInclude Include="src\Application\Fonts\fa-solid-900Font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Application\messageBox.h">
+    <ClInclude Include="src\inject\injector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -92,7 +92,7 @@
     <ClCompile Include="src\utils\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Application\messageBox.cpp">
+    <ClCompile Include="src\inject\injector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

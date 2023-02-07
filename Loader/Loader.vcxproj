@@ -138,10 +138,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Application\messageBox.h" />
+    <ClInclude Include="src\inject\injector.h" />
     <ClInclude Include="src\Application\Application.h" />
     <ClInclude Include="src\Application\Fonts\fa-solid-900Font.h" />
     <ClInclude Include="src\Application\Fonts\Icons.h" />
@@ -157,7 +158,7 @@
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Application\messageBox.cpp" />
+    <ClCompile Include="src\inject\injector.cpp" />
     <ClCompile Include="src\Application\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\toad.cpp" />

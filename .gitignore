@@ -27,3 +27,5 @@ bin-inter/
 *.exe
 *.out
 *.app
+
+*.ini

@@ -1,49 +1,64 @@
 #include "pch.h"
 #include "Toad.h"
 
+#include <fstream>
+
 #include "nlohmann/json.hpp"
 
 //#include <glew-2.1.0/include/GL/glew.h>
 //#include <gl/GL.h>
 
+constexpr static size_t bufsize = 1000;
 int stage = 0;
 
 namespace toadll
 {
-	void update_settings()
+	void Fupdate_settings()
 	{
-		constexpr static size_t bufsize = 1000;
-		HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"Global\\Toad");
-		if (hMapFile == NULL)
-			clean_up(11);
-		auto buf = (LPCSTR)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, bufsize);
-		if (buf == NULL)
+		while (is_running)
 		{
-			clean_up(12);
+			HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"ToadClientMappingObj");
+			if (hMapFile == NULL)
+			{
+				clean_up(11);
+				std::cout << "exit 11\n";
+			}
+			const auto buf = (LPCSTR)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, bufsize);
+			if (buf == NULL)
+			{
+				std::cout << "buf = 0\n";
+				//clean_up(12);
+				CloseHandle(hMapFile);
+				continue;
+			}
+			std::string s = buf;
+			//log_Debug(s.c_str());
+			// parse buf as json and read them and set them and yes
+
+			auto endof = s.find("END");
+			std::string settings = s.substr(0, endof);
+			//log_Debug(settings.c_str());
+
+			using json = nlohmann::json;
+			json data = json::parse(settings);
+
+			aa::enabled = data["aaenabled"];
+			aa::distance = data["aadistance"];
+			aa::speed = data["aaspeed"];
+
+			UnmapViewOfFile(buf);
 			CloseHandle(hMapFile);
+
+			SLOW_SLEEP(100);
 		}
-
-		// parse buf as json and read them and set them and yes
-
-		using json = nlohmann::json;
-
-		json data = json::parse(buf);
-
-		aa::enabled = data["aaenabled"];
-		aa::distance = data["aadistance"];
-		aa::speed = data["aaspeed"];
-
-		UnmapViewOfFile(buf);
-		CloseHandle(hMapFile);
 	}
 
 	void init()
 	{
 #ifdef _DEBUG
 		p_Log = std::make_unique<c_Logger>();
-#endif
-
 		SetConsoleCtrlHandler(NULL, true);
+#endif
 
 		// get functions from jvm.dll
 		auto jvmHandle = GetModuleHandleA("jvm.dll");
@@ -90,22 +105,20 @@ namespace toadll
 		}
 
 		mappings::init_map(env, p_Minecraft->get_mcclass(), curr_client);
-		std::thread([]()
-			{
-				while (true)
-				{
-					log_Debug("yo");
-					std::this_thread::sleep_for(std::chrono::milliseconds(100));
-				}
-			}).detach();
 
 		is_running = true;
 
+		// threads
+//#ifndef _DEBUG
+		Tupdate_settings = std::thread([] { Fupdate_settings(); });
+//#endif
+
+		// swapbuffers
 		p_Hooks->enable();
 
+		// main loop
 		while (is_running)
 		{
-			//update_settings();
 			modules::update();
 			if (GetAsyncKeyState(VK_END)) break;
 		}
@@ -116,19 +129,35 @@ namespace toadll
 	{
 		log_Debug("closing: %d", exitcode);
 
+		log_Debug("hooks");
+		if (p_Hooks != nullptr)
+		{
+			p_Hooks->dispose();
+			p_Hooks = nullptr;
+		}
+
+		log_Debug("threads");
+		is_running = false;
+		if (Tupdate_settings.joinable()) Tupdate_settings.join();
+
+		log_Debug("jvm");
 		if (jvm != nullptr)
 		{
 			jvm->DetachCurrentThread();
 			jvm->DestroyJavaVM();
 		}
 
-		if (p_Hooks != nullptr)
-			p_Hooks->dispose();
-
 		env = nullptr;
 		jvm = nullptr;
 
+#ifndef _DEBUG
+		log_Debug("console");
 		p_Log->dispose_console();
+#endif
+
+		log_Debug("last");
+		SLOW_SLEEP(1000); // wait a bit 
+
 		FreeLibraryAndExitThread(hMod, 0);
 	}
 }
