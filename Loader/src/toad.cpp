@@ -16,7 +16,7 @@ bool toad::pre_init()
 bool initialized = false;
 bool toad::init()
 {
-	if (initialized)return false;
+	if (initialized) return false;
 	hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, bufSize, L"ToadClientMappingObj");
 	if (hMapFile == NULL)
 		return false;
@@ -57,7 +57,11 @@ void toad::update_settings()
 	data["aaenabled"] = aa::enabled;
 	data["aadistance"] = aa::distance;
 	data["aaspeed"] = aa::speed;
-	
+	data["aahorizontal_only"] = aa::horizontal_only;
+
+	data["abenabled"] = auto_bridge::enabled;
+	data["abpitch_check"] = auto_bridge::pitch_check;
+
 	std::stringstream ss;
 	ss << data << "END";
 	CopyMemory(pMem, ss.str().c_str(), ss.str().length());
@@ -73,6 +77,8 @@ void toad::stop_all_threads()
 
 void toad::clean_up()
 {
+#ifndef _DEBUG
 	CloseHandle(hMapFile);
+#endif
 }
 

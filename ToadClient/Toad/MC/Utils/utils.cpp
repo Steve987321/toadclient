@@ -90,13 +90,28 @@ namespace toadll
 
     jmethodID get_mid(const jobject& obj, mapping name)
     {
-        return get_mid(env->GetObjectClass(obj), name);
+        auto objKlass = env->GetObjectClass(obj);
+        auto mid = get_mid(objKlass, name);
+        env->DeleteLocalRef(objKlass);
+        return mid;
     }
 
-    jmethodID get_static_mid(const jclass& cls, const mapping& name)
+    jmethodID get_static_mid(const jclass& cls, mapping name)
     {
         return env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
     }
+
+    jfieldID get_fid(const jclass& cls, mapping name)
+	{
+        return env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
+	}
+
+	jfieldID get_fid(const jobject& obj, mapping name)
+	{
+        return get_fid(env->GetObjectClass(obj), name);
+	}
+
+    
 
     vec3 to_vec3(const jobject& vecObj)
     {

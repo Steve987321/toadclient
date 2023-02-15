@@ -97,6 +97,9 @@ namespace toadll
         getRenderManager,
         isAirBlock,
 
+        // player
+        getOpenContainer,
+
         // .Entity
         getPos,
         getRotationYaw,
@@ -108,6 +111,11 @@ namespace toadll
         setRotationYaw,
         setRotationPitch,
         setRotation,
+
+        rotationYawField,
+        rotationPitchField,
+        prevRotationYawField,
+        prevRotationPitchField,
 
         getInventory,
 

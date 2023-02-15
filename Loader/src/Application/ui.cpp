@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "inject/injector.h"
 
+std::thread init_thread;
+
 namespace toad
 {
     // ui when injected
@@ -9,6 +11,7 @@ namespace toad
     {
         if (static bool once = false; !once)
         {
+            if (init_thread.joinable()) init_thread.join();
 #ifdef IMGUI_HAS_VIEWPORT
             ImGuiViewport* viewport = ImGui::GetMainViewport();
             ImGui::SetNextWindowPos(viewport->GetWorkPos());
@@ -25,42 +28,78 @@ namespace toad
 
         ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
         {
-            // Tab Bar
-            //ImGui::ImageButton();
-            if (ImGui::Button("Combat"))
+            ImGui::BeginChild("main Tabs", {85, 0});
             {
-                tab = 0;
-            }
-            else if (ImGui::Button("Visuals"))
-            {
-                tab = 1;
-            }
-            else if (ImGui::Button("Misc"))
-            {
-                tab = 2;
-            }
+                // Tab Bar
+                //ImGui::ImageButton();
+                if (ImGui::Button("Combat", { 85, 75 }))
+                {
+                    tab = 0;
+                }
+                ImGui::Spacing();
+                if (ImGui::Button("Misc", { 85, 75 }))
+                {
+                    tab = 1;
+                }
+            } ImGui::EndChild();
 
-            // 
-            
-            if (tab == 0)
-            {
-                utils::groupBox("yes");
+            ImGui::SameLine();
+            ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+            ImGui::SameLine();
 
-                ImGui::Checkbox("Enabled", &aa::enabled);
-                ImGui::SliderFloat("Speed", &aa::speed, 0, 100);
-                ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
+            //
 
-                ImGui::EndChild();
-            }
-            else if (tab == 1)
+            ImGui::BeginChild("Selected Tab Modules");
             {
-	            
-            }
-            else if (tab == 2)
-            {
-	            
-            }
+                if (tab == 0)
+                {
+                    static bool is_Clicker = false;
+                    static bool is_AA = false;
+                    if (utils::checkboxButton("Clicker", ICON_FA_MOUSE, &clicker::enabled)) is_Clicker = true;
+                    if (utils::checkboxButton("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) is_AA = true;
 
+                    if (is_Clicker)
+                        utils::setting_menu("Auto Clicker", is_Clicker, []
+                            {
+                                ImGui::Text("Nothing");
+                            });
+                    else if (is_AA)
+                        utils::setting_menu("Aim Assist", is_AA, []
+                            {
+                                //ImGui::Checkbox("##AAEnabled", &aa::enabled); ImGui::SameLine(); ImGui::Text("Enabled");
+                                ImGui::SliderFloat("Speed", &aa::speed, 0, 10);
+			                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
+			                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
+                            });
+
+
+                    // ImGui::EndChild();
+                }
+                else if (tab == 1)
+                {
+                    static bool is_Bridge = false;
+                    if (utils::checkboxButton("Auto Bridge", ICON_FA_CUBE, &auto_bridge::enabled)) is_Bridge = true;
+
+                    if (is_Bridge)
+                    {
+                        utils::setting_menu("Auto Bridge", is_Bridge, []
+                            {
+
+                            ImGui::SliderFloat("pitch check", &auto_bridge::pitch_check, 1, 70);
+
+                            // animation of how the bridging might look
+	                        ImDrawList* draw = ImGui::GetForegroundDrawList();
+                            ImGuiContext& g = *GImGui;
+                            auto pos = ImVec2{300,200};
+	                        draw->AddRect(pos, { pos.x + 20, pos.y + 20 }, IM_COL32(100, 100, 100, 255));
+                            draw->AddRect({ pos.x, pos.y + 20 }, { pos.x + 20, pos.y + 60 }, IM_COL32(100, 100, 100, 255));
+                            draw->AddRect({ pos.x, pos.y + 60 }, { pos.x + 20, pos.y + 120 }, IM_COL32(100, 100, 100, 255));
+                            draw->AddRect({ pos.x, pos.y + 60 }, { pos.x + 20, pos.y + 120 }, IM_COL32(100, 100, 100, 255));
+
+                            });
+                    }
+                }
+            } ImGui::EndChild();
         }
     	ImGui::End();
     }
@@ -96,8 +135,6 @@ namespace toad
                 static bool failed_shared_mem = false;
                 static bool failed_inject = false;
                 static bool loading = false;
-
-                static std::thread init_thread;
 
                 if (count)
                 {
@@ -138,6 +175,7 @@ namespace toad
                                              failed_inject = true;
                                     if (!failed_shared_mem && !failed_inject)
                                         is_verified = true;
+                                    loading = false;
                                 });                                        
                         }
                     }
@@ -147,7 +185,7 @@ namespace toad
                     std::string state = "state: " + inject_status;
                     utils::show_mBox("Injecting", state.c_str(), loading, false);
                     ImGui::SetCursorPos({ utils::get_middle_point().x - 10, utils::get_middle_point().y - 10 });
-                    utils::load_spinner("##injectingSpinner", 10, 3, IM_COL32(100, 0, 0, 255));
+                    utils::load_spinner("##injectingSpinner", 10, 3, IM_COL32(100, 100, 100, 255));
                 }
                 else if (failed_shared_mem)
                 {
@@ -172,7 +210,10 @@ namespace toad
 
     void c_Application::render_UI(ImGuiIO* io)
     {
+#ifdef _DEBUG
+        ui_main(io);
+#else
         is_verified ? ui_main(io) : ui_init(io);
-        //ui_main(io);
+#endif
     }
 }

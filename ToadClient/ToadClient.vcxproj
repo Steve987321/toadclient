@@ -166,6 +166,7 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="nlohmann\json.hpp" />
+    <ClInclude Include="Toad\helpers.h" />
     <ClInclude Include="Toad\Hooks\Hooks.h" />
     <ClInclude Include="Toad\Logger.h" />
     <ClInclude Include="Toad\MC\mappings.h" />

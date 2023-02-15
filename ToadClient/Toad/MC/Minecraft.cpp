@@ -3,68 +3,82 @@
 #include "Toad/MC/Utils/utils.h"
 #include "Minecraft.h"
 
-bool toadll::c_Minecraft::init()
-{
-	mcclass = findclass(curr_client == minecraft_client::Vanilla ? "ave" : "net.minecraft.client.Minecraft");
-	return mcclass != nullptr;
-}
-
 jclass toadll::c_Minecraft::get_mcclass() const
 {
-    return this->mcclass;
+    return findclass(curr_client == minecraft_client::Vanilla ? "ave" : "net.minecraft.client.Minecraft");
 }
 
 jobject toadll::c_Minecraft::get_mc() const
 {
-	return env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));
+    auto mcclass = get_mcclass();
+	auto ret = env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));
+    env->DeleteLocalRef(mcclass);
+    return ret;
 }
 
 jobject toadll::c_Minecraft::get_rendermanager() const
 {
-    return env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getRenderManager));
+    auto mc = get_mc();
+    auto ret = env->CallObjectMethod(mc, get_mid(mc, mapping::getRenderManager));
+    env->DeleteLocalRef(mc); 
+    return ret;
 }
 
 std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_localplayer() const
 {
-	auto playermid = env->GetMethodID(this->mcclass, mappings::findName(mapping::getPlayer), mappings::findSig(mapping::getPlayer));
-    return !playermid ? nullptr : std::make_shared<c_Entity>(std::make_shared<jobject>(env->CallObjectMethod(this->get_mc(), playermid)));
+    auto mcclass = get_mcclass();
+    auto mc = this->get_mc();
+	auto playermid = env->GetMethodID(mcclass, mappings::findName(mapping::getPlayer), mappings::findSig(mapping::getPlayer));
+    auto obj = !playermid ? nullptr : std::make_shared<c_Entity>(std::make_shared<jobject>(env->NewGlobalRef(env->CallObjectMethod(mc, playermid))));
+    env->DeleteLocalRef(mcclass);
+    env->DeleteLocalRef(mc);
+    return obj;
 }
 
-void toadll::c_Minecraft::disableLightMap() const
-{
-    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
-    env->CallObjectMethod(EntityRenderer, get_mid(EntityRenderer, mapping::disableLightmap));
-    env->DeleteLocalRef(EntityRenderer);
-}
-
-void toadll::c_Minecraft::enableLightMap() const
-{
-    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
-    env->CallObjectMethod(EntityRenderer, get_mid(EntityRenderer, mapping::enableLightmap));
-    env->DeleteLocalRef(EntityRenderer);
-}
+//void toadll::c_Minecraft::disableLightMap() const
+//{
+//    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
+//    env->CallObjectMethod(EntityRenderer, get_mid(EntityRenderer, mapping::disableLightmap));
+//    env->DeleteLocalRef(EntityRenderer);
+//}
+//
+//void toadll::c_Minecraft::enableLightMap() const
+//{
+//    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
+//    // void 
+//    env->CallObjectMethod(EntityRenderer, get_mid(EntityRenderer, mapping::enableLightmap));
+//    env->DeleteLocalRef(EntityRenderer);
+//}
 
 jobject toadll::c_Minecraft::get_localplayerobj() const
 {
-    auto playermid = get_mid(this->mcclass, mapping::getPlayer);
-    return env->CallObjectMethod(this->get_mc(), playermid);
+    auto mcclass = get_mcclass();
+    auto playermid = get_mid(mcclass, mapping::getPlayer);
+    auto mc = this->get_mc();
+    auto obj = env->CallObjectMethod(mc, playermid);
+    env->DeleteLocalRef(mc);
+    env->DeleteLocalRef(mcclass);
+    return obj;
 }
 
 jobject toadll::c_Minecraft::get_world() const
 {
-	auto worldmid = get_mid(this->mcclass, mapping::getWorld);
-	return !worldmid ? nullptr : env->CallObjectMethod(this->get_mc(), worldmid);
+    auto mcclass = get_mcclass();
+    auto mc = this->get_mc();
+	auto worldmid = get_mid(mcclass, mapping::getWorld);
+	auto obj = !worldmid ? nullptr : env->CallObjectMethod(mc, worldmid);
+
+    env->DeleteLocalRef(mc);
+    env->DeleteLocalRef(mcclass);
+
+    return obj;
 }
 
 std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerList() const
 {
-    auto theWorld = get_world();
-    if (theWorld == nullptr) return {};
+    auto world = p_Minecraft->get_world();
 
-    auto getPlayerEtitiesMid = get_mid(env->GetObjectClass(theWorld), mapping::getPlayerEntities);
-
-    auto entites = env->CallObjectMethod(get_world(), getPlayerEtitiesMid);
-
+    auto entites = env->CallObjectMethod(world, get_mid(world, mapping::getPlayerEntities));
     auto to_arraymid = env->GetMethodID(env->GetObjectClass(entites), "toArray", "()[Ljava/lang/Object;");
     auto entityarray = reinterpret_cast<jobjectArray>(env->CallObjectMethod(entites, to_arraymid));
     int size = env->GetArrayLength(entityarray);
@@ -74,16 +88,13 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerLi
 
     for (int i = 0; i < size; i++)
     {
-        res.emplace_back(std::make_shared<c_Entity>(std::make_shared<jobject>(env->GetObjectArrayElement(entityarray, i))));
+        res.emplace_back(std::make_shared<c_Entity>(std::make_shared<jobject>(env->NewGlobalRef(env->GetObjectArrayElement(entityarray, i)))));
     }
 
+    env->DeleteLocalRef(world);
     env->DeleteLocalRef(entites);
     env->DeleteLocalRef(entityarray);
 
     return res;
 }
 
-void toadll::c_Minecraft::clean_up()
-{
-	env->DeleteLocalRef(mcclass);
-}

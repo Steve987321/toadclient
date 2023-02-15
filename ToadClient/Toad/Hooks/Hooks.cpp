@@ -16,6 +16,37 @@ HGLRC ctx = nullptr;
 
 BOOL hwglSwapBuffers(HDC hDc)
 {
+	//toadll::setup_ortho();
+	//GLubyte col[3] = { 1, 1, 1 };
+	//for (const auto& vec : toadll::entities)
+	//{
+	//	toadll::setup_ortho();
+	//	auto f = toadll::WorldToScreen(vec, toadll::render_pos_vec3, toadll::render_rotation.y, toadll::render_rotation.x, 0, 1920, 1080);
+	//	//std::cout << f.x << " " << f.y << std::endl;
+	//	glBegin(GL_QUADS);
+	//	glColor4f(1, 1, 1, 1);
+	//	glVertex3f(f.x, f.y, 0);
+	//	glVertex3f(f.x + 10, f.y, 0);
+	//	glVertex3f(f.x + 10, f.y + 10, 0);
+	//	glVertex3f(f.x, f.y + 10, 0);
+	//	glEnd();
+	//	glColor4f(1, 1, 1, 1);
+	//	toadll::restore_GL();
+	//	//toadll::draw_outline(100, 100, 50.f, 50.f, 2.5f, col);
+	//}
+
+	
+
+
+	
+	//glPushMatrix();
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadMatrixf(:ActiveRenderInfo:PROJECTION);
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadMatrixf(:MOVELVIEW);
+	//EventSystem::fire(EventRenderOverlay3D());
+	//glPopMatrix();
+
 	//if (toadll::modules::entitiepositions.empty())
 	//	return owglSwapBuffers(hDc);
 	//auto players = toadll::modules::entitiepositions;
@@ -138,7 +169,7 @@ BOOL hwglSwapBuffers(HDC hDc)
 	return owglSwapBuffers(hDc);
 }
 
-bool c_Hooks::init()
+bool toadll::c_Hooks::init()
 {
 	if (MH_Initialize() != MH_OK)
 		return false;
@@ -153,19 +184,19 @@ bool c_Hooks::init()
 	return MH_CreateHook(optr, &hwglSwapBuffers, reinterpret_cast<LPVOID*>(&owglSwapBuffers)) == MH_OK;
 }
 
-void c_Hooks::enable()
+void toadll::c_Hooks::enable()
 {
 	enabled = true;
 	MH_EnableHook(optr);
 }
 
-void c_Hooks::disable()
+void toadll::c_Hooks::disable()
 {
 	enabled = false;
 	MH_DisableHook(optr);
 }
 
-void c_Hooks::dispose() const
+void toadll::c_Hooks::dispose() const
 {
 	if (enabled)
 		MH_DisableHook(optr);

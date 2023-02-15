@@ -6,6 +6,8 @@
 #include "Toad/Types.h"
 #include "Toad/Logger.h"
 
+#include "helpers.h"
+
 #include "Toad/MC/Utils/utils.h"
 #include "Toad/MC/mappings.h"
 #include "Toad/MC/Entity/Entity.h"
@@ -28,6 +30,10 @@ namespace toadll
 	inline std::atomic_bool is_running = false;
 
 	inline std::thread Tupdate_settings;
+	inline std::thread Tupdate_cursorinfo;
+	inline std::thread Tupdate_hookvars;
+
+	inline bool is_cursor_shown = false;
 
 	inline HMODULE hMod;
 
@@ -37,21 +43,22 @@ namespace toadll
 	namespace aa
 	{
 		inline bool enabled = false;
-		inline int key = VK_LBUTTON; // shared mem
+		inline int key = VK_LBUTTON; 
 		inline bool predict = false;
+		inline bool horizontal_only = false;
 		inline float reaction_speed = 100.f; // reaction in ms
 		inline float speed = 5.0f;
 		inline float distance = 4.0f;
 	}
 
-	namespace visuals
+	namespace auto_bridge
 	{
-		inline bool esp_enabled = false;
-		inline bool show_name = false;
+		inline bool enabled = false;
+		inline float pitch_check = 61;
 	}
 
 	// called when dll has injected
-	void init();
+	DWORD WINAPI init();
 
 	// the main loop when init was succesfull
 	void update();

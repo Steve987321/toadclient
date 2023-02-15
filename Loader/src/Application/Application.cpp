@@ -227,7 +227,7 @@ namespace toad
             //if (GetActiveWindow() == FindWindowA(NULL, "ToadClient.exe")) std::this_thread::sleep_for(std::chrono::milliseconds(100));
             MenuLoop();
             // TODO: DELETUS? 
-			//SLOW_SLEEP(1);
+			SLOW_SLEEP(1);
         }
     }
 

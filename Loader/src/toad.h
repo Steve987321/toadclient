@@ -41,11 +41,23 @@ namespace toad
 	// will be true when injection was succesfull
 	inline bool is_verified = false;
 
+	namespace clicker
+	{
+		inline bool enabled = false;
+	}
+
 	namespace aa
 	{
 		inline bool enabled = false;
+		inline bool horizontal_only = false;
 		inline float distance = 5.f;
 		inline float speed = 5.f;
+	}
+
+	namespace auto_bridge
+	{
+		inline bool enabled = false;
+		inline float pitch_check = 61.f;
 	}
 
 }

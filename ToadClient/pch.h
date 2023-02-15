@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <vector>
 #include <gl/GL.h>
+#include <random>
 
 #include "jni.h"
 

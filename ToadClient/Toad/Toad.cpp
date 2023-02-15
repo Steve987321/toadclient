@@ -33,7 +33,7 @@ namespace toadll
 			}
 			std::string s = buf;
 			//log_Debug(s.c_str());
-			// parse buf as json and read them and set them and yes
+			// parse buf as json and read them and set them and 
 
 			auto endof = s.find("END");
 			std::string settings = s.substr(0, endof);
@@ -46,14 +46,18 @@ namespace toadll
 			aa::distance = data["aadistance"];
 			aa::speed = data["aaspeed"];
 
+			aa::horizontal_only = data["aahorizontal_only"];
+			auto_bridge::enabled = data["abenabled"];
+			auto_bridge::pitch_check = data["abpitch_check"];
+
 			UnmapViewOfFile(buf);
 			CloseHandle(hMapFile);
 
-			SLOW_SLEEP(100);
+			SLOW_SLEEP(300);
 		}
 	}
 
-	void init()
+	DWORD WINAPI init()
 	{
 #ifdef _DEBUG
 		p_Log = std::make_unique<c_Logger>();
@@ -65,8 +69,7 @@ namespace toadll
 
 		if (jvmHandle == nullptr)
 		{
-			clean_up(1);
-			return;
+			return 1;
 		}
 		
 		jvmfunc::oJNI_GetCreatedJavaVMs = reinterpret_cast<jvmfunc::hJNI_GetCreatedJavaVMs>(GetProcAddress(jvmHandle, "JNI_GetCreatedJavaVMs"));
@@ -81,40 +84,58 @@ namespace toadll
 
 		jvmfunc::oJNI_GetCreatedJavaVMs(&jvm, 1, nullptr);
 
-		jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), nullptr);
+		if (jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), nullptr) != JNI_OK)
+			return 1;
 
 		if (!env)
 		{
 			clean_up(2);
-			return;
+			return 0;
 		}
 
 		p_Minecraft = std::make_unique<c_Minecraft>();
 		p_Hooks = std::make_unique<c_Hooks>();
 
+		auto mcclass = p_Minecraft->get_mcclass();
+
+		if (mcclass == nullptr)
+		{
+			clean_up(4);
+			return 0;
+		}
+
 		if (!p_Hooks->init())
 		{
 			clean_up(3);
-			return;
+			return 0;
 		}
 
-		if (!p_Minecraft->init())
-		{
-			clean_up(4);
-			return;
-		}
+		mappings::init_map(env, mcclass, curr_client);
 
-		mappings::init_map(env, p_Minecraft->get_mcclass(), curr_client);
+		env->DeleteLocalRef(mcclass);
 
 		is_running = true;
 
 		// threads
-//#ifndef _DEBUG
 		Tupdate_settings = std::thread([] { Fupdate_settings(); });
-//#endif
+		Tupdate_cursorinfo = std::thread([]
+			{
+				while (is_running)
+				{
+					CURSORINFO ci{ sizeof(CURSORINFO) };
+					if (GetCursorInfo(&ci))
+					{
+						auto handle = ci.hCursor;
+						is_cursor_shown = reinterpret_cast<int>(handle) > 50000 && reinterpret_cast<int>(handle) < 1000000 || reinterpret_cast<int>(handle) == 13961697;
+					}
+				}
+			});
+
 
 		// swapbuffers
 		p_Hooks->enable();
+
+		Sleep(1000);
 
 		// main loop
 		while (is_running)
@@ -122,11 +143,16 @@ namespace toadll
 			modules::update();
 			if (GetAsyncKeyState(VK_END)) break;
 		}
-		clean_up(0);		
+		clean_up(0);
+		return 0;
 	}
 
+	std::once_flag flag;
 	void clean_up(int exitcode)
 	{
+		std::call_once(flag, [&]
+			{
+				is_running = false;
 		log_Debug("closing: %d", exitcode);
 
 		log_Debug("hooks");
@@ -136,21 +162,21 @@ namespace toadll
 			p_Hooks = nullptr;
 		}
 
-		log_Debug("threads");
-		is_running = false;
-		if (Tupdate_settings.joinable()) Tupdate_settings.join();
-
 		log_Debug("jvm");
 		if (jvm != nullptr)
 		{
 			jvm->DetachCurrentThread();
-			jvm->DestroyJavaVM();
 		}
+
+		log_Debug("threads");
+		if (Tupdate_settings.joinable()) Tupdate_settings.join();
+		if (Tupdate_cursorinfo.joinable()) Tupdate_cursorinfo.join();
+		if (Tupdate_hookvars.joinable()) Tupdate_hookvars.join();
 
 		env = nullptr;
 		jvm = nullptr;
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 		log_Debug("console");
 		p_Log->dispose_console();
 #endif
@@ -159,5 +185,6 @@ namespace toadll
 		SLOW_SLEEP(1000); // wait a bit 
 
 		FreeLibraryAndExitThread(hMod, 0);
+			});
 	}
 }

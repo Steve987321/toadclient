@@ -3,10 +3,6 @@ namespace toadll
 {
 	class c_Minecraft
 	{
-	private:
-		jclass mcclass = nullptr;
-	public:
-		bool init();
 	public:
 		[[nodiscard]] jclass get_mcclass() const;
 		[[nodiscard]] jobject get_mc() const;
@@ -16,11 +12,8 @@ namespace toadll
 		[[nodiscard]] std::vector<std::shared_ptr<toadll::c_Entity>> get_playerList() const;
 		[[nodiscard]] std::shared_ptr<c_Entity> get_localplayer() const;
 
-		void disableLightMap() const;
-		void enableLightMap() const;
-
-	public:
-		void clean_up();
+		//void disableLightMap() const;
+		//void enableLightMap() const;
 	};
 
 	inline std::unique_ptr<c_Minecraft> p_Minecraft = nullptr;
