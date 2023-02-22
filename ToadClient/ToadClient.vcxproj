@@ -216,6 +216,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Toad\MC\mappings.cpp" />
     <ClCompile Include="Toad\MC\Minecraft.cpp" />
     <ClCompile Include="Toad\MC\Utils\utils.cpp" />
     <ClCompile Include="Toad\Modules\modules.cpp" />

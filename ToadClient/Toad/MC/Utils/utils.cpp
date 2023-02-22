@@ -51,17 +51,15 @@ namespace toadll
 
             return jclass(env->CallObjectMethod(class_loader, find_class_id, name));
         }
-        else
-        {
-            env->DeleteLocalRef(array_elements);
-            env->DeleteLocalRef(thread_clazz);
-            env->DeleteLocalRef(thread);
-            env->DeleteLocalRef(threadgroup_clazz);
-            env->DeleteLocalRef(arrayD);
-            env->DeleteLocalRef(threadgroup_obj);
 
-            return env->FindClass(clsName);
-        }
+        env->DeleteLocalRef(array_elements);
+        env->DeleteLocalRef(thread_clazz);
+        env->DeleteLocalRef(thread);
+        env->DeleteLocalRef(threadgroup_clazz);
+        env->DeleteLocalRef(arrayD);
+        env->DeleteLocalRef(threadgroup_obj);
+
+        return env->FindClass(clsName);
     }
 
     std::string jstring2string(const jstring& jStr) {

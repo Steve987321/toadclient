@@ -2,12 +2,12 @@
 #include "Toad/Toad.h"
 #include "modules.h"
 
-
 void toadll::modules::update()
 {
-	lPlayer = p_Minecraft->get_localplayer();
-
-	//if (lPlayer == nullptr) return;
+	auto player = p_Minecraft->get_localplayer();
+	if (player == nullptr) return;
+	 
+	aa(player);
 
 	/*auto heldItem = lPlayer->get_heldItem();
 	if (heldItem != NULL)
@@ -25,17 +25,18 @@ void toadll::modules::update()
 
 }
 
-void toadll::modules::aa()
+void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 {
 	if (!aa::enabled || is_cursor_shown) return;
-
+	
 	if (GetAsyncKeyState(aa::key))
 	{
 		std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
 
+		//log_Debug("%d", p_Minecraft->get_playerList().size());
 		for (const auto& player : p_Minecraft->get_playerList())
 		{
-			if (env->IsSameObject(*lPlayer->obj, *player->obj)) continue;
+			if (env->IsSameObject(lPlayer->obj, player->obj)) continue;
 			if (lPlayer->get_position().dist(player->get_position()) > aa::distance) continue;
 			distances.emplace_back(lPlayer->get_position().dist(player->get_position()), player);
 		}
@@ -59,13 +60,14 @@ void toadll::modules::aa()
 
 		lPlayer->set_rotationYaw(lyaw + difference / (10000.f / aa::speed));
 		lPlayer->set_prevRotationYaw(lyaw + difference / (10000.f / aa::speed));
+
 		if (!aa::horizontal_only)
 		{
 			lPlayer->set_rotationPitch(lpitch + difference2 / (10000.f / aa::speed));
 			lPlayer->set_prevRotationPitch(lpitch + difference2 / (10000.f / aa::speed));
 		}
 
-		//lPlayer->set_rotation(lyaw + difference / (10000.f / aa::speed), lpitch + difference2 / (10000.f / aa::speed));
+		lPlayer->set_rotation(lyaw + difference / (10000.f / aa::speed), lpitch + difference2 / (10000.f / aa::speed));
 	}
 }
 

@@ -86,6 +86,9 @@ namespace toadll
     enum class mapping
     {
         // .Minecraft
+        theMcField,
+        thePlayerField,
+        theWorldField,
         getMinecraft,
         getWorld,
         getPlayer,

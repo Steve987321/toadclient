@@ -8,7 +8,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     if (ul_reason_for_call == DLL_PROCESS_ATTACH)
     {
         toadll::hMod = hModule;
-        CloseHandle(CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(toadll::init), nullptr, 0, nullptr));
+        CloseHandle(CreateThread(nullptr, 0, 
+            reinterpret_cast<LPTHREAD_START_ROUTINE>(toadll::init), nullptr, 0, nullptr));
     }
     //if (ul_reason_for_call == DLL_PROCESS_DETACH)
         //CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)toadll::clean_up, 0, 0, 0);

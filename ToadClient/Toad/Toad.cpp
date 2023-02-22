@@ -93,10 +93,11 @@ namespace toadll
 			return 0;
 		}
 
-		p_Minecraft = std::make_unique<c_Minecraft>();
+		auto mcclass = p_Minecraft->get_mcclass();
+
+		p_Minecraft = std::make_unique<c_Minecraft>(mcclass);
 		p_Hooks = std::make_unique<c_Hooks>();
 
-		auto mcclass = p_Minecraft->get_mcclass();
 
 		if (mcclass == nullptr)
 		{
@@ -111,8 +112,6 @@ namespace toadll
 		}
 
 		mappings::init_map(env, mcclass, curr_client);
-
-		env->DeleteLocalRef(mcclass);
 
 		is_running = true;
 
@@ -131,11 +130,9 @@ namespace toadll
 				}
 			});
 
-
+		log_Debug("hooks");
 		// swapbuffers
 		p_Hooks->enable();
-
-		Sleep(1000);
 
 		// main loop
 		while (is_running)

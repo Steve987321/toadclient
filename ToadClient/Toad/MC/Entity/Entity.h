@@ -5,11 +5,11 @@ namespace toadll
 	class c_Entity
 	{
 	public:
-		std::shared_ptr<jobject> obj = nullptr;
+		jobject obj = nullptr;
 
 	public:
 		//explicit c_Entity(const std::shared_ptr<jobject>& jobj) { obj = jobj; }
-		explicit c_Entity(const std::shared_ptr<jobject>& jobj) { obj = jobj; }
+		explicit c_Entity(jobject jobj) { obj = jobj; }
 		~c_Entity();
 
 	public:
