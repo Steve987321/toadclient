@@ -73,14 +73,23 @@ jobject toadll::c_Minecraft::get_world() const
 std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerList() const
 {
     auto world = p_Minecraft->get_world();
+    if (!world) return {};
 
     auto entites = env->CallObjectMethod(world, get_mid(world, mapping::getPlayerEntities));
     env->DeleteLocalRef(world);
+
+    if (!entites)
+        return {};
+
     auto entitesklass = env->GetObjectClass(entites);
     auto to_arraymid = env->GetMethodID(entitesklass, "toArray", "()[Ljava/lang/Object;");
     env->DeleteLocalRef(entitesklass);
+
     auto entityarray = (jobjectArray)env->CallObjectMethod(entites, to_arraymid);
     env->DeleteLocalRef(entites);
+    if (!entityarray)
+        return {};
+
     int size = env->GetArrayLength(entityarray);
 
     std::vector<std::shared_ptr<c_Entity>> res;
@@ -88,7 +97,8 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerLi
 
     for (int i = 0; i < size; i++)
     {
-        res.emplace_back(std::make_shared<c_Entity>(env->GetObjectArrayElement(entityarray, i)));
+        jobject obj = env->GetObjectArrayElement(entityarray, i);
+        res.emplace_back(std::make_shared<c_Entity>(obj));
     }
 
     env->DeleteLocalRef(entityarray);

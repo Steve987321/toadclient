@@ -25,7 +25,7 @@ namespace toadll
 		[[nodiscard]] float get_motionY() const;
 		[[nodiscard]] float get_motionZ() const;
 
-		[[nodiscard]] jobject get_open_container() const;
+		//[[nodiscard]] jobject get_open_container() const;
 
 	public:
 		void set_rotationYaw(float newYaw) const;

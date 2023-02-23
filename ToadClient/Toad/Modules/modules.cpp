@@ -33,7 +33,6 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 	{
 		std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
 
-		//log_Debug("%d", p_Minecraft->get_playerList().size());
 		for (const auto& player : p_Minecraft->get_playerList())
 		{
 			if (env->IsSameObject(lPlayer->obj, player->obj)) continue;
@@ -52,22 +51,22 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 		auto lyaw = lPlayer->get_rotationYaw();
 		auto lpitch = lPlayer->get_rotationPitch();
 
-		float difference = wrap_to_180(-(lyaw - yaw));
-		float difference2 = wrap_to_180(-(lpitch - pitch));
+		float yawDiff = wrap_to_180(-(lyaw - yaw));
+		float pitchDiff = wrap_to_180(-(lpitch - pitch));
 
-		difference += toad::rand_float(-1.f, 1.f);
-		difference2 += toad::rand_float(-2.f, 2.f);
+		yawDiff += toad::rand_float(-1.f, 1.f);
+		pitchDiff += toad::rand_float(-2.f, 2.f);
 
-		lPlayer->set_rotationYaw(lyaw + difference / (10000.f / aa::speed));
-		lPlayer->set_prevRotationYaw(lyaw + difference / (10000.f / aa::speed));
+		lPlayer->set_rotationYaw(lyaw + yawDiff / (10000.f / aa::speed));
+		lPlayer->set_prevRotationYaw(lyaw + yawDiff / (10000.f / aa::speed));
 
 		if (!aa::horizontal_only)
 		{
-			lPlayer->set_rotationPitch(lpitch + difference2 / (10000.f / aa::speed));
-			lPlayer->set_prevRotationPitch(lpitch + difference2 / (10000.f / aa::speed));
+			lPlayer->set_rotationPitch(lpitch + pitchDiff / (10000.f / aa::speed));
+			lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (10000.f / aa::speed));
 		}
 
-		lPlayer->set_rotation(lyaw + difference / (10000.f / aa::speed), lpitch + difference2 / (10000.f / aa::speed));
+		//lPlayer->set_rotation(lyaw + yawDiff / (10000.f / aa::speed), lpitch + pitchDiff / (10000.f / aa::speed));
 	}
 }
 
@@ -79,7 +78,7 @@ void toadll::modules::esp(const vec3& ePos)
 
 INPUT ip{};
 std::once_flag onceFlag;
-void toadll::modules::auto_bridge()
+void toadll::modules::auto_bridge(const std::shared_ptr<c_Entity>& lPlayer)
 {
 	if (!auto_bridge::enabled || is_cursor_shown) return;
 

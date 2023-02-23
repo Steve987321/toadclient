@@ -212,17 +212,17 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
 
 			// Player
-			auto mcobj = env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));
-			auto player = env->CallObjectMethod(mcobj, get_mid(mcobj, mapping::getPlayer));
-			auto playerclass = env->GetObjectClass(player);
+			//auto mcobj = env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));
+			//auto player = env->CallObjectMethod(mcobj, get_mid(mcobj, mapping::getPlayer));
+			//auto playerclass = env->GetObjectClass(player);
 
-			methodnames.insert({ mapping::getOpenContainer, "bridge$getOpenContainer" });
-			if (!getsig(mapping::getOpenContainer, "bridge$getOpenContainer", playerclass))
-				log_Error("can't find getinventory"); // methodsigs.insert(mapping::getOpenContainer, "bridge$getOpenContainer");
+			//methodnames.insert({ mapping::getOpenContainer, "bridge$getOpenContainer" });
+			//if (!getsig(mapping::getOpenContainer, "bridge$getOpenContainer", playerclass))
+			//	log_Error("can't find getinventory"); // methodsigs.insert(mapping::getOpenContainer, "bridge$getOpenContainer");
 
-			env->DeleteLocalRef(mcobj);
-			env->DeleteLocalRef(player);
-			env->DeleteLocalRef(playerclass);
+			//env->DeleteLocalRef(mcobj);
+			//env->DeleteLocalRef(player);
+			//env->DeleteLocalRef(playerclass);
 
 			// ENTITY
 

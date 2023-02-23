@@ -56,10 +56,10 @@ float toadll::c_Entity::get_motionZ() const
 	return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionZ));
 }
 
-jobject toadll::c_Entity::get_open_container() const
-{
-	return env->CallObjectMethod(obj, get_mid(obj, mapping::getOpenContainer));
-}
+//jobject toadll::c_Entity::get_open_container() const
+//{
+//	return env->CallObjectMethod(obj, get_mid(obj, mapping::getOpenContainer));
+//}
 
 void toadll::c_Entity::set_rotationYaw(float newYaw) const
 {
