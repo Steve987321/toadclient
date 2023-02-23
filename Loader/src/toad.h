@@ -22,13 +22,14 @@
 namespace toad
 {
 	inline bool dll_debug_mode = false;
-	
+
+	// before init
 	[[nodiscard]] bool pre_init();
 
 	[[nodiscard]] bool init();
 
-	void update_settings();
-	inline std::thread tupdate_settings;
+	void Fupdate_settings();
+	inline std::thread Tupdate_settings;
 
 	// stop all threads that are currently running 
 	void stop_all_threads();

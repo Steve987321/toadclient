@@ -87,14 +87,12 @@ namespace toad
     {
         while (is_running)
         {
-	         if (!is_verified)
-			 {
-                 winListVec.clear();
-                 EnumWindows(enumWindowCallback, 0);
-
-	             SLOW_SLEEP(1000);
-	         }
-			
+            if (!is_verified)
+            {
+                winListVec.clear();
+                EnumWindows(enumWindowCallback, 0);
+            }
+            SLOW_SLEEP(1000);
         }
     }
 

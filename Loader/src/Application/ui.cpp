@@ -7,7 +7,7 @@ std::thread init_thread;
 namespace toad
 {
     // ui when injected
-    void ui_main(ImGuiIO* io)
+    void ui_main(const ImGuiIO* io)
     {
         if (static bool once = false; !once)
         {
@@ -24,11 +24,10 @@ namespace toad
             once = true;
         }
 
-        static int tab = 0;
-
         ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
         {
-            ImGui::BeginChild("main Tabs", {85, 0});
+	        static int tab = 0;
+	        ImGui::BeginChild("main Tabs", {85, 0});
             {
                 // Tab Bar
                 //ImGui::ImageButton();
@@ -72,7 +71,6 @@ namespace toad
 			                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
                             });
 
-
                     // ImGui::EndChild();
                 }
                 else if (tab == 1)
@@ -87,7 +85,7 @@ namespace toad
 
                             ImGui::SliderFloat("pitch check", &auto_bridge::pitch_check, 1, 70);
 
-                            // animation of how the bridging might look
+                            // animation of how the bridging might look with settings
 	                        ImDrawList* draw = ImGui::GetForegroundDrawList();
                             ImGuiContext& g = *GImGui;
                             auto pos = ImVec2{300,200};
@@ -105,7 +103,7 @@ namespace toad
     }
 
     // ui when not injected 
-    void ui_init(ImGuiIO* io)
+    void ui_init(const ImGuiIO* io)
     {
 	    if (static bool once = false; !once)
         {
@@ -169,12 +167,15 @@ namespace toad
                             init_thread = std::thread([=]
                                 {
                                     if (!init())
-                                    failed_shared_mem = true;
+										failed_shared_mem = true;
+
 									if (!failed_shared_mem)
 										 if (!inject(window.pid))
                                              failed_inject = true;
+
                                     if (!failed_shared_mem && !failed_inject)
                                         is_verified = true;
+
                                     loading = false;
                                 });                                        
                         }
@@ -197,7 +198,7 @@ namespace toad
                 {
                     if (init_thread.joinable()) init_thread.join();
                     loading = false;
-                    utils::show_mBox("failed", "failed to inject", failed_shared_mem, true, utils::mboxType::ERR);
+                    utils::show_mBox("failed", "failed to inject", failed_inject, true, utils::mboxType::ERR);
                 }
                 ImGui::Checkbox("Debug", &dll_debug_mode);
             }
@@ -208,7 +209,7 @@ namespace toad
         ImGui::PopStyleVar();
     }
 
-    void c_Application::render_UI(ImGuiIO* io)
+    void c_Application::render_UI()
     {
 #ifdef _DEBUG
         ui_main(io);

@@ -165,7 +165,7 @@ namespace toad
             ImGui::NewFrame();
 
             //ui
-            render_UI(io);
+            render_UI();
 
             // Rendering
             ImGui::EndFrame();
@@ -223,10 +223,7 @@ namespace toad
     {
         while (is_running)
         {
-            //cpu 
-            //if (GetActiveWindow() == FindWindowA(NULL, "ToadClient.exe")) std::this_thread::sleep_for(std::chrono::milliseconds(100));
             MenuLoop();
-            // TODO: DELETUS? 
 			SLOW_SLEEP(1);
         }
     }

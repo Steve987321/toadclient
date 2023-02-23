@@ -9,18 +9,19 @@
 // make enum work as flags
 #define ENUM_FLAG(e) inline constexpr e operator | (e a, e b) { return static_cast<e>(static_cast<int>(a) | static_cast<int>(b)); }
 
-// extra functions
+// extra functions used throughout the project
 namespace toad::utils
 {
+
 	struct window
 	{
-		window(std::string_view title, DWORD pid, const HWND& hwnd) : title(title), pid(pid), hwnd(hwnd) {}
+		window(const std::string_view title, DWORD pid, const HWND& hwnd) : title(title), pid(pid), hwnd(hwnd) {}
 		std::string title;
 		DWORD pid;
 		HWND hwnd;
 	};
 
-	enum class mboxType
+	enum class mboxType : short
 	{
 		NONE,
 		WARNING,
@@ -41,11 +42,12 @@ namespace toad::utils
 	};
 	ENUM_FLAG(center_text_flags)
 
+
 	// window scanner thread
 	inline std::thread Twin_scan;
 	void Fwin_scan();
 
-	// only updated when still in init screen !isverified
+	// only updated when still in init screen 
 	inline std::vector<window> winListVec = {};
 
 
@@ -104,7 +106,7 @@ namespace toad::utils
 		// render our multi line text
 		for (int i = 0; i < lines.size(); i++)
 		{
-			const auto& [lable, height]= lines[i];
+			const auto& [lable, height] = lines[i];
 
 			assert("TEXT_MIDDLEX conflicts with TEXT_LEFT and TEXT_RIGHT " && !(flags & TEXT_MIDDLEX && (flags & TEXT_LEFT || flags & TEXT_RIGHT)));
 			assert("TEXT_MIDDLEY conflicts with TEXT_TOP and TEXT_BOTTOM " && !(flags & TEXT_MIDDLEY && (flags & TEXT_TOP || flags & TEXT_BOTTOM)));

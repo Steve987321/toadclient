@@ -31,7 +31,7 @@ namespace toad
 
 	private:
 		// defined in ui.cpp
-		void render_UI(ImGuiIO* io);
+		void render_UI();
 
 	public:
 		constexpr static int WINDOW_WIDTH = 500, WINDOW_HEIGHT = 400;

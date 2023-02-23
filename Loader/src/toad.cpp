@@ -16,6 +16,7 @@ bool toad::pre_init()
 bool initialized = false;
 bool toad::init()
 {
+	// setup ipc 
 	if (initialized) return false;
 	hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, bufSize, L"ToadClientMappingObj");
 	if (hMapFile == NULL)
@@ -27,15 +28,17 @@ bool toad::init()
 		CloseHandle(hMapFile);
 		return false;
 	}
-
+	
 	memset(pMem, L'\0', bufSize);
 
 	UnmapViewOfFile(pMem);
-	tupdate_settings = std::thread([]
+
+	// update settings for ipc 
+	Tupdate_settings = std::thread([]
 		{
 			while (is_running)
 			{
-				update_settings();
+				Fupdate_settings();
 				SLOW_SLEEP(100);
 			}
 		});
@@ -44,7 +47,7 @@ bool toad::init()
 	return true;
 }
 
-void toad::update_settings()
+void toad::Fupdate_settings()
 {
 	std::unique_lock lock(mutex);
 	auto pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE, 0, 0, 0);
@@ -72,7 +75,7 @@ void toad::update_settings()
 void toad::stop_all_threads()
 {
 	if (utils::Twin_scan.joinable()) utils::Twin_scan.join();
-	if (tupdate_settings.joinable()) tupdate_settings.join();
+	if (Tupdate_settings.joinable()) Tupdate_settings.join();
 }
 
 void toad::clean_up()
