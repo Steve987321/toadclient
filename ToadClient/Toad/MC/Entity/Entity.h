@@ -25,6 +25,8 @@ namespace toadll
 		[[nodiscard]] float get_motionY() const;
 		[[nodiscard]] float get_motionZ() const;
 
+		[[nodiscard]] bool is_invisible() const;
+
 		//[[nodiscard]] jobject get_open_container() const;
 
 	public:

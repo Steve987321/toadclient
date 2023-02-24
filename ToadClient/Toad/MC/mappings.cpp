@@ -276,6 +276,9 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::setRotation, "setRotation" });
 			methodsigs.insert({ mapping::setRotation, "(FF)V" });
 
+			methodnames.insert({ mapping::isInvisible, "isInvisible" });
+			methodsigs.insert({ mapping::isInvisible, "()Z" });
+
 			// .EntityBaseLiving
 			methodnames.insert({ mapping::getHeldItem, "getHeldItem" });
 			methodsigs.insert({ mapping::getHeldItem, "()Lnet/minecraft/item/ItemStack;" });

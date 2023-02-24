@@ -56,6 +56,11 @@ float toadll::c_Entity::get_motionZ() const
 	return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionZ));
 }
 
+bool toadll::c_Entity::is_invisible() const
+{
+	return env->CallBooleanMethod(obj, get_mid(obj, mapping::isInvisible));
+}
+
 //jobject toadll::c_Entity::get_open_container() const
 //{
 //	return env->CallObjectMethod(obj, get_mid(obj, mapping::getOpenContainer));

@@ -43,12 +43,17 @@ namespace toadll
 	namespace aa
 	{
 		inline bool enabled = false;
-		inline int key = VK_LBUTTON; 
-		inline bool predict = false;
+		inline int key = VK_LBUTTON;
+
+		inline bool targetFOV = false;
+		inline bool invisibles = false;
 		inline bool horizontal_only = false;
+		inline bool always_aim = false;
+
 		inline float reaction_speed = 100.f; // reaction in ms
 		inline float speed = 5.0f;
 		inline float distance = 4.0f;
+		inline int fov = 360;
 	}
 
 	namespace auto_bridge

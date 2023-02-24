@@ -47,7 +47,4 @@ namespace toad
 			return this->hwnd;
 		}
 	};
-
-inline std::unique_ptr<c_Application> p_App;
-
 }

@@ -8,6 +8,7 @@ void toadll::modules::update()
 	if (player == nullptr) return;
 	 
 	aa(player);
+	auto_bridge(player);
 
 	/*auto heldItem = lPlayer->get_heldItem();
 	if (heldItem != NULL)
@@ -28,46 +29,93 @@ void toadll::modules::update()
 void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 {
 	if (!aa::enabled || is_cursor_shown) return;
+	if (!aa::always_aim && !GetAsyncKeyState(aa::key)) return;
 	
-	if (GetAsyncKeyState(aa::key))
+	std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
+
+	std::shared_ptr<c_Entity> target = nullptr;
+
+	float speed = aa::speed;
+	float minimalAngleDiff = aa::fov / 2.f;
+
+	for (const auto& player : p_Minecraft->get_playerList())
 	{
-		std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
+		if (env->IsSameObject(lPlayer->obj, player->obj)) continue;
 
-		for (const auto& player : p_Minecraft->get_playerList())
+		if (lPlayer->get_position().dist(player->get_position()) > aa::distance) continue;
+		if (player->is_invisible() && !aa::invisibles) continue;
+
+		distances.emplace_back(lPlayer->get_position().dist(player->get_position()), player);
+		if (aa::targetFOV)
 		{
-			if (env->IsSameObject(lPlayer->obj, player->obj)) continue;
-			if (lPlayer->get_position().dist(player->get_position()) > aa::distance) continue;
-			distances.emplace_back(lPlayer->get_position().dist(player->get_position()), player);
+			float yawDiff = abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), player->get_position()).first)));
+			if (yawDiff < minimalAngleDiff)
+			{
+				minimalAngleDiff = yawDiff;
+				target = player;
+			}
 		}
-		if (distances.empty()) return; // atleast one other player
-
-		auto t = std::min_element(distances.begin(), distances.end());
-
-		//if (t->first > aa::distance) return;
-
-		auto& target = t->second;
-		auto [yaw, pitch] = get_angles(lPlayer->get_position(), target->get_position());
-
-		auto lyaw = lPlayer->get_rotationYaw();
-		auto lpitch = lPlayer->get_rotationPitch();
-
-		float yawDiff = wrap_to_180(-(lyaw - yaw));
-		float pitchDiff = wrap_to_180(-(lpitch - pitch));
-
-		yawDiff += toad::rand_float(-1.f, 1.f);
-		pitchDiff += toad::rand_float(-2.f, 2.f);
-
-		lPlayer->set_rotationYaw(lyaw + yawDiff / (10000.f / aa::speed));
-		lPlayer->set_prevRotationYaw(lyaw + yawDiff / (10000.f / aa::speed));
-
-		if (!aa::horizontal_only)
-		{
-			lPlayer->set_rotationPitch(lpitch + pitchDiff / (10000.f / aa::speed));
-			lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (10000.f / aa::speed));
-		}
-
-		//lPlayer->set_rotation(lyaw + yawDiff / (10000.f / aa::speed), lpitch + pitchDiff / (10000.f / aa::speed));
 	}
+	if (distances.empty()) return; // atleast one other player
+
+	if (!aa::targetFOV)
+	{
+		auto t = std::ranges::min_element(distances);
+		target = t->second;
+	}
+	if (target == nullptr) return;
+
+	auto [yaw, pitch] = get_angles(lPlayer->get_position(), target->get_position());
+
+	auto lyaw = lPlayer->get_rotationYaw();
+	auto lpitch = lPlayer->get_rotationPitch();
+
+	float yawDiff = wrap_to_180(-(lyaw - yaw));
+	float absYawDiff = abs(yawDiff);
+	if (absYawDiff < 1) return;
+	float pitchDiff = wrap_to_180(-(lpitch - pitch));
+
+	if (!aa::targetFOV) // don't have to check if this is enabled because already checked
+		if (absYawDiff > minimalAngleDiff)
+			return;
+
+	yawDiff += toad::rand_float(-2.f, 2.f);
+	pitchDiff += toad::rand_float(-2.f, 2.f);
+	float smooth = speed;
+
+	if (absYawDiff > 7)
+	{
+		smooth *= toad::rand_float(0.4f, 2.0f);
+	}
+	else if (absYawDiff < 7)
+	{
+		smooth *= toad::rand_float(0.0f, 0.4f);
+	}
+	speed = std::lerp(speed, smooth, 0.3f);
+
+	auto yawdiffSpeed = yawDiff / (15000.f / speed);
+
+	if (toad::rand_int(0, 2) == 1)
+	{
+		yawdiffSpeed += toad::rand_float(-0.005f, 0.005f);
+	}
+	lPlayer->set_rotationYaw(lyaw + yawdiffSpeed);
+	lPlayer->set_prevRotationYaw(lyaw + yawdiffSpeed);
+	if (toad::rand_int(0, 3) == 1) {
+		float pitchrand = toad::rand_float(-0.005f, 0.005f);
+		lPlayer->set_rotationPitch(lpitch + pitchrand);
+		lPlayer->set_prevRotationPitch(lpitch + pitchrand);
+	}
+	
+	if (!aa::horizontal_only)
+	{
+		lPlayer->set_rotationPitch(lpitch + pitchDiff / (15000.f / speed));
+		lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (15000.f / speed));
+	}
+	toad::preciseSleep(toad::rand_float(0.001 / 1000, 0.2 / 1000));
+
+	//lPlayer->set_rotation(lyaw + yawDiff / (10000.f / aa::speed), lpitch + pitchDiff / (10000.f / aa::speed));
+
 }
 
 void toadll::modules::esp(const vec3& ePos)
@@ -124,7 +172,6 @@ void toadll::modules::auto_bridge(const std::shared_ptr<c_Entity>& lPlayer)
 		return;
 
 	bool isEdge = false;
-
 	if (jo.x > lplayerpos.x && abs(jo.x - lplayerpos.x) > 0.1f)
 	{
 		jo.x -= 1;

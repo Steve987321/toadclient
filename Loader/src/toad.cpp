@@ -57,17 +57,24 @@ void toad::Fupdate_settings()
 	using json = nlohmann::json;
 	json data;
 
+	// aim assist
 	data["aaenabled"] = aa::enabled;
 	data["aadistance"] = aa::distance;
 	data["aaspeed"] = aa::speed;
 	data["aahorizontal_only"] = aa::horizontal_only;
+	data["aafov"] = aa::fov;
+	data["aainvisibles"] = aa::invisibles;
+	data["aatargetFOV"] = aa::targetFOV;
+	data["aaalways_aim"] = aa::always_aim;
 
+	// auto bridge
 	data["abenabled"] = auto_bridge::enabled;
 	data["abpitch_check"] = auto_bridge::pitch_check;
 
 	std::stringstream ss;
 	ss << data << "END";
-	CopyMemory(pMem, ss.str().c_str(), ss.str().length());
+
+	memcpy(pMem, ss.str().c_str(), ss.str().length());
 
 	UnmapViewOfFile(pMem);
 }
@@ -80,8 +87,6 @@ void toad::stop_all_threads()
 
 void toad::clean_up()
 {
-#ifndef _DEBUG
 	CloseHandle(hMapFile);
-#endif
 }
 

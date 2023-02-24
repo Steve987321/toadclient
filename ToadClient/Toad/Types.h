@@ -128,6 +128,8 @@ namespace toadll
         getMotionY,
         getMotionZ,
 
+        isInvisible,
+
         // .EntityRenderer
         disableLightmap,
         enableLightmap,

@@ -20,8 +20,9 @@ namespace toadll
 			HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"ToadClientMappingObj");
 			if (hMapFile == NULL)
 			{
-				clean_up(11);
+				is_running = false;
 				std::cout << "exit 11\n";
+				break;
 			}
 			const auto buf = (LPCSTR)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, bufsize);
 			if (buf == NULL)
@@ -45,15 +46,19 @@ namespace toadll
 			aa::enabled = data["aaenabled"];
 			aa::distance = data["aadistance"];
 			aa::speed = data["aaspeed"];
-
 			aa::horizontal_only = data["aahorizontal_only"];
+			aa::fov = data["aafov"];
+			aa::invisibles = data["aainvisibles"];
+			aa::targetFOV = data["aatargetFOV"];
+			aa::always_aim = data["aaalways_aim"];
+
 			auto_bridge::enabled = data["abenabled"];
 			auto_bridge::pitch_check = data["abpitch_check"];
 
 			UnmapViewOfFile(buf);
 			CloseHandle(hMapFile);
 
-			SLOW_SLEEP(300);
+			SLOW_SLEEP(100);
 		}
 	}
 
@@ -144,9 +149,10 @@ namespace toadll
 		return 0;
 	}
 
-	std::once_flag flag;
 	void clean_up(int exitcode)
 	{
+		static std::once_flag flag;
+
 		std::call_once(flag, [&]
 			{
 				is_running = false;

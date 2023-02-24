@@ -3,17 +3,17 @@
 
 int main()
 {
-	toad::p_App = std::make_unique<toad::c_Application>();
+	auto p_App = std::make_unique<toad::c_Application>();
 
 	// init window & toad
-	if (!toad::p_App->Init())
+	if (!p_App->Init())
 		return 1;
 
 	// main loop 
-	toad::p_App->MainLoop();
+	p_App->MainLoop();
 
 	// clean up and exit 
-	toad::p_App->Exit();
+	p_App->Exit();
 
 	return 0;
 }

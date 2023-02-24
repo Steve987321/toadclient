@@ -45,12 +45,20 @@ namespace toad
 	namespace clicker
 	{
 		inline bool enabled = false;
+		inline bool item_whitelist = false;
 	}
 
 	namespace aa
 	{
 		inline bool enabled = false;
+		inline bool use_item_whitelist = false;
 		inline bool horizontal_only = false;
+		inline bool invisibles = false;
+		inline bool targetFOV = false;
+		inline bool always_aim = false;
+
+		inline int fov = 180.f;
+
 		inline float distance = 5.f;
 		inline float speed = 5.f;
 	}

@@ -65,10 +65,15 @@ namespace toad
                     else if (is_AA)
                         utils::setting_menu("Aim Assist", is_AA, []
                             {
-                                //ImGui::Checkbox("##AAEnabled", &aa::enabled); ImGui::SameLine(); ImGui::Text("Enabled");
                                 ImGui::SliderFloat("Speed", &aa::speed, 0, 10);
+								ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
 			                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
 			                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
+                                ImGui::Checkbox("Invisibles", &aa::invisibles);
+                                ImGui::Checkbox("Always Aim", &aa::always_aim);
+                                ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
+                                if (ImGui::IsItemClicked())
+                                    aa::targetFOV = !aa::targetFOV;
                             });
 
                     // ImGui::EndChild();

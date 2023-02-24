@@ -21,6 +21,18 @@ namespace toad::utils
 		HWND hwnd;
 	};
 
+	enum class mc_item
+	{
+		NONE = 0,
+		HANDS = 1 << 1,
+		SWORD = 1 << 2,
+		AXE = 1 << 3,
+		PICKAXE = 1 << 4,
+		SHOVEL = 1 << 5,
+		PLACEABLE = 1 << 6
+	};
+	ENUM_FLAG(mc_item);
+
 	enum class mboxType : short
 	{
 		NONE,

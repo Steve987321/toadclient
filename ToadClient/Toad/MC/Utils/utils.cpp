@@ -108,7 +108,6 @@ namespace toadll
 	{
         return get_fid(env->GetObjectClass(obj), name);
 	}
-
     
 
     vec3 to_vec3(const jobject& vecObj)
