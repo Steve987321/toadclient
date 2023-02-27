@@ -9,6 +9,7 @@ namespace toadll::modules
 
 	void update();
 
+	void velocity(const std::shared_ptr<c_Entity>& lPlayer);
 	void aa(const std::shared_ptr<c_Entity>& lPlayer);
 	void esp(const vec3& ePos);
 	void auto_bridge(const std::shared_ptr<c_Entity>& lPlayer);

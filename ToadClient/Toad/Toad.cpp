@@ -43,6 +43,7 @@ namespace toadll
 			using json = nlohmann::json;
 			json data = json::parse(settings);
 
+			// aim assist
 			aa::enabled = data["aaenabled"];
 			aa::distance = data["aadistance"];
 			aa::speed = data["aaspeed"];
@@ -52,8 +53,16 @@ namespace toadll
 			aa::targetFOV = data["aatargetFOV"];
 			aa::always_aim = data["aaalways_aim"];
 
+			// auto bridge
 			auto_bridge::enabled = data["abenabled"];
 			auto_bridge::pitch_check = data["abpitch_check"];
+
+			// velocity
+			velocity::enabled = data["velenabled"];
+			velocity::horizontal = data["velhorizontal"];
+			velocity::vertical = data["velvertical"];
+			velocity::chance = data["velchance"];
+			velocity::delay = data["veldelay"];
 
 			UnmapViewOfFile(buf);
 			CloseHandle(hMapFile);
@@ -155,39 +164,39 @@ namespace toadll
 
 		std::call_once(flag, [&]
 			{
-				is_running = false;
-		log_Debug("closing: %d", exitcode);
+			is_running = false;
+			log_Debug("closing: %d", exitcode);
 
-		log_Debug("hooks");
-		if (p_Hooks != nullptr)
-		{
-			p_Hooks->dispose();
-			p_Hooks = nullptr;
-		}
+			log_Debug("hooks");
+			if (p_Hooks != nullptr)
+			{
+				p_Hooks->dispose();
+				p_Hooks = nullptr;
+			}
 
-		log_Debug("jvm");
-		if (jvm != nullptr)
-		{
-			jvm->DetachCurrentThread();
-		}
+			log_Debug("jvm");
+			if (jvm != nullptr)
+			{
+				jvm->DetachCurrentThread();
+			}
 
-		log_Debug("threads");
-		if (Tupdate_settings.joinable()) Tupdate_settings.join();
-		if (Tupdate_cursorinfo.joinable()) Tupdate_cursorinfo.join();
-		if (Tupdate_hookvars.joinable()) Tupdate_hookvars.join();
+			log_Debug("threads");
+			if (Tupdate_settings.joinable()) Tupdate_settings.join();
+			if (Tupdate_cursorinfo.joinable()) Tupdate_cursorinfo.join();
+			if (Tupdate_hookvars.joinable()) Tupdate_hookvars.join();
 
-		env = nullptr;
-		jvm = nullptr;
+			env = nullptr;
+			jvm = nullptr;
 
 #ifdef _DEBUG
-		log_Debug("console");
-		p_Log->dispose_console();
+			log_Debug("console");
+			p_Log->dispose_console();
 #endif
 
-		log_Debug("last");
-		SLOW_SLEEP(1000); // wait a bit 
+			log_Debug("last");
+			SLOW_SLEEP(1000); // wait a bit 
 
-		FreeLibraryAndExitThread(hMod, 0);
+			FreeLibraryAndExitThread(hMod, 0);
 			});
 	}
 }

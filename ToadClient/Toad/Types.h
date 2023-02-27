@@ -83,12 +83,26 @@ namespace toadll
         Forge
     };
 
-    enum class mapping
+    enum class mappingFields
     {
         // .Minecraft
         theMcField,
-        thePlayerField,
-        theWorldField,
+
+        // .Entity
+        rotationYawField,
+        rotationPitchField,
+        prevRotationYawField,
+        prevRotationPitchField,
+
+        // jdouble
+        motionXField,
+        motionYField,
+        motionZField
+    };
+
+    enum class mapping
+    {
+        // .Minecraft
         getMinecraft,
         getWorld,
         getPlayer,
@@ -115,11 +129,6 @@ namespace toadll
         setRotationPitch,
         setRotation,
 
-        rotationYawField,
-        rotationPitchField,
-        prevRotationYawField,
-        prevRotationPitchField,
-
         getInventory,
 
         getName,
@@ -136,7 +145,7 @@ namespace toadll
 
         // .EntityLivingBase
         getHeldItem,
-
+        getHurtTime,
 
         // .rendermanager
         getRenderPosX,

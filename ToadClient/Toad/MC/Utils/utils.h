@@ -84,8 +84,8 @@ namespace toadll
 
     jmethodID get_static_mid(const jclass& cls, mapping name);
 
-    jfieldID get_fid(const jclass& cls, mapping name);
-    jfieldID get_fid(const jobject& obj, mapping name);
+    jfieldID get_fid(const jclass& cls, mappingFields name);
+    jfieldID get_fid(const jobject& obj, mappingFields name);
 
 	// minecraft Vec3 object to vec3
 	vec3 to_vec3(const jobject& vecObj);

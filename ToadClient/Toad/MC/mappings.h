@@ -6,8 +6,8 @@ namespace toadll::mappings
 	const char* findName(mapping name);
 	const char* findSig(mapping name);
 
-	const char* findNameField(mapping name);
-	const char* findSigField(mapping name);
+	const char* findNameField(mappingFields name);
+	const char* findSigField(mappingFields name);
 
 	void init_map(JNIEnv* env, jclass mcclass, minecraft_client client);
 }

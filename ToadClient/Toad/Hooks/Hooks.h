@@ -27,7 +27,7 @@ namespace toadll
 
     inline void setup_ortho()
     {
-        std::cout << "ortho\n";
+        //std::cout << "ortho\n";
         glPushAttrib(GL_ALL_ATTRIB_BITS);
         glPushMatrix();
         GLint viewport[4];

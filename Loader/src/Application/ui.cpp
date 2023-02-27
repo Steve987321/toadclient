@@ -54,8 +54,10 @@ namespace toad
                 {
                     static bool is_Clicker = false;
                     static bool is_AA = false;
+                    static bool is_Velocity = false;
                     if (utils::checkboxButton("Clicker", ICON_FA_MOUSE, &clicker::enabled)) is_Clicker = true;
                     if (utils::checkboxButton("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) is_AA = true;
+                    if (utils::checkboxButton("Velocity", ICON_FA_WIND, &velocity::enabled)) is_Velocity = true;
 
                     if (is_Clicker)
                         utils::setting_menu("Auto Clicker", is_Clicker, []
@@ -66,15 +68,23 @@ namespace toad
                         utils::setting_menu("Aim Assist", is_AA, []
                             {
                                 ImGui::SliderFloat("Speed", &aa::speed, 0, 10);
-								ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
+			                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
 			                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
 			                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
-                                ImGui::Checkbox("Invisibles", &aa::invisibles);
-                                ImGui::Checkbox("Always Aim", &aa::always_aim);
-                                ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
-                                if (ImGui::IsItemClicked())
-                                    aa::targetFOV = !aa::targetFOV;
+			                    ImGui::Checkbox("Invisibles", &aa::invisibles);
+			                    ImGui::Checkbox("Always Aim", &aa::always_aim);
+			                    ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
+			                    if (ImGui::IsItemClicked())
+			                        aa::targetFOV = !aa::targetFOV;
                             });
+                    else if (is_Velocity)
+                        utils::setting_menu("Velocity", is_Velocity, []
+                            {
+                                ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
+                                ImGui::SliderFloat("Vertical", &velocity::vertical, 0.f, 100.f, "%.1f%%");
+                                ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");
+                                ImGui::SliderFloat("Delay", &velocity::delay, 0, 100, "%.0f%");
+                        });
 
                     // ImGui::EndChild();
                 }
@@ -91,13 +101,13 @@ namespace toad
                             ImGui::SliderFloat("pitch check", &auto_bridge::pitch_check, 1, 70);
 
                             // animation of how the bridging might look with settings
-	                        ImDrawList* draw = ImGui::GetForegroundDrawList();
+	                      /*  ImDrawList* draw = ImGui::GetForegroundDrawList();
                             ImGuiContext& g = *GImGui;
                             auto pos = ImVec2{300,200};
 	                        draw->AddRect(pos, { pos.x + 20, pos.y + 20 }, IM_COL32(100, 100, 100, 255));
                             draw->AddRect({ pos.x, pos.y + 20 }, { pos.x + 20, pos.y + 60 }, IM_COL32(100, 100, 100, 255));
                             draw->AddRect({ pos.x, pos.y + 60 }, { pos.x + 20, pos.y + 120 }, IM_COL32(100, 100, 100, 255));
-                            draw->AddRect({ pos.x, pos.y + 60 }, { pos.x + 20, pos.y + 120 }, IM_COL32(100, 100, 100, 255));
+                            draw->AddRect({ pos.x, pos.y + 60 }, { pos.x + 20, pos.y + 120 }, IM_COL32(100, 100, 100, 255));*/
 
                             });
                     }

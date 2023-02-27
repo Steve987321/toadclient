@@ -6,11 +6,21 @@
 toadll::c_Minecraft::~c_Minecraft()
 {
     env->DeleteLocalRef(mcclass);
+    env->DeleteGlobalRef(elbclass);
 }
 
-jclass toadll::c_Minecraft::get_mcclass() const
+jclass toadll::c_Minecraft::get_mcclass()
 {
     return findclass(curr_client == minecraft_client::Vanilla ? "ave" : "net.minecraft.client.Minecraft");
+}
+
+jclass toadll::c_Minecraft::get_entity_living_class()
+{
+	if (elbclass == nullptr)
+	{
+        elbclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.entity.EntityLivingBase"));
+	}
+    return elbclass;
 }
 
 jobject toadll::c_Minecraft::get_mc() const

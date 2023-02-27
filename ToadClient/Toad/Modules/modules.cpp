@@ -6,7 +6,8 @@ void toadll::modules::update()
 {
 	auto player = p_Minecraft->get_localplayer();
 	if (player == nullptr) return;
-	 
+
+	velocity(player);
 	aa(player);
 	auto_bridge(player);
 
@@ -26,10 +27,45 @@ void toadll::modules::update()
 
 }
 
+void toadll::modules::velocity(const std::shared_ptr<c_Entity>& lPlayer)
+{
+	if (!velocity::enabled) return;
+
+	static bool once = false;
+
+	if (lPlayer->get_hurt_time() > 0 && !once)
+	{
+		once = true;
+		/*log_Debug("hurt Time %d, motionxyz(x:%.3f, %.3f, %.3f), new motionxyz(x:%.3f, y:%.3f, z:%.3f)",
+			lPlayer->get_hurt_time(),
+			lPlayer->get_motionX(), lPlayer->get_motionY(), lPlayer->get_motionZ(),
+			lPlayer->get_motionX() * (velocity::horizontal / 100.f),
+			lPlayer->get_motionY() * (velocity::horizontal / 100.f),
+			lPlayer->get_motionZ() * (velocity::vertical / 100.f)
+		);*/
+
+		if (once)
+		{
+			if (toad::rand_int(0, 100) >= velocity::chance) return;
+		}
+
+		if (velocity::delay > 0) toad::preciseSleep(velocity::delay / 100.f);
+
+		if (abs(lPlayer->get_motionX()) > 0)
+			lPlayer->set_motionX(lPlayer->get_motionX() * (velocity::horizontal / 100.f));
+		if (abs(lPlayer->get_motionZ()) > 0)
+			lPlayer->set_motionZ(lPlayer->get_motionZ() * (velocity::horizontal / 100.f));
+		if (lPlayer->get_motionY() > 0) // normal velocity when going down 
+			lPlayer->set_motionY(lPlayer->get_motionY() * (velocity::vertical / 100.f));
+	}
+	else
+		once = false;
+}
+
 void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 {
 	if (!aa::enabled || is_cursor_shown) return;
-	if (!aa::always_aim && !GetAsyncKeyState(aa::key)) return;
+	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON)) return;
 	
 	std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
 

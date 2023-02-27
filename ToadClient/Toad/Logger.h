@@ -48,13 +48,14 @@ public:
 	}
 	~c_Logger()
 	{
-		if (!m_closed)
-			dispose_console();
+		dispose_console();
 	}
 
 public:
 	void dispose_console()
 	{
+		if (m_closed) return;
+
 		FreeConsole();
 		fclose(m_f);
 		m_closed = true;

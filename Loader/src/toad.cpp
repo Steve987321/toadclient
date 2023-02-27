@@ -71,9 +71,16 @@ void toad::Fupdate_settings()
 	data["abenabled"] = auto_bridge::enabled;
 	data["abpitch_check"] = auto_bridge::pitch_check;
 
+	// velocity
+	data["velenabled"] = velocity::enabled;
+	data["velhorizontal"] = velocity::horizontal;
+	data["velvertical"] = velocity::vertical;
+	data["velchance"] = velocity::chance;
+	data["veldelay"] = velocity::delay;
+
 	std::stringstream ss;
 	ss << data << "END";
-
+	OutputDebugStringA(ss.str().c_str());
 	memcpy(pMem, ss.str().c_str(), ss.str().length());
 
 	UnmapViewOfFile(pMem);

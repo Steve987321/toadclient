@@ -13,19 +13,21 @@ namespace toadll
 		~c_Entity();
 
 	public:
-		[[nodiscard]] vec3 get_position() const;
+		_NODISCARD vec3 get_position() const;
 
-		[[nodiscard]] float get_rotationYaw() const;
-		[[nodiscard]] float get_rotationPitch() const;
+		_NODISCARD float get_rotationYaw() const;
+		_NODISCARD float get_rotationPitch() const;
 
-		[[nodiscard]] std::string get_name() const;
-		[[nodiscard]] jobject get_heldItem() const;
+		_NODISCARD std::string get_name() const;
+		_NODISCARD jobject get_heldItem() const;
 
-		[[nodiscard]] float get_motionX() const;
-		[[nodiscard]] float get_motionY() const;
-		[[nodiscard]] float get_motionZ() const;
+		_NODISCARD int get_hurt_time() const;
 
-		[[nodiscard]] bool is_invisible() const;
+		_NODISCARD float get_motionX() const;
+		_NODISCARD float get_motionY() const;
+		_NODISCARD float get_motionZ() const;
+
+		_NODISCARD bool is_invisible() const;
 
 		//[[nodiscard]] jobject get_open_container() const;
 
@@ -35,6 +37,10 @@ namespace toadll
 		void set_rotationPitch(float newPitch) const;
 		void set_prevRotationPitch(float newPitch) const;
 		void set_rotation(float yaw, float pitch) const;
+		void set_motionX(float val);
+		void set_motionY(float val);
+		void set_motionZ(float val);
+
 	};
 
 }

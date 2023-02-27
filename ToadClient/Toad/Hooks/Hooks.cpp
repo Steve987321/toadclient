@@ -16,13 +16,24 @@ HGLRC ctx = nullptr;
 
 BOOL hwglSwapBuffers(HDC hDc)
 {
-	//toadll::setup_ortho();
-	//GLubyte col[3] = { 1, 1, 1 };
+	/*GLubyte col[3] = { 1, 1, 1 };
+	toadll::setup_ortho();
+	toadll::vec2 f(50, 50);
+	std::cout << f.x << " " << f.y << std::endl;
+	glBegin(GL_QUADS);
+	glColor4f(1, 1, 1, 1);
+	glVertex3f(f.x, f.y, 0);
+	glVertex3f(f.x + 10, f.y, 0);
+	glVertex3f(f.x + 10, f.y + 10, 0);
+	glVertex3f(f.x, f.y + 10, 0);
+	glEnd();
+	glColor4f(1, 1, 1, 1);
+	toadll::restore_GL();*/
 	//for (const auto& vec : toadll::entities)
 	//{
 	//	toadll::setup_ortho();
-	//	auto f = toadll::WorldToScreen(vec, toadll::render_pos_vec3, toadll::render_rotation.y, toadll::render_rotation.x, 0, 1920, 1080);
-	//	//std::cout << f.x << " " << f.y << std::endl;
+	//	auto f = WorldToScreen(vec, toadll::render_pos_vec3, toadll::render_rotation.y, toadll::render_rotation.x, 0, 1920, 1080);
+	//	std::cout << f.x << " " << f.y << std::endl;
 	//	glBegin(GL_QUADS);
 	//	glColor4f(1, 1, 1, 1);
 	//	glVertex3f(f.x, f.y, 0);

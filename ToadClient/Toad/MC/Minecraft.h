@@ -5,17 +5,23 @@ namespace toadll
 	{
 	private:
 		jclass mcclass = nullptr;
+		jclass elbclass = nullptr;
 	public:
 		explicit c_Minecraft(jclass mc_jclass) : mcclass(mc_jclass) {}
 		~c_Minecraft();
 	public:
-		[[nodiscard]] jclass get_mcclass() const;
-		[[nodiscard]] jobject get_mc() const;
-		[[nodiscard]] jobject get_rendermanager() const;
-		[[nodiscard]] jobject get_localplayerobj() const;
-		[[nodiscard]] jobject get_world() const;
-		[[nodiscard]] std::vector<std::shared_ptr<c_Entity>> get_playerList() const;
-		[[nodiscard]] std::shared_ptr<c_Entity> get_localplayer() const;
+		_NODISCARD jclass get_mcclass();
+
+		_NODISCARD jclass get_entity_living_class();
+
+		_NODISCARD jobject get_mc() const;
+		_NODISCARD jobject get_rendermanager() const;
+		_NODISCARD jobject get_localplayerobj() const;
+		_NODISCARD jobject get_world() const;
+
+		_NODISCARD std::vector<std::shared_ptr<c_Entity>> get_playerList() const;
+
+		_NODISCARD std::shared_ptr<c_Entity> get_localplayer() const;
 
 		//void disableLightMap() const;
 		//void enableLightMap() const;

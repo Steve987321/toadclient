@@ -41,19 +41,29 @@ jobject toadll::c_Entity::get_heldItem() const
 	return env->CallObjectMethod(obj, mid);
 }
 
+int toadll::c_Entity::get_hurt_time() const
+{
+	auto entitylivingbaseklass = p_Minecraft->get_entity_living_class();
+	auto mid = get_mid(entitylivingbaseklass, mapping::getHurtTime);
+	return env->CallIntMethod(obj, mid);
+}
+
 float toadll::c_Entity::get_motionX() const
 {
-	return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionX));
+	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionX));
+	return env->GetDoubleField(obj, get_fid(obj, mappingFields::motionXField));
 }
 
 float toadll::c_Entity::get_motionY() const
 {
-	return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionY));
+	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionY));
+	return env->GetDoubleField(obj, get_fid(obj, mappingFields::motionYField));
 }
 
 float toadll::c_Entity::get_motionZ() const
 {
-	return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionZ));
+	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionZ));
+	return env->GetDoubleField(obj, get_fid(obj, mappingFields::motionZField));
 }
 
 bool toadll::c_Entity::is_invisible() const
@@ -68,29 +78,44 @@ bool toadll::c_Entity::is_invisible() const
 
 void toadll::c_Entity::set_rotationYaw(float newYaw) const
 {
-	env->SetFloatField(obj, get_fid(obj, mapping::rotationYawField), newYaw);
+	env->SetFloatField(obj, get_fid(obj, mappingFields::rotationYawField), newYaw);
 	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
 }
 
 void toadll::c_Entity::set_prevRotationYaw(float newYaw) const
 {
-	env->SetFloatField(obj, get_fid(obj, mapping::prevRotationYawField), newYaw);
+	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationPitchField), newYaw);
 	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
 }
 
 void toadll::c_Entity::set_rotationPitch(float newPitch) const
 {
-	env->SetFloatField(obj, get_fid(obj, mapping::rotationPitchField), newPitch);
+	env->SetFloatField(obj, get_fid(obj, mappingFields::rotationPitchField), newPitch);
 	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationPitch), newPitch);
 }
 
 void toadll::c_Entity::set_prevRotationPitch(float newPitch) const
 {
-	env->SetFloatField(obj, get_fid(obj, mapping::prevRotationPitchField), newPitch);
+	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationPitchField), newPitch);
 	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationPitch), newPitch);
 }
 
 void toadll::c_Entity::set_rotation(float yaw, float pitch) const
 {
 	env->CallVoidMethod(obj, get_mid(obj, mapping::setRotation), yaw, pitch);
+}
+
+void toadll::c_Entity::set_motionX(float val)
+{
+	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionXField), val);
+}
+
+void toadll::c_Entity::set_motionY(float val)
+{
+	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionYField), val);
+}
+
+void toadll::c_Entity::set_motionZ(float val)
+{
+	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionZField), val);
 }

@@ -99,12 +99,12 @@ namespace toadll
         return env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
     }
 
-    jfieldID get_fid(const jclass& cls, mapping name)
+    jfieldID get_fid(const jclass& cls, mappingFields name)
 	{
         return env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
 	}
 
-	jfieldID get_fid(const jobject& obj, mapping name)
+	jfieldID get_fid(const jobject& obj, mappingFields name)
 	{
         return get_fid(env->GetObjectClass(obj), name);
 	}

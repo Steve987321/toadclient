@@ -21,7 +21,7 @@ namespace toad::utils
 		HWND hwnd;
 	};
 
-	enum class mc_item
+	enum class mc_items
 	{
 		NONE = 0,
 		HANDS = 1 << 1,
@@ -31,7 +31,20 @@ namespace toad::utils
 		SHOVEL = 1 << 5,
 		PLACEABLE = 1 << 6
 	};
-	ENUM_FLAG(mc_item);
+	ENUM_FLAG(mc_items);
+	inline std::string to_string(mc_items item)
+	{
+		switch (item)
+		{
+		case mc_items::NONE: return "none";
+		case mc_items::HANDS: return "hands";
+		case mc_items::SWORD: return "sword";
+		case mc_items::AXE: return "axe";
+		case mc_items::PICKAXE: return "pickaxe";
+		case mc_items::SHOVEL: return "shovel";
+		case mc_items::PLACEABLE: return "blocks";
+		}
+	}
 
 	enum class mboxType : short
 	{
@@ -41,7 +54,7 @@ namespace toad::utils
 		GOOD
 	};
 
-	// flags for 
+	// flags for imgui text placement
 	enum center_text_flags
 	{
 		TEXT_LEFT = 1 << 1,
