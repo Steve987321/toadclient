@@ -33,33 +33,35 @@ void toadll::modules::velocity(const std::shared_ptr<c_Entity>& lPlayer)
 
 	static bool once = false;
 
-	if (lPlayer->get_hurt_time() > 0 && !once)
+
+	if (int hurttime = lPlayer->get_hurt_time(); hurttime > 0 && !once)
 	{
-		once = true;
-		/*log_Debug("hurt Time %d, motionxyz(x:%.3f, %.3f, %.3f), new motionxyz(x:%.3f, y:%.3f, z:%.3f)",
-			lPlayer->get_hurt_time(),
-			lPlayer->get_motionX(), lPlayer->get_motionY(), lPlayer->get_motionZ(),
-			lPlayer->get_motionX() * (velocity::horizontal / 100.f),
-			lPlayer->get_motionY() * (velocity::horizontal / 100.f),
-			lPlayer->get_motionZ() * (velocity::vertical / 100.f)
-		);*/
+		if (toad::rand_int(0, 100) > velocity::chance) { once = true; return; }
 
-		if (once)
-		{
-			if (toad::rand_int(0, 100) >= velocity::chance) return;
-		}
+		if (velocity::delay > 0) toad::preciseSleep(velocity::delay * 0.05f);
 
-		if (velocity::delay > 0) toad::preciseSleep(velocity::delay / 100.f);
+		auto motionX = lPlayer->get_motionX();
+		auto newMotionX = std::lerp(motionX, motionX * (velocity::horizontal / 100.f), 0.3f);
+		auto motionZ = lPlayer->get_motionZ();
+		auto newMotionZ = std::lerp(motionZ, motionZ * (velocity::horizontal / 100.f), 0.3f);
 
-		if (abs(lPlayer->get_motionX()) > 0)
-			lPlayer->set_motionX(lPlayer->get_motionX() * (velocity::horizontal / 100.f));
-		if (abs(lPlayer->get_motionZ()) > 0)
-			lPlayer->set_motionZ(lPlayer->get_motionZ() * (velocity::horizontal / 100.f));
+		if (abs(motionX) > 0)
+			lPlayer->set_motionX(newMotionX);
+		if (abs(motionZ) > 0)
+			lPlayer->set_motionZ(newMotionZ);
+
+		// TODO: separate horizontal and vertical velocity module in separate threads? 
+
 		if (lPlayer->get_motionY() > 0) // normal velocity when going down 
 			lPlayer->set_motionY(lPlayer->get_motionY() * (velocity::vertical / 100.f));
+
+		if (velocity::vertical > 0 && velocity::horizontal > 0)
+			toad::preciseSleep(50.0 / 1000);
 	}
-	else
+	else if (hurttime <= 0)
+	{
 		once = false;
+	}
 }
 
 void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)

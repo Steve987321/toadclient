@@ -84,7 +84,7 @@ void toadll::c_Entity::set_rotationYaw(float newYaw) const
 
 void toadll::c_Entity::set_prevRotationYaw(float newYaw) const
 {
-	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationPitchField), newYaw);
+	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationYawField), newYaw);
 	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
 }
 
