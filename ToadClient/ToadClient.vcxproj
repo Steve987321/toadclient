@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_opengl2.h" />
@@ -179,6 +180,7 @@
     <ClInclude Include="Toad\Types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

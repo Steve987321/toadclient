@@ -92,7 +92,7 @@ BOOL hwglSwapBuffers(HDC hDc)
 	}*/
 	
 
-	/*hwnd = WindowFromDC(hDc);
+	hwnd = WindowFromDC(hDc);
 	HGLRC oCtx = wglGetCurrentContext();
 
 	if (init==0)
@@ -128,9 +128,17 @@ BOOL hwglSwapBuffers(HDC hDc)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	ImGui::SetNextWindowSize({200, 200});
+
 	ImGui::Begin("nigga client v0.1");
 
-	ImGui::Text("Black af?");
+	for (const auto& s : toadll::p_Log->get_console_logs())
+	{
+		ImGui::Text(s->c_str());
+	}
+
+	const auto draw = ImGui::GetForegroundDrawList();
+	draw->AddRect({ 0,0 }, { 200, 200 }, IM_COL32_WHITE, 2.f);
 
 	ImGui::End();
 
@@ -139,44 +147,6 @@ BOOL hwglSwapBuffers(HDC hDc)
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
 	wglMakeCurrent(hDc, oCtx);
-	*/
-
-	//glReadPixels()
-	//GLint viewport[4];
-	//GLfloat modelview[16];
-	//GLfloat projection[16];
-	//glGetIntegerv(GL_VIEWPORT, viewport);
-	//glGetFloatv(GL_MODELVIEW_MATRIX, modelview );
-	//glGetFloatv(GL_PROJECTION_MATRIX, projection);
-
-	//for (auto player : toadll::p_Minecraft->get_playerList())
-	//{
-	//}
-	
-	/*
-	std::cout << "viewport ";
-	for (int i = 0; i < 4; i++)
-	{
-		std::cout << viewport[i] << " ";
-	}
-	std::cout << std::endl;
-
-	std::cout << "modelview ";
-	for (int i = 0; i < 16; i++)
-	{
-		std::cout << modelview[i] << " ";
-	}
-	std::cout << std::endl;
-
-	std::cout << "projection ";
-	for (int i = 0; i < 16; i++)
-	{
-		std::cout << projection[i] << " ";
-	}
-	std::cout << std::endl;*/
-
-
-	
 	return owglSwapBuffers(hDc);
 }
 

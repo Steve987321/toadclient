@@ -2,10 +2,36 @@
 #include "Toad/Toad.h"
 #include "modules.h"
 
+std::once_flag flag;
+
 void toadll::modules::update()
 {
 	auto player = p_Minecraft->get_localplayer();
 	if (player == nullptr) return;
+
+	auto ari = p_Minecraft->get_active_render_info();
+
+	std::cout << ari->get_render_pos() << std::endl;
+
+	//auto klass = p_Minecraft->get_active_render_class();
+	//auto vec = to_vec3(env->CallStaticObjectMethod(klass, get_static_mid(klass, mapping::getRenderPos)));
+	//p_Log->LogToConsole("%f, %f, %f", vec.x, vec.y, vec.z);
+	//log_Debug("%f, %f, %f", vec.x, vec.y, vec.z);
+	
+	/*std::cout << env->GetStaticFieldID(klass, "MODELVIEW", "Ljava/nio/FloatBuffer;") << std::endl;
+	std::cout << env->GetStaticFieldID(klass, "VIEWPORT", "Ljava/nio/IntBuffer;") << std::endl;
+	std::cout << env->GetStaticFieldID(klass, "PROJECTION", "Ljava/nio/FloatBuffer;") << std::endl;*/
+
+	/*std::call_once(flag, []
+		{
+			auto mc = p_Minecraft->get_mc();
+			auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer));
+			auto objklass = env->GetObjectClass(obj);
+			loop_through_class(objklass);
+			env->DeleteLocalRef(mc);
+			env->DeleteLocalRef(obj);
+			env->DeleteLocalRef(objklass);
+		});*/
 
 	velocity(player);
 	aa(player);
@@ -96,6 +122,7 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 	}
 	if (distances.empty()) return; // atleast one other player
 
+	// getting target by distance
 	if (!aa::targetFOV)
 	{
 		auto t = std::ranges::min_element(distances);
@@ -110,12 +137,13 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 
 	float yawDiff = wrap_to_180(-(lyaw - yaw));
 	float absYawDiff = abs(yawDiff);
-	if (absYawDiff < 1) return;
+	if (auto stopaiming = aa::auto_aim ? 3.f : 1.f; absYawDiff < stopaiming) return;
 	float pitchDiff = wrap_to_180(-(lpitch - pitch));
 
 	if (!aa::targetFOV) // don't have to check if this is enabled because already checked
 		if (absYawDiff > minimalAngleDiff)
 			return;
+	// got target and yaw and pitch offsets
 
 	yawDiff += toad::rand_float(-2.f, 2.f);
 	pitchDiff += toad::rand_float(-2.f, 2.f);
@@ -123,23 +151,31 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 
 	if (absYawDiff > 7)
 	{
-		smooth *= toad::rand_float(0.4f, 2.0f);
+		smooth *= aa::auto_aim ? toad::rand_float(1.5f, 2.0f) : toad::rand_float(0.4f, 2.0f);
 	}
 	else if (absYawDiff < 7)
 	{
-		smooth *= toad::rand_float(0.0f, 0.4f);
+		smooth *= aa::auto_aim ? toad::rand_float(0.5f, 1.f) : toad::rand_float(0.0f, 0.4f);
 	}
-	speed = std::lerp(speed, smooth, 0.3f);
+	speed = std::lerp(speed, smooth, aa::auto_aim ? 0.05f : 0.3f);
+
+	const int rand_100 = toad::rand_int(0, 100);
+
+	if (aa::auto_aim)
+		if (rand_100 <= 5)
+			speed += toad::rand_float(100.f, 200.f);
 
 	auto yawdiffSpeed = yawDiff / (15000.f / speed);
 
-	if (toad::rand_int(0, 2) == 1)
+	if (toad::rand_int(0, aa::auto_aim ? 10 : 2) == 1)
 	{
-		yawdiffSpeed += toad::rand_float(-0.005f, 0.005f);
+		yawdiffSpeed += aa::auto_aim ? toad::rand_float(-0.01f, 0.01f) : toad::rand_float(-0.005f, 0.005f);
 	}
+
 	lPlayer->set_rotationYaw(lyaw + yawdiffSpeed);
 	lPlayer->set_prevRotationYaw(lyaw + yawdiffSpeed);
-	if (toad::rand_int(0, 3) == 1) {
+
+	if (rand_100 <= 10) {
 		float pitchrand = toad::rand_float(-0.005f, 0.005f);
 		lPlayer->set_rotationPitch(lpitch + pitchrand);
 		lPlayer->set_prevRotationPitch(lpitch + pitchrand);
@@ -150,7 +186,10 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 		lPlayer->set_rotationPitch(lpitch + pitchDiff / (15000.f / speed));
 		lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (15000.f / speed));
 	}
-	toad::preciseSleep(toad::rand_float(0.001 / 1000, 0.2 / 1000));
+	toad::preciseSleep(
+		aa::auto_aim ? toad::rand_float(0.0001f, 0.0005f)
+		: toad::rand_float(0.001f / 1000.f, 0.2f / 1000.f)
+	);
 
 	//lPlayer->set_rotation(lyaw + yawDiff / (10000.f / aa::speed), lpitch + pitchDiff / (10000.f / aa::speed));
 
@@ -181,24 +220,17 @@ void toadll::modules::auto_bridge(const std::shared_ptr<c_Entity>& lPlayer)
 
 	auto lplayerpos = lPlayer->get_position();
 
-	//auto lplayer = p_Minecraft->get_localplayer();
-	/*auto blockpos = env->CallObjectMethod(*lplayer->obj, get_mid(*lplayer->obj, mapping::getBlockPosition));
-	auto vec3 = to_vec3i(blockpos);*/
-	//auto vec3 = lplayer->get_position();
-	//vec3.x = floor(vec3.x);
-	//vec3.y = floor(vec3.y);
-	//vec3.z = floor(vec3.z);
-	//log_Debug("vec3: (%f %f %f) absDist: %f", vec3.x, vec3.y, vec3.z, abs(vec3.dist(lplayer->get_position())));
-
 	static bool flag = false;
 
 	// extra checks and settings
-	float rotPitch = p_Minecraft->get_localplayer()->get_rotationPitch();
+	float rotPitch = lPlayer->get_rotationPitch();
 	if (rotPitch < auto_bridge::pitch_check) return;
 
 	//good for break blocks
-	auto lookatobj = env->CallObjectMethod(p_Minecraft->get_mc(), get_mid(p_Minecraft->get_mc(), mapping::getObjectMouseOver));
+	auto theMC = p_Minecraft->get_mc();
+	auto lookatobj = env->CallObjectMethod(theMC, get_mid(theMC, mapping::getObjectMouseOver));
 	auto blokpoz = env->CallObjectMethod(lookatobj, get_mid(lookatobj, mapping::getBlockPos));
+	env->DeleteLocalRef(theMC);
 
 	// no dec
 	auto jo = to_vec3i(blokpoz);
@@ -234,7 +266,6 @@ void toadll::modules::auto_bridge(const std::shared_ptr<c_Entity>& lPlayer)
 	auto vec3iClass = findclass(curr_client == minecraft_client::Vanilla ? "cj" : "net.minecraft.util.Vec3i");
 	if (vec3iClass == nullptr)
 		return;
-	
 
 	auto vec3i = env->NewObject(vec3iClass, env->GetMethodID(vec3iClass, "<init>", "(III)V"), (int)jo.x, (int)jo.y, (int)jo.z);
 	env->DeleteLocalRef(vec3iClass);

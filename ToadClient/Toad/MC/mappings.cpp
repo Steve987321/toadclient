@@ -75,6 +75,10 @@ namespace toadll::mappings
 			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass))
 				log_Error("can't find entityRenderer");// methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
 
+			methodnames.insert({ mapping::getTimer, "bridge$getTimer" });
+			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass))
+				log_Error("can't find timer");
+
 			// WORLD
 			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
 			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });
@@ -166,13 +170,16 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getHurtTime, "bridge$getHurtTime" });
 			methodsigs.insert({ mapping::getHurtTime, "()I" });
 
-			// rendermanager
-			methodnames.insert({ mapping::getRenderPosX, "getRenderPosX" });
-			methodnames.insert({ mapping::getRenderPosY, "getRenderPosY" });
-			methodnames.insert({ mapping::getRenderPosZ, "getRenderPosZ" });
-			methodsigs.insert({ mapping::getRenderPosX, "()D" });
-			methodsigs.insert({ mapping::getRenderPosY, "()D" });
-			methodsigs.insert({ mapping::getRenderPosZ, "()D" });
+			// .ActiveRenderInfo
+			methodnames.insert({ mapping::getRenderPos, "getPosition" });
+			methodsigs.insert({ mapping::getRenderPos, "()Lnet/minecraft/util/Vec3;" });
+
+			fieldnames.insert({ mappingFields::modelviewField, "MODELVIEW" });
+			fieldsigs.insert({ mappingFields::modelviewField, "Ljava/nio/FloatBuffer;" });
+			fieldnames.insert({ mappingFields::viewportField, "VIEWPORT" });
+			fieldsigs.insert({ mappingFields::viewportField, "Ljava/nio/IntBuffer;" });
+			fieldnames.insert({ mappingFields::projectionField, "PROJECTION" });
+			fieldsigs.insert({ mappingFields::projectionField, "Ljava/nio/FloatBuffer;" });
 
 			// ENTITY RENDERER
 			methodnames.insert({ mapping::enableLightmap, "enableLightmap" });

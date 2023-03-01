@@ -4,6 +4,7 @@
 #include <shared_mutex>
 #include <iomanip>
 #include <sstream>
+#include <format>
 
 namespace toadll
 {
@@ -15,6 +16,12 @@ private:
 	HANDLE m_hOutput;
 	FILE* m_f = nullptr;
 	bool m_closed = false;
+
+private:
+
+	std::vector <std::shared_ptr<std::string>> logs;
+
+	int maxSize = 100; // how many msgs in console 
 
 private:
 	static std::string get_time()
@@ -101,6 +108,28 @@ public:
 
 		printf(Args..., Args...);
 		std::cout << std::endl;
+	}
+
+	_NODISCARD
+	std::vector<std::shared_ptr<std::string>> get_console_logs() const
+	{
+		return this->logs;
+	}
+
+	template <typename ... Args>
+	void LogToConsole(const std::string_view frmt, Args&&... args)
+	{
+		if (logs.size() > maxSize)
+			ClearConsole();
+		std::stringstream ss;
+		ss << std::vformat(frmt, std::make_format_args(args...));
+
+		logs.emplace_back(std::make_shared<std::string>(get_time() + ' ' + ss.str()));
+	}
+
+	void ClearConsole()
+	{
+		logs.clear();
 	}
 
 };

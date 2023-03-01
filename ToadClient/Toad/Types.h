@@ -76,6 +76,22 @@ namespace toadll
         }
     };
 
+    // for logging
+    inline std::ostream& operator<<(std::ostream& o, const vec2& v) {
+        o << "(X:" << v.x << ", Y:" << v.y << ")";
+        return o;
+    }
+
+    inline std::ostream& operator<<(std::ostream& o, const vec3& v) {
+	    o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.y << ")";
+	    return o;
+    }
+
+	inline std::ostream& operator<<(std::ostream& o, const vec4& v) {
+        o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.y << ", W:" << v.w << ")";
+        return o;
+    }
+
     enum class minecraft_client
     {
         Lunar,
@@ -97,7 +113,13 @@ namespace toadll
         // jdouble
         motionXField,
         motionYField,
-        motionZField
+        motionZField,
+
+        // .ActiveRenderInfo
+        viewportField,
+        projectionField,
+		modelviewField
+
     };
 
     enum class mapping
@@ -108,6 +130,7 @@ namespace toadll
         getPlayer,
         getObjectMouseOver,
         getEntityRenderer,
+        getTimer,
 
         // .World
         getPlayerEntities,
@@ -147,10 +170,8 @@ namespace toadll
         getHeldItem,
         getHurtTime,
 
-        // .rendermanager
-        getRenderPosX,
-        getRenderPosY,
-        getRenderPosZ,
+        // .ActiveRenderInfo
+        getRenderPos,
 
         // .Vec3
         Vec3X,

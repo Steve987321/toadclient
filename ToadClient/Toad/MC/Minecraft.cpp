@@ -6,7 +6,8 @@
 toadll::c_Minecraft::~c_Minecraft()
 {
     env->DeleteLocalRef(mcclass);
-    env->DeleteGlobalRef(elbclass);
+    if (elbclass != nullptr) env->DeleteGlobalRef(elbclass);
+    if (ariclass != nullptr) env->DeleteGlobalRef(ariclass);
 }
 
 jclass toadll::c_Minecraft::get_mcclass()
@@ -22,6 +23,17 @@ jclass toadll::c_Minecraft::get_entity_living_class()
 	}
     return elbclass;
 }
+
+std::unique_ptr<toadll::c_ActiveRenderInfo> toadll::c_Minecraft::get_active_render_info()
+{
+	if (ariclass == nullptr)
+	{
+        ariclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.client.renderer.ActiveRenderInfo"));
+	}
+    
+    return std::make_unique<c_ActiveRenderInfo>(ariclass);
+}
+
 
 jobject toadll::c_Minecraft::get_mc() const
 {

@@ -6,6 +6,8 @@ namespace toadll
 	private:
 		jclass mcclass = nullptr;
 		jclass elbclass = nullptr;
+		jclass ariclass = nullptr;
+
 	public:
 		explicit c_Minecraft(jclass mc_jclass) : mcclass(mc_jclass) {}
 		~c_Minecraft();
@@ -13,6 +15,8 @@ namespace toadll
 		_NODISCARD jclass get_mcclass();
 
 		_NODISCARD jclass get_entity_living_class();
+
+		_NODISCARD std::unique_ptr<c_ActiveRenderInfo> get_active_render_info();
 
 		_NODISCARD jobject get_mc() const;
 		_NODISCARD jobject get_rendermanager() const;

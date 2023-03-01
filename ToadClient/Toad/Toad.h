@@ -10,6 +10,7 @@
 
 #include "Toad/MC/Utils/utils.h"
 #include "Toad/MC/mappings.h"
+#include "Toad/MC/ActiveRenderInfo/ActiveRenderInfo.h"
 #include "Toad/MC/Entity/Entity.h"
 #include "Toad/MC/Minecraft.h"
 
@@ -54,6 +55,7 @@ namespace toadll
 		inline bool invisibles = false;
 		inline bool targetFOV = false;
 		inline bool always_aim = false;
+		inline bool auto_aim = true;
 
 		inline int fov = 180.f;
 
