@@ -8,12 +8,12 @@ namespace toadll
 		jclass ariclass = nullptr;
 
 	public:
-		explicit c_ActiveRenderInfo(const jclass& ariklass) : ariclass(ariklass) {}
+		explicit c_ActiveRenderInfo(jclass ariklass) { ariclass = ariklass; }
 
 	public:
-		void get_modelview(GLint* viewportbuf) const;
-		void get_projection(GLfloat* projectionbuf) const;
-		void get_viewport(GLfloat* viewportBuf) const;
+		void get_modelview(GLfloat modelviewbuf[15]) const;
+		void get_projection(GLfloat projectionbuf[15]) const;
+		void get_viewport(GLint viewportBuf[3]) const;
 
 	public:
 		_NODISCARD vec3 get_render_pos() const;

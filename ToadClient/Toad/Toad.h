@@ -80,6 +80,10 @@ namespace toadll
 		inline float vertical = 100;
 	}
 
+	namespace EntityEsp
+	{
+		inline bool enabled = false;
+	}
 
 	namespace auto_bridge
 	{

@@ -2,30 +2,30 @@
 #include "Toad/Toad.h"
 #include "ActiveRenderInfo.h"
 
-void toadll::c_ActiveRenderInfo::get_modelview(GLint* viewportbuf) const
-{	
-	auto fid = get_static_fid(ariclass, mappingFields::modelviewField);
-	auto obj = env->GetStaticObjectField(ariclass, fid);
-	auto ibufklass = env->GetObjectClass(obj);
-	auto getIndexBuf = env->GetMethodID(ibufklass, "get", "(I)F");
-
-	for (int i = 0; i < 16; i++)
-	{
-		viewportbuf[i] = env->CallIntMethod(obj, getIndexBuf, i);
-	}
-
-	env->DeleteLocalRef(obj);
-	env->DeleteLocalRef(ibufklass);
-}
-
-void toadll::c_ActiveRenderInfo::get_projection(GLfloat* projectionbuf) const
+void toadll::c_ActiveRenderInfo::get_modelview(GLfloat modelviewbuf[15]) const
 {
 	auto fid = get_static_fid(ariclass, mappingFields::modelviewField);
 	auto obj = env->GetStaticObjectField(ariclass, fid);
 	auto ibufklass = env->GetObjectClass(obj);
 	auto getIndexBuf = env->GetMethodID(ibufklass, "get", "(I)F");
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 3; i++)
+	{
+		modelviewbuf[i] = env->CallFloatMethod(obj, getIndexBuf, i);
+	}
+
+	env->DeleteLocalRef(obj);
+	env->DeleteLocalRef(ibufklass);
+}
+
+void toadll::c_ActiveRenderInfo::get_projection(GLfloat projectionbuf[15]) const
+{
+	auto fid = get_static_fid(ariclass, mappingFields::projectionField);
+	auto obj = env->GetStaticObjectField(ariclass, fid);
+	auto ibufklass = env->GetObjectClass(obj);
+	auto getIndexBuf = env->GetMethodID(ibufklass, "get", "(I)F");
+
+	for (int i = 0; i < 3; i++)
 	{
 		projectionbuf[i] = env->CallFloatMethod(obj, getIndexBuf, i);
 	}
@@ -34,16 +34,16 @@ void toadll::c_ActiveRenderInfo::get_projection(GLfloat* projectionbuf) const
 	env->DeleteLocalRef(ibufklass);
 }
 
-void toadll::c_ActiveRenderInfo::get_viewport(GLfloat* viewportBuf) const
+void toadll::c_ActiveRenderInfo::get_viewport(GLint viewportBuf[3]) const
 {
-	auto fid = get_static_fid(ariclass, mappingFields::modelviewField);
+	auto fid = get_static_fid(ariclass, mappingFields::viewportField);
 	auto obj = env->GetStaticObjectField(ariclass, fid);
 	auto ibufklass = env->GetObjectClass(obj);
 	auto getIndexBuf = env->GetMethodID(ibufklass, "get", "(I)I");
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		viewportBuf[i] = env->CallFloatMethod(obj, getIndexBuf, i);
+		viewportBuf[i] = env->CallIntMethod(obj, getIndexBuf, i);
 	}
 
 	env->DeleteLocalRef(obj);

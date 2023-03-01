@@ -19,11 +19,8 @@ namespace toadll
 	};
 
 	inline std::unique_ptr<c_Hooks> p_Hooks = nullptr;
-
-	inline vec3 render_pos_vec3(0,0,0);
-	inline vec3 render_rotation(0, 0, 0);
-
-    inline std::vector<vec3> entities;
+    inline std::vector<std::pair<vec2, const char*>> renderNames;
+    inline std::vector<std::shared_ptr<std::string>> logs;
 
     inline void setup_ortho()
     {
@@ -45,33 +42,5 @@ namespace toadll
         glPopMatrix();
         glPopAttrib();
     }
-
-    inline void draw_outline(float x, float y, float width, float height, float lineWidth, const GLubyte col[3])
-    {
-        glLineWidth(lineWidth);
-        glBegin(GL_LINE_STRIP);
-        glColor3ub(col[0], col[1], col[2]);
-
-        glVertex2f(x- 0.5f, y - 0.5f);
-        glVertex2f(x + width + 0.5f, y - 0.5f);
-        glVertex2f(x + width + 0.5f, y + height + 0.5f);
-        glVertex2f(x - 0.5f, y + height + 0.5f);
-        glVertex2f(x - 0.5f, y - 0.5f);
-        glEnd();
-    }
-
-    inline vec2 WorldToScreen(const vec3& worldPosition, const vec3& cameraPosition, float camyaw, float campitch, float fieldOfView, int screenWidth, int screenHeight) {
-        auto relativePos = worldPosition - cameraPosition;
-        auto [yaw, pitch] = get_angles(cameraPosition, worldPosition);
-
-        auto relativeYaw = camyaw - yaw;
-        auto relativePitch = campitch - pitch;
-
-        if (relativePitch > 180 || relativeYaw > 180) return {-1,-1};
-
-        return {screenWidth / 2.f + relativeYaw, screenHeight / 2.f + relativePitch};
-    }
-	
-	//inline void update_renderinfo();
 
 }

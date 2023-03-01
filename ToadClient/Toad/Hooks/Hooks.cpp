@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Hooks.h"
 
+#include <ranges>
+
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_win32.h"
 #include "Toad/Toad.h"
@@ -128,17 +130,30 @@ BOOL hwglSwapBuffers(HDC hDc)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::SetNextWindowSize({200, 200});
+	ImGui::SetNextWindowSize({400, 300});
 
 	ImGui::Begin("nigga client v0.1");
-
-	for (const auto& s : toadll::p_Log->get_console_logs())
+	/*ImGui::BeginChild("logs", { 250, 250 }, true);
+	for (const auto& s : toadll::logs)
 	{
 		ImGui::Text(s->c_str());
 	}
+	ImGui::SetScrollHereY(0.00f);*/
+
+	ImGui::EndChild();
 
 	const auto draw = ImGui::GetForegroundDrawList();
-	draw->AddRect({ 0,0 }, { 200, 200 }, IM_COL32_WHITE, 2.f);
+	//draw->AddRect({ 25,25 }, { 50, 50 }, IM_COL32_WHITE, 5.f);
+
+	for (const auto& pos : toadll::renderNames | std::views::keys)
+	{
+	/*	std::stringstream ss;
+		ss << pos << " size: " << toadll::renderNames.size();
+		toadll::p_Log->LogToConsole(ss.str().c_str());*/
+		//std::cout << pos << " size: " << toadll::renderNames.size() << std::endl;
+		draw->AddCircle({ pos.x, pos.y }, 10.f, IM_COL32_WHITE);
+		//draw->AddText({ pos.x, pos.y }, IM_COL32(255, 255, 255, 255), name);
+	}
 
 	ImGui::End();
 

@@ -174,27 +174,89 @@ namespace toadll
         return res - 180;
     }
 
-    bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[16], GLfloat projection[16], GLint viewPort[4])
+    //bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[15], GLfloat projection[15], GLint viewPort[3])
+    //{
+    //    const auto Multiply = [](const vec4& vec, const GLfloat mat[15]) -> vec4
+    //    {
+    //        return {
+	//            vec.x * mat[0] + vec.y * mat[4] + vec.z * mat[8] + vec.w * mat[12],
+    //            vec.x * mat[1] + vec.y * mat[5] + vec.z * mat[9] + vec.w * mat[13],
+    //            vec.x * mat[2] + vec.y * mat[6] + vec.z * mat[10] + vec.w * mat[14],
+    //            vec.x * mat[3] + vec.y * mat[7] + vec.z * mat[11] + vec.w * mat[15]
+    //        };
+    //    };
+    //
+    //    auto clipSpacePos = Multiply(Multiply(vec4(worldpos.x, worldpos.y, worldpos.z, 1.0f), modelView), projection);
+    //    auto ndcSpacePos = vec3(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w);
+    //
+    //    if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0)
+    //    {
+    //        return false;
+    //    }
+    //
+    //    screen.x = (ndcSpacePos.x + 1.0f) / 2.0f * viewPort[2];
+    //    screen.y = (1.0f - ndcSpacePos.y) / 2.0f * viewPort[3];
+    //    return true;
+    //}
+
+    bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, int fov, vec2& screenpos)
     {
-        const auto Multiply = [](const vec4& vec, const GLfloat mat[16]) -> vec4
+        auto const get_Hfov = [](float width, float height, float fov) -> float
         {
-            return {
-	            vec.x * mat[0] + vec.y * mat[4] + vec.z * mat[8] + vec.w * mat[12],
-                vec.x * mat[1] + vec.y * mat[5] + vec.z * mat[9] + vec.w * mat[13],
-                vec.x * mat[2] + vec.y * mat[6] + vec.z * mat[10] + vec.w * mat[14],
-                vec.x * mat[3] + vec.y * mat[7] + vec.z * mat[11] + vec.w * mat[15]
-            };
+            auto r = width / height;
+            return fov * (2 * atan(tan(fov / 2) / r));
         };
-        auto clipSpacePos = Multiply(Multiply(vec4(worldpos.x, worldpos.y, worldpos.z, 1.0f), modelView), projection);
-        auto ndcSpacePos = vec3(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w);
-
-        if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0)
+        auto const get_angle = [=](vec3 from, vec3 target) -> vec2
         {
-            return false;
-        }
+            /*vec2 angles{0,0};
+            vec3 delta = source - target;
+            float hyp = source.dist(target);
+            angles.x = (float)(std::atan(delta.z / hyp) * 180.0f / PI);
+            angles.y = (float)(std::atan(delta.y / delta.x) * 180.0f / PI);
 
-        screen.x = (ndcSpacePos.x + 1.0f) / 2.0f * viewPort[2];
-        screen.y = (1.0f - ndcSpacePos.y) / 2.0f * viewPort[3];
+            if (delta.x >= 0.0f)
+                angles.y += 180.0f;*/
+
+            //return angles;
+
+            float d_x = target.x - from.x;
+            float d_y = target.y - from.y;
+            float d_z = target.z - from.z;
+
+            float hypothenuse = sqrt(d_x * d_x + d_z * d_z);
+            float yaw = atan2(d_z, d_x) * 180.f / PI - 90.f;
+            float pitch = -atan2(d_y, hypothenuse) * 180 / PI;
+
+            return { yaw, pitch };
+        };
+
+        int hGameRes = 856;
+        int vGameRes = 512;
+
+        float hFov = get_Hfov(hGameRes, vGameRes, fov);
+        //p_Log->LogToConsole(std::to_string(hFov).c_str());
+        float vFov = fov;
+
+        auto [yaw, pitch] = get_angles(source, target);
+
+        float yawDiff = wrap_to_180(-(viewAngles.x - yaw));
+        float pitchDiff = wrap_to_180(-(viewAngles.y - pitch));
+
+        vec2 deltaAngles = {yawDiff, pitchDiff};
+    /*    std::stringstream ss;
+        ss << deltaAngles;
+        p_Log->LogToConsole(ss.str().c_str());*/
+
+        float hOffset = std::tan(deltaAngles.x / vFov / 2) * std::cos(hFov / 2) / std::sin(hFov / 2) * (hGameRes / 2);
+        p_Log->LogToConsole(std::to_string(hOffset));
+        float hScreenPos = hGameRes / 2 + hOffset;
+
+        float vOffset = std::tan(deltaAngles.y / hFov / 2) * std::cos(vFov / 2) / std::sin(vFov / 2) * (vGameRes / 2);
+        float vScreenPos = vGameRes / 2 + vOffset;
+
+        screenpos.x = hScreenPos;
+        screenpos.y = vScreenPos;
+
         return true;
     }
 

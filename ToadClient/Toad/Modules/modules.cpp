@@ -9,10 +9,6 @@ void toadll::modules::update()
 	auto player = p_Minecraft->get_localplayer();
 	if (player == nullptr) return;
 
-	auto ari = p_Minecraft->get_active_render_info();
-
-	std::cout << ari->get_render_pos() << std::endl;
-
 	//auto klass = p_Minecraft->get_active_render_class();
 	//auto vec = to_vec3(env->CallStaticObjectMethod(klass, get_static_mid(klass, mapping::getRenderPos)));
 	//p_Log->LogToConsole("%f, %f, %f", vec.x, vec.y, vec.z);
@@ -36,6 +32,7 @@ void toadll::modules::update()
 	velocity(player);
 	aa(player);
 	auto_bridge(player);
+	update_esp_vars(player);
 
 	/*auto heldItem = lPlayer->get_heldItem();
 	if (heldItem != NULL)
@@ -195,10 +192,22 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 
 }
 
-void toadll::modules::esp(const vec3& ePos)
+void toadll::modules::update_esp_vars(const std::shared_ptr<c_Entity>& lPlayer)
 {
-	
-	
+	//if (!EntityEsp::enabled) return;
+
+	static auto ari = p_Minecraft->get_active_render_info();
+
+	renderNames.clear();
+	for (const auto& e : p_Minecraft->get_playerList())
+	{
+		vec2 screenposition{0,0};
+		vec2 viewangles{lPlayer->get_rotationYaw(), lPlayer->get_rotationPitch()};
+		if (WorldToScreen(lPlayer->get_position(), e->get_position(), viewangles, 70, screenposition))
+		{
+			renderNames.emplace_back(screenposition, e->get_name().c_str());
+		}
+	}
 }
 
 INPUT ip{};

@@ -6,6 +6,8 @@
 #include <sstream>
 #include <format>
 
+#include "Hooks/Hooks.h"
+
 namespace toadll
 {
 
@@ -16,12 +18,6 @@ private:
 	HANDLE m_hOutput;
 	FILE* m_f = nullptr;
 	bool m_closed = false;
-
-private:
-
-	std::vector <std::shared_ptr<std::string>> logs;
-
-	int maxSize = 100; // how many msgs in console 
 
 private:
 	static std::string get_time()
@@ -110,24 +106,15 @@ public:
 		std::cout << std::endl;
 	}
 
-	_NODISCARD
-	std::vector<std::shared_ptr<std::string>> get_console_logs() const
+	static void LogToConsole(const std::string& str)
 	{
-		return this->logs;
-	}
-
-	template <typename ... Args>
-	void LogToConsole(const std::string_view frmt, Args&&... args)
-	{
-		if (logs.size() > maxSize)
+		if (logs.size() > 500)
 			ClearConsole();
-		std::stringstream ss;
-		ss << std::vformat(frmt, std::make_format_args(args...));
-
-		logs.emplace_back(std::make_shared<std::string>(get_time() + ' ' + ss.str()));
+	
+		logs.emplace_back(std::make_shared<std::string>(get_time() + ' ' + str));
 	}
 
-	void ClearConsole()
+	static void ClearConsole()
 	{
 		logs.clear();
 	}
