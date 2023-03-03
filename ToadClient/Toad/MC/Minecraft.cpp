@@ -57,6 +57,15 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_localplayer() const
     return obj;
 }
 
+void toadll::c_Minecraft::set_gamma(float val) const
+{
+    auto obj = get_gamesettings();
+
+    env->CallVoidMethod(obj, get_mid(obj, mapping::setGamma), val);
+
+    env->DeleteLocalRef(obj);
+}
+
 //void toadll::c_Minecraft::disableLightMap() const
 //{
 //    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
@@ -90,6 +99,27 @@ jobject toadll::c_Minecraft::get_world() const
     env->DeleteLocalRef(mc);
 
     return obj;
+}
+
+jobject toadll::c_Minecraft::get_gamesettings() const
+{
+    auto mc = p_Minecraft->get_mc();
+    auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getGameSettings));
+    env->DeleteLocalRef(mc);
+    return obj;
+}
+
+float toadll::c_Minecraft::get_fov() const
+{
+    auto obj = get_gamesettings();
+    auto objklass = env->GetObjectClass(obj);
+
+    auto res = env->GetFloatField(obj, get_fid(objklass, mappingFields::fovField));
+
+    env->DeleteLocalRef(obj);
+    env->DeleteLocalRef(objklass);
+
+    return res;
 }
 
 std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerList() const

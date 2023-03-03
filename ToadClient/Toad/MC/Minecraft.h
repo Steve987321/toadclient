@@ -5,6 +5,8 @@ namespace toadll
 	{
 	private:
 		jclass mcclass = nullptr;
+		jclass gsclass = nullptr;
+
 		jclass elbclass = nullptr;
 		jclass ariclass = nullptr;
 
@@ -22,10 +24,16 @@ namespace toadll
 		_NODISCARD jobject get_rendermanager() const;
 		_NODISCARD jobject get_localplayerobj() const;
 		_NODISCARD jobject get_world() const;
+		_NODISCARD jobject get_gamesettings() const;
+
+		_NODISCARD float get_fov() const;
 
 		_NODISCARD std::vector<std::shared_ptr<c_Entity>> get_playerList() const;
 
 		_NODISCARD std::shared_ptr<c_Entity> get_localplayer() const;
+
+	public:
+		void set_gamma(float val) const;
 
 		//void disableLightMap() const;
 		//void enableLightMap() const;

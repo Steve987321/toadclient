@@ -199,63 +199,52 @@ namespace toadll
     //    return true;
     //}
 
-    bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, int fov, vec2& screenpos)
+    bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, float fov, vec2& screenpos)
     {
-        auto const get_Hfov = [](float width, float height, float fov) -> float
-        {
-            auto r = width / height;
-            return fov * (2 * atan(tan(fov / 2) / r));
-        };
-        auto const get_angle = [=](vec3 from, vec3 target) -> vec2
-        {
-            /*vec2 angles{0,0};
-            vec3 delta = source - target;
-            float hyp = source.dist(target);
-            angles.x = (float)(std::atan(delta.z / hyp) * 180.0f / PI);
-            angles.y = (float)(std::atan(delta.y / delta.x) * 180.0f / PI);
+        // Get screen dimensions
+        int hGameRes = SCREEN_WIDTH;
+        int vGameRes = SCREEN_HEIGHT;
 
-            if (delta.x >= 0.0f)
-                angles.y += 180.0f;*/
+        // Calculate aspect ratio
+        float aspectRatio = hGameRes / vGameRes;
 
-            //return angles;
+        // Calculate horizontal and vertical field of view in radians
+        float hFovRad = fov * PI / 180.f;
+        float vFovRad = 2 * atan(tan(hFovRad / 2) / aspectRatio);
 
-            float d_x = target.x - from.x;
-            float d_y = target.y - from.y;
-            float d_z = target.z - from.z;
+        // Get view angles
+        float yaw = viewAngles.x * PI / 180.f;
+        float pitch = viewAngles.y * PI / 180.f;
 
-            float hypothenuse = sqrt(d_x * d_x + d_z * d_z);
-            float yaw = atan2(d_z, d_x) * 180.f / PI - 90.f;
-            float pitch = -atan2(d_y, hypothenuse) * 180 / PI;
+        // Get the position of the target relative to the source
+        float dx = target.x - source.x;
+        float dy = target.y - source.y;
+        float dz = target.z - source.z;
 
-            return { yaw, pitch };
-        };
+        // Calculate the distance between the source and the target
+        float distance = source.dist(target);
 
-        int hGameRes = 856;
-        int vGameRes = 512;
+        // Calculate yaw and pitch angles between the source and the target
+        float pitchRad = asin(dy / distance);
+        float yawRad = atan2(dz, dx);
 
-        float hFov = get_Hfov(hGameRes, vGameRes, fov);
-        //p_Log->LogToConsole(std::to_string(hFov).c_str());
-        float vFov = fov;
+        // Calculate the delta angles between the view angles and the target angles
+        float deltaYawRad = yawRad - yaw;
+        float deltaPitchRad = pitchRad - pitch;
 
-        auto [yaw, pitch] = get_angles(source, target);
+        // Calculate the screen coordinates
+        float x = tan(deltaYawRad) / tan(hFovRad / 2.f) * (hGameRes / 2.f) * aspectRatio;
+        float y = -tan(deltaPitchRad) / tan(vFovRad / 2.f) * (vGameRes / 2.f) * aspectRatio;
 
-        float yawDiff = wrap_to_180(-(viewAngles.x - yaw));
-        float pitchDiff = wrap_to_180(-(viewAngles.y - pitch));
+        // Clamp the coordinates to the screen bounds
+        /*if (x < -hGameRes / 2.f) x = -hGameRes / 2.f;
+        if (x > hGameRes / 2.f) x = hGameRes / 2.f;
+        if (y < -vGameRes / 2.f) y = -vGameRes / 2.f;
+        if (y > vGameRes / 2.f) y = vGameRes / 2.f;*/
 
-        vec2 deltaAngles = {yawDiff, pitchDiff};
-    /*    std::stringstream ss;
-        ss << deltaAngles;
-        p_Log->LogToConsole(ss.str().c_str());*/
-
-        float hOffset = std::tan(deltaAngles.x / vFov / 2) * std::cos(hFov / 2) / std::sin(hFov / 2) * (hGameRes / 2);
-        p_Log->LogToConsole(std::to_string(hOffset));
-        float hScreenPos = hGameRes / 2 + hOffset;
-
-        float vOffset = std::tan(deltaAngles.y / hFov / 2) * std::cos(vFov / 2) / std::sin(vFov / 2) * (vGameRes / 2);
-        float vScreenPos = vGameRes / 2 + vOffset;
-
-        screenpos.x = hScreenPos;
-        screenpos.y = vScreenPos;
+        // Convert to screen coordinates
+        screenpos.x = hGameRes / 2.f + x;
+        screenpos.y = vGameRes / 2.f - y;
 
         return true;
     }

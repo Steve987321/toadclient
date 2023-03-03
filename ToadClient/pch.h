@@ -19,6 +19,7 @@
 #include <vector>
 #include <gl/GL.h>
 #include <random>
+#include <ranges>
 
 #include "jni.h"
 

@@ -18,16 +18,18 @@ void toadll::modules::update()
 	std::cout << env->GetStaticFieldID(klass, "VIEWPORT", "Ljava/nio/IntBuffer;") << std::endl;
 	std::cout << env->GetStaticFieldID(klass, "PROJECTION", "Ljava/nio/FloatBuffer;") << std::endl;*/
 
-	/*std::call_once(flag, []
-		{
-			auto mc = p_Minecraft->get_mc();
-			auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer));
-			auto objklass = env->GetObjectClass(obj);
-			loop_through_class(objklass);
-			env->DeleteLocalRef(mc);
-			env->DeleteLocalRef(obj);
-			env->DeleteLocalRef(objklass);
-		});*/
+	//std::call_once(flag, []
+	//	{
+	//		auto mc = p_Minecraft->get_mc();
+	//		auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getGameSettings));
+	//		auto objklass = env->GetObjectClass(obj);
+	//		std::cout << env->GetFieldID(objklass, "fovSetting", "F") << std::endl;
+	//		std::cout << env->GetFloatField(obj, env->GetFieldID(objklass, "fovSetting", "F"));
+	//		//loop_through_class(objklass);
+	//		env->DeleteLocalRef(mc);
+	//		env->DeleteLocalRef(obj);
+	//		env->DeleteLocalRef(objklass);
+	//	});
 
 	velocity(player);
 	aa(player);
@@ -197,15 +199,20 @@ void toadll::modules::update_esp_vars(const std::shared_ptr<c_Entity>& lPlayer)
 	//if (!EntityEsp::enabled) return;
 
 	static auto ari = p_Minecraft->get_active_render_info();
+	static auto playerList = p_Minecraft->get_playerList();
 
-	renderNames.clear();
-	for (const auto& e : p_Minecraft->get_playerList())
+	renderNames.resize(playerList.size());
+
+	for (int i = 0; i < playerList.size(); i++)
 	{
+		const auto e = playerList[i];
+
 		vec2 screenposition{0,0};
+		vec3 realPos = lPlayer->get_position() + ari->get_render_pos();
 		vec2 viewangles{lPlayer->get_rotationYaw(), lPlayer->get_rotationPitch()};
-		if (WorldToScreen(lPlayer->get_position(), e->get_position(), viewangles, 70, screenposition))
+		if (WorldToScreen(realPos, e->get_position(), viewangles, p_Minecraft->get_fov(), screenposition))
 		{
-			renderNames.emplace_back(screenposition, e->get_name().c_str());
+			renderNames[i] = std::make_pair(screenposition, e->get_name().c_str());
 		}
 	}
 }

@@ -67,6 +67,10 @@ namespace toadll::mappings
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass))
 				log_Error("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
+			methodnames.insert({ mapping::getGameSettings, "bridge$getGameSettings" });
+			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass))
+				log_Error("can't find gamesettings");
+
 			methodnames.insert({ mapping::getObjectMouseOver, "bridge$getObjectMouseOver" });
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass))
 				log_Error("can't find getobjectmouseover");// methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
@@ -102,8 +106,14 @@ namespace toadll::mappings
 			//env->DeleteLocalRef(player);
 			//env->DeleteLocalRef(playerclass);
 
-			// ENTITY
+			// .GameSettings
+			methodnames.insert({ mapping::setGamma, "bridge$setGamma"});
+			methodsigs.insert({mapping::setGamma, "(F)V"});
 
+			fieldnames.insert({ mappingFields::fovField, "fovSetting" });
+			fieldsigs.insert({ mappingFields::fovField, "F" });
+
+			// ENTITY
 			fieldnames.insert({ mappingFields::rotationYawField, "rotationYaw" });
 			fieldsigs.insert({ mappingFields::rotationYawField, "F" });
 

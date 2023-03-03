@@ -4,6 +4,7 @@ namespace toadll
 {
     struct vec2 {
         vec2(float x, float y) : x(x), y(y) {}
+        vec2() = default;
 
         float x, y;
 
@@ -104,6 +105,9 @@ namespace toadll
         // .Minecraft
         theMcField,
 
+        // .GameSettings
+        fovField,
+
         // .Entity
         rotationYawField,
         rotationPitchField,
@@ -119,7 +123,6 @@ namespace toadll
         viewportField,
         projectionField,
 		modelviewField
-
     };
 
     enum class mapping
@@ -128,6 +131,7 @@ namespace toadll
         getMinecraft,
         getWorld,
         getPlayer,
+        getGameSettings,
         getObjectMouseOver,
         getEntityRenderer,
         getTimer,
@@ -139,6 +143,9 @@ namespace toadll
 
         // player
         getOpenContainer,
+
+        // .GameSettings
+        setGamma,
 
         // .Entity
         getPos,
