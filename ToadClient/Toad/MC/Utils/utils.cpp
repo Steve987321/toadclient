@@ -174,6 +174,14 @@ namespace toadll
         return res - 180;
     }
 
+    double calculateHorizontalFOV(double screenHeight, double screenWidth, double verticalFOV) {
+        double aspectRatio = screenWidth / screenHeight;
+        double verticalFOVRad = verticalFOV * PI / 180; // convert to radians
+        double horizontalFOVRad = 2 * atan(tan(verticalFOVRad / 2) * aspectRatio);
+        double horizontalFOV = horizontalFOVRad * 180 / PI; // convert back to degrees
+        return horizontalFOV;
+    }
+
     //bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[15], GLfloat projection[15], GLint viewPort[3])
     //{
     //    const auto Multiply = [](const vec4& vec, const GLfloat mat[15]) -> vec4
@@ -209,8 +217,9 @@ namespace toadll
         float aspectRatio = hGameRes / vGameRes;
 
         // Calculate horizontal and vertical field of view in radians
-        float hFovRad = fov * PI / 180.f;
-        float vFovRad = 2 * atan(tan(hFovRad / 2) / aspectRatio);
+        auto hFov = calculateHorizontalFOV(SCREEN_HEIGHT, SCREEN_WIDTH, fov);
+        float hFovRad = hFov * PI / 180.f;
+        float vFovRad = 2 * atan(tan(fov * PI / 180.f / 2) / aspectRatio);
 
         // Get view angles
         float yaw = viewAngles.x * PI / 180.f;

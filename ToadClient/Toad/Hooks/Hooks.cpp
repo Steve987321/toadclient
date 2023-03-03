@@ -56,7 +56,7 @@ BOOL hwglSwapBuffers(HDC hDc)
 	//ImGui::SetNextWindowSize({400, 300});
 
 	ImGui::Begin("nigga client v0.1");
-	////ImGui::BeginChild("logs", { 250, 250 }, true);
+
 	for (const auto& s : toadll::logs)
 	{
 		ImGui::Text(s->c_str());
