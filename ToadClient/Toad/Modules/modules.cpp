@@ -150,7 +150,7 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 
 	if (absYawDiff > 7)
 	{
-		smooth *= aa::auto_aim ? toad::rand_float(1.5f, 2.0f) : toad::rand_float(0.4f, 2.0f);
+		smooth *= aa::auto_aim ? toad::rand_float(2.0f, 3.0f) : toad::rand_float(0.4f, 2.0f);
 	}
 	else if (absYawDiff < 7)
 	{
@@ -201,16 +201,26 @@ void toadll::modules::update_esp_vars(const std::shared_ptr<c_Entity>& lPlayer)
 	static auto ari = p_Minecraft->get_active_render_info();
 	static auto playerList = p_Minecraft->get_playerList();
 
-	renderNames.resize(playerList.size());
+	renderNames.resize(50, {{-1, -1}, nullptr});
 
 	for (int i = 0; i < playerList.size(); i++)
 	{
-		const auto e = playerList[i];
+		const auto& e = playerList[i];
+		if (env->IsSameObject(lPlayer->obj, e->obj)) continue;
 
 		vec2 screenposition{0,0};
 		vec3 realPos = lPlayer->get_position() + ari->get_render_pos();
 		vec2 viewangles{lPlayer->get_rotationYaw(), lPlayer->get_rotationPitch()};
-		if (WorldToScreen(realPos, e->get_position(), viewangles, p_Minecraft->get_fov(), screenposition))
+
+		vec3 ePos = e->get_position();
+		float yawDiff = abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), ePos).first)));
+		//p_Log->LogToConsole(std::to_string(yawDiff));
+
+		std::cout << e->get_name() << " pos: " << ePos << " yawdiff: " <<yawDiff << std::endl;
+
+		if (yawDiff > 120) continue; // will not render anyway
+
+		if (WorldToScreen(realPos, ePos, viewangles, p_Minecraft->get_fov(), screenposition))
 		{
 			renderNames[i] = std::make_pair(screenposition, e->get_name().c_str());
 		}

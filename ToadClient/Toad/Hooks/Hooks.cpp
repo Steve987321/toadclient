@@ -57,6 +57,12 @@ BOOL hwglSwapBuffers(HDC hDc)
 
 	ImGui::Begin("nigga client v0.1");
 
+	ImGui::SliderFloat("testing float", &toadll::testingfloat, -1000, 1000);
+	if (GetAsyncKeyState(VK_OEM_PLUS))
+		toadll::testingfloat += 0.5f;
+	else if (GetAsyncKeyState(VK_OEM_MINUS))
+		toadll::testingfloat -= 0.5f;
+
 	for (const auto& s : toadll::logs)
 	{
 		ImGui::Text(s->c_str());
@@ -71,6 +77,7 @@ BOOL hwglSwapBuffers(HDC hDc)
 
 	for (const auto& [pos, name] : toadll::renderNames)
 	{
+		if (name == nullptr) continue;
 		const auto draw = ImGui::GetForegroundDrawList();
 		draw->AddCircle({ pos.x, pos.y }, 10.f, IM_COL32_WHITE);
 		draw->AddText({ pos.x, pos.y }, IM_COL32(255, 255, 255, 255), name);

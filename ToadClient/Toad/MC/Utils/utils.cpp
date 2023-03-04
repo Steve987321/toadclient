@@ -222,13 +222,13 @@ namespace toadll
         float vFovRad = 2 * atan(tan(fov * PI / 180.f / 2) / aspectRatio);
 
         // Get view angles
-        float yaw = viewAngles.x * PI / 180.f;
+        float yaw = viewAngles.x * PI / 180.f + 1.55f;
         float pitch = viewAngles.y * PI / 180.f;
 
         // Get the position of the target relative to the source
-        float dx = target.x - source.x;
-        float dy = target.y - source.y;
-        float dz = target.z - source.z;
+        float dx = source.x - target.x;
+        float dy = source.y - target.y;
+        float dz = source.z - target.z;
 
         // Calculate the distance between the source and the target
         float distance = source.dist(target);
@@ -242,8 +242,9 @@ namespace toadll
         float deltaPitchRad = pitchRad - pitch;
 
         // Calculate the screen coordinates
+
         float x = tan(deltaYawRad) / tan(hFovRad / 2.f) * (hGameRes / 2.f) * aspectRatio;
-        float y = -tan(deltaPitchRad) / tan(vFovRad / 2.f) * (vGameRes / 2.f) * aspectRatio;
+        float y =  -tan(deltaPitchRad) / tan(vFovRad / 2.f) * (vGameRes / 2.f) * aspectRatio;
 
         // Clamp the coordinates to the screen bounds
         /*if (x < -hGameRes / 2.f) x = -hGameRes / 2.f;

@@ -73,10 +73,8 @@ namespace toadll
 
 	DWORD WINAPI init()
 	{
-#ifdef _DEBUG
 		p_Log = std::make_unique<c_Logger>();
 		SetConsoleCtrlHandler(NULL, true);
-#endif
 
 		// get functions from jvm.dll
 		auto jvmHandle = GetModuleHandleA("jvm.dll");
@@ -188,10 +186,8 @@ namespace toadll
 			env = nullptr;
 			jvm = nullptr;
 
-#ifdef _DEBUG
 			log_Debug("console");
 			p_Log->dispose_console();
-#endif
 
 			log_Debug("last");
 			SLOW_SLEEP(1000); // wait a bit 

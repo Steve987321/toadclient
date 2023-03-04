@@ -20,6 +20,8 @@ namespace toadll
 
     inline int SCREEN_HEIGHT = -1, SCREEN_WIDTH = -1;
 
+    inline float testingfloat = 1;
+
 	inline std::unique_ptr<c_Hooks> p_Hooks = nullptr;
     inline std::vector<std::pair<vec2, const char*>> renderNames;
     inline std::vector<std::shared_ptr<std::string>> logs;
