@@ -8,7 +8,7 @@
 
 #include "helpers.h"
 
-#include "Toad/MC/Utils/utils.h"
+#include "Toad/MC/Utils/mcutils.h"
 #include "Toad/MC/mappings.h"
 #include "Toad/MC/ActiveRenderInfo/ActiveRenderInfo.h"
 #include "Toad/MC/Entity/Entity.h"

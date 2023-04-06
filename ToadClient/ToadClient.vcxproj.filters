@@ -21,7 +21,7 @@
     <ClInclude Include="Toad\MC\Minecraft.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\MC\Utils\utils.h">
+    <ClInclude Include="Toad\MC\utils\mcutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Toad\Toad.h">
@@ -78,6 +78,9 @@
     <ClInclude Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Toad\Modules\esp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -89,7 +92,7 @@
     <ClCompile Include="Toad\MC\Minecraft.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\MC\Utils\utils.cpp">
+    <ClCompile Include="Toad\MC\utils\mcutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\Toad.cpp">
@@ -129,6 +132,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Modules\esp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

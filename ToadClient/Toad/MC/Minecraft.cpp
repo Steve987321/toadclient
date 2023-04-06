@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Toad/Toad.h"
-#include "Toad/MC/Utils/utils.h"
+#include "Toad/MC/Utils/mcutils.h"
 #include "Minecraft.h"
 
 toadll::c_Minecraft::~c_Minecraft()
@@ -107,6 +107,14 @@ jobject toadll::c_Minecraft::get_gamesettings() const
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getGameSettings));
     env->DeleteLocalRef(mc);
     return obj;
+}
+
+float toadll::c_Minecraft::get_partialTick() const
+{
+    auto mc = p_Minecraft->get_mc();
+    auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer));
+    env->DeleteLocalRef(mc);
+    return env->CallFloatMethod(obj, get_mid(obj, mapping::partialTick));
 }
 
 float toadll::c_Minecraft::get_fov() const

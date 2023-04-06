@@ -12,7 +12,6 @@
 // extra functions used throughout the project
 namespace toad::utils
 {
-
 	struct window
 	{
 		window(const std::string_view title, DWORD pid, const HWND& hwnd) : title(title), pid(pid), hwnd(hwnd) {}
@@ -32,6 +31,7 @@ namespace toad::utils
 		PLACEABLE = 1 << 6
 	};
 	ENUM_FLAG(mc_items);
+
 	inline std::string to_string(mc_items item)
 	{
 		switch (item)
@@ -75,7 +75,6 @@ namespace toad::utils
 	// only updated when still in init screen 
 	inline std::vector<window> winListVec = {};
 
-
 	/**
 	 * \brief wrapper for getting the middle of the window
 	 * \return the middle point of the current box or window
@@ -85,7 +84,7 @@ namespace toad::utils
 		return { ImGui::GetWindowSize().x / 2, ImGui::GetWindowSize().y / 2 };
 	}
 
-	// simple wrapper for centering a single line of text inside a box on the X-axis
+	// simple wrapper for centering a single line of text inside a box on the X axis
 	template<typename ...Args>
 	void center_textX(const ImVec4& col = {1,1,1,1}, const char* txt = "sample text", Args&& ...args)
 	{
@@ -93,7 +92,7 @@ namespace toad::utils
 		ImGui::TextColored(col, txt, args...);
 	}
 
-	// simple wrapper for centering a single line of text inside a box on the X and Y-axis
+	// simple wrapper for centering a single line of text inside a box on the X and Y axis
 	template<typename ...Args>
 	void center_text(const ImVec4& col = {1,1,1,1}, const char* frmt = "sample text", Args&& ...args)
 	{
@@ -155,6 +154,15 @@ namespace toad::utils
 		}
 	}
 
+	/**
+	 * \brief
+	 * \param title 
+	 * \param msg 
+	 * \param condition 
+	 * \param can_close 
+	 * \param type 
+	 * \param anim_speed 
+	 */
 	inline void show_mBox(const char* title, const char* msg, bool & condition, bool can_close = true, mboxType type = mboxType::NONE, float anim_speed = 12.f)
 	{
 		auto io = &ImGui::GetIO();

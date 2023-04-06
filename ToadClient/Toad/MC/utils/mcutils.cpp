@@ -1,19 +1,10 @@
 #include "pch.h"
-#include "utils.h"
+#include "mcutils.h"
 
 #include "Toad/Toad.h"
 
 namespace toadll
 {
-	void draw::drawRect(float x1, float y1, float x2, float y2)
-	{
-        glBegin(GL_LINE_LOOP);
-        glVertex2f(x1, y1);
-        glVertex2f(x2, y1);
-        glVertex2f(x1, y2);
-        glVertex2f(x2, y2 );
-        glEnd();
-	}
 
     jclass findclass(const char* clsName)
     {
@@ -81,12 +72,12 @@ namespace toadll
         return ret;
     }
 
-    jmethodID get_mid(const jclass& cls, mapping name)
+    jmethodID get_mid(jclass cls, mapping name)
     {
         return env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
     }
 
-    jmethodID get_mid(const jobject& obj, mapping name)
+    jmethodID get_mid(jobject obj, mapping name)
     {
         auto objKlass = env->GetObjectClass(obj);
         auto mid = get_mid(objKlass, name);
@@ -94,28 +85,28 @@ namespace toadll
         return mid;
     }
 
-    jmethodID get_static_mid(const jclass& cls, mapping name)
+    jmethodID get_static_mid(jclass cls, mapping name)
     {
         return env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
     }
 
-    jfieldID get_static_fid(const jclass& cls, mappingFields name)
+    jfieldID get_static_fid(jclass cls, mappingFields name)
 	{
         return env->GetStaticFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
 	}
     
-    jfieldID get_fid(const jclass& cls, mappingFields name)
+    jfieldID get_fid(jclass cls, mappingFields name)
 	{
         return env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
 	}
 
-	jfieldID get_fid(const jobject& obj, mappingFields name)
+	jfieldID get_fid(jobject obj, mappingFields name)
 	{
         return get_fid(env->GetObjectClass(obj), name);
 	}
     
 
-    vec3 to_vec3(const jobject& vecObj)
+    vec3 to_vec3(jobject vecObj)
     {
         auto posclass = env->GetObjectClass(vecObj);
 
@@ -134,7 +125,7 @@ namespace toadll
         };
     }
 
-	vec3 to_vec3i(const jobject& vecObj)
+	vec3 to_vec3i(jobject vecObj)
     {
         auto posclass = env->GetObjectClass(vecObj);
 
@@ -245,13 +236,11 @@ namespace toadll
 
         float x = tan(deltaYawRad) / tan(hFovRad / 2.f) * (hGameRes / 2.f) * aspectRatio;
         float y =  -tan(deltaPitchRad) / tan(vFovRad / 2.f) * (vGameRes / 2.f) * aspectRatio;
-
         // Clamp the coordinates to the screen bounds
         /*if (x < -hGameRes / 2.f) x = -hGameRes / 2.f;
         if (x > hGameRes / 2.f) x = hGameRes / 2.f;
         if (y < -vGameRes / 2.f) y = -vGameRes / 2.f;
         if (y > vGameRes / 2.f) y = vGameRes / 2.f;*/
-
         // Convert to screen coordinates
         screenpos.x = hGameRes / 2.f + x;
         screenpos.y = vGameRes / 2.f - y;

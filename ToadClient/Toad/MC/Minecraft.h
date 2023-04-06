@@ -5,10 +5,10 @@ namespace toadll
 	{
 	private:
 		jclass mcclass = nullptr;
-		jclass gsclass = nullptr;
+		jclass gsclass = nullptr; // game settings
 
-		jclass elbclass = nullptr;
-		jclass ariclass = nullptr;
+		jclass elbclass = nullptr; // entity living base
+		jclass ariclass = nullptr; // active render info
 
 	public:
 		explicit c_Minecraft(jclass mc_jclass) : mcclass(mc_jclass) {}
@@ -26,6 +26,7 @@ namespace toadll
 		_NODISCARD jobject get_world() const;
 		_NODISCARD jobject get_gamesettings() const;
 
+		_NODISCARD float get_partialTick() const;
 		_NODISCARD float get_fov() const;
 
 		_NODISCARD std::vector<std::shared_ptr<c_Entity>> get_playerList() const;

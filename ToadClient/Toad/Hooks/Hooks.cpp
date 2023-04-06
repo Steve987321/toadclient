@@ -53,9 +53,9 @@ BOOL hwglSwapBuffers(HDC hDc)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	//ImGui::SetNextWindowSize({400, 300});
+	ImGui::SetNextWindowSize({400, 300});
 
-	ImGui::Begin("nigga client v0.1");
+	/*ImGui::Begin("nigga client v0.1");
 
 	ImGui::SliderFloat("testing float", &toadll::testingfloat, -1000, 1000);
 	if (GetAsyncKeyState(VK_OEM_PLUS))
@@ -63,24 +63,16 @@ BOOL hwglSwapBuffers(HDC hDc)
 	else if (GetAsyncKeyState(VK_OEM_MINUS))
 		toadll::testingfloat -= 0.5f;
 
-	for (const auto& s : toadll::logs)
-	{
-		ImGui::Text(s->c_str());
-	}
-	ImGui::End();
-
-	//ImGui::SetScrollHereY(0.00f);
-
-	//ImGui::EndChild();
+	ImGui::End();*/
 
 	//draw->AddRect({ 25,25 }, { 50, 50 }, IM_COL32_WHITE, 5.f);
 
-	for (const auto& [pos, name] : toadll::renderNames)
+	for (const auto& [name, pos] : toadll::esp::playerListMap)
 	{
-		if (name == nullptr) continue;
+		if (name == nullptr || pos.x < 0) continue;
 		const auto draw = ImGui::GetForegroundDrawList();
-		draw->AddCircle({ pos.x, pos.y }, 10.f, IM_COL32_WHITE);
-		draw->AddText({ pos.x, pos.y }, IM_COL32(255, 255, 255, 255), name);
+		//draw->AddCircle({ pos.x, pos.y }, 10.f, IM_COL32_WHITE);
+		draw->AddText({pos.x, pos.y }, IM_COL32(255, 255, 255, 255), name);
 	}
 
 

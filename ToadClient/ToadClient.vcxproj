@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\Modules\esp.h" />
     <ClInclude Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
@@ -174,12 +175,13 @@
     <ClInclude Include="Toad\MC\Entity\Entity.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Toad\MC\Minecraft.h" />
-    <ClInclude Include="Toad\MC\Utils\utils.h" />
+    <ClInclude Include="Toad\MC\utils\mcutils.h" />
     <ClInclude Include="Toad\Modules\modules.h" />
     <ClInclude Include="Toad\Toad.h" />
     <ClInclude Include="Toad\Types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\Modules\esp.cpp" />
     <ClCompile Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="imgui\imgui.cpp">
@@ -220,7 +222,7 @@
     </ClCompile>
     <ClCompile Include="Toad\MC\mappings.cpp" />
     <ClCompile Include="Toad\MC\Minecraft.cpp" />
-    <ClCompile Include="Toad\MC\Utils\utils.cpp" />
+    <ClCompile Include="Toad\MC\utils\mcutils.cpp" />
     <ClCompile Include="Toad\Modules\modules.cpp" />
     <ClCompile Include="Toad\Toad.cpp" />
   </ItemGroup>

@@ -31,10 +31,11 @@ void toadll::modules::update()
 	//		env->DeleteLocalRef(objklass);
 	//	});
 
-	velocity(player);
 	aa(player);
+	velocity(player);
 	auto_bridge(player);
-	update_esp_vars(player);
+	esp::UpdatePlayerMap(player);
+	//update_esp_vars(player);
 
 	/*auto heldItem = lPlayer->get_heldItem();
 	if (heldItem != NULL)
@@ -57,7 +58,6 @@ void toadll::modules::velocity(const std::shared_ptr<c_Entity>& lPlayer)
 	if (!velocity::enabled) return;
 
 	static bool once = false;
-
 
 	if (int hurttime = lPlayer->get_hurt_time(); hurttime > 0 && !once)
 	{
@@ -91,6 +91,7 @@ void toadll::modules::velocity(const std::shared_ptr<c_Entity>& lPlayer)
 
 void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 {
+	//std::cout << "AA, enabled, cursor shown, alwasy aim :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << std::endl;
 	if (!aa::enabled || is_cursor_shown) return;
 	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON)) return;
 	
@@ -146,6 +147,12 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 
 	yawDiff += toad::rand_float(-2.f, 2.f);
 	pitchDiff += toad::rand_float(-2.f, 2.f);
+
+	const int rand_100 = toad::rand_int(0, 100);
+
+	static float speed_rand_timer = 200;
+	static float long_speed_modifier = 1;
+
 	float smooth = speed;
 
 	if (absYawDiff > 7)
@@ -156,15 +163,17 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 	{
 		smooth *= aa::auto_aim ? toad::rand_float(0.5f, 1.f) : toad::rand_float(0.0f, 0.4f);
 	}
+
 	speed = std::lerp(speed, smooth, aa::auto_aim ? 0.05f : 0.3f);
 
-	const int rand_100 = toad::rand_int(0, 100);
+	if (speed_rand_timer < 0)
+	{
+		long_speed_modifier = toad::rand_float(0.7f, 1.3f);
+		speed_rand_timer = 200;
+		//std::cout << "reset :" << long_speed_modifier << std::endl;
+	}
 
-	if (aa::auto_aim)
-		if (rand_100 <= 5)
-			speed += toad::rand_float(100.f, 200.f);
-
-	auto yawdiffSpeed = yawDiff / (15000.f / speed);
+	auto yawdiffSpeed = yawDiff / (15000.f / speed * long_speed_modifier);
 
 	if (toad::rand_int(0, aa::auto_aim ? 10 : 2) == 1)
 	{
@@ -186,46 +195,46 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 		lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (15000.f / speed));
 	}
 	toad::preciseSleep(
-		aa::auto_aim ? toad::rand_float(0.0001f, 0.0005f)
+		aa::auto_aim 
+		? toad::rand_float(0.0001f, 0.0005f)
 		: toad::rand_float(0.001f / 1000.f, 0.2f / 1000.f)
 	);
 
+	speed_rand_timer -= p_Minecraft->get_partialTick();
 	//lPlayer->set_rotation(lyaw + yawDiff / (10000.f / aa::speed), lpitch + pitchDiff / (10000.f / aa::speed));
 
 }
 
-void toadll::modules::update_esp_vars(const std::shared_ptr<c_Entity>& lPlayer)
-{
-	//if (!EntityEsp::enabled) return;
-
-	static auto ari = p_Minecraft->get_active_render_info();
-	static auto playerList = p_Minecraft->get_playerList();
-
-	renderNames.resize(50, {{-1, -1}, nullptr});
-
-	for (int i = 0; i < playerList.size(); i++)
-	{
-		const auto& e = playerList[i];
-		if (env->IsSameObject(lPlayer->obj, e->obj)) continue;
-
-		vec2 screenposition{0,0};
-		vec3 realPos = lPlayer->get_position() + ari->get_render_pos();
-		vec2 viewangles{lPlayer->get_rotationYaw(), lPlayer->get_rotationPitch()};
-
-		vec3 ePos = e->get_position();
-		float yawDiff = abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), ePos).first)));
-		//p_Log->LogToConsole(std::to_string(yawDiff));
-
-		std::cout << e->get_name() << " pos: " << ePos << " yawdiff: " <<yawDiff << std::endl;
-
-		if (yawDiff > 120) continue; // will not render anyway
-
-		if (WorldToScreen(realPos, ePos, viewangles, p_Minecraft->get_fov(), screenposition))
-		{
-			renderNames[i] = std::make_pair(screenposition, e->get_name().c_str());
-		}
-	}
-}
+//void toadll::modules::update_esp_vars(const std::shared_ptr<c_Entity>& lPlayer)
+//{
+//	//if (!EntityEsp::enabled) return;
+//
+//	static auto ari = p_Minecraft->get_active_render_info();
+//	auto playerList = p_Minecraft->get_playerList();
+//
+//	renderNames.resize(playerList.size(), {{-1, -1}, nullptr});
+//
+//	for (int i = 0; i < playerList.size(); i++)
+//	{
+//		const auto& e = playerList[i];
+//		if (env->IsSameObject(lPlayer->obj, e->obj)) continue;
+//
+//		vec2 screenposition{0,0};
+//		vec3 realPos = lPlayer->get_position() + ari->get_render_pos();
+//		vec2 viewangles{lPlayer->get_rotationYaw(), lPlayer->get_rotationPitch()};
+//
+//		vec3 ePos = e->get_position();
+//		float yawDiff = abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), ePos).first)));
+//		//p_Log->LogToConsole(std::to_string(yawDiff));
+//
+//		if (yawDiff > 110) continue; // will not render anyway
+//
+//		if (WorldToScreen(realPos, ePos, viewangles, p_Minecraft->get_fov(), screenposition))
+//		{
+//			renderNames[i] = std::make_pair(screenposition, e->get_name().c_str());
+//		}
+//	}
+//}
 
 INPUT ip{};
 std::once_flag onceFlag;

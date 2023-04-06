@@ -1,4 +1,4 @@
-#include "pch.h"
+ #include "pch.h"
 #include "Toad.h"
 
 #include <fstream>
@@ -80,10 +80,8 @@ namespace toadll
 		auto jvmHandle = GetModuleHandleA("jvm.dll");
 
 		if (jvmHandle == nullptr)
-		{
 			return 1;
-		}
-		
+
 		jvmfunc::oJNI_GetCreatedJavaVMs = reinterpret_cast<jvmfunc::hJNI_GetCreatedJavaVMs>(GetProcAddress(jvmHandle, "JNI_GetCreatedJavaVMs"));
 		jvmfunc::oJVM_GetMethodIxNameUTF = reinterpret_cast<jvmfunc::hJVM_GetMethodIxNameUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxNameUTF"));
 		jvmfunc::oJVM_GetMethodIxSignatureUTF = reinterpret_cast<jvmfunc::hJVM_GetMethodIxSignatureUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxSignatureUTF"));
@@ -142,9 +140,12 @@ namespace toadll
 				}
 			});
 
-		log_Debug("hooks");
+		log_Debug("enabling hooks");
 		// swapbuffers
 		p_Hooks->enable();
+
+		std::cout << "main loop starting\n";
+		SLOW_SLEEP(1000);
 
 		// main loop
 		while (is_running)

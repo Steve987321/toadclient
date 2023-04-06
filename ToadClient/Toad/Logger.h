@@ -6,8 +6,6 @@
 #include <sstream>
 #include <format>
 
-#include "Hooks/Hooks.h"
-
 namespace toadll
 {
 
@@ -104,19 +102,6 @@ public:
 
 		printf(Args..., Args...);
 		std::cout << std::endl;
-	}
-
-	static void LogToConsole(const std::string& str)
-	{
-		if (logs.size() > 500)
-			ClearConsole();
-	
-		logs.emplace_back(std::make_shared<std::string>(get_time() + ' ' + str));
-	}
-
-	static void ClearConsole()
-	{
-		logs.clear();
 	}
 
 };

@@ -9,7 +9,6 @@ namespace toadll
     // jvm functions
     namespace jvmfunc
     {
-
         typedef jint
         (*hJNI_GetCreatedJavaVMs)(JavaVM** vmBuf, jsize bufLen, jsize* nVMs);
         inline hJNI_GetCreatedJavaVMs oJNI_GetCreatedJavaVMs;
@@ -68,34 +67,28 @@ namespace toadll
 
     }
 
-    namespace draw
-    {
-        void drawRect(float x1, float y1, float x2, float y2);
-    }
-
     // function to find classes on (any) minecraft client
     jclass findclass(const char* clsName);
 
     std::string jstring2string(const jstring& jStr);
 
     // get jmethodID from obj or class from the given mapping
-    jmethodID get_mid(const jclass& cls, mapping name);
-    jmethodID get_mid(const jobject& obj, mapping name);
-    jmethodID get_static_mid(const jclass& cls, mapping name);
+    jmethodID get_mid(jclass cls, mapping name);
+    jmethodID get_mid(jobject obj, mapping name);
+    jmethodID get_static_mid(jclass cls, mapping name);
 
     // get jfieldId from obj or class from the given mapping
-    jfieldID get_fid(const jclass& cls, mappingFields name);
-    jfieldID get_fid(const jobject& obj, mappingFields name);
-    jfieldID get_static_fid(const jclass& cls, mappingFields name);
+    jfieldID get_fid(jclass cls, mappingFields name);
+    jfieldID get_fid(jobject obj, mappingFields name);
+    jfieldID get_static_fid(jclass cls, mappingFields name);
 
 	// minecraft Vec3 object to vec3
-	vec3 to_vec3(const jobject& vecObj);
-	vec3 to_vec3i(const jobject& vecObj);
+	vec3 to_vec3(jobject vecObj);
+	vec3 to_vec3i(jobject vecObj);
 
     std::pair<float, float> get_angles(const vec3& pos1, const vec3& pos2);
     float wrap_to_180(float value);
 
-    //bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[15], GLfloat projection[15], GLint viewPort[3]);
     bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, float fov, vec2& screenpos);
 
     void loop_through_class(const jclass klass);

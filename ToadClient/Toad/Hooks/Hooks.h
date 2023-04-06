@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Toad/Types.h"
-#include "Toad/MC/Utils/utils.h"
+#include "Toad/MC/Utils/mcutils.h"
 
 namespace toadll
 {
@@ -17,14 +17,10 @@ namespace toadll
 		void disable();
 		void dispose() const;
 	};
+	inline std::unique_ptr<c_Hooks> p_Hooks = nullptr;
 
     inline int SCREEN_HEIGHT = -1, SCREEN_WIDTH = -1;
-
     inline float testingfloat = 1;
-
-	inline std::unique_ptr<c_Hooks> p_Hooks = nullptr;
-    inline std::vector<std::pair<vec2, const char*>> renderNames;
-    inline std::vector<std::shared_ptr<std::string>> logs;
 
     inline void setup_ortho()
     {

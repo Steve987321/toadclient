@@ -212,6 +212,10 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::Vec3IY, "()I" });
 			methodnames.insert({ mapping::Vec3IZ, "getZ" });
 			methodsigs.insert({ mapping::Vec3IZ, "()I" });
+
+			// Timer
+			methodnames.insert({ mapping::partialTick, "bridge$partialTick" });
+			methodsigs.insert({ mapping::partialTick, "()F" });
 		}
 	}
 }

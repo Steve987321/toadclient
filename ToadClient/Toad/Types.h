@@ -53,6 +53,8 @@ namespace toadll
         [[nodiscard]] float dist(const vec3& v) const {
             return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
         }
+
+
     };
 
 	struct vec4 {
@@ -188,7 +190,10 @@ namespace toadll
         //. Vec3I
     	Vec3IX,
         Vec3IY,
-        Vec3IZ
+        Vec3IZ,
+
+        // Timer
+        partialTick
     };
 
     constexpr static auto PI = 3.14159265358979323846f;
