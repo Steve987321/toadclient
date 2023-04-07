@@ -152,6 +152,7 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 
 	static float speed_rand_timer = 200;
 	static float long_speed_modifier = 1;
+	static float long_speed_modifier_smooth = 1;
 
 	float smooth = speed;
 
@@ -173,7 +174,8 @@ void toadll::modules::aa(const std::shared_ptr<c_Entity>& lPlayer)
 		//std::cout << "reset :" << long_speed_modifier << std::endl;
 	}
 
-	auto yawdiffSpeed = yawDiff / (15000.f / speed * long_speed_modifier);
+	long_speed_modifier_smooth = std::lerp(long_speed_modifier_smooth, long_speed_modifier, 0.05f);
+	auto yawdiffSpeed = yawDiff / (15000.f / speed * long_speed_modifier_smooth);
 
 	if (toad::rand_int(0, aa::auto_aim ? 10 : 2) == 1)
 	{
