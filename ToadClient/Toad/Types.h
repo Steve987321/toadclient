@@ -24,6 +24,10 @@ namespace toadll
             return { x / s, y / s};
         }
 
+        constexpr bool operator==(const vec2& v) const{
+            return x == v.x && y == v.y;
+        }
+
         [[nodiscard]] float dist(const vec2& v) const {
             return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
         }
@@ -48,6 +52,10 @@ namespace toadll
 
         vec3 operator/(float s) const {
             return { x / s, y / s, z / s };
+        }
+
+        constexpr bool operator==(const vec3& v) const {
+            return x == v.x && y == v.y && z == v.z;
         }
 
         [[nodiscard]] float dist(const vec3& v) const {
