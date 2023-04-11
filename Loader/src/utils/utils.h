@@ -44,6 +44,7 @@ namespace toad::utils
 		case mc_items::SHOVEL: return "shovel";
 		case mc_items::PLACEABLE: return "blocks";
 		}
+		return "invalid";
 	}
 
 	enum class mboxType : short
