@@ -18,6 +18,7 @@ namespace toadll
 		_NODISCARD float get_rotationPitch() const;
 
 		_NODISCARD std::string get_name() const;
+		_NODISCARD std::string get_heldItemStr() const;
 		_NODISCARD jobject get_heldItem() const;
 
 		_NODISCARD int get_hurt_time() const;

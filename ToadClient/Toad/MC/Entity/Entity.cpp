@@ -33,6 +33,21 @@ std::string toadll::c_Entity::get_name() const
 	return ret;
 }
 
+std::string toadll::c_Entity::get_heldItemStr() const
+{
+	auto item = get_heldItem();
+
+	auto itemklass = env->GetObjectClass(item);
+	auto itemjstr = (jstring)env->CallObjectMethod(item, env->GetMethodID(itemklass, "toString", "()Ljava/lang/String;"));
+
+	auto ret = jstring2string(itemjstr);
+
+	env->DeleteLocalRef(item);
+	env->DeleteLocalRef(itemklass);
+	env->DeleteLocalRef(itemjstr);
+	return ret;
+}
+
 jobject toadll::c_Entity::get_heldItem() const
 {
 	auto mid = get_mid(obj, mapping::getHeldItem);
