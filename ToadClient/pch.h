@@ -20,7 +20,10 @@
 #include <gl/GL.h>
 #include <random>
 #include <ranges>
-
+#include <shared_mutex>
+#include <iomanip>
+#include <sstream>
+#include <format>
 #include "jni.h"
 
 #endif //PCH_H

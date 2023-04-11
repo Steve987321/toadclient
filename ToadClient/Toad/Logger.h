@@ -1,11 +1,5 @@
 #pragma once
 
-#include <Windows.h>
-#include <shared_mutex>
-#include <iomanip>
-#include <sstream>
-#include <format>
-
 namespace toadll
 {
 
