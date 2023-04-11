@@ -157,6 +157,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\singleton.h" />
+    <ClInclude Include="Toad\module.h" />
     <ClInclude Include="Toad\Modules\esp.h" />
     <ClInclude Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.h" />
     <ClInclude Include="imgui\imconfig.h" />

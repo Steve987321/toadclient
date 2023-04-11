@@ -1,8 +1,6 @@
  #include "pch.h"
 #include "Toad.h"
 
-#include <fstream>
-
 #include "nlohmann/json.hpp"
 
 //#include <glew-2.1.0/include/GL/glew.h>

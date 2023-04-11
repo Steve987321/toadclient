@@ -81,6 +81,12 @@
     <ClInclude Include="Toad\Modules\esp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Toad\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Toad\singleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

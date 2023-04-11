@@ -3,6 +3,12 @@
 #include <gl/GL.h>
 #pragma comment(lib, "opengl32.lib")
 
+// use this when precision isn't required but the CPU should be saved
+#define SLOW_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
+
+// macro that inherits from Singleton interface class
+#define SET_MODULE_CLASS(T) : public toadll::Singleton<T>, public CModule
+
 #include "Toad/Types.h"
 #include "Toad/Logger.h"
 
@@ -14,14 +20,14 @@
 #include "Toad/MC/Entity/Entity.h"
 #include "Toad/MC/Minecraft.h"
 
+#include "singleton.h"
+#include "module.h"
+
 #include "Toad/Modules/modules.h"
 
 #include "MinHook/include/MinHook.h"
 #pragma comment(lib, "minhook.x64.lib")
 #include "Hooks/Hooks.h"
-
-// use this when precision isn't required but the CPU should be saved
-#define SLOW_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
 // global vars and functions 
 namespace toadll
@@ -61,6 +67,7 @@ namespace toadll
 
 		inline float distance = 5.f;
 		inline float speed = 5.f;
+		inline float reaction_time = 40; //ms
 	}
 
 	namespace velocity
