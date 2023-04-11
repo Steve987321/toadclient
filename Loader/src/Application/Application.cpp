@@ -144,50 +144,45 @@ namespace toad
 
     void c_Application::MenuLoop()
     {
-        while (is_running)
+        MSG msg;
+        while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
         {
-            MSG msg;
-            while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
             {
-                ::TranslateMessage(&msg);
-                ::DispatchMessage(&msg);
-                if (msg.message == WM_QUIT)
-                {
-                    toad::is_running = false;
-                }
+                toad::is_running = false;
             }
-            if (!toad::is_running)
-                break;
-
-            // Start the Dear ImGui frame
-            ImGui_ImplDX9_NewFrame();
-            ImGui_ImplWin32_NewFrame();
-            ImGui::NewFrame();
-
-            //ui
-            render_UI();
-
-            // Rendering
-            ImGui::EndFrame();
-            g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-            g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-            g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-
-            constexpr auto clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-            D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x * clear_color.w * 255.0f), (int)(clear_color.y * clear_color.w * 255.0f), (int)(clear_color.z * clear_color.w * 255.0f), (int)(clear_color.w * 255.0f));
-            g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
-            if (g_pd3dDevice->BeginScene() >= 0)
-            {
-                ImGui::Render();
-                ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-                g_pd3dDevice->EndScene();
-            }
-            HRESULT result = g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
-
-            // Handle loss of D3D9 device
-            if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
-                ResetDevice();
         }
+
+        // Start the Dear ImGui frame
+        ImGui_ImplDX9_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
+        //ui
+        render_UI();
+
+        // Rendering
+        ImGui::EndFrame();
+        g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+        g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+        g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+
+        constexpr auto clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+        D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x * clear_color.w * 255.0f), (int)(clear_color.y * clear_color.w * 255.0f), (int)(clear_color.z * clear_color.w * 255.0f), (int)(clear_color.w * 255.0f));
+        g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
+        if (g_pd3dDevice->BeginScene() >= 0)
+        {
+            ImGui::Render();
+            ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+            g_pd3dDevice->EndScene();
+        }
+        HRESULT result = g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
+
+        // Handle loss of D3D9 device
+        if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
+            ResetDevice();
     }
 
     //void c_Application::UpdateCursorInfo()
