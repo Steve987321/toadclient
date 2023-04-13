@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\Modules\aimassist.h" />
     <ClInclude Include="Toad\singleton.h" />
     <ClInclude Include="Toad\module.h" />
     <ClInclude Include="Toad\Modules\esp.h" />
@@ -181,8 +182,10 @@
     <ClInclude Include="Toad\Modules\modules.h" />
     <ClInclude Include="Toad\Toad.h" />
     <ClInclude Include="Toad\Types.h" />
+    <ClInclude Include="Toad\Modules\velocity.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\Modules\aimassist.cpp" />
     <ClCompile Include="Toad\Modules\esp.cpp" />
     <ClCompile Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -227,6 +230,7 @@
     <ClCompile Include="Toad\MC\utils\mcutils.cpp" />
     <ClCompile Include="Toad\Modules\modules.cpp" />
     <ClCompile Include="Toad\Toad.cpp" />
+    <ClCompile Include="Toad\Modules\velocity.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

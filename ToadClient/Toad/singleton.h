@@ -9,11 +9,11 @@ namespace toadll
 template <class T>
 class Singleton
 {
+	friend T;
 public:
-	Singleton(Singleton&) = delete;
 	Singleton() = default;
+	Singleton(const Singleton&) = delete;
 
-public:
 	void operator=(const Singleton&) = delete;
 
 	_NODISCARD static T* get_instance()

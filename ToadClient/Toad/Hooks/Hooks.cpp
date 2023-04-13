@@ -67,11 +67,9 @@ BOOL hwglSwapBuffers(HDC hDc)
 
 	//draw->AddRect({ 25,25 }, { 50, 50 }, IM_COL32_WHITE, 5.f);
 
-	for (const auto& [name, pos] : toadll::esp::playerListMap)
+	for (const auto& [name, pos] : toadll::CEsp::get_instance()->getMappedPlayerList())
 	{
-		//if (name == nullptr) continue;
 		const auto draw = ImGui::GetForegroundDrawList();
-		//draw->AddCircle({ pos.x, pos.y }, 10.f, IM_COL32_WHITE);
 		draw->AddText({pos.x, pos.y }, IM_COL32(255, 255, 255, 255), name);
 	}
 

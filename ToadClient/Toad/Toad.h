@@ -6,8 +6,8 @@
 // use this when precision isn't required but the CPU should be saved
 #define SLOW_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
-// macro that inherits from Singleton interface class
-#define SET_MODULE_CLASS(T) : public toadll::Singleton<T>, public CModule
+// macro that inherits from essential classes for a cheat module
+#define SET_MODULE_CLASS(T) final : public toadll::Singleton<T>, public CModule
 
 #include "Toad/Types.h"
 #include "Toad/Logger.h"
@@ -22,6 +22,10 @@
 
 #include "singleton.h"
 #include "module.h"
+
+#include "Modules/esp.h"
+#include "Modules/aimassist.h"
+#include "Modules/velocity.h"
 
 #include "Toad/Modules/modules.h"
 
