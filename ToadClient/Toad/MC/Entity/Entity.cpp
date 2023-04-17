@@ -86,6 +86,22 @@ bool toadll::c_Entity::is_invisible() const
 	return env->CallBooleanMethod(obj, get_mid(obj, mapping::isInvisible));
 }
 
+toadll::bbox toadll::c_Entity::get_BBox() const
+{
+	auto bboxobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getBBox));
+
+	float minX = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinX));
+	float minY = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinY));
+	float minZ = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinZ));
+	float maxX = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxX));
+	float maxY = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxY));
+	float maxZ = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxZ));
+
+	env->DeleteLocalRef(bboxobj);
+
+	return {{ minX, minY, minZ }, { maxX, maxY, maxZ } };
+}
+
 //jobject toadll::c_Entity::get_open_container() const
 //{
 //	return env->CallObjectMethod(obj, get_mid(obj, mapping::getOpenContainer));

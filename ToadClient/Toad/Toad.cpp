@@ -104,7 +104,6 @@ namespace toadll
 		auto mcclass = p_Minecraft->get_mcclass();
 
 		p_Minecraft = std::make_unique<c_Minecraft>(mcclass);
-		p_Hooks = std::make_unique<c_Hooks>();
 
 
 		if (mcclass == nullptr)
@@ -113,13 +112,29 @@ namespace toadll
 			return 0;
 		}
 
-		if (!p_Hooks->init())
+		if (!c_Swapbuffershook::get_instance()->init())
 		{
+			log_Error("failed to hook swapbuffers");
 			clean_up(3);
 			return 0;
 		}
 
-		mappings::init_map(env, mcclass, curr_client);
+		if (!c_WSASend::get_instance()->init())
+		{
+			log_Error("failed to hook WSA");
+			clean_up(22);
+			return 0;
+		}
+
+		auto eclasstemp = findclass("net.minecraft.entity.Entity");
+		if (eclasstemp == nullptr)
+		{
+			clean_up(6);
+			return 0;
+		}
+		mappings::init_map(env, mcclass, eclasstemp, curr_client);
+
+		env->DeleteLocalRef(eclasstemp);
 
 		is_running = true;
 
@@ -132,15 +147,19 @@ namespace toadll
 					CURSORINFO ci{ sizeof(CURSORINFO) };
 					if (GetCursorInfo(&ci))
 					{
-						auto handle = ci.hCursor;
-						is_cursor_shown = reinterpret_cast<int>(handle) > 50000 && reinterpret_cast<int>(handle) < 1000000 || reinterpret_cast<int>(handle) == 13961697;
+						auto handle = reinterpret_cast<int>(ci.hCursor);
+						is_cursor_shown = (handle) > 100000 && (handle) < 1000000 || (handle) == 13961697 ? false : true;
 					}
 				}
 			});
 
 		log_Debug("enabling hooks");
+
 		// swapbuffers
-		p_Hooks->enable();
+		c_Swapbuffershook::get_instance()->enable();
+		c_WSASend::get_instance()->enable();
+		// wsasend & wsarecv
+		
 
 		std::cout << "main loop starting\n";
 		SLOW_SLEEP(1000);
@@ -163,13 +182,11 @@ namespace toadll
 			{
 			is_running = false;
 			log_Debug("closing: %d", exitcode);
+			if (!c_Swapbuffershook::get_instance()->is_null())
+				c_Swapbuffershook::get_instance()->dispose();
 
-			log_Debug("hooks");
-			if (p_Hooks != nullptr)
-			{
-				p_Hooks->dispose();
-				p_Hooks = nullptr;
-			}
+			if (!c_WSASend::get_instance()->is_null())
+				c_WSASend::get_instance()->dispose();
 
 			log_Debug("jvm");
 			if (jvm != nullptr)
@@ -187,9 +204,6 @@ namespace toadll
 
 			log_Debug("console");
 			p_Log->dispose_console();
-
-			log_Debug("last");
-			SLOW_SLEEP(1000); // wait a bit 
 
 			FreeLibraryAndExitThread(hMod, 0);
 			});

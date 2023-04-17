@@ -52,7 +52,7 @@ void toad::Fupdate_settings()
 	std::unique_lock lock(mutex);
 	auto pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE, 0, 0, 0);
 	if (pMem == NULL)
-		std::cout << "[!!!] something went wrong calling MapViewOfFile(...)\n";
+		std::cout << "[!] something went wrong calling MapViewOfFile\n";
 
 	using json = nlohmann::json;
 	json data;

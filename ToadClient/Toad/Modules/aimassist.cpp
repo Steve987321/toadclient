@@ -6,7 +6,7 @@ namespace toadll {
 
 void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer, float partialTick)
 {
-	//std::cout << "AA, enabled, cursor shown, alwasy aim :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << std::endl;
+	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
 	if (!aa::enabled || is_cursor_shown) return;
 	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON)) return;
 
@@ -45,7 +45,10 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer, float partialT
 	}
 	if (target == nullptr) return;
 
-	auto [yawtarget, pitchtarget] = get_angles(lPlayer->get_position(), target->get_position());
+
+	auto closest_point = target->get_BBox().get_closest_point(lPlayer->get_position());
+
+	auto [yawtarget, pitchtarget] = get_angles(lPlayer->get_position(), closest_point/*target->get_position()*/);
 
 	auto lyaw = lPlayer->get_rotationYaw();
 	auto lpitch = lPlayer->get_rotationPitch();
@@ -71,14 +74,14 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer, float partialT
 
 	float smooth = speed;
 
-	if (absYawDiff > 7)
+	/*if (absYawDiff > 7)
 	{
 		smooth *= aa::auto_aim ? toad::rand_float(2.0f, 3.0f) : toad::rand_float(0.4f, 2.0f);
 	}
 	else if (absYawDiff < 7)
 	{
 		smooth *= aa::auto_aim ? toad::rand_float(0.5f, 1.f) : toad::rand_float(0.0f, 0.4f);
-	}
+	}*/
 
 	speed = std::lerp(speed, smooth, aa::auto_aim ? 0.05f : 0.3f);
 
@@ -91,19 +94,12 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer, float partialT
 
 	long_speed_modifier_smooth = std::lerp(long_speed_modifier_smooth, long_speed_modifier, 0.05f);
 
-	static float reaction_time_timer = aa::reaction_time + 1;
-
 	if (static bool once = false; !once || reaction_time_timer > aa::reaction_time)
 	{
 		yawdiffSpeed = yawDiff / (15000.f / speed * long_speed_modifier_smooth);
 
 		once = true;
 		reaction_time_timer = 0;
-	}
-
-	if (toad::rand_int(0, aa::auto_aim ? 10 : 2) == 1)
-	{
-		yawdiffSpeed += aa::auto_aim ? toad::rand_float(-0.01f, 0.01f) : toad::rand_float(-0.005f, 0.005f);
 	}
 
 	lPlayer->set_rotationYaw(lyaw + yawdiffSpeed);

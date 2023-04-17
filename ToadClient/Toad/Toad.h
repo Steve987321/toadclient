@@ -7,7 +7,7 @@
 #define SLOW_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
 // macro that inherits from essential classes for a cheat module
-#define SET_MODULE_CLASS(T) final : public toadll::Singleton<T>, public CModule
+#define SET_MODULE_CLASS(T) final : public toadll::c_Singleton<T>, public CModule
 
 #include "Toad/Types.h"
 #include "Toad/Logger.h"
@@ -31,7 +31,10 @@
 
 #include "MinHook/include/MinHook.h"
 #pragma comment(lib, "minhook.x64.lib")
+
 #include "Hooks/Hooks.h"
+#include "Hooks/wglswapbuffers.h"
+#include "Hooks/ws2_32.h"
 
 // global vars and functions 
 namespace toadll
@@ -45,6 +48,7 @@ namespace toadll
 	inline std::thread Tupdate_hookvars;
 
 	inline bool is_cursor_shown = false;
+	inline int screen_height = -1, screen_width = -1;
 
 	inline HMODULE hMod;
 

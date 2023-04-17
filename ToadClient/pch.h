@@ -10,9 +10,14 @@
 // add headers that you want to pre-compile here
 
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#define _WINSOCKAPI_
 #include <windows.h>
+#include <winsock.h>
+#include <WinSock2.h>
 #include <iostream>
 #include <unordered_map>
+#include <map>
 #include <thread>
 #include <cmath>
 #include <algorithm>

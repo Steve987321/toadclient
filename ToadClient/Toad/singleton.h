@@ -7,14 +7,14 @@ namespace toadll
  * @brief Singleton class interface
  */
 template <class T>
-class Singleton
+class c_Singleton
 {
 	friend T;
 public:
-	Singleton() = default;
-	Singleton(const Singleton&) = delete;
+	c_Singleton() = default;
+	c_Singleton(const c_Singleton&) = delete;
 
-	void operator=(const Singleton&) = delete;
+	void operator=(const c_Singleton&) = delete;
 
 	_NODISCARD static T* get_instance()
 	{

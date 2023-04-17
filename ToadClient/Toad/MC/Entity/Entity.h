@@ -30,6 +30,7 @@ namespace toadll
 		_NODISCARD bool is_invisible() const;
 
 		//[[nodiscard]] jobject get_open_container() const;
+		_NODISCARD bbox get_BBox() const;
 
 	public:
 		void set_rotationYaw(float newYaw) const;

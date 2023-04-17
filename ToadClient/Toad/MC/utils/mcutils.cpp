@@ -201,14 +201,14 @@ namespace toadll
     bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, float fov, vec2& screenpos)
     {
         // Get screen dimensions
-        int hGameRes = SCREEN_WIDTH;
-        int vGameRes = SCREEN_HEIGHT;
+        int hGameRes = screen_width;
+        int vGameRes = screen_height;
 
         // Calculate aspect ratio
         float aspectRatio = hGameRes / vGameRes;
 
         // Calculate horizontal and vertical field of view in radians
-        auto hFov = calculateHorizontalFOV(SCREEN_HEIGHT, SCREEN_WIDTH, fov);
+        auto hFov = calculateHorizontalFOV(screen_height, screen_width, fov);
         float hFovRad = hFov * PI / 180.f;
         float vFovRad = 2 * atan(tan(fov * PI / 180.f / 2) / aspectRatio);
 
@@ -250,10 +250,6 @@ namespace toadll
 
     void loop_through_class(const jclass klass)
     {
-#ifndef _DEBUG
-        return;
-#endif
-
         for (auto i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
         {
             std::cout << "name: " << jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i) << " sig: " << jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i) << " args size: " << jvmfunc::oJVM_GetMethodIxArgsSize(env, klass, i) << std::endl;

@@ -12,10 +12,10 @@ namespace toadll
 
 	public:
 		explicit c_Minecraft(jclass mc_jclass) : mcclass(mc_jclass) {}
+		c_Minecraft() = delete;
 		~c_Minecraft();
 	public:
 		_NODISCARD jclass get_mcclass();
-
 		_NODISCARD jclass get_entity_living_class();
 
 		_NODISCARD std::unique_ptr<c_ActiveRenderInfo> get_active_render_info();

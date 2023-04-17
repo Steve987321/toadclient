@@ -93,6 +93,12 @@
     <ClInclude Include="Toad\Modules\velocity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Toad\Hooks\wglswapbuffers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Toad\Hooks\ws2_32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -153,6 +159,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\Modules\velocity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Hooks\wglswapbuffers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Hooks\ws2_32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

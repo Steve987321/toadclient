@@ -5,42 +5,22 @@
 
 namespace toadll
 {
-	class c_Hooks
+	class c_Hook
 	{
-	private:
+	protected:
 		bool enabled = false;
 		void* optr = nullptr;
 
+	protected:
+		bool create_hook(const char* moduleName, const char* procName, void* detour, void** original);
+
 	public:
-		bool init();
+		_NODISCARD bool is_null() const;
 		void enable();
 		void disable();
 		void dispose() const;
 	};
-	inline std::unique_ptr<c_Hooks> p_Hooks = nullptr;
-
-    inline int SCREEN_HEIGHT = -1, SCREEN_WIDTH = -1;
-    inline float testingfloat = 1;
-
-    inline void setup_ortho()
-    {
-        //std::cout << "ortho\n";
-        glPushAttrib(GL_ALL_ATTRIB_BITS);
-        glPushMatrix();
-        GLint viewport[4];
-        glGetIntegerv(GL_VIEWPORT, viewport);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, viewport[2], viewport[3], 0, -1, -1);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glDisable(GL_DEPTH_TEST);
-    }
-
-    inline void restore_GL()
-    {
-        glPopMatrix();
-        glPopAttrib();
-    }
+	inline bool mh_initialized = false;
+	//inline std::unique_ptr<CHook> p_Hooks = nullptr;
 
 }

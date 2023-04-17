@@ -67,7 +67,7 @@ namespace toadll
 
 	struct vec4 {
         vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-
+        vec4() = default;
         float x, y, z, w;
 
         vec4 operator+(const vec4& v) const {
@@ -87,6 +87,22 @@ namespace toadll
         }
     };
 
+    struct bbox
+    {
+        bbox(const vec3& min, const vec3& max) : min(min), max(max) {}
+
+        vec3 min, max;
+
+        _NODISCARD vec3 get_closest_point(const vec3& from) const
+        {
+            auto clampedX = std::clamp(from.x, min.x, max.x);
+            auto clampedY = std::clamp(from.y, min.y, max.y);
+            auto clampedZ = std::clamp(from.z, min.z, max.z);
+
+            return { clampedX, clampedY, clampedZ };
+        }
+    };
+
     // for logging
     inline std::ostream& operator<<(std::ostream& o, const vec2& v) {
         o << "(X:" << v.x << ", Y:" << v.y << ")";
@@ -100,6 +116,11 @@ namespace toadll
 
 	inline std::ostream& operator<<(std::ostream& o, const vec4& v) {
         o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.y << ", W:" << v.w << ")";
+        return o;
+    }
+
+    inline std::ostream& operator<<(std::ostream& o, const bbox& v){
+        o << "(min: " << v.min << "), max(" << v.max << ")";
         return o;
     }
 
@@ -169,6 +190,8 @@ namespace toadll
         setRotationPitch,
         setRotation,
 
+        getBBox,
+
         getInventory,
 
         getName,
@@ -199,6 +222,14 @@ namespace toadll
     	Vec3IX,
         Vec3IY,
         Vec3IZ,
+
+        // bounding box
+        bboxMinX,
+        bboxMinY,
+        bboxMinZ,
+        bboxMaxX,
+        bboxMaxY,
+        bboxMaxZ,
 
         // Timer
         partialTick

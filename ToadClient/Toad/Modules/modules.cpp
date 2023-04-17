@@ -30,14 +30,13 @@ void toadll::modules::update()
 	//		env->DeleteLocalRef(obj);
 	//		env->DeleteLocalRef(objklass);
 	//	});
-
+	
 	float partial_tick = p_Minecraft->get_partialTick();
 
 	CAimAssist::get_instance()->Update(player, partial_tick);
 	CVelocity::get_instance()->Update(player, partial_tick);
-	auto_bridge(player);
+	//auto_bridge(player);
 	CEsp::get_instance()->Update(player, partial_tick);
-	//update_esp_vars(player);
 
 	/*auto heldItem = lPlayer->get_heldItem();
 	if (heldItem != NULL)

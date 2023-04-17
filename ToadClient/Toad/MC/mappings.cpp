@@ -30,7 +30,7 @@ namespace toadll::mappings
 		return fieldsigs.find(name)->second;
 	}
 
-	void init_map(JNIEnv* env, jclass mcclass, minecraft_client client)
+	void init_map(JNIEnv* env, jclass mcclass, jclass entity_class, minecraft_client client)
 	{
 		const auto getsig = [&](mapping map, const char* name, const jclass klass) -> bool
 		{
@@ -150,6 +150,10 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::getRotationYaw, "()D" });
 			methodsigs.insert({ mapping::getRotationPitch, "()D" });
 
+			methodnames.insert({ mapping::getBBox, "bridge$getBoundingBox" });
+			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class))
+				log_Error("can't find bbox");
+
 			/*methodnames.insert({ mapping::setSneaking, "setSneaking" });
 			methodsigs.insert({ mapping::setSneaking, "(Z)V" });*/
 
@@ -212,6 +216,21 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::Vec3IY, "()I" });
 			methodnames.insert({ mapping::Vec3IZ, "getZ" });
 			methodsigs.insert({ mapping::Vec3IZ, "()I" });
+
+			// bounding box
+			methodnames.insert({mapping::bboxMinX, "bridge$getMinX"});
+			methodnames.insert({mapping::bboxMinY, "bridge$getMinY"});
+			methodnames.insert({mapping::bboxMinZ, "bridge$getMinZ"});
+			methodnames.insert({mapping::bboxMaxX, "bridge$getMaxX"});
+			methodnames.insert({mapping::bboxMaxY, "bridge$getMaxY"});
+			methodnames.insert({mapping::bboxMaxZ, "bridge$getMaxZ"});
+
+			methodsigs.insert({ mapping::bboxMinX, "()D" });
+			methodsigs.insert({ mapping::bboxMinY, "()D" });
+			methodsigs.insert({ mapping::bboxMinZ, "()D" });
+			methodsigs.insert({ mapping::bboxMaxX, "()D" });
+			methodsigs.insert({ mapping::bboxMaxY, "()D" });
+			methodsigs.insert({ mapping::bboxMaxZ, "()D" });
 
 			// Timer
 			methodnames.insert({ mapping::partialTick, "bridge$partialTick" });
