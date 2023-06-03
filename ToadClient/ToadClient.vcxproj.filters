@@ -99,6 +99,9 @@
     <ClInclude Include="Toad\Hooks\ws2_32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Toad\timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

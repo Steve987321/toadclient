@@ -11,7 +11,7 @@ int stage = 0;
 
 namespace toadll
 {
-	void Fupdate_settings()
+	inline void Fupdate_settings()
 	{
 		while (is_running)
 		{
@@ -105,7 +105,6 @@ namespace toadll
 
 		p_Minecraft = std::make_unique<c_Minecraft>(mcclass);
 
-
 		if (mcclass == nullptr)
 		{
 			clean_up(4);
@@ -132,6 +131,7 @@ namespace toadll
 			clean_up(6);
 			return 0;
 		}
+
 		mappings::init_map(env, mcclass, eclasstemp, curr_client);
 
 		env->DeleteLocalRef(eclasstemp);
@@ -148,21 +148,17 @@ namespace toadll
 					if (GetCursorInfo(&ci))
 					{
 						auto handle = reinterpret_cast<int>(ci.hCursor);
-						is_cursor_shown = (handle) > 100000 && (handle) < 1000000 || (handle) == 13961697 ? false : true;
+						is_cursor_shown = !(handle > 50000 && handle < 1000000 || handle == 13961697);
 					}
 				}
 			});
 
 		log_Debug("enabling hooks");
 
-		// swapbuffers
 		c_Swapbuffershook::get_instance()->enable();
 		c_WSASend::get_instance()->enable();
-		// wsasend & wsarecv
-		
 
-		std::cout << "main loop starting\n";
-		SLOW_SLEEP(1000);
+		modules::initialize();
 
 		// main loop
 		while (is_running)

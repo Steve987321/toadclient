@@ -15,6 +15,15 @@ toadll::vec3 toadll::c_Entity::get_position() const
 	return ret;
 }
 
+toadll::vec3 toadll::c_Entity::get_lasttickposition() const
+{
+	return {
+		env->GetFloatField(obj, get_fid(obj, mappingFields::lastTickPosXField)),
+		env->GetFloatField(obj, get_fid(obj, mappingFields::lastTickPosYField)),
+		env->GetFloatField(obj, get_fid(obj, mappingFields::lastTickPosZField)),
+	};
+}
+
 float toadll::c_Entity::get_rotationYaw() const
 {
 	return env->CallDoubleMethod(obj, get_mid(obj, mapping::getRotationYaw));
@@ -136,17 +145,17 @@ void toadll::c_Entity::set_rotation(float yaw, float pitch) const
 	env->CallVoidMethod(obj, get_mid(obj, mapping::setRotation), yaw, pitch);
 }
 
-void toadll::c_Entity::set_motionX(float val)
+void toadll::c_Entity::set_motionX(float val) const
 {
 	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionXField), val);
 }
 
-void toadll::c_Entity::set_motionY(float val)
+void toadll::c_Entity::set_motionY(float val) const
 {
 	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionYField), val);
 }
 
-void toadll::c_Entity::set_motionZ(float val)
+void toadll::c_Entity::set_motionZ(float val) const
 {
 	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionZField), val);
 }

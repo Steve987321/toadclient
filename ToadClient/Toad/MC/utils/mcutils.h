@@ -92,6 +92,7 @@ namespace toadll
     float wrap_to_180(float value);
 
     bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, float fov, vec2& screenpos);
+    bool WorldToScreen(const vec3& worldPoint, vec2& screen, GLfloat modelView[16], GLfloat projection[16]);
 
     void loop_through_class(const jclass klass);
 

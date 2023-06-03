@@ -181,6 +181,7 @@
     <ClInclude Include="Toad\MC\Minecraft.h" />
     <ClInclude Include="Toad\MC\utils\mcutils.h" />
     <ClInclude Include="Toad\Modules\modules.h" />
+    <ClInclude Include="Toad\timer.h" />
     <ClInclude Include="Toad\Toad.h" />
     <ClInclude Include="Toad\Types.h" />
     <ClInclude Include="Toad\Modules\velocity.h" />

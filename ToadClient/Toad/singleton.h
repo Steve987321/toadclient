@@ -4,7 +4,7 @@ namespace toadll
 {
 
 /**
- * @brief Singleton class interface
+ * @brief Singleton class to inherit from
  */
 template <class T>
 class c_Singleton
@@ -16,9 +16,9 @@ public:
 
 	void operator=(const c_Singleton&) = delete;
 
-	_NODISCARD static T* get_instance()
+	static T* get_instance()
 	{
-		static std::shared_ptr<T> instance = std::make_shared<T>();
+		static auto instance = std::make_shared<T>();
 		return instance.get();
 	}
 };

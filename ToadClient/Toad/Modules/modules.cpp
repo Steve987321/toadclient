@@ -4,6 +4,13 @@
 
 std::once_flag flag;
 
+void toadll::modules::initialize()
+{
+	CAimAssist::get_instance();
+	CEsp::get_instance();
+	CVelocity::get_instance();
+}
+
 void toadll::modules::update()
 {
 	auto player = p_Minecraft->get_localplayer();
@@ -31,12 +38,24 @@ void toadll::modules::update()
 	//		env->DeleteLocalRef(objklass);
 	//	});
 	
-	float partial_tick = p_Minecraft->get_partialTick();
+	partialTick = p_Minecraft->get_partialTick();
 
-	CAimAssist::get_instance()->Update(player, partial_tick);
-	CVelocity::get_instance()->Update(player, partial_tick);
-	//auto_bridge(player);
-	CEsp::get_instance()->Update(player, partial_tick);
+	static auto timer = std::make_unique<CTimer>();
+
+	if (timer->Elapsed<>() > 50.f)
+	{
+		for (auto Module : moduleInstances)
+			Module->OnTick(player);
+		timer->Start();
+	}
+
+	for (auto Module : moduleInstances)
+		Module->Update(player);
+
+	//CAimAssist::get_instance()->Update(player, partial_tick);
+	//CVelocity::get_instance()->Update(player, partial_tick);
+	////auto_bridge(player);
+	//CEsp::get_instance()->Update(player, partial_tick);
 
 	/*auto heldItem = lPlayer->get_heldItem();
 	if (heldItem != NULL)

@@ -24,7 +24,6 @@ namespace toad
         using namespace std;
         using namespace std::chrono;
 
-        //TODO: remove this? , it is only used for recorder so no need now
         static double estimate = 5e-3;
         static double mean = 5e-3;
         static double m2 = 0;

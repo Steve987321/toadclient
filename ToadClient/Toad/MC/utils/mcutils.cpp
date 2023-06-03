@@ -173,31 +173,6 @@ namespace toadll
         return horizontalFOV;
     }
 
-    //bool WorldToScreen(const vec3& worldpos, vec2& screen, GLfloat modelView[15], GLfloat projection[15], GLint viewPort[3])
-    //{
-    //    const auto Multiply = [](const vec4& vec, const GLfloat mat[15]) -> vec4
-    //    {
-    //        return {
-	//            vec.x * mat[0] + vec.y * mat[4] + vec.z * mat[8] + vec.w * mat[12],
-    //            vec.x * mat[1] + vec.y * mat[5] + vec.z * mat[9] + vec.w * mat[13],
-    //            vec.x * mat[2] + vec.y * mat[6] + vec.z * mat[10] + vec.w * mat[14],
-    //            vec.x * mat[3] + vec.y * mat[7] + vec.z * mat[11] + vec.w * mat[15]
-    //        };
-    //    };
-    //
-    //    auto clipSpacePos = Multiply(Multiply(vec4(worldpos.x, worldpos.y, worldpos.z, 1.0f), modelView), projection);
-    //    auto ndcSpacePos = vec3(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w);
-    //
-    //    if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0)
-    //    {
-    //        return false;
-    //    }
-    //
-    //    screen.x = (ndcSpacePos.x + 1.0f) / 2.0f * viewPort[2];
-    //    screen.y = (1.0f - ndcSpacePos.y) / 2.0f * viewPort[3];
-    //    return true;
-    //}
-
     bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, float fov, vec2& screenpos)
     {
         // Get screen dimensions
@@ -245,6 +220,31 @@ namespace toadll
         screenpos.x = hGameRes / 2.f + x;
         screenpos.y = vGameRes / 2.f - y;
 
+        return true;
+    }
+
+    bool WorldToScreen(const vec3& worldPoint, vec2& screen, GLfloat modelView[16], GLfloat projection[16])
+    {
+        const auto multiply = [&](const vec4& vec, const GLfloat mat[16])
+        {
+            return vec4(
+                vec.x * mat[0] + vec.y * mat[4] + vec.z * mat[8] + vec.w * mat[12],
+                vec.x * mat[1] + vec.y * mat[5] + vec.z * mat[9] + vec.w * mat[13],
+                vec.x * mat[2] + vec.y * mat[6] + vec.z * mat[10] + vec.w * mat[14],
+                vec.x * mat[3] + vec.y * mat[7] + vec.z * mat[11] + vec.w * mat[15]
+            );
+        };
+
+        vec4 clipSpacePos = multiply(multiply(vec4(worldPoint.x, worldPoint.y, worldPoint.z, 1.0f), modelView), projection);
+        vec3 ndcSpacePos = vec3(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w);
+
+        if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0)
+        {
+            return false;
+        }
+
+        screen.x = (ndcSpacePos.x + 1.0f) / 2.0f * screen_width;
+        screen.y = (1.0f - ndcSpacePos.y) / 2.0f * screen_height;
         return true;
     }
 

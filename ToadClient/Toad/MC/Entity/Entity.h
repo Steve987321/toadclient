@@ -13,6 +13,7 @@ namespace toadll
 
 	public:
 		_NODISCARD vec3 get_position() const;
+		_NODISCARD vec3 get_lasttickposition() const;
 
 		_NODISCARD float get_rotationYaw() const;
 		_NODISCARD float get_rotationPitch() const;
@@ -38,9 +39,9 @@ namespace toadll
 		void set_rotationPitch(float newPitch) const;
 		void set_prevRotationPitch(float newPitch) const;
 		void set_rotation(float yaw, float pitch) const;
-		void set_motionX(float val);
-		void set_motionY(float val);
-		void set_motionZ(float val);
+		void set_motionX(float val) const;
+		void set_motionY(float val) const;
+		void set_motionZ(float val) const;
 
 	};
 

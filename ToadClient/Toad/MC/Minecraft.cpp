@@ -117,6 +117,14 @@ float toadll::c_Minecraft::get_partialTick() const
     return env->CallFloatMethod(obj, get_mid(obj, mapping::partialTick));
 }
 
+float toadll::c_Minecraft::get_renderPartialTick() const
+{
+    auto mc = p_Minecraft->get_mc();
+    auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer));
+    env->DeleteLocalRef(mc);
+    return env->GetFloatField(obj, get_fid(obj, mappingFields::renderPartialTickField));
+}
+
 float toadll::c_Minecraft::get_fov() const
 {
     auto obj = get_gamesettings();

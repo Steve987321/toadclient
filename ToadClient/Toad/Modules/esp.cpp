@@ -4,78 +4,102 @@
 
 namespace toadll {
 
-void CEsp::Update(const std::shared_ptr<c_Entity>& lPlayer, float partialTick)
+void CEsp::OnTick(const std::shared_ptr<c_Entity>& lPlayer)
 {
-	//if (!is_enabled) return;
+	auto playerList = p_Minecraft->get_playerList();
+	auto ari = p_Minecraft->get_active_render_info();
 
-	static name_pos_t prev_name_map = {};
-	name_pos_t name_map = {};
-	name_bbox_t name_bbox_map = {};
+	auto renderpos = ari->get_render_pos();
+	ari->get_modelview(modelview);
+	ari->get_projection(projection);
 
-	static auto ari = p_Minecraft->get_active_render_info();
-	auto fov = p_Minecraft->get_fov();
+	auto renderpartialtick = p_Minecraft->get_renderPartialTick();
 
-	for (auto playerList = p_Minecraft->get_playerList(); const auto & e : playerList)
+	std::vector<std::shared_ptr<EntityVisual>> evlist {};
+
+	for (uint32_t i = 0; i < playerList.size(); i++)
 	{
-		if (env->IsSameObject(lPlayer->obj, e->obj)) continue;
+		auto& entity = playerList[i];
 
-		vec2 screenposition{ 0,0 };
-		vec3 realPos = lPlayer->get_position() + ari->get_render_pos();
-		vec2 viewangles{ lPlayer->get_rotationYaw(), lPlayer->get_rotationPitch() };
+		if (env->IsSameObject(lPlayer->obj, entity->obj))
+			continue;
 
-		vec3 ePos = e->get_position();
-		float yawDiff = abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), ePos).first)));
-		if (yawDiff > 110) continue; // will not render anyway
-		
-		if (WorldToScreen(realPos, ePos, viewangles, fov, screenposition))
+		auto bbox = entity->get_BBox();
+		auto epos = entity->get_position();
+		auto lasttickpos = entity->get_lasttickposition();
+
+		bbox.min.x = epos.x - bbox.min.x + (lasttickpos.x + (epos.x - lasttickpos.x) * renderpartialtick) - renderpos.x;
+		bbox.min.y = epos.y - bbox.min.y + (lasttickpos.y + (epos.y - lasttickpos.y) * renderpartialtick) - renderpos.y;
+		bbox.min.z = epos.z - bbox.min.z + (lasttickpos.z + (epos.z - lasttickpos.z) * renderpartialtick) - renderpos.z;
+		bbox.max.x = epos.x - bbox.max.x + (lasttickpos.x + (epos.x - lasttickpos.x) * renderpartialtick) - renderpos.x;
+		bbox.max.y = epos.y - bbox.max.y + (lasttickpos.y + (epos.y - lasttickpos.y) * renderpartialtick) - renderpos.y;
+		bbox.max.z = epos.z - bbox.max.z + (lasttickpos.z + (epos.z - lasttickpos.z) * renderpartialtick) - renderpos.z;
+
+		vec3 boxVertices[8]
 		{
-			name_map[e->get_name().c_str()] = screenposition;
+			/*{bbox.min.x - 0.1f, bbox.min.y - 0.1f, bbox.min.z - 0.1f},
+			{bbox.min.x - 0.1f, bbox.max.y + 0.1f, bbox.min.z - 0.1f},
+			{bbox.max.x + 0.1f, bbox.max.y + 0.1f, bbox.min.z - 0.1f},
+			{bbox.max.x + 0.1f, bbox.min.y - 0.1f, bbox.min.z - 0.1f},
+			{bbox.max.x + 0.1f, bbox.max.y + 0.1f, bbox.max.z + 0.1f},
+			{bbox.min.x - 0.1f, bbox.max.y + 0.1f, bbox.max.z + 0.1f},
+			{bbox.min.x - 0.1f, bbox.min.y - 0.1f, bbox.max.z + 0.1f},
+			{bbox.max.x + 0.1f, bbox.min.y - 0.1f, bbox.max.z + 0.1f},*/
+			{bbox.min.x, bbox.min.y, bbox.min.z},
+			{bbox.min.x, bbox.max.y, bbox.min.z},
+			{bbox.max.x, bbox.max.y, bbox.min.z},
+			{bbox.max.x, bbox.min.y, bbox.min.z},
+			{bbox.min.x, bbox.min.y, bbox.max.z},
+			{bbox.min.x, bbox.max.y, bbox.max.z},
+			{bbox.max.x, bbox.max.y, bbox.max.z},
+			{bbox.max.x, bbox.min.y, bbox.max.z},
+		};
+
+		vec4 screenbbox = {FLT_MAX, FLT_MAX, -1.f, -1.f};
+
+		for (int j = 0; j < 8; j++)
+		{
+			vec2 screenPos;
+			if (WorldToScreen(
+				vec3(boxVertices[i].x, boxVertices[i].y, boxVertices[i].z),
+				screenPos,
+				modelview,
+				projection
+			))
+			{
+				screenbbox.x = std::min(screenPos.x, screenbbox.x);
+				screenbbox.y = std::min(screenPos.y, screenbbox.y);
+				screenbbox.z = std::max(screenPos.x, screenbbox.z);
+				screenbbox.w = std::max(screenPos.y, screenbbox.w);
+			}
 		}
 
-		/*vec2 sposmin {}, sposmax{};
-		
-		if (WorldToScreen(realPos, eBBox.min, viewangles, fov, screenposition))
-		{
-			sposmin = screenposition;
-		}
-		if (WorldToScreen(realPos, eBBox.max, viewangles, fov, screenposition))
-		{
-			sposmax = screenposition;
-		}
-
-		name_bbox_map[e->get_name().c_str()] = { sposmin.x, sposmin.y, sposmax.x, sposmax.y };*/
+		evlist.emplace_back(std::make_unique<EntityVisual>( 
+			playerList[i]->get_name().c_str(),
+			screenbbox
+			));
 	}
 
-	/*prev_name_map = name_map;
+	entityVisualList = evlist;
+}
 
-	for (const auto& prevmapit : prev_name_map)
+void CEsp::OnRender(ImDrawList* draw)
+{
+	const auto DrawBox = [](const ImVec2& start, const ImVec2& end, const ImU32& color)
 	{
-		if (const auto& it2 = std::find_if(name_map.begin(), name_map.end(), [&](const std::pair<const char*, vec2>& f){return strcmp(f.first, prevmapit.first) == 0; }); it2 == name_map.end())
-		{
-			prev_name_map.erase(it2);
-		}
+		ImGui::GetBackgroundDrawList()->AddRect(start, end, ImColor(0, 0, 0, 255), 0, 0, 4.f);
+		ImGui::GetBackgroundDrawList()->AddRect(start, end, color, 0, 0, 1.f);
+	};
+
+	for (const auto& e : entityVisualList)
+	{
+		auto& bbox = e->bounding_box2d;
+
+		if (bbox.x <= 0 || bbox.y <= 0 || bbox.z >= screen_width || bbox.w >= screen_height)
+			continue;
+
+		DrawBox(ImVec2(bbox.x, bbox.y), ImVec2(bbox.z, bbox.w), IM_COL32_WHITE);
 	}
-
-	for (const auto& it : name_map)
-	{
-		if (auto it2 = std::find_if(prev_name_map.begin(), prev_name_map.end(), [&](const std::pair<const char*, vec2>& f) { return strcmp(it.first, f.first) == 0; }); it2 != player_namepos_map.end())
-		{
-			it2->second = it.second;
-		}
-	}*/
-
-	player_bboxpos_map = name_bbox_map;
-	player_namepos_map = name_map;
-
 }
 
-const CEsp::name_pos_t& CEsp::get_playernames_map() const
-{
-	return this->player_namepos_map;
-}
-
-const CEsp::name_bbox_t& CEsp::get_bounding_box_map() const
-{
-	return this->player_bboxpos_map;
-}
 }

@@ -20,6 +20,7 @@
 #include "Toad/MC/Entity/Entity.h"
 #include "Toad/MC/Minecraft.h"
 
+#include "timer.h"
 #include "singleton.h"
 #include "module.h"
 
@@ -48,13 +49,19 @@ namespace toadll
 	inline std::thread Tupdate_hookvars;
 
 	inline bool is_cursor_shown = false;
+
 	inline int screen_height = -1, screen_width = -1;
+	inline GLfloat modelview[16];
+	inline GLfloat projection[16];
 
 	inline HMODULE hMod;
+
+	inline float partialTick = 0;
 
 	inline JNIEnv* env = nullptr;
 	inline JavaVM* jvm = nullptr;
 
+	// settings
 	namespace clicker
 	{
 		inline bool enabled = false;

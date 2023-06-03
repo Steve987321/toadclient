@@ -8,9 +8,11 @@ private:
 	float yawdiffSpeed = 0;
 	float reaction_time_timer = 0;
 
+public:
+	//CAimAssist() : CModule() {}
 
 public:
-	void Update(const std::shared_ptr<c_Entity>& lPlayer, float partialTick) override;
+	void Update(const std::shared_ptr<c_Entity>& lPlayer) override;
 };
 
 }

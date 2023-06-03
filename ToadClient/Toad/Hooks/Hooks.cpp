@@ -21,6 +21,11 @@ bool toadll::c_Hook::create_hook(const char* moduleName, const char* procName, v
 	//return MH_CreateHookApi(reinterpret_cast<LPCWSTR>(moduleName), procName, detour, &original) == MH_OK;
 }
 
+toadll::c_Hook::c_Hook()
+{
+	hookInstances.emplace_back(this);
+}
+
 bool toadll::c_Hook::is_null() const
 {
 	return optr == nullptr;

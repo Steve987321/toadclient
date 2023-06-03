@@ -4,7 +4,7 @@
 
 namespace toadll {
 
-void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer, float partialTick)
+void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 {
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
 	if (!aa::enabled || is_cursor_shown) return;
@@ -116,6 +116,7 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer, float partialT
 		lPlayer->set_rotationPitch(lpitch + pitchDiff / (15000.f / speed));
 		lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (15000.f / speed));
 	}
+
 	toad::preciseSleep(
 		aa::auto_aim
 		? toad::rand_float(0.0001f, 0.0005f)

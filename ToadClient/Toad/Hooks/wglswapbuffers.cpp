@@ -49,30 +49,24 @@ namespace toadll
 			init_stage = 3;
 		}
 
+		auto& io = ImGui::GetIO();
+		io.DisplaySize = { static_cast<float>(screen_width), static_cast<float>(screen_height) };
+
 		ImGui_ImplOpenGL2_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-
-		ImGui::SetNextWindowSize({ 400, 300 });
-
-		/*ImGui::Begin("nigga client v0.1");
-
-		ImGui::SliderFloat("testing float", &toadll::testingfloat, -1000, 1000);
-		if (GetAsyncKeyState(VK_OEM_PLUS))
-			toadll::testingfloat += 0.5f;
-		else if (GetAsyncKeyState(VK_OEM_MINUS))
-			toadll::testingfloat -= 0.5f;
-
-		ImGui::End();*/
 
 		//draw->AddRect({ 25,25 }, { 50, 50 }, IM_COL32_WHITE, 5.f);
 
 		const auto draw = ImGui::GetForegroundDrawList();
 
-		for (const auto& [name, pos] : toadll::CEsp::get_instance()->get_playernames_map())
+		for (const auto& Module : moduleInstances)
+			Module->OnRender(draw);
+
+		/*for (const auto& [name, pos] : toadll::CEsp::get_instance()->get_playernames_map())
 		{
 			draw->AddText({ pos.x, pos.y }, IM_COL32(255, 255, 255, 255), name);
-		}
+		}*/
 		/*for (const auto& [name, v4] : toadll::CEsp::get_instance()->get_bounding_box_map())
 		{
 			draw->AddRect({v4.x, v4.y}, {v4.z, v4.w}, IM_COL32(255, 255, 255, 255));

@@ -5,22 +5,32 @@
 
 namespace toadll
 {
-	class c_Hook
-	{
-	protected:
-		bool enabled = false;
-		void* optr = nullptr;
+class c_Hook;
 
-	protected:
-		bool create_hook(const char* moduleName, const char* procName, void* detour, void** original);
+inline bool mh_initialized = false;
+inline std::vector<c_Hook*> hookInstances = {};
 
-	public:
-		_NODISCARD bool is_null() const;
-		void enable();
-		void disable();
-		void dispose() const;
-	};
-	inline bool mh_initialized = false;
-	//inline std::unique_ptr<CHook> p_Hooks = nullptr;
+/**
+ * @brief
+ *
+ */
+class c_Hook
+{
+protected:
+	bool enabled = false;
+	void* optr = nullptr;
+
+protected:
+	bool create_hook(const char* moduleName, const char* procName, void* detour, void** original);
+
+public:
+	c_Hook();
+
+public:
+	bool is_null() const;
+	void enable();
+	void disable();
+	void dispose() const;
+};
 
 }

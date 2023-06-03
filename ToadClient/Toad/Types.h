@@ -144,6 +144,9 @@ namespace toadll
         rotationPitchField,
         prevRotationYawField,
         prevRotationPitchField,
+        lastTickPosXField,
+        lastTickPosYField,
+        lastTickPosZField,
 
         // jdouble
         motionXField,
@@ -153,7 +156,10 @@ namespace toadll
         // .ActiveRenderInfo
         viewportField,
         projectionField,
-		modelviewField
+		modelviewField,
+
+        // Timer
+        renderPartialTickField
     };
 
     enum class mapping

@@ -4,6 +4,13 @@
 
 namespace toadll::mappings
 {
+	struct MCMap
+	{
+		const char* name;
+		const char* sig;
+	};
+
+	std::unordered_map<mapping, MCMap*> methods;
 	std::unordered_map<mapping, const char*> methodnames;
 	std::unordered_map<mapping, const char*> methodsigs;
 
@@ -107,8 +114,8 @@ namespace toadll::mappings
 			//env->DeleteLocalRef(playerclass);
 
 			// .GameSettings
-			methodnames.insert({ mapping::setGamma, "bridge$setGamma"});
-			methodsigs.insert({mapping::setGamma, "(F)V"});
+			methodnames.insert({ mapping::setGamma, "bridge$setGamma" });
+			methodsigs.insert({ mapping::setGamma, "(F)V" });
 
 			fieldnames.insert({ mappingFields::fovField, "fovSetting" });
 			fieldsigs.insert({ mappingFields::fovField, "F" });
@@ -133,6 +140,16 @@ namespace toadll::mappings
 			fieldsigs.insert({ mappingFields::motionYField, "D" });
 			fieldsigs.insert({ mappingFields::motionZField, "D" });
 
+			fieldnames.insert({ mappingFields::lastTickPosXField, "lastTickPosX" });
+			fieldsigs.insert({ mappingFields::lastTickPosXField, "D" });
+			fieldnames.insert({ mappingFields::lastTickPosYField, "lastTickPosY" });
+			fieldsigs.insert({ mappingFields::lastTickPosYField, "D" });
+			fieldnames.insert({ mappingFields::lastTickPosZField, "lastTickPosZ" });
+			fieldsigs.insert({ mappingFields::lastTickPosZField, "D" });
+
+			fieldnames.insert({ mappingFields::renderPartialTickField, "renderPartialTicks" });
+			fieldsigs.insert({ mappingFields::renderPartialTickField, "F" });
+
 			methodnames.insert({ mapping::getPos, "getPositionVector" });
 			methodsigs.insert({ mapping::getPos, "()Lnet/minecraft/util/Vec3;" });
 
@@ -154,9 +171,6 @@ namespace toadll::mappings
 			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class))
 				log_Error("can't find bbox");
 
-			/*methodnames.insert({ mapping::setSneaking, "setSneaking" });
-			methodsigs.insert({ mapping::setSneaking, "(Z)V" });*/
-
 			methodnames.insert({ mapping::getName, "getName" });
 			methodsigs.insert({ mapping::getName, "()Ljava/lang/String;" });
 
@@ -173,7 +187,7 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::setRotationPitch, "(D)V" });
 			methodnames.insert({ mapping::setRotation, "setRotation" });
 			methodsigs.insert({ mapping::setRotation, "(FF)V" });
-
+			
 			methodnames.insert({ mapping::isInvisible, "isInvisible" });
 			methodsigs.insert({ mapping::isInvisible, "()Z" });
 

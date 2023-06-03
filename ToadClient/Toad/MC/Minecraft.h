@@ -27,6 +27,7 @@ namespace toadll
 		_NODISCARD jobject get_gamesettings() const;
 
 		_NODISCARD float get_partialTick() const;
+		_NODISCARD float get_renderPartialTick() const;
 		_NODISCARD float get_fov() const;
 
 		_NODISCARD std::vector<std::shared_ptr<c_Entity>> get_playerList() const;
