@@ -18,9 +18,9 @@ toadll::vec3 toadll::c_Entity::get_position() const
 toadll::vec3 toadll::c_Entity::get_lasttickposition() const
 {
 	return {
-		env->GetFloatField(obj, get_fid(obj, mappingFields::lastTickPosXField)),
-		env->GetFloatField(obj, get_fid(obj, mappingFields::lastTickPosYField)),
-		env->GetFloatField(obj, get_fid(obj, mappingFields::lastTickPosZField)),
+		static_cast<float>(env->GetDoubleField(obj, get_fid(obj, mappingFields::lastTickPosXField))),
+		static_cast<float>(env->GetDoubleField(obj, get_fid(obj, mappingFields::lastTickPosYField))),
+		static_cast<float>(env->GetDoubleField(obj, get_fid(obj, mappingFields::lastTickPosZField))),
 	};
 }
 
