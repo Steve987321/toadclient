@@ -12,11 +12,25 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 
 	std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
 
-	std::shared_ptr<c_Entity> target = nullptr;
+	static std::shared_ptr<c_Entity> target = nullptr;
 
 	float speed = aa::speed;
 	float minimalAngleDiff = aa::fov / 2.f;
 
+	if (aa::lock_aim && target != nullptr)
+	{
+		if  (
+			abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), target->get_position()).first))) <= aa::fov 
+			&&
+			target->get_position().dist(lPlayer->get_position()) <= aa::distance
+			)
+			goto AIMING;
+	}
+		
+
+	target = nullptr;
+
+	// get a target
 	for (const auto& player : p_Minecraft->get_playerList())
 	{
 		if (env->IsSameObject(lPlayer->obj, player->obj)) continue;
@@ -45,17 +59,67 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 	}
 	if (target == nullptr) return;
 
+AIMING:
 
-	auto closest_point = target->get_BBox().get_closest_point(lPlayer->get_position());
+	auto targetPos = target->get_position();
+	auto lplayerPos = lPlayer->get_position();
+	vec3 aimPoint;
 
-	auto [yawtarget, pitchtarget] = get_angles(lPlayer->get_position(), closest_point/*target->get_position()*/);
+	const std::vector<vec3> bboxCorners
+	{
+		{ targetPos.x - 0.3f, targetPos.y, targetPos.z + 0.3f },
+		{ targetPos.x - 0.3f, targetPos.y, targetPos.z - 0.3f },
+		{ targetPos.x + 0.3f, targetPos.y, targetPos.z - 0.3f },
+		{ targetPos.x + 0.3f, targetPos.y, targetPos.z + 0.3f },
+	};
+
+	if (aa::aim_at_closest_point) // aims at the closest corner of target
+	{
+		const std::vector<float> distances = {
+			bboxCorners.at(0).dist(lplayerPos),
+			bboxCorners.at(1).dist(lplayerPos),
+			bboxCorners.at(2).dist(lplayerPos),
+			bboxCorners.at(3).dist(lplayerPos),
+		};
+
+		auto closestcorner = bboxCorners[std::distance(distances.begin(), std::ranges::min_element(distances))];
+
+		aimPoint = closestcorner;
+	}
+	else // aims to target if players aim is not inside hitbox 
+	{
+		auto lplayeryaw = lPlayer->get_rotationYaw();
+		auto yawdiffToPos = wrap_to_180(-(lplayeryaw - get_angles(lplayerPos, targetPos).first));
+
+		const std::vector<float> yawdiffs = {
+			wrap_to_180(-(lplayeryaw - get_angles(lplayerPos, bboxCorners.at(0)).first)),
+			wrap_to_180(-(lplayeryaw - get_angles(lplayerPos, bboxCorners.at(1)).first)),
+			wrap_to_180(-(lplayeryaw - get_angles(lplayerPos, bboxCorners.at(2)).first)),
+			wrap_to_180(-(lplayeryaw - get_angles(lplayerPos, bboxCorners.at(3)).first)),
+		};
+
+		if (yawdiffToPos < 0)
+		{
+			if (*std::ranges::max_element(yawdiffs) > 0)
+				return;
+		}
+		else
+		{
+			if (*std::ranges::min_element(yawdiffs) < 0)
+				return;
+		}
+
+		aimPoint = target->get_position();
+	}
+
+	auto [yawtarget, pitchtarget] = get_angles(lPlayer->get_position(), aimPoint/*target->get_position()*/);
 
 	auto lyaw = lPlayer->get_rotationYaw();
 	auto lpitch = lPlayer->get_rotationPitch();
 
 	float yawDiff = wrap_to_180(-(lyaw - yawtarget));
 	float absYawDiff = abs(yawDiff);
-	if (auto stopaiming = aa::auto_aim ? 3.f : 1.f; absYawDiff < stopaiming) return;
+	if (absYawDiff < 3.f) return;
 	float pitchDiff = wrap_to_180(-(lpitch - pitchtarget));
 
 	if (!aa::targetFOV) // don't have to check if this is enabled because already checked
@@ -83,7 +147,7 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 		smooth *= aa::auto_aim ? toad::rand_float(0.5f, 1.f) : toad::rand_float(0.0f, 0.4f);
 	}*/
 
-	speed = std::lerp(speed, smooth, aa::auto_aim ? 0.05f : 0.3f);
+	speed = std::lerp(speed, smooth, 0.05f);
 
 	if (speed_rand_timer < 0)
 	{
@@ -117,11 +181,7 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 		lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (15000.f / speed));
 	}
 
-	toad::preciseSleep(
-		aa::auto_aim
-		? toad::rand_float(0.0001f, 0.0005f)
-		: toad::rand_float(0.001f / 1000.f, 0.2f / 1000.f)
-	);
+	toad::preciseSleep(toad::rand_float(0.0001f, 0.0005f));
 
 	speed_rand_timer -= partialTick;
 	reaction_time_timer += partialTick;

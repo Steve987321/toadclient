@@ -13,27 +13,31 @@ void CEsp::OnTick(const std::shared_ptr<c_Entity>& lPlayer)
 	ari->get_modelview(modelview);
 	ari->get_projection(projection);
 
-	auto renderpartialtick = p_Minecraft->get_renderPartialTick();
-
 	std::vector<std::shared_ptr<EntityVisual>> evlist {};
 
-	for (uint32_t i = 0; i < playerList.size(); i++)
+	for (const auto& entity : playerList)
 	{
-		auto& entity = playerList[i];
-
 		if (env->IsSameObject(lPlayer->obj, entity->obj))
 			continue;
 
 		auto bbox = entity->get_BBox();
 		auto epos = entity->get_position();
-		auto lasttickpos = entity->get_lasttickposition();
 
-		bbox.min.x = epos.x - bbox.min.x + (lasttickpos.x + (epos.x - lasttickpos.x) * renderpartialtick) - renderpos.x;
-		bbox.min.y = epos.y - bbox.min.y + (lasttickpos.y + (epos.y - lasttickpos.y) * renderpartialtick) - renderpos.y;
-		bbox.min.z = epos.z - bbox.min.z + (lasttickpos.z + (epos.z - lasttickpos.z) * renderpartialtick) - renderpos.z;
-		bbox.max.x = epos.x - bbox.max.x + (lasttickpos.x + (epos.x - lasttickpos.x) * renderpartialtick) - renderpos.x;
-		bbox.max.y = epos.y - bbox.max.y + (lasttickpos.y + (epos.y - lasttickpos.y) * renderpartialtick) - renderpos.y;
-		bbox.max.z = epos.z - bbox.max.z + (lasttickpos.z + (epos.z - lasttickpos.z) * renderpartialtick) - renderpos.z;
+	/*	auto eposlasttick = entity->get_lasttickposition();
+
+		bbox.min.x = bbox.min.x + (-epos.x) + (eposlasttick.x + (epos.x - eposlasttick.x) * partialTick) + (-renderpos.x);
+		bbox.min.y = bbox.min.y + (-epos.y) + (eposlasttick.y + (epos.y - eposlasttick.y) * partialTick) + (-renderpos.y);
+		bbox.min.z = bbox.min.z + (-epos.z) + (eposlasttick.z + (epos.z - eposlasttick.z) * partialTick) + (-renderpos.z);
+		bbox.max.x = bbox.max.x + (-epos.x) + (eposlasttick.x + (epos.x - eposlasttick.x) * partialTick) + (-renderpos.x);
+		bbox.max.y = bbox.max.y + (-epos.y) + (eposlasttick.y + (epos.y - eposlasttick.y) * partialTick) + (-renderpos.y);
+		bbox.max.z = bbox.max.z + (-epos.z) + (eposlasttick.z + (epos.z - eposlasttick.z) * partialTick) + (-renderpos.z);*/
+
+		bbox.min.x = epos.x - bbox.min.x - renderpos.x;
+		bbox.min.y = epos.y - bbox.min.y - renderpos.y;
+		bbox.min.z = epos.z - bbox.min.z - renderpos.z;
+		bbox.max.x = epos.x - bbox.max.x - renderpos.x;
+		bbox.max.y = epos.y - bbox.max.y - renderpos.y;
+		bbox.max.z = epos.z - bbox.max.z - renderpos.z;
 
 		vec3 boxVertices[8]
 		{
@@ -57,11 +61,11 @@ void CEsp::OnTick(const std::shared_ptr<c_Entity>& lPlayer)
 
 		vec4 screenbbox = {FLT_MAX, FLT_MAX, -1.f, -1.f};
 
-		for (int j = 0; j < 8; j++)
+		for (const auto& boxVertice : boxVertices)
 		{
 			vec2 screenPos;
 			if (WorldToScreen(
-				vec3(boxVertices[i].x, boxVertices[i].y, boxVertices[i].z),
+				vec3(boxVertice.x, boxVertice.y, boxVertice.z),
 				screenPos,
 				modelview,
 				projection
@@ -74,8 +78,8 @@ void CEsp::OnTick(const std::shared_ptr<c_Entity>& lPlayer)
 			}
 		}
 
-		evlist.emplace_back(std::make_unique<EntityVisual>( 
-			playerList[i]->get_name().c_str(),
+		evlist.emplace_back(std::make_unique<EntityVisual>(
+			entity->get_name().c_str(),
 			screenbbox
 			));
 	}

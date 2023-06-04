@@ -57,6 +57,7 @@ namespace toadll
 	inline HMODULE hMod;
 
 	inline float partialTick = 0;
+	inline float renderPartialTick = 0;
 
 	inline JNIEnv* env = nullptr;
 	inline JavaVM* jvm = nullptr;
@@ -76,7 +77,8 @@ namespace toadll
 		inline bool invisibles = false;
 		inline bool targetFOV = false;
 		inline bool always_aim = false;
-		inline bool auto_aim = true;
+		inline bool aim_at_closest_point = false;
+		inline bool lock_aim = false; // locks the aim to a player until mouse is released for a short time
 
 		inline int fov = 180.f;
 

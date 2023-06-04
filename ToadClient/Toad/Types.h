@@ -35,6 +35,7 @@ namespace toadll
 
 	struct vec3 {
         vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+        vec3() : x(0), y(0), z(0) {}
 
         float x, y, z;
 
@@ -92,15 +93,6 @@ namespace toadll
         bbox(const vec3& min, const vec3& max) : min(min), max(max) {}
 
         vec3 min, max;
-
-        _NODISCARD vec3 get_closest_point(const vec3& from) const
-        {
-            auto clampedX = std::clamp(from.x, min.x, max.x);
-            auto clampedY = std::clamp(from.y, min.y, max.y);
-            auto clampedZ = std::clamp(from.z, min.z, max.z);
-
-            return { clampedX, clampedY, clampedZ };
-        }
     };
 
     // for logging

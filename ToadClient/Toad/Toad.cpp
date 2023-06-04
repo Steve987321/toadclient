@@ -148,7 +148,7 @@ namespace toadll
 					if (GetCursorInfo(&ci))
 					{
 						auto handle = reinterpret_cast<int>(ci.hCursor);
-						is_cursor_shown = !(handle > 50000 && handle < 1000000 || handle == 13961697);
+						is_cursor_shown = (handle > 50000 && handle < 1000000 || handle == 13961697);
 					}
 				}
 			});

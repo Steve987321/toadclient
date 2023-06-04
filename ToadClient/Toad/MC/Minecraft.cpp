@@ -114,7 +114,9 @@ float toadll::c_Minecraft::get_partialTick() const
     auto mc = p_Minecraft->get_mc();
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer));
     env->DeleteLocalRef(mc);
-    return env->CallFloatMethod(obj, get_mid(obj, mapping::partialTick));
+    auto res = env->CallFloatMethod(obj, get_mid(obj, mapping::partialTick));
+    env->DeleteLocalRef(obj);
+    return res;
 }
 
 float toadll::c_Minecraft::get_renderPartialTick() const
@@ -122,7 +124,9 @@ float toadll::c_Minecraft::get_renderPartialTick() const
     auto mc = p_Minecraft->get_mc();
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer));
     env->DeleteLocalRef(mc);
-    return env->GetFloatField(obj, get_fid(obj, mappingFields::renderPartialTickField));
+    auto res = env->GetFloatField(obj, get_fid(obj, mappingFields::renderPartialTickField));
+    env->DeleteLocalRef(obj);
+    return res;
 }
 
 float toadll::c_Minecraft::get_fov() const

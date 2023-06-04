@@ -39,6 +39,7 @@ void toadll::modules::update()
 	//	});
 	
 	partialTick = p_Minecraft->get_partialTick();
+	//renderPartialTick = p_Minecraft->get_renderPartialTick();
 
 	static auto timer = std::make_unique<CTimer>();
 
