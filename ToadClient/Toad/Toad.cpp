@@ -89,7 +89,7 @@ namespace toadll
 		p_Log = std::make_unique<c_Logger>();
 		SetConsoleCtrlHandler(NULL, true);
 
-		g_hWnd = GetCurrentWindowHandle();
+		GetCurrWindowHWND(&g_hWnd);
 		if (!g_hWnd)
 			return 1;
 
@@ -183,6 +183,7 @@ namespace toadll
 		while (g_is_running)
 		{
 			if (GetAsyncKeyState(VK_END)) break;
+			SLOW_SLEEP(500);
 		}
 		clean_up(0);
 		return 0;

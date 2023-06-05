@@ -144,7 +144,7 @@ void toadll::CLeftAutoClicker::mouse_down()
 	
 	POINT pt{};
 	GetCursorPos(&pt);
-	PostMessage(GetForegroundWindow(), WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
+	PostMessage(g_hWnd, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 
 	update_rand_vars();
 }
@@ -159,7 +159,7 @@ void toadll::CLeftAutoClicker::mouse_up()
 
 	POINT pt{};
 	GetCursorPos(&pt);
-	PostMessage(GetForegroundWindow(), WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
+	PostMessage(g_hWnd, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 
 	update_rand_vars();
 }

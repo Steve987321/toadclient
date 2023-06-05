@@ -50,21 +50,40 @@ namespace toadll
         while ((high_resolution_clock::now() - start).count() / 1e9 < seconds);
     }
 
-    inline HWND GetCurrentWindowHandle()
+    inline BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
     {
-        HWND Window = GetTopWindow(nullptr);
+        constexpr DWORD TITLE_SIZE = 1024;
+        DWORD PID = 0;
 
-        while (Window)
-        {
-            DWORD WindowPID;
-            GetWindowThreadProcessId(Window, &WindowPID);
+        WCHAR windowTitle[TITLE_SIZE];
 
-            if (WindowPID == GetCurrentProcessId())
-                return Window;
+        GetWindowTextW(hwnd, windowTitle, TITLE_SIZE);
 
-            Window = GetNextWindow(Window, GW_HWNDNEXT);
+        const int length = ::GetWindowTextLength(hwnd);
+
+        if (IsWindowVisible(hwnd) && length != 0) {
+            //convert to std::string
+            auto buf = new char[length + 1];
+
+            char DefChar = ' ';
+            WideCharToMultiByte(CP_ACP, 0, windowTitle, -1, buf, length + 1, &DefChar, NULL);
+
+            auto title = std::string(buf);
+            DWORD pid;
+            HWND* hWnd = reinterpret_cast<HWND*>(lParam);
+            GetWindowThreadProcessId(hwnd, &pid);
+            if (pid == GetCurrentProcessId())
+                *hWnd = hwnd;
+
+            delete[] buf;
+
+            return TRUE;
         }
+        return TRUE;
+    }
 
-        return nullptr;
+    inline void GetCurrWindowHWND(HWND* hwnd)
+    {
+        EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(hwnd));
     }
 }
