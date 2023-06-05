@@ -14,6 +14,7 @@
 #include <shared_mutex>
 
 // TOAD
+#include "global_settings.h"
 #include "utils/utils.h"
 
 // use this when precision isn't required but the CPU should be saved
@@ -41,52 +42,4 @@ namespace toad
 
 	// will be true when injection was succesfull
 	inline bool g_is_verified = false;
-
-	namespace clicker
-	{
-		inline bool enabled = false;
-		inline bool item_whitelist = false;
-	}
-
-	namespace aa
-	{
-		inline bool enabled = false;
-		inline bool use_item_whitelist = false;
-		inline utils::mc_items mc_items_whitelist;
-		inline bool horizontal_only = false;
-		inline bool invisibles = false;
-		inline bool targetFOV = false;
-		inline bool always_aim = false;
-
-		inline int fov = 180.f;
-
-		inline float distance = 5.f;
-		inline float speed = 5.f;
-	}
-
-	namespace velocity
-	{
-		inline bool enabled = false;
-
-		inline bool use_item_whitelist;
-		inline utils::mc_items mc_items_whitelist;
-
-		inline bool only_when_moving = false;
-		inline bool only_when_attacking = false;
-
-		inline int chance = 100;
-		inline float delay = 0;
-
-		// in % the lower the less vel
-		inline float horizontal = 100;
-		inline float vertical = 100;
-	}
-
-
-	namespace auto_bridge
-	{
-		inline bool enabled = false;
-		inline float pitch_check = 61.f;
-	}
-
 }

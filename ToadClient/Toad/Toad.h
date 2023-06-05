@@ -9,6 +9,9 @@
 // macro that inherits from essential classes for a cheat module
 #define SET_MODULE_CLASS(T) final : public toadll::c_Singleton<T>, public CModule
 
+// Settings/config for modules are stored in the Loader folder
+#include "../../Loader/src/global_settings.h"
+
 #include "Toad/Types.h"
 #include "Toad/Logger.h"
 

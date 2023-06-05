@@ -73,6 +73,8 @@ namespace toad
 			                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
 			                    ImGui::Checkbox("Invisibles", &aa::invisibles);
 			                    ImGui::Checkbox("Always Aim", &aa::always_aim);
+                                ImGui::Checkbox("Target Lock", &aa::lock_aim);
+                                ImGui::Checkbox("Multi Point", &aa::aim_at_closest_point);
 			                    ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
 			                    if (ImGui::IsItemClicked())
 			                        aa::targetFOV = !aa::targetFOV;

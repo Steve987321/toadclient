@@ -50,7 +50,9 @@ namespace toadll
 			aa::invisibles = data["aainvisibles"];
 			aa::targetFOV = data["aatargetFOV"];
 			aa::always_aim = data["aaalways_aim"];
-
+			aa::aim_at_closest_point = data["aamultipoint"];
+			aa::lock_aim = data["aalockaim"];
+	
 			// auto bridge
 			auto_bridge::enabled = data["abenabled"];
 			auto_bridge::pitch_check = data["abpitch_check"];

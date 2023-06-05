@@ -66,6 +66,8 @@ void toad::Fupdate_settings()
 	data["aainvisibles"] = aa::invisibles;
 	data["aatargetFOV"] = aa::targetFOV;
 	data["aaalways_aim"] = aa::always_aim;
+	data["aamultipoint"] = aa::aim_at_closest_point;
+	data["aalockaim"] = aa::lock_aim;
 
 	// auto bridge
 	data["abenabled"] = auto_bridge::enabled;
