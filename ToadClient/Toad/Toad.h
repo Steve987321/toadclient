@@ -27,6 +27,7 @@
 #include "singleton.h"
 #include "module.h"
 
+#include "Modules/vars_updater.h"
 #include "Modules/autoclicker.h"
 #include "Modules/esp.h"
 #include "Modules/aimassist.h"
@@ -47,10 +48,6 @@ namespace toadll
 	inline minecraft_client curr_client = minecraft_client::Lunar;
 
 	inline std::atomic_bool g_is_running = false;
-
-	inline std::thread Tupdate_settings;
-	inline std::thread Tupdate_cursorinfo;
-	inline std::thread Tupdate_hookvars;
 
 	inline bool g_is_cursor_shown = false;
 

@@ -6,82 +6,82 @@
 //#include <glew-2.1.0/include/GL/glew.h>
 //#include <gl/GL.h>
 
+// for getting settings
 constexpr static size_t bufsize = 1000;
+
 int stage = 0;
+
+std::thread Tupdate_settings;
+std::thread Tupdate_cursorinfo;
 
 namespace toadll
 {
-	inline void Fupdate_settings()
+	void Fupdate_settings()
 	{
-		while (g_is_running)
+		HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"ToadClientMappingObj");
+		if (hMapFile == NULL)
 		{
-			HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"ToadClientMappingObj");
-			if (hMapFile == NULL)
-			{
-				g_is_running = false;
-				std::cout << "exit 11\n";
-				break;
-			}
-			const auto buf = (LPCSTR)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, bufsize);
-			if (buf == NULL)
-			{
-				std::cout << "buf = 0\n";
-				//clean_up(12);
-				CloseHandle(hMapFile);
-				continue;
-			}
-			std::string s = buf;
-			//log_Debug(s.c_str());
-			// parse buf as json and read them and set them and 
-
-			auto endof = s.find("END");
-			std::string settings = s.substr(0, endof);
-			//log_Debug(settings.c_str());
-
-			using json = nlohmann::json;
-			json data = json::parse(settings);
-
-			using namespace toad;
-
-			// auto clicker
-			clicker::enabled = data["lcenabled"];
-			clicker::cps = data["lccps"];
-			clicker::block_hit = data["lcblockhit"];
-			clicker::block_hit_ms = data["lcblockhitms"];
-			clicker::targeting_affects_cps = data["lcsmartcps"];
-			clicker::weapons_only = data["lcweaponsonly"];
-			clicker::trade_assist = data["lctradeassist"];
-
-			// aim assist
-			aa::enabled = data["aaenabled"];
-			aa::distance = data["aadistance"];
-			aa::speed = data["aaspeed"];
-			aa::horizontal_only = data["aahorizontal_only"];
-			aa::fov = data["aafov"];
-			aa::invisibles = data["aainvisibles"];
-			aa::targetFOV = data["aatargetFOV"];
-			aa::always_aim = data["aaalways_aim"];
-			aa::aim_at_closest_point = data["aamultipoint"];
-			aa::lock_aim = data["aalockaim"];
-	
-			// auto bridge
-			auto_bridge::enabled = data["abenabled"];
-			auto_bridge::pitch_check = data["abpitch_check"];
-
-			// velocity
-			velocity::enabled = data["velenabled"];
-			velocity::horizontal = data["velhorizontal"];
-			velocity::vertical = data["velvertical"];
-			velocity::chance = data["velchance"];
-			velocity::delay = data["veldelay"];
-
-			CLeftAutoClicker::SetDelays();
-
-			UnmapViewOfFile(buf);
-			CloseHandle(hMapFile);
-
-			SLOW_SLEEP(100);
+			g_is_running = false;
+			std::cout << "exit 11\n";
+			return;
 		}
+		const auto buf = (LPCSTR)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, bufsize);
+		if (buf == NULL)
+		{
+			std::cout << "buf = 0\n";
+			//clean_up(12);
+			CloseHandle(hMapFile);
+			return;
+		}
+		std::string s = buf;
+		//log_Debug(s.c_str());
+		// parse buf as json and read them and set them and 
+
+		auto endof = s.find("END");
+		std::string settings = s.substr(0, endof);
+		//log_Debug(settings.c_str());
+
+		using json = nlohmann::json;
+		json data = json::parse(settings);
+
+		using namespace toad;
+
+		// auto clicker
+		clicker::enabled = data["lcenabled"];
+		clicker::cps = data["lccps"];
+		clicker::block_hit = data["lcblockhit"];
+		clicker::block_hit_ms = data["lcblockhitms"];
+		clicker::targeting_affects_cps = data["lcsmartcps"];
+		clicker::weapons_only = data["lcweaponsonly"];
+		clicker::trade_assist = data["lctradeassist"];
+
+		// aim assist
+		aa::enabled = data["aaenabled"];
+		aa::distance = data["aadistance"];
+		aa::speed = data["aaspeed"];
+		aa::horizontal_only = data["aahorizontal_only"];
+		aa::fov = data["aafov"];
+		aa::invisibles = data["aainvisibles"];
+		aa::targetFOV = data["aatargetFOV"];
+		aa::always_aim = data["aaalways_aim"];
+		aa::aim_at_closest_point = data["aamultipoint"];
+		aa::lock_aim = data["aalockaim"];
+
+		// auto bridge
+		auto_bridge::enabled = data["abenabled"];
+		auto_bridge::pitch_check = data["abpitch_check"];
+
+		// velocity
+		velocity::enabled = data["velenabled"];
+		velocity::horizontal = data["velhorizontal"];
+		velocity::vertical = data["velvertical"];
+		velocity::chance = data["velchance"];
+		velocity::delay = data["veldelay"];
+
+		CLeftAutoClicker::SetDelays();
+
+		UnmapViewOfFile(buf);
+		CloseHandle(hMapFile);
 	}
 
 	DWORD WINAPI init()
@@ -155,35 +155,26 @@ namespace toadll
 
 		g_is_running = true;
 
-		// threads
-		Tupdate_settings = std::thread([] { Fupdate_settings(); });
-		Tupdate_cursorinfo = std::thread([]
-			{
-				while (g_is_running)
-				{
-					CURSORINFO ci{ sizeof(CURSORINFO) };
-					if (GetCursorInfo(&ci))
-					{
-						auto handle = reinterpret_cast<int>(ci.hCursor);
-						g_is_cursor_shown = (handle > 50000 && handle < 1000000 || handle == 13961697);
-					}
-				}
-			});
-
 		log_Debug("enabling hooks");
 
 		c_Swapbuffershook::get_instance()->enable();
 		c_WSASend::get_instance()->enable();
 
 		log_Debug("Starting modules");
+
 		modules::initialize();
+
 		log_Debug("Initialized modules");
 
 		// main loop
 		while (g_is_running)
 		{
 			if (GetAsyncKeyState(VK_END)) break;
-			SLOW_SLEEP(500);
+
+			Fupdate_settings();
+
+			SLOW_SLEEP(100);
+
 		}
 		clean_up(0);
 		return 0;
