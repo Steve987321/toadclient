@@ -158,6 +158,7 @@
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\global_settings.h" />
     <ClCompile Include="src\inject\injector.cpp" />
     <ClCompile Include="src\Application\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
