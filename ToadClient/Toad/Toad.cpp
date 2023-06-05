@@ -41,6 +41,17 @@ namespace toadll
 			using json = nlohmann::json;
 			json data = json::parse(settings);
 
+			using namespace toad;
+
+			// auto clicker
+			clicker::enabled = data["lcenabled"];
+			clicker::cps = data["lccps"];
+			clicker::block_hit = data["lcblockhit"];
+			clicker::block_hit_ms = data["lcblockhitms"];
+			clicker::targeting_affects_cps = data["lcsmartcps"];
+			clicker::weapons_only = data["lcweaponsonly"];
+			clicker::trade_assist = data["lctradeassist"];
+
 			// aim assist
 			aa::enabled = data["aaenabled"];
 			aa::distance = data["aadistance"];
@@ -64,6 +75,8 @@ namespace toadll
 			velocity::chance = data["velchance"];
 			velocity::delay = data["veldelay"];
 
+			CLeftAutoClicker::SetDelays();
+
 			UnmapViewOfFile(buf);
 			CloseHandle(hMapFile);
 
@@ -75,6 +88,10 @@ namespace toadll
 	{
 		p_Log = std::make_unique<c_Logger>();
 		SetConsoleCtrlHandler(NULL, true);
+
+		g_hWnd = GetCurrentWindowHandle();
+		if (!g_hWnd)
+			return 1;
 
 		// get functions from jvm.dll
 		auto jvmHandle = GetModuleHandleA("jvm.dll");
@@ -148,7 +165,7 @@ namespace toadll
 					if (GetCursorInfo(&ci))
 					{
 						auto handle = reinterpret_cast<int>(ci.hCursor);
-						is_cursor_shown = (handle > 50000 && handle < 1000000 || handle == 13961697);
+						g_is_cursor_shown = (handle > 50000 && handle < 1000000 || handle == 13961697);
 					}
 				}
 			});
@@ -204,7 +221,7 @@ namespace toadll
 			log_Debug("console");
 			p_Log->dispose_console();
 
-			FreeLibraryAndExitThread(hMod, 0);
+			FreeLibraryAndExitThread(g_hMod, 0);
 			});
 	}
 }

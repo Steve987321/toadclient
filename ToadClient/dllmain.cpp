@@ -7,7 +7,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 
     if (ul_reason_for_call == DLL_PROCESS_ATTACH)
     {
-        toadll::hMod = hModule;
+        toadll::g_hMod = hModule;
         CloseHandle(CreateThread(nullptr, 0, 
             reinterpret_cast<LPTHREAD_START_ROUTINE>(toadll::init), nullptr, 0, nullptr));
     }

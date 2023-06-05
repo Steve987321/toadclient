@@ -6,6 +6,7 @@ std::once_flag flag;
 
 void toadll::modules::initialize()
 {
+	CLeftAutoClicker::get_instance();
 	CAimAssist::get_instance();
 	CEsp::get_instance();
 	CVelocity::get_instance();
@@ -33,7 +34,11 @@ void toadll::modules::initialize()
 			while (g_is_running)
 			{
 				auto lPlayer = mc->get_localplayer();
-				if (lPlayer == nullptr) return;
+				if (lPlayer == nullptr) 
+				{
+					SLOW_SLEEP(100);
+					return;
+				}
 
 				Module->Update(lPlayer);
 

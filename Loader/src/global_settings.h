@@ -7,7 +7,17 @@ namespace toad
 	namespace clicker
 	{
 		inline bool enabled = false;
-		inline bool item_whitelist = false;
+
+		inline int cps = 15;
+
+		//inline bool item_whitelist = false;
+		inline bool weapons_only = false; // only click when holding weapon
+		inline bool break_blocks = false; // will hold down lmb when aiming at block
+		inline bool trade_assist = false; // when trading hits cps spikes
+		inline bool targeting_affects_cps = false; // when aiming at target cps is higher, else it lowers
+		inline bool block_hit = false; // when hitting player it blocks for ms, see @block_hit_ms
+		inline int block_hit_ms = 10; 
+
 	}
 
 	namespace aa

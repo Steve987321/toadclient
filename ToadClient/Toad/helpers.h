@@ -49,4 +49,22 @@ namespace toadll
         auto start = high_resolution_clock::now();
         while ((high_resolution_clock::now() - start).count() / 1e9 < seconds);
     }
+
+    inline HWND GetCurrentWindowHandle()
+    {
+        HWND Window = GetTopWindow(nullptr);
+
+        while (Window)
+        {
+            DWORD WindowPID;
+            GetWindowThreadProcessId(Window, &WindowPID);
+
+            if (WindowPID == GetCurrentProcessId())
+                return Window;
+
+            Window = GetNextWindow(Window, GW_HWNDNEXT);
+        }
+
+        return nullptr;
+    }
 }

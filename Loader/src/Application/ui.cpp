@@ -62,7 +62,13 @@ namespace toad
                     if (is_Clicker)
                         utils::setting_menu("Auto Clicker", is_Clicker, []
                             {
-                                ImGui::Text("Nothing");
+                                ImGui::SliderInt("cps", &clicker::cps, 0, 20, "%dcps");
+			                    ImGui::Checkbox("weapons only", &clicker::weapons_only);
+                                ImGui::Checkbox("break blocks", &clicker::break_blocks);
+			                    ImGui::Checkbox("block hit", &clicker::block_hit);
+			                    ImGui::SliderInt("block hit delay", &clicker::block_hit_ms, 0, 50);
+			                    ImGui::Checkbox("smart cps", &clicker::targeting_affects_cps);
+			                    ImGui::Checkbox("trade assist", &clicker::trade_assist);
                             });
                     else if (is_AA)
                         utils::setting_menu("Aim Assist", is_AA, []

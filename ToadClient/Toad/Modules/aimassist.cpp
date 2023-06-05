@@ -2,13 +2,23 @@
 #include "Toad/Toad.h"
 #include "aimassist.h"
 
+using namespace toad;
+
 namespace toadll {
 
 void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 {
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
-	if (!aa::enabled || is_cursor_shown) return;
-	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON)) return;
+	if (!aa::enabled || g_is_cursor_shown)
+	{
+		SLOW_SLEEP(10);
+		return;
+	}
+	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON))
+	{
+		SLOW_SLEEP(10);
+		return;
+	}
 
 	std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
 

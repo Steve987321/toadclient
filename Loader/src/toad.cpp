@@ -57,6 +57,15 @@ void toad::Fupdate_settings()
 	using json = nlohmann::json;
 	json data;
 
+	// auto clicker
+	data["lcenabled"] = clicker::enabled;
+	data["lccps"] = clicker::cps;
+	data["lcblockhit"] = clicker::block_hit;
+	data["lcblockhitms"] = clicker::block_hit_ms;
+	data["lcsmartcps"] = clicker::targeting_affects_cps;
+	data["lcweaponsonly"] = clicker::weapons_only;
+	data["lctradeassist"] = clicker::trade_assist;
+
 	// aim assist
 	data["aaenabled"] = aa::enabled;
 	data["aadistance"] = aa::distance;

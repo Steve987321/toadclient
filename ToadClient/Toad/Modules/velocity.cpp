@@ -2,11 +2,17 @@
 #include "Toad/Toad.h"
 #include "velocity.h"
 
+using namespace toad;
+
 namespace toadll
 {
 	void CVelocity::OnTick(const std::shared_ptr<c_Entity>& lPlayer)
 	{
-		if (!velocity::enabled) return;
+		if (!velocity::enabled)
+		{
+			SLOW_SLEEP(250);
+			return;
+		}
 
 		static bool StopFlag = false;
 		static int beginHurtTime = 0;
