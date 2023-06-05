@@ -16,7 +16,7 @@ namespace toadll
 			if (beginHurtTime < hurttime) beginHurtTime = hurttime;
 
 			if (hurttime != beginHurtTime - (int)velocity::delay) return;
-			if (toad::rand_int(0, 100) > velocity::chance) { StopFlag = true; return; }
+			if (toadll::rand_int(0, 100) > velocity::chance) { StopFlag = true; return; }
 
 			//if (velocity::delay > 0) toad::preciseSleep(velocity::delay * 0.05f);
 

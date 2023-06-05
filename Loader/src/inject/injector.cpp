@@ -351,7 +351,7 @@ bool inject(DWORD pid)
 
 	do
 	{
-		auto dllPath =  toad::dll_debug_mode ? "D:\\VSProjects\\ToadClient\\ToadClient\\bin\\Debug\\ToadClient.dll" : "D:\\VSProjects\\ToadClient\\ToadClient\\bin\\Release\\ToadClient.dll";
+		auto dllPath =  toad::g_dll_debug_mode ? "D:\\VSProjects\\ToadClient\\ToadClient\\bin\\Debug\\ToadClient.dll" : "D:\\VSProjects\\ToadClient\\ToadClient\\bin\\Release\\ToadClient.dll";
 
 		if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
 			priv.PrivilegeCount = 1;

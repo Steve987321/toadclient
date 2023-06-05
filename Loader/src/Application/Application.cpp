@@ -151,7 +151,7 @@ namespace toad
             ::DispatchMessage(&msg);
             if (msg.message == WM_QUIT)
             {
-                toad::is_running = false;
+                toad::g_is_running = false;
             }
         }
 
@@ -210,13 +210,13 @@ namespace toad
 #ifndef _DEBUG
         //ShowWindow(GetConsoleWindow(), SW_HIDE);
 #endif
-        is_running = true;
+        g_is_running = true;
         return true;
     }
 
     void c_Application::MainLoop()
     {
-        while (is_running)
+        while (g_is_running)
         {
             MenuLoop();
 			SLOW_SLEEP(1);
@@ -228,7 +228,7 @@ namespace toad
     {
         std::unique_lock lock(mutex);
         std::cout << "closing\n";
-        is_running = false;
+        g_is_running = false;
 
         clean_up();
         stop_all_threads();

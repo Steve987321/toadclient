@@ -36,7 +36,7 @@ bool toad::init()
 	// update settings for ipc 
 	Tupdate_settings = std::thread([]
 		{
-			while (is_running)
+			while (g_is_running)
 			{
 				Fupdate_settings();
 				SLOW_SLEEP(100);

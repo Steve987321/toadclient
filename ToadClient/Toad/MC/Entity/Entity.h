@@ -4,11 +4,15 @@ namespace toadll
 {
 	class c_Entity
 	{
+	private:
+		JNIEnv* env = nullptr;
+		jclass elclass = nullptr;
+
 	public:
 		jobject obj = nullptr;
 
 	public:
-		explicit c_Entity(jobject jobj) { obj = jobj; }
+		explicit c_Entity(jobject jobj, JNIEnv* env, jclass elclass) : env(env), elclass(elclass), obj(jobj) {}
 		~c_Entity();
 
 	public:

@@ -42,7 +42,7 @@ namespace toadll
 {
 	inline minecraft_client curr_client = minecraft_client::Lunar;
 
-	inline std::atomic_bool is_running = false;
+	inline std::atomic_bool g_is_running = false;
 
 	inline std::thread Tupdate_settings;
 	inline std::thread Tupdate_cursorinfo;
@@ -56,11 +56,11 @@ namespace toadll
 
 	inline HMODULE hMod;
 
-	inline float partialTick = 0;
-	inline float renderPartialTick = 0;
+	inline float g_partialTick = 0;
+	inline float g_renderPartialTick = 0;
 
-	inline JNIEnv* env = nullptr;
-	inline JavaVM* jvm = nullptr;
+	inline JNIEnv* g_env = nullptr;
+	inline JavaVM* g_jvm = nullptr;
 
 	// settings
 	namespace clicker

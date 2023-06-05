@@ -21,7 +21,7 @@
 
 namespace toad
 {
-	inline bool dll_debug_mode = false;
+	inline bool g_dll_debug_mode = false;
 
 	// before init
 	[[nodiscard]] bool pre_init();
@@ -37,10 +37,10 @@ namespace toad
 	void clean_up();
 
 	// will be true when the program is in its main loop 
-	inline std::atomic_bool is_running = false;
+	inline std::atomic_bool g_is_running = false;
 
 	// will be true when injection was succesfull
-	inline bool is_verified = false;
+	inline bool g_is_verified = false;
 
 	namespace clicker
 	{

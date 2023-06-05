@@ -1,6 +1,6 @@
 #pragma once
 
-namespace toad
+namespace toadll
 {
 
     inline float rand_float(float min, float max)

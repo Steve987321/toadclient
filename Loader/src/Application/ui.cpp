@@ -189,7 +189,7 @@ namespace toad
                                              failed_inject = true;
 
                                     if (!failed_shared_mem && !failed_inject)
-                                        is_verified = true;
+                                        g_is_verified = true;
 
                                     loading = false;
                                 });                                        
@@ -215,7 +215,7 @@ namespace toad
                     loading = false;
                     utils::show_mBox("failed", "failed to inject", failed_inject, true, utils::mboxType::ERR);
                 }
-                ImGui::Checkbox("Debug", &dll_debug_mode);
+                ImGui::Checkbox("Debug", &g_dll_debug_mode);
             }
             ImGui::EndChild(); // mc windows
         }
@@ -229,7 +229,7 @@ namespace toad
 #ifdef _DEBUG
         ui_main(io);
 #else
-        is_verified ? ui_main(io) : ui_init(io);
+        g_is_verified ? ui_main(io) : ui_init(io);
 #endif
     }
 }

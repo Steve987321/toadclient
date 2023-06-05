@@ -13,12 +13,12 @@ namespace toadll
 {
 	inline void Fupdate_settings()
 	{
-		while (is_running)
+		while (g_is_running)
 		{
 			HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"ToadClientMappingObj");
 			if (hMapFile == NULL)
 			{
-				is_running = false;
+				g_is_running = false;
 				std::cout << "exit 11\n";
 				break;
 			}
@@ -90,21 +90,18 @@ namespace toadll
 		jvmfunc::oJVM_GetArrayLength = reinterpret_cast<jvmfunc::hJVM_GetArrayLength>(GetProcAddress(jvmHandle, "JVM_GetArrayLength"));
 		jvmfunc::oJVM_GetMethodIxArgsSize = reinterpret_cast<jvmfunc::hJVM_GetMethodIxArgsSize>(GetProcAddress(jvmHandle, "JVM_GetMethodIxArgsSize"));
 
-		jvmfunc::oJNI_GetCreatedJavaVMs(&jvm, 1, nullptr);
+		jvmfunc::oJNI_GetCreatedJavaVMs(&g_jvm, 1, nullptr);
 
-		if (jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), nullptr) != JNI_OK)
+		if (g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&g_env), nullptr) != JNI_OK)
 			return 1;
 
-		if (!env)
+		if (!g_env)
 		{
 			clean_up(2);
 			return 0;
 		}
 
-		auto mcclass = p_Minecraft->get_mcclass();
-
-		p_Minecraft = std::make_unique<c_Minecraft>(mcclass);
-
+		auto mcclass = c_Minecraft::get_mcclass(g_env);
 		if (mcclass == nullptr)
 		{
 			clean_up(4);
@@ -125,24 +122,25 @@ namespace toadll
 			return 0;
 		}
 
-		auto eclasstemp = findclass("net.minecraft.entity.Entity");
+		auto eclasstemp = findclass("net.minecraft.entity.Entity", g_env);
 		if (eclasstemp == nullptr)
 		{
 			clean_up(6);
 			return 0;
 		}
 
-		mappings::init_map(env, mcclass, eclasstemp, curr_client);
+		mappings::init_map(g_env, mcclass, eclasstemp, curr_client);
 
-		env->DeleteLocalRef(eclasstemp);
+		g_env->DeleteLocalRef(eclasstemp);
+		g_env->DeleteLocalRef(mcclass);
 
-		is_running = true;
+		g_is_running = true;
 
 		// threads
 		Tupdate_settings = std::thread([] { Fupdate_settings(); });
 		Tupdate_cursorinfo = std::thread([]
 			{
-				while (is_running)
+				while (g_is_running)
 				{
 					CURSORINFO ci{ sizeof(CURSORINFO) };
 					if (GetCursorInfo(&ci))
@@ -158,12 +156,13 @@ namespace toadll
 		c_Swapbuffershook::get_instance()->enable();
 		c_WSASend::get_instance()->enable();
 
+		log_Debug("Starting modules");
 		modules::initialize();
+		log_Debug("Initialized modules");
 
 		// main loop
-		while (is_running)
+		while (g_is_running)
 		{
-			modules::update();
 			if (GetAsyncKeyState(VK_END)) break;
 		}
 		clean_up(0);
@@ -176,7 +175,7 @@ namespace toadll
 
 		std::call_once(flag, [&]
 			{
-			is_running = false;
+			g_is_running = false;
 			log_Debug("closing: %d", exitcode);
 			if (!c_Swapbuffershook::get_instance()->is_null())
 				c_Swapbuffershook::get_instance()->dispose();
@@ -185,18 +184,20 @@ namespace toadll
 				c_WSASend::get_instance()->dispose();
 
 			log_Debug("jvm");
-			if (jvm != nullptr)
+			if (g_jvm != nullptr)
 			{
-				jvm->DetachCurrentThread();
+				g_jvm->DetachCurrentThread();
 			}
 
 			log_Debug("threads");
 			if (Tupdate_settings.joinable()) Tupdate_settings.join();
 			if (Tupdate_cursorinfo.joinable()) Tupdate_cursorinfo.join();
-			if (Tupdate_hookvars.joinable()) Tupdate_hookvars.join();
 
-			env = nullptr;
-			jvm = nullptr;
+			for (auto& ModuleThread : modules::threads)
+				if (ModuleThread.joinable()) ModuleThread.join();
+
+			g_env = nullptr;
+			g_jvm = nullptr;
 
 			log_Debug("console");
 			p_Log->dispose_console();

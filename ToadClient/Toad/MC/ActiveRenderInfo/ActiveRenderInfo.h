@@ -6,9 +6,10 @@ namespace toadll
 	{
 	private:
 		jclass ariclass = nullptr;
+		JNIEnv* env = nullptr;
 
 	public:
-		explicit c_ActiveRenderInfo(jclass ariklass) { ariclass = ariklass; }
+		explicit c_ActiveRenderInfo(jclass ariklass, JNIEnv* env) : ariclass(ariklass), env(env) {}
 
 	public:
 		void get_modelview(GLfloat modelviewbuf[16]) const;

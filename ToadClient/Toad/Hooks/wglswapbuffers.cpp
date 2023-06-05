@@ -60,7 +60,7 @@ namespace toadll
 
 		const auto draw = ImGui::GetForegroundDrawList();
 
-		for (const auto& Module : moduleInstances)
+		for (const auto& Module : CModule::moduleInstances)
 			Module->OnRender(draw);
 
 		/*for (const auto& [name, pos] : toadll::CEsp::get_instance()->get_playernames_map())

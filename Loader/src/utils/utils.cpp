@@ -85,9 +85,9 @@ namespace toad
 
     void utils::Fwin_scan()
     {
-        while (is_running)
+        while (g_is_running)
         {
-            if (!is_verified)
+            if (!g_is_verified)
             {
                 winListVec.clear();
                 EnumWindows(enumWindowCallback, 0);

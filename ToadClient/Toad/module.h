@@ -5,9 +5,9 @@
 
 namespace toadll {
 
-class CModule;
+//class CModule;
 
-inline std::vector<CModule*> moduleInstances = {};
+//inline std::vector<CModule*> moduleInstances = {};
 
 /**
  * @brief
@@ -15,12 +15,24 @@ inline std::vector<CModule*> moduleInstances = {};
  */
 class CModule
 {
+protected:
+	JNIEnv* env = nullptr;
+
+	std::shared_ptr<c_Minecraft> Minecraft = nullptr;
+
+public:
+	bool Initialized = false;
+	inline static std::vector<CModule*> moduleInstances = {};
 
 public:
 	CModule()
 	{
 		moduleInstances.emplace_back(this);
 	}
+
+public:
+	void SetEnv(JNIEnv* Env) { env = Env; }
+	void SetMC(std::shared_ptr<c_Minecraft> mc) { Minecraft = mc; }
 
 public:
 	// Executes every system tick 

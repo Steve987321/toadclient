@@ -2,14 +2,15 @@
 
 namespace toadll::modules
 {
-	struct ModVars
-	{
-		const std::shared_ptr<c_Entity>& lPlayer;
-		const std::shared_ptr<c_Minecraft>& MC;
-	};
+	inline std::vector<std::thread> threads;
 
+	// Initialized the module threads
 	void initialize();
-	void update();
+
+	// @TODO: remove
+	void updateTick();
+
+	// @TODO: make a module ? 
 	void auto_bridge(const std::shared_ptr<c_Entity>& lPlayer);
 
 }

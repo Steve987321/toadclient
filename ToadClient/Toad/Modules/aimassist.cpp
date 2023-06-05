@@ -13,7 +13,6 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 	std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
 
 	static std::shared_ptr<c_Entity> target = nullptr;
-
 	float speed = aa::speed;
 	float minimalAngleDiff = aa::fov / 2.f;
 
@@ -31,7 +30,7 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 	target = nullptr;
 
 	// get a target
-	for (const auto& player : p_Minecraft->get_playerList())
+	for (const auto& player : Minecraft->get_playerList())
 	{
 		if (env->IsSameObject(lPlayer->obj, player->obj)) continue;
 
@@ -127,50 +126,43 @@ AIMING:
 			return;
 	// got target and yaw and pitch offsets
 
-	yawDiff += toad::rand_float(-2.f, 2.f);
-	pitchDiff += toad::rand_float(-2.f, 2.f);
+	yawDiff += toadll::rand_float(-2.f, 2.f);
+	pitchDiff += toadll::rand_float(-2.f, 2.f);
 
-	const int rand_100 = toad::rand_int(0, 100);
+	const int rand_100 = toadll::rand_int(0, 100);
 
 	static float speed_rand_timer = 200;
+	static float reaction_time_timer = 0;
 	static float long_speed_modifier = 1;
 	static float long_speed_modifier_smooth = 1;
 
 	float smooth = speed;
 
-	/*if (absYawDiff > 7)
-	{
-		smooth *= aa::auto_aim ? toad::rand_float(2.0f, 3.0f) : toad::rand_float(0.4f, 2.0f);
-	}
-	else if (absYawDiff < 7)
-	{
-		smooth *= aa::auto_aim ? toad::rand_float(0.5f, 1.f) : toad::rand_float(0.0f, 0.4f);
-	}*/
-
 	speed = std::lerp(speed, smooth, 0.05f);
 
 	if (speed_rand_timer < 0)
 	{
-		long_speed_modifier = toad::rand_float(0.7f, 1.3f);
+		long_speed_modifier = toadll::rand_float(0.7f, 1.3f);
 		speed_rand_timer = 200;
 		//std::cout << "reset :" << long_speed_modifier << std::endl;
 	}
 
 	long_speed_modifier_smooth = std::lerp(long_speed_modifier_smooth, long_speed_modifier, 0.05f);
+	static float yawdiffSpeed = 0;
 
 	if (static bool once = false; !once || reaction_time_timer > aa::reaction_time)
 	{
 		yawdiffSpeed = yawDiff / (15000.f / speed * long_speed_modifier_smooth);
-
 		once = true;
 		reaction_time_timer = 0;
 	}
 
+	//log_Debug("%s | %f = %f + %f", target->get_name().c_str(), lyaw + yawdiffSpeed, lyaw, yawdiffSpeed);
 	lPlayer->set_rotationYaw(lyaw + yawdiffSpeed);
 	lPlayer->set_prevRotationYaw(lyaw + yawdiffSpeed);
 
 	if (rand_100 <= 10) {
-		float pitchrand = toad::rand_float(-0.005f, 0.005f);
+		float pitchrand = toadll::rand_float(-0.005f, 0.005f);
 		lPlayer->set_rotationPitch(lpitch + pitchrand);
 		lPlayer->set_prevRotationPitch(lpitch + pitchrand);
 	}
@@ -181,10 +173,10 @@ AIMING:
 		lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (15000.f / speed));
 	}
 
-	toad::preciseSleep(toad::rand_float(0.0001f, 0.0005f));
-
-	speed_rand_timer -= partialTick;
-	reaction_time_timer += partialTick;
+	toadll::preciseSleep(toadll::rand_float(0.0001f, 0.0005f));
+	auto ptick = Minecraft->get_partialTick();
+	speed_rand_timer -= ptick;
+	reaction_time_timer += ptick;
 }
 
 }

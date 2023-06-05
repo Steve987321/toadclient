@@ -68,23 +68,23 @@ namespace toadll
     }
 
     // function to find classes on (any) minecraft client
-    jclass findclass(const char* clsName);
+    jclass findclass(const char* clsName, JNIEnv* env);
 
-    std::string jstring2string(const jstring& jStr);
+    std::string jstring2string(const jstring& jStr, JNIEnv* env);
 
     // get jmethodID from obj or class from the given mapping
-    jmethodID get_mid(jclass cls, mapping name);
-    jmethodID get_mid(jobject obj, mapping name);
-    jmethodID get_static_mid(jclass cls, mapping name);
+    jmethodID get_mid(jclass cls, mapping name, JNIEnv* env);
+    jmethodID get_mid(jobject obj, mapping name, JNIEnv* env);
+    jmethodID get_static_mid(jclass cls, mapping name, JNIEnv* env);
 
     // get jfieldId from obj or class from the given mapping
-    jfieldID get_fid(jclass cls, mappingFields name);
-    jfieldID get_fid(jobject obj, mappingFields name);
-    jfieldID get_static_fid(jclass cls, mappingFields name);
+    jfieldID get_fid(jclass cls, mappingFields name, JNIEnv* env);
+    jfieldID get_fid(jobject obj, mappingFields name, JNIEnv* env);
+    jfieldID get_static_fid(jclass cls, mappingFields name, JNIEnv* env);
 
 	// minecraft Vec3 object to vec3
-	vec3 to_vec3(jobject vecObj);
-	vec3 to_vec3i(jobject vecObj);
+	vec3 to_vec3(jobject vecObj, JNIEnv* env);
+	vec3 to_vec3i(jobject vecObj, JNIEnv* env);
 
     //vec3 get_closest_point()
 
@@ -94,6 +94,6 @@ namespace toadll
     bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, float fov, vec2& screenpos);
     bool WorldToScreen(const vec3& worldPoint, vec2& screen, GLfloat modelView[16], GLfloat projection[16]);
 
-    void loop_through_class(const jclass klass);
+    void loop_through_class(const jclass klass, JNIEnv* env);
 
 }

@@ -11,6 +11,7 @@ class c_Singleton
 {
 	friend T;
 public:
+	virtual ~c_Singleton() = default;
 	c_Singleton() = default;
 	c_Singleton(const c_Singleton&) = delete;
 

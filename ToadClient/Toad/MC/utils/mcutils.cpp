@@ -6,7 +6,7 @@
 namespace toadll
 {
 
-    jclass findclass(const char* clsName)
+    jclass findclass(const char* clsName, JNIEnv* env)
     {
         jclass thread_clazz = env->FindClass("java/lang/Thread");
         jmethodID curthread_mid = env->GetStaticMethodID(thread_clazz, "currentThread", "()Ljava/lang/Thread;");
@@ -53,7 +53,7 @@ namespace toadll
         return env->FindClass(clsName);
     }
 
-    std::string jstring2string(const jstring& jStr) {
+    std::string jstring2string(const jstring& jStr, JNIEnv* env) {
         if (!jStr)
             return "";
 
@@ -72,41 +72,41 @@ namespace toadll
         return ret;
     }
 
-    jmethodID get_mid(jclass cls, mapping name)
+    jmethodID get_mid(jclass cls, mapping name, JNIEnv* env)
     {
         return env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
     }
 
-    jmethodID get_mid(jobject obj, mapping name)
+    jmethodID get_mid(jobject obj, mapping name, JNIEnv* env)
     {
         auto objKlass = env->GetObjectClass(obj);
-        auto mid = get_mid(objKlass, name);
+        auto mid = get_mid(objKlass, name, env);
         env->DeleteLocalRef(objKlass);
         return mid;
     }
 
-    jmethodID get_static_mid(jclass cls, mapping name)
+    jmethodID get_static_mid(jclass cls, mapping name, JNIEnv* env)
     {
         return env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
     }
 
-    jfieldID get_static_fid(jclass cls, mappingFields name)
+    jfieldID get_static_fid(jclass cls, mappingFields name, JNIEnv* env)
 	{
         return env->GetStaticFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
 	}
     
-    jfieldID get_fid(jclass cls, mappingFields name)
+    jfieldID get_fid(jclass cls, mappingFields name, JNIEnv* env)
 	{
         return env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
 	}
 
-	jfieldID get_fid(jobject obj, mappingFields name)
+	jfieldID get_fid(jobject obj, mappingFields name, JNIEnv* env)
 	{
-        return get_fid(env->GetObjectClass(obj), name);
+        return get_fid(env->GetObjectClass(obj), name, env);
 	}
     
 
-    vec3 to_vec3(jobject vecObj)
+    vec3 to_vec3(jobject vecObj, JNIEnv* env)
     {
         auto posclass = env->GetObjectClass(vecObj);
 
@@ -125,7 +125,7 @@ namespace toadll
         };
     }
 
-	vec3 to_vec3i(jobject vecObj)
+	vec3 to_vec3i(jobject vecObj, JNIEnv* env)
     {
         auto posclass = env->GetObjectClass(vecObj);
 
@@ -248,7 +248,7 @@ namespace toadll
         return true;
     }
 
-    void loop_through_class(const jclass klass)
+    void loop_through_class(const jclass klass, JNIEnv* env)
     {
         for (auto i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
         {
