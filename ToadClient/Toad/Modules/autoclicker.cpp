@@ -106,7 +106,7 @@ void toadll::CLeftAutoClicker::apply_rand(std::vector<Inconsistency>& inconsiste
 			// boost up
 			if (boost.counter <= boost.transition_duration)
 			{
-				log_Debug("id: %d boosting up (%f, %f)", boost.id, rand.edited_min, rand.edited_max);
+				//log_Debug("id: %d boosting up (%f, %f)", boost.id, rand.edited_min, rand.edited_max);
 				rand.edited_min -= boost.amount_ms;
 				rand.edited_max -= boost.amount_ms / 2.0f;
 			}
@@ -116,7 +116,7 @@ void toadll::CLeftAutoClicker::apply_rand(std::vector<Inconsistency>& inconsiste
 				&&
 				boost.counter <= boost.duration)
 			{
-				log_Debug("id: %d boosting down (%f, %f)", boost.id, rand.edited_min, rand.edited_max);
+				//log_Debug("id: %d boosting down (%f, %f)", boost.id, rand.edited_min, rand.edited_max);
 				rand.edited_min += boost.amount_ms;
 				rand.edited_max += boost.amount_ms / 2.0f;
 			}
@@ -193,7 +193,11 @@ void toadll::CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
 {
 	static bool is_starting_click = false;
 
+	static bool break_blocks_flag = false; // decides if the player is gonna hold down lmb
+
+	// TODO: test trade assist 
 	static CTimer trade_assist_timer;
+	static CTimer break_blocks_timer; // a delay before breaking a block after aiming at one
 
 	if (!clicker::enabled)
 	{
@@ -265,12 +269,41 @@ void toadll::CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
 
 		mouse_down();
 		
-		while (clicker::break_blocks && mouse_over_type == "BLOCK")
+		if (clicker::break_blocks)
 		{
-			SLOW_SLEEP(1);
-			mouse_over_type = get_mouse_over_type();
-			m_start = std::chrono::high_resolution_clock::now();
+			static bool start_once = false;
+
+			if (mouse_over_type == "BLOCK")
+			{
+				if (!start_once)
+				{
+					break_blocks_timer.Start();
+					start_once = true;
+				}
+				else
+				{
+					// reaction time of 200 ms
+					if (break_blocks_timer.Elapsed<>() > 200)
+					{
+						break_blocks_flag = true;
+					}
+				}
+
+				while (mouse_over_type == "BLOCK" && break_blocks_flag)
+				{
+					SLOW_SLEEP(1);
+					mouse_over_type = get_mouse_over_type();
+					m_start = std::chrono::high_resolution_clock::now();
+				}
+			}
+			else
+			{
+				break_blocks_timer.Start();
+				start_once = true;
+				break_blocks_flag = false;
+			}
 		}
+		
 
 		mouse_up();
 	}
