@@ -45,11 +45,13 @@ private:
 
 		std::vector<Boost> boosts =
 		{
-			Boost(3.5f, 30, 3, {100,  150}, 0),
-			Boost(2.8f, 50, 5, {100,  150}, 1),
-			Boost(1.8f, 120, 8, {160, 200}, 2),
-			Boost(2.7f, 150, 5, {160, 200}, 3)
+			Boost(1.6f, 50 , 3, {100, 150}, 0),
+			Boost(0.5f, 120 , 5, {100, 150}, 1),
+			Boost(0.4f, 160, 8, {150, 200}, 2),
+			Boost(1.0f, 190, 5, {150, 200}, 3)
 		};
+
+		// add drops = negative boosts
 		
 	} rand;
 

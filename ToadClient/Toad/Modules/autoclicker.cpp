@@ -48,7 +48,7 @@ void toadll::CLeftAutoClicker::update_rand_vars()
 			if (i.chance >= rand_100)
 				i.should_start = true;
 			else
-				i.frequency_counter -= i.frequency_counter * (i.frequency_counter / i.frequency * 0.85f);
+				i.frequency_counter -= static_cast<float>(i.frequency_counter) * (static_cast<float>(i.frequency_counter) / static_cast<float>(i.frequency) * 0.75f);
 		}		
 
 	for (auto& i2 : rand.inconsistencies2)
@@ -57,12 +57,12 @@ void toadll::CLeftAutoClicker::update_rand_vars()
 			if (i2.chance <= rand_100)
 				i2.should_start = true;
 			else
-				i2.frequency_counter -= i2.frequency_counter * (i2.frequency_counter / i2.frequency * 0.85f);
+				i2.frequency_counter -= static_cast<float>(i2.frequency_counter) * (static_cast<float>(i2.frequency_counter) / static_cast<float>(i2.frequency) * 0.75f);
 		}
 
 	for (auto& b : rand.boosts)
 	{
-		//log_Debug("%d: started: %s counter %d frequency_counter %d", b.id, b.start ? "true" : "false", b.counter, b.frequency_counter);
+		//log_Debug("%d: started: %s paused: %s counter: %d frequency_counter: %d", b.id, b.start ? "Y" : "N", b.paused ? "Y" : "N", b.counter, b.frequency_counter);
 
 		if (b.paused)
 			continue;
@@ -76,7 +76,7 @@ void toadll::CLeftAutoClicker::update_rand_vars()
 			{
 				if (b_other.id == b.id)
 					continue;
-				b_other.frequency_counter -= b_other.frequency_counter * (b_other.frequency_counter / b_other.frequency * 0.85f);
+				b_other.frequency_counter -= static_cast<float>(b_other.frequency_counter) * (static_cast<float>(b_other.frequency_counter) / static_cast<float>(b_other.frequency) * 0.75f);
 				b_other.paused = true;
 			}
 		}
@@ -112,12 +112,11 @@ void toadll::CLeftAutoClicker::apply_rand(std::vector<Inconsistency>& inconsiste
 			}
 
 			// boost down 
-			else if (boost.counter >= boost.duration - boost.transition_duration
+			else if (boost.counter > boost.duration - boost.transition_duration
 				&&
 				boost.counter <= boost.duration)
 			{
 				log_Debug("id: %d boosting down (%f, %f)", boost.id, rand.edited_min, rand.edited_max);
-
 				rand.edited_min += boost.amount_ms;
 				rand.edited_max += boost.amount_ms / 2.0f;
 			}
@@ -128,7 +127,7 @@ void toadll::CLeftAutoClicker::apply_rand(std::vector<Inconsistency>& inconsiste
 				boost.Reset();
 				// unpause other boosts
 				for (auto& b : rand.boosts)
-					b.Reset();
+					b.paused = false;
 			}
 
 			break; // make sure we dont apply other boosts while boosting 
@@ -274,9 +273,9 @@ void toadll::CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
 	{
 		if (is_starting_click)
 		{
-			for (auto& i : rand.boosts)
+			for (auto& b : rand.boosts)
 			{
-				i.paused = false;
+				b.Reset();
 			}
 			is_starting_click = false;
 		}

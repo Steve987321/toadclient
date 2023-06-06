@@ -42,7 +42,7 @@ namespace toadll
 			start = false;
 			paused = false;
 			counter = 0;
-			frequency_counter = frequency_counter -= frequency_counter * (frequency_counter / frequency * 0.85f);
+			frequency_counter = frequency_counter -= static_cast<float>(frequency_counter) * (static_cast<float>(frequency_counter) / static_cast<float>(frequency) * 0.75f);
 			frequency = rand_int(frequency_range.x, frequency_range.y);
 		}
 
