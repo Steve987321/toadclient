@@ -10,7 +10,6 @@ void toadll::CVarsUpdater::Update(const std::shared_ptr<c_Entity>& lPlayer)
 	if (GetCursorInfo(&ci))
 	{
 		auto handle = reinterpret_cast<int>(ci.hCursor);
-		std::cout << handle << std::endl;
 		g_is_cursor_shown = (handle > 50000 && handle < 1000000 || handle == 13961697);
 	}
 
