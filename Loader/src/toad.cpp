@@ -60,6 +60,7 @@ void toad::Fupdate_settings()
 	// auto clicker
 	data["lcenabled"] = clicker::enabled;
 	data["lccps"] = clicker::cps;
+	data["lcbreakblocks"] = clicker::break_blocks;
 	data["lcblockhit"] = clicker::block_hit;
 	data["lcblockhitms"] = clicker::block_hit_ms;
 	data["lcsmartcps"] = clicker::targeting_affects_cps;

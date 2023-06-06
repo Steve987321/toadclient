@@ -165,6 +165,9 @@ namespace toadll
         getEntityRenderer,
         getTimer,
 
+        // General
+        toString,
+
         // .World
         getPlayerEntities,
         getRenderManager,
@@ -230,7 +233,7 @@ namespace toadll
         bboxMaxZ,
 
         // Timer
-        partialTick
+        partialTick,
     };
 
     constexpr static auto PI = 3.14159265358979323846f;

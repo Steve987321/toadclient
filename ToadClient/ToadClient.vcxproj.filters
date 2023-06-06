@@ -108,6 +108,9 @@
     <ClInclude Include="Toad\Modules\vars_updater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Toad\Modules\rand_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

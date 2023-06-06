@@ -53,7 +53,7 @@ namespace toadll
         return env->FindClass(clsName);
     }
 
-    std::string jstring2string(const jstring& jStr, JNIEnv* env) {
+    std::string jstring2string(jstring jStr, JNIEnv* env) {
         if (!jStr)
             return "";
 

@@ -90,6 +90,10 @@ namespace toadll::mappings
 			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass))
 				log_Error("can't find timer");
 
+			// General
+			methodnames.insert({ mapping::toString, "toString" });
+			methodsigs.insert({ mapping::toString, "()Ljava/lang/String;" });
+
 			// WORLD
 			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
 			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });

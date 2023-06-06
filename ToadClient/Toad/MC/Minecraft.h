@@ -35,6 +35,10 @@ namespace toadll
 		_NODISCARD float get_renderPartialTick() const;
 		_NODISCARD float get_fov() const;
 
+		_NODISCARD jobject get_mouseOverObj() const;
+		_NODISCARD std::string get_mouseOverStr() const;
+		_NODISCARD bool is_AirBlock(jobject blockobj) const;
+
 		_NODISCARD std::vector<std::shared_ptr<c_Entity>> get_playerList();
 
 		_NODISCARD std::shared_ptr<c_Entity> get_localplayer();

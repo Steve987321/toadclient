@@ -15,6 +15,7 @@ public:
 	}
 
 public:
+	// Starts or Resets the begin point of the timer
 	void Start()
 	{
 		start = std::chrono::high_resolution_clock::now();

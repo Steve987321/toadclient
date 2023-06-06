@@ -160,6 +160,7 @@
     <ClInclude Include="Toad\Modules\autoclicker.h" />
     <ClInclude Include="Toad\Hooks\wglswapbuffers.h" />
     <ClInclude Include="Toad\Modules\aimassist.h" />
+    <ClInclude Include="Toad\Modules\rand_types.h" />
     <ClInclude Include="Toad\singleton.h" />
     <ClInclude Include="Toad\module.h" />
     <ClInclude Include="Toad\Modules\esp.h" />

@@ -58,7 +58,6 @@ namespace toadll
 	inline HMODULE g_hMod;
 	inline HWND g_hWnd; 
 
-	inline float g_partialTick = 0;
 	inline float g_renderPartialTick = 0;
 
 	inline JNIEnv* g_env = nullptr;

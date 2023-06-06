@@ -98,7 +98,7 @@ void toadll::modules::updateTick()
 	//		env->DeleteLocalRef(objklass);
 	//	});
 	
-	g_partialTick = mc->get_partialTick();
+	//g_partialTick = mc->get_partialTick();
 
 	/*for (auto Module : moduleInstances)
 		Module->Update(player);*/

@@ -49,6 +49,7 @@ namespace toadll
 		// auto clicker
 		clicker::enabled = data["lcenabled"];
 		clicker::cps = data["lccps"];
+		clicker::break_blocks = data["lcbreakblocks"];
 		clicker::block_hit = data["lcblockhit"];
 		clicker::block_hit_ms = data["lcblockhitms"];
 		clicker::targeting_affects_cps = data["lcsmartcps"];

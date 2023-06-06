@@ -38,6 +38,14 @@ namespace toad
 		inline float reaction_time = 40; //ms
 	}
 
+	namespace reach
+	{
+		inline bool enabled = false;
+		inline float min_value = 3.00f;
+		inline float max_value = 3.50f;
+		inline int chance = 50;
+	}
+
 	namespace velocity
 	{
 		inline bool enabled = false;

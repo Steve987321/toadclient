@@ -153,6 +153,35 @@ float toadll::c_Minecraft::get_fov() const
     return res;
 }
 
+jobject toadll::c_Minecraft::get_mouseOverObj() const
+{
+    auto mc = get_mc();
+    auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getObjectMouseOver, env));
+    env->DeleteLocalRef(mc);
+    return obj;
+}
+
+std::string toadll::c_Minecraft::get_mouseOverStr() const
+{
+    auto obj = get_mouseOverObj();
+    if (obj == nullptr)
+        return "TYPE=null,";
+    auto jstr = static_cast<jstring>(env->CallObjectMethod(obj, get_mid(obj, mapping::toString, env)));
+
+    auto res = jstring2string(jstr, env);
+    env->DeleteLocalRef(obj);
+    env->DeleteLocalRef(jstr);
+    return res;
+}
+
+bool toadll::c_Minecraft::is_AirBlock(jobject blockobj) const
+{
+    auto world = get_world();
+    auto res = env->CallBooleanMethod(world, get_mid(world, mapping::isAirBlock, env), blockobj);
+    env->DeleteLocalRef(world);
+    return res;
+}
+
 std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerList()
 {
     auto world = get_world();
