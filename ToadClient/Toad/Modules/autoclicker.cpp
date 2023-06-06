@@ -207,7 +207,8 @@ void toadll::CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
 
 		m_pTick = Minecraft->get_partialTick();
 		auto mouse_over_type = get_mouse_over_type();
-
+		auto held_item = lPlayer->get_heldItemStr();
+		
 		if (!is_starting_click)
 		{
 			rand.edited_min = rand.min_delay;
@@ -215,6 +216,10 @@ void toadll::CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
 
 			is_starting_click = true;
 		}
+
+		if (clicker::weapons_only)
+			if (held_item.find("sword") == std::string::npos)
+				return;
 
 		if (clicker::targeting_affects_cps)
 		{
