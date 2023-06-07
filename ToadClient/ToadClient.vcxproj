@@ -188,7 +188,6 @@
     <ClInclude Include="Toad\Types.h" />
     <ClInclude Include="Toad\Modules\velocity.h" />
     <ClInclude Include="Toad\Hooks\ws2_32.h" />
-    <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Toad\Modules\autoclicker.cpp" />
@@ -240,7 +239,6 @@
     <ClCompile Include="Toad\Toad.cpp" />
     <ClCompile Include="Toad\Modules\velocity.cpp" />
     <ClCompile Include="Toad\Hooks\ws2_32.cpp" />
-    <ClCompile Include="Toad\Modules\vars_updater.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

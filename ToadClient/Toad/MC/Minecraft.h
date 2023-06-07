@@ -31,12 +31,16 @@ namespace toadll
 		_NODISCARD jobject get_world() const;
 		_NODISCARD jobject get_gamesettings() const;
 
+		_NODISCARD bool isInGui() const;
+
 		_NODISCARD float get_partialTick() const;
 		_NODISCARD float get_renderPartialTick() const;
 		_NODISCARD float get_fov() const;
 
 		_NODISCARD jobject get_mouseOverObj() const;
 		_NODISCARD std::string get_mouseOverStr() const;
+		_NODISCARD std::shared_ptr<c_Entity> get_mouseOverPlayer();
+
 		_NODISCARD bool is_AirBlock(jobject blockobj) const;
 
 		_NODISCARD std::vector<std::shared_ptr<c_Entity>> get_playerList();

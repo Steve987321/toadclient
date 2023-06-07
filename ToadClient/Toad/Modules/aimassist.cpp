@@ -9,7 +9,7 @@ namespace toadll {
 void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 {
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
-	if (!aa::enabled || g_is_cursor_shown)
+	if (!aa::enabled || Minecraft->isInGui())
 	{
 		SLOW_SLEEP(10);
 		return;

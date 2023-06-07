@@ -123,10 +123,19 @@ namespace toadll
         Forge
     };
 
+    struct MCMap
+    {
+        MCMap(const char* n, const char* s) : name(n), sig(s) {}
+
+        const char* name;
+        const char* sig;
+    };
+
     enum class mappingFields
     {
         // .Minecraft
         theMcField,
+        currentScreenField,
 
         // .GameSettings
         fovField,
@@ -154,6 +163,11 @@ namespace toadll
         renderPartialTickField
     };
 
+    enum class static_mapping
+    {
+	    
+    };
+
     enum class mapping
     {
         // .Minecraft
@@ -164,6 +178,9 @@ namespace toadll
         getObjectMouseOver,
         getEntityRenderer,
         getTimer,
+
+        // objectmouseover
+        getEntityHit,
 
         // General
         toString,

@@ -82,6 +82,19 @@ namespace toadll
         return TRUE;
     }
 
+    inline void SendKey(WORD vk_key, bool send_down = true)
+    {
+        static INPUT ip{INPUT_KEYBOARD};
+
+        ip.ki.wScan = 0; 
+        ip.ki.time = 0;
+        ip.ki.dwExtraInfo = 0;
+        ip.ki.wVk = vk_key;
+        ip.ki.dwFlags = send_down ? 0 : KEYEVENTF_KEYUP;
+
+        SendInput(1, &ip, sizeof(INPUT));
+    }
+
     inline void GetCurrWindowHWND(HWND* hwnd)
     {
         EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(hwnd));

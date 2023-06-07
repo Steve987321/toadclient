@@ -27,7 +27,6 @@
 #include "singleton.h"
 #include "module.h"
 
-#include "Modules/vars_updater.h"
 #include "Modules/autoclicker.h"
 #include "Modules/esp.h"
 #include "Modules/aimassist.h"
@@ -48,8 +47,6 @@ namespace toadll
 	inline minecraft_client curr_client = minecraft_client::Lunar;
 
 	inline std::atomic_bool g_is_running = false;
-
-	inline bool g_is_cursor_shown = false;
 
 	inline int screen_height = -1, screen_width = -1;
 	inline GLfloat modelview[16];

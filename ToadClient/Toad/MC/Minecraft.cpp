@@ -120,6 +120,14 @@ jobject toadll::c_Minecraft::get_gamesettings() const
     return obj;
 }
 
+bool toadll::c_Minecraft::isInGui() const
+{
+    auto mc = get_mc();
+    auto res = env->GetObjectField(mc, get_fid(mc, mappingFields::currentScreenField, env)) != nullptr;
+    env->DeleteLocalRef(mc);
+    return res;
+}
+
 float toadll::c_Minecraft::get_partialTick() const
 {
     auto mc = get_mc();
@@ -172,6 +180,32 @@ std::string toadll::c_Minecraft::get_mouseOverStr() const
     env->DeleteLocalRef(obj);
     env->DeleteLocalRef(jstr);
     return res;
+}
+
+std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_mouseOverPlayer()
+{
+    if (get_mouseOverStr().find("MISS") != std::string::npos) return nullptr;
+
+    auto obj = get_mouseOverObj();
+    if (obj == nullptr)
+        return nullptr;
+
+    // TODO: ...
+    if (static bool init_map = false; !init_map)
+    {
+        auto klass = env->GetObjectClass(obj);
+        mappings::methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
+        if (!mappings::getsig(mapping::getEntityHit, "bridge$getEntityHit", klass, env))
+            log_Error("can't find getEntityHit");
+        env->DeleteLocalRef(klass);
+        init_map = true;
+    }
+
+    auto entityObj = env->CallObjectMethod(obj, get_mid(obj, mapping::getEntityHit, env));
+    env->DeleteLocalRef(obj);
+    if (entityObj == nullptr)
+        return nullptr;
+    return std::make_shared<c_Entity>(entityObj, env, get_entity_living_class());
 }
 
 bool toadll::c_Minecraft::is_AirBlock(jobject blockobj) const

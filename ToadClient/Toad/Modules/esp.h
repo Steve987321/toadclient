@@ -14,7 +14,7 @@ class CEsp SET_MODULE_CLASS(CEsp)
 {
 
 public:
-	void OnTick(const std::shared_ptr<c_Entity>& lPlayer) override;
+	void Update(const std::shared_ptr<c_Entity>& lPlayer) override;
 	void OnRender(ImDrawList* draw) override;
 };
 

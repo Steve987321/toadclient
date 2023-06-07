@@ -82,6 +82,11 @@ private:
 	inline void mouse_down();
 	inline void mouse_up();
 
+
+	// No randomization on these
+	static inline void right_mouse_down();
+	static inline void right_mouse_up();
+
 private:
 	inline std::string get_mouse_over_type() const;
 

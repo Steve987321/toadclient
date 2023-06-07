@@ -6,7 +6,6 @@ std::once_flag flag;
 
 void toadll::modules::initialize()
 {
-	CVarsUpdater::get_instance();
 	CLeftAutoClicker::get_instance();
 	CAimAssist::get_instance();
 	CEsp::get_instance();

@@ -4,19 +4,6 @@
 
 namespace toadll::mappings
 {
-	struct MCMap
-	{
-		const char* name;
-		const char* sig;
-	};
-
-	std::unordered_map<mapping, MCMap*> methods;
-	std::unordered_map<mapping, const char*> methodnames;
-	std::unordered_map<mapping, const char*> methodsigs;
-
-	std::unordered_map<mappingFields, const char*> fieldnames;
-	std::unordered_map<mappingFields, const char*> fieldsigs;
-
 	const char* findName( mapping name)
 	{
 		return methodnames.find(name)->second;
@@ -39,20 +26,6 @@ namespace toadll::mappings
 
 	void init_map(JNIEnv* env, jclass mcclass, jclass entity_class, minecraft_client client)
 	{
-		const auto getsig = [&](mapping map, const char* name, const jclass klass) -> bool
-		{
-			for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
-			{
-				if (std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i)) == name)
-				{
-					//std::cout << name << " = " << std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, mcclass, i)) << " sig: " << jvmfunc::oJVM_GetMethodIxSignatureUTF(env, mcclass, i) << std::endl;
-					methodsigs.insert({ map, jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i) });
-					return true;
-				}
-			}
-			return false;
-		};
-
 		if (client == minecraft_client::Vanilla)
 		{
 			
@@ -67,28 +40,34 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::getMinecraft, "()Lnet/minecraft/client/Minecraft;" });
 
 			methodnames.insert({ mapping::getWorld, "bridge$getWorld" });
-			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass))
+			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
 				log_Error("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
 			methodnames.insert({ mapping::getPlayer, "bridge$getPlayer" });
-			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass))
+			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
 				log_Error("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
 			methodnames.insert({ mapping::getGameSettings, "bridge$getGameSettings" });
-			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass))
+			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass, env))
 				log_Error("can't find gamesettings");
 
 			methodnames.insert({ mapping::getObjectMouseOver, "bridge$getObjectMouseOver" });
-			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass))
+			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
 				log_Error("can't find getobjectmouseover");// methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
 
 			methodnames.insert({ mapping::getEntityRenderer, "bridge$getEntityRenderer" });
-			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass))
+			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass, env))
 				log_Error("can't find entityRenderer");// methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
 
 			methodnames.insert({ mapping::getTimer, "bridge$getTimer" });
-			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass))
+			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
 				log_Error("can't find timer");
+
+			fieldnames.insert({mappingFields::currentScreenField, "currentScreen"});
+			fieldsigs.insert({mappingFields::currentScreenField, "Lnet/minecraft/client/gui/GuiScreen;"});
+
+			methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
+			// methodsig is in minecraft.cpp
 
 			// General
 			methodnames.insert({ mapping::toString, "toString" });
@@ -172,7 +151,7 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::getRotationPitch, "()D" });
 
 			methodnames.insert({ mapping::getBBox, "bridge$getBoundingBox" });
-			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class))
+			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
 				log_Error("can't find bbox");
 
 			methodnames.insert({ mapping::getName, "getName" });
