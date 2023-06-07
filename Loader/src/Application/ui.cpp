@@ -62,9 +62,9 @@ namespace toad
                     if (is_Clicker)
                         utils::setting_menu("Auto Clicker", is_Clicker, []
                             {
-                                ImGui::SliderInt("cps", &clicker::cps, 0, 20, "%dcps");
+			                    ImGui::SliderInt("cps", &clicker::cps, 0, 20, "%dcps");
 			                    ImGui::Checkbox("weapons only", &clicker::weapons_only);
-                                ImGui::Checkbox("break blocks", &clicker::break_blocks);
+			                    ImGui::Checkbox("break blocks", &clicker::break_blocks);
 			                    ImGui::Checkbox("block hit", &clicker::block_hit);
 			                    ImGui::SliderInt("block hit delay", &clicker::block_hit_ms, 0, 50);
 			                    ImGui::Checkbox("smart cps", &clicker::targeting_affects_cps);
@@ -73,14 +73,14 @@ namespace toad
                     else if (is_AA)
                         utils::setting_menu("Aim Assist", is_AA, []
                             {
-                                ImGui::SliderFloat("Speed", &aa::speed, 0, 10);
+			                    ImGui::SliderFloat("Speed", &aa::speed, 0, 10);
 			                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
 			                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
 			                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
 			                    ImGui::Checkbox("Invisibles", &aa::invisibles);
 			                    ImGui::Checkbox("Always Aim", &aa::always_aim);
-                                ImGui::Checkbox("Target Lock", &aa::lock_aim);
-                                ImGui::Checkbox("Multi Point", &aa::aim_at_closest_point);
+			                    ImGui::Checkbox("Target Lock", &aa::lock_aim);
+			                    ImGui::Checkbox("Multi Point", &aa::aim_at_closest_point);
 			                    ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
 			                    if (ImGui::IsItemClicked())
 			                        aa::targetFOV = !aa::targetFOV;
@@ -88,6 +88,7 @@ namespace toad
                     else if (is_Velocity)
                         utils::setting_menu("Velocity", is_Velocity, []
                             {
+                                ImGui::Checkbox("Use Jump Reset", &velocity::jump_reset);
                                 ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
                                 ImGui::SliderFloat("Vertical", &velocity::vertical, 0.f, 100.f, "%.1f%%");
                                 ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");

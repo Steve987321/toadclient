@@ -50,7 +50,7 @@ namespace toad
 	{
 		inline bool enabled = false;
 
-		inline bool use_item_whitelist;
+		inline bool jump_reset; // uses jump reset instead, will ignore everything else and justs jumps on hit
 
 		inline bool only_when_moving = false;
 		inline bool only_when_attacking = false;

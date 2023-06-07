@@ -85,6 +85,7 @@ void toad::Fupdate_settings()
 
 	// velocity
 	data["velenabled"] = velocity::enabled;
+	data["veljumpreset"] = velocity::jump_reset;
 	data["velhorizontal"] = velocity::horizontal;
 	data["velvertical"] = velocity::vertical;
 	data["velchance"] = velocity::chance;

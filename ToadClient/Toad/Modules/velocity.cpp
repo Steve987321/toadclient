@@ -15,6 +15,21 @@ namespace toadll
 		}
 
 		static bool StopFlag = false;
+
+		if (velocity::jump_reset)
+		{
+			if (lPlayer->get_hurt_time() > 0 && !StopFlag)
+			{
+				StopFlag = true;
+				SendKey(VK_SPACE);
+				SLOW_SLEEP(rand_int(40, 70));
+				SendKey(VK_SPACE, false);
+			}
+			else if (lPlayer->get_hurt_time() == 0)
+				StopFlag = false;
+			return;
+		}
+
 		static int beginHurtTime = 0;
 
 		if (int hurttime = lPlayer->get_hurt_time(); hurttime > 0 && !StopFlag)

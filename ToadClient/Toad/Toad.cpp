@@ -78,6 +78,7 @@ namespace toadll
 		velocity::vertical = data["velvertical"];
 		velocity::chance = data["velchance"];
 		velocity::delay = data["veldelay"];
+		velocity::jump_reset = data["veljumpreset"];
 
 		CLeftAutoClicker::SetDelays();
 
