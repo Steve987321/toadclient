@@ -18,6 +18,9 @@ namespace toadll
 		toadll::screen_width = viewport[2];
 		toadll::screen_height = viewport[3];
 
+		for (const auto& Module : CModule::moduleInstances)
+			Module->OnRender();
+
 		HWND hwnd = WindowFromDC(hDc);
 		HGLRC oCtx = wglGetCurrentContext();
 
@@ -57,11 +60,6 @@ namespace toadll
 		ImGui::NewFrame();
 
 		//draw->AddRect({ 25,25 }, { 50, 50 }, IM_COL32_WHITE, 5.f);
-
-		const auto draw = ImGui::GetForegroundDrawList();
-
-		for (const auto& Module : CModule::moduleInstances)
-			Module->OnRender(draw);
 
 		/*for (const auto& [name, pos] : toadll::CEsp::get_instance()->get_playernames_map())
 		{

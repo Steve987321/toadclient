@@ -223,29 +223,45 @@ namespace toadll
         return true;
     }
 
-    bool WorldToScreen(const vec3& worldPoint, vec2& screen, GLfloat modelView[16], GLfloat projection[16])
+    vec4 Multiply(const vec4& vec, const std::vector<float>& mat)
     {
-        const auto multiply = [&](const vec4& vec, const GLfloat mat[16])
-        {
-            return vec4(
-                vec.x * mat[0] + vec.y * mat[4] + vec.z * mat[8] + vec.w * mat[12],
-                vec.x * mat[1] + vec.y * mat[5] + vec.z * mat[9] + vec.w * mat[13],
-                vec.x * mat[2] + vec.y * mat[6] + vec.z * mat[10] + vec.w * mat[14],
-                vec.x * mat[3] + vec.y * mat[7] + vec.z * mat[11] + vec.w * mat[15]
-            );
+        return {
+	        vec.x * mat[0] + vec.y * mat[4] + vec.z * mat[8] + vec.w * mat[12],
+            vec.x * mat[1] + vec.y * mat[5] + vec.z * mat[9] + vec.w * mat[13],
+            vec.x * mat[2] + vec.y * mat[6] + vec.z * mat[10] + vec.w * mat[14],
+            vec.x * mat[3] + vec.y * mat[7] + vec.z * mat[11] + vec.w * mat[15]
+        };
+    }
+
+    bool WorldToScreen(const vec3& worldPos, vec2& screen, const std::vector<float>& modelView, const std::vector<float>& projection, int width, int height)
+    {
+        // csp = Clip Space Position
+        vec4 csp = Multiply(
+            Multiply(
+                vec4{ worldPos.x, worldPos.y, worldPos.z, 1.0f },
+                modelView
+            ),
+            projection
+        );
+
+        // ndc = Native Device Coordinate
+        vec3 ndc{
+            csp.x / csp.w,
+            csp.y / csp.w,
+            csp.z / csp.w
         };
 
-        vec4 clipSpacePos = multiply(multiply(vec4(worldPoint.x, worldPoint.y, worldPoint.z, 1.0f), modelView), projection);
-        vec3 ndcSpacePos = vec3(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w);
+        //Logger::Log("NDC.Z: " + std::to_string(ndc.z));
 
-        if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0)
-        {
-            return false;
+        if (ndc.z > 1 && ndc.z < 1.15) {
+            screen = vec2{
+                ((ndc.x + 1.0f) / 2.0f) * width,
+                ((1.0f - ndc.y) / 2.0f) * height,
+            };
+            return true;
         }
 
-        screen.x = (ndcSpacePos.x + 1.0f) / 2.0f * screen_width;
-        screen.y = (1.0f - ndcSpacePos.y) / 2.0f * screen_height;
-        return true;
+        return false;
     }
 
     void loop_through_class(const jclass klass, JNIEnv* env)

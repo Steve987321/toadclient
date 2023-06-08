@@ -42,7 +42,7 @@ public:
 	virtual void OnTick(const std::shared_ptr<c_Entity>& lPlayer) {}
 
 	// Executes inside the wglswapbuffers hook 
-	virtual void OnRender(ImDrawList* draw) {}
+	virtual void OnRender() {}
 
 };
 

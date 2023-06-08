@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Toad/Toad.h"
-#include "autoclicker.h"
+#include "leftautoclicker.h"
 
 using namespace toad;
 

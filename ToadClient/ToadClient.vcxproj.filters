@@ -102,10 +102,13 @@
     <ClInclude Include="Toad\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\autoclicker.h">
+    <ClInclude Include="Toad\Modules\leftautoclicker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Toad\Modules\rand_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Toad\Modules\rightautoclicker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -176,7 +179,10 @@
     <ClCompile Include="Toad\Hooks\ws2_32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\autoclicker.cpp">
+    <ClCompile Include="Toad\Modules\leftautoclicker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Modules\rightautoclicker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

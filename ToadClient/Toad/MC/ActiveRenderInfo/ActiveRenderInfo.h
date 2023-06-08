@@ -12,8 +12,8 @@ namespace toadll
 		explicit c_ActiveRenderInfo(jclass ariklass, JNIEnv* env) : ariclass(ariklass), env(env) {}
 
 	public:
-		void get_modelview(GLfloat modelviewbuf[16]) const;
-		void get_projection(GLfloat projectionbuf[16]) const;
+		std::vector<float> get_modelview() const;
+		std::vector<float>  get_projection() const;
 		//void get_viewport(GLint viewportBuf[4]) const;
 
 	public:

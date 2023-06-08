@@ -157,7 +157,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Toad\Modules\autoclicker.h" />
+    <ClInclude Include="Toad\Modules\rightautoclicker.h" />
+    <ClInclude Include="Toad\Modules\leftautoclicker.h" />
     <ClInclude Include="Toad\Hooks\wglswapbuffers.h" />
     <ClInclude Include="Toad\Modules\aimassist.h" />
     <ClInclude Include="Toad\Modules\rand_types.h" />
@@ -190,7 +191,8 @@
     <ClInclude Include="Toad\Hooks\ws2_32.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Toad\Modules\autoclicker.cpp" />
+    <ClCompile Include="Toad\Modules\rightautoclicker.cpp" />
+    <ClCompile Include="Toad\Modules\leftautoclicker.cpp" />
     <ClCompile Include="Toad\Hooks\wglswapbuffers.cpp" />
     <ClCompile Include="Toad\Modules\aimassist.cpp" />
     <ClCompile Include="Toad\Modules\esp.cpp" />

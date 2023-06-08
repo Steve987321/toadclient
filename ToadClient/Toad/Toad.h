@@ -27,7 +27,8 @@
 #include "singleton.h"
 #include "module.h"
 
-#include "Modules/autoclicker.h"
+#include "Modules/leftautoclicker.h"
+#include "Modules/rightautoclicker.h"
 #include "Modules/esp.h"
 #include "Modules/aimassist.h"
 #include "Modules/velocity.h"
@@ -49,13 +50,9 @@ namespace toadll
 	inline std::atomic_bool g_is_running = false;
 
 	inline int screen_height = -1, screen_width = -1;
-	inline GLfloat modelview[16];
-	inline GLfloat projection[16];
 
 	inline HMODULE g_hMod;
 	inline HWND g_hWnd; 
-
-	inline float g_renderPartialTick = 0;
 
 	inline JNIEnv* g_env = nullptr;
 	inline JavaVM* g_jvm = nullptr;

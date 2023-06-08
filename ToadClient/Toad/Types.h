@@ -102,7 +102,7 @@ namespace toadll
     }
 
     inline std::ostream& operator<<(std::ostream& o, const vec3& v) {
-	    o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.y << ")";
+	    o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.z << ")";
 	    return o;
     }
 
