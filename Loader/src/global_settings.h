@@ -4,7 +4,7 @@
 
 namespace toad
 {
-	namespace clicker
+	namespace left_clicker
 	{
 		inline bool enabled = false;
 
@@ -18,6 +18,15 @@ namespace toad
 		inline bool block_hit = false; // when hitting player it blocks for ms, see @block_hit_ms
 		inline int block_hit_ms = 10; 
 
+	}
+
+	namespace right_clicker
+	{
+		inline bool enabled = false;
+		inline int cps = 15;
+
+		inline int start_delayms = 10;
+		inline bool blocks_only = false;
 	}
 
 	namespace aa
@@ -63,9 +72,13 @@ namespace toad
 		inline float vertical = 100;
 	}
 
-	namespace EntityEsp
+	namespace esp
 	{
 		inline bool enabled = false;
+		inline float lineCol[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+		inline float fillCol[4] = {1.0f, 1.0f, 1.0f, 0.3f};
+		
+
 	}
 
 	namespace auto_bridge

@@ -78,4 +78,65 @@ namespace toadll
 		// increments every click, is used to check when we can boost: frequency_counter >= frequency
 		int frequency_counter = 0;
 	};
+
+	struct Randomization
+	{
+		Randomization(
+			float min_delay, float max_delay, 
+			float edited_min, float edited_max, 
+			float delay,
+			bool start_rand_flag,
+			float inconsistency_delay,
+			std::vector<Inconsistency> inconsistencies,
+			std::vector<Inconsistency> inconsistencies2,
+			std::vector<Boost> boosts) 
+		{
+			this->min_delay = min_delay;
+			this->max_delay = max_delay;
+
+			this->edited_min = edited_min;
+			this->edited_max = edited_max;
+
+			this->delay = delay;
+
+			this->start_rand_flag = start_rand_flag;
+			 
+			this->inconsistency_delay = inconsistency_delay;
+
+			this->inconsistencies = std::move(inconsistencies);
+			this->inconsistencies2 = std::move(inconsistencies2);
+
+			this->boosts = std::move(boosts);
+		}
+
+		float min_delay = 0;
+		float max_delay = 0;
+
+		float edited_min = 20;
+		float edited_max = 50;
+
+		float delay = 0;
+
+		bool start_rand_flag = false;
+
+		float inconsistency_delay = 0;
+
+		// inside the mouse_down function
+		std::vector<Inconsistency> inconsistencies =
+		{
+		};
+
+		// inside the mouse_up function
+		std::vector<Inconsistency> inconsistencies2 =
+		{
+		};
+
+		std::vector<Boost> boosts =
+		{
+		};
+
+		// add drops = negative boosts
+
+	};
+
 }

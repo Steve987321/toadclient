@@ -27,8 +27,13 @@
 #include "singleton.h"
 #include "module.h"
 
-#include "Modules/leftautoclicker.h"
-#include "Modules/rightautoclicker.h"
+#include "Modules/vars_updater.h"
+
+#include "Modules/clicker/rand_types.h"
+#include "Modules/clicker/clicker_base.h"
+
+#include "Modules/clicker/leftautoclicker.h"
+#include "Modules/clicker/rightautoclicker.h"
 #include "Modules/esp.h"
 #include "Modules/aimassist.h"
 #include "Modules/velocity.h"

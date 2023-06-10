@@ -157,11 +157,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Toad\Modules\rightautoclicker.h" />
-    <ClInclude Include="Toad\Modules\leftautoclicker.h" />
+    <ClInclude Include="Toad\Modules\clicker\clicker_base.h" />
+    <ClInclude Include="Toad\Modules\clicker\rightautoclicker.h" />
+    <ClInclude Include="Toad\Modules\clicker\leftautoclicker.h" />
     <ClInclude Include="Toad\Hooks\wglswapbuffers.h" />
     <ClInclude Include="Toad\Modules\aimassist.h" />
-    <ClInclude Include="Toad\Modules\rand_types.h" />
+    <ClInclude Include="Toad\Modules\clicker\rand_types.h" />
     <ClInclude Include="Toad\singleton.h" />
     <ClInclude Include="Toad\module.h" />
     <ClInclude Include="Toad\Modules\esp.h" />
@@ -189,10 +190,11 @@
     <ClInclude Include="Toad\Types.h" />
     <ClInclude Include="Toad\Modules\velocity.h" />
     <ClInclude Include="Toad\Hooks\ws2_32.h" />
+    <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Toad\Modules\rightautoclicker.cpp" />
-    <ClCompile Include="Toad\Modules\leftautoclicker.cpp" />
+    <ClCompile Include="Toad\Modules\clicker\rightautoclicker.cpp" />
+    <ClCompile Include="Toad\Modules\clicker\leftautoclicker.cpp" />
     <ClCompile Include="Toad\Hooks\wglswapbuffers.cpp" />
     <ClCompile Include="Toad\Modules\aimassist.cpp" />
     <ClCompile Include="Toad\Modules\esp.cpp" />
@@ -241,6 +243,7 @@
     <ClCompile Include="Toad\Toad.cpp" />
     <ClCompile Include="Toad\Modules\velocity.cpp" />
     <ClCompile Include="Toad\Hooks\ws2_32.cpp" />
+    <ClCompile Include="Toad\Modules\vars_updater.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

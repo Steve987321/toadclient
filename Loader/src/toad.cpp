@@ -57,39 +57,55 @@ void toad::Fupdate_settings()
 	using json = nlohmann::json;
 	json data;
 
-	// auto clicker
-	data["lcenabled"] = clicker::enabled;
-	data["lccps"] = clicker::cps;
-	data["lcbreakblocks"] = clicker::break_blocks;
-	data["lcblockhit"] = clicker::block_hit;
-	data["lcblockhitms"] = clicker::block_hit_ms;
-	data["lcsmartcps"] = clicker::targeting_affects_cps;
-	data["lcweaponsonly"] = clicker::weapons_only;
-	data["lctradeassist"] = clicker::trade_assist;
+	// left auto clicker
+	data["lc_enabled"] = left_clicker::enabled;
+	data["lc_cps"] = left_clicker::cps;
+	data["lc_breakblocks"] = left_clicker::break_blocks;
+	data["lc_blockhit"] = left_clicker::block_hit;
+	data["lc_blockhitms"] = left_clicker::block_hit_ms;
+	data["lc_smartcps"] = left_clicker::targeting_affects_cps;
+	data["lc_weaponsonly"] = left_clicker::weapons_only;
+	data["lc_tradeassist"] = left_clicker::trade_assist;
+
+	// right auto clicker
+	data["rc_enabled"] = right_clicker::enabled;
+	data["rc_blocks_only"] = right_clicker::blocks_only;
+	data["rc_start_delay"] = right_clicker::start_delayms;
 
 	// aim assist
-	data["aaenabled"] = aa::enabled;
-	data["aadistance"] = aa::distance;
-	data["aaspeed"] = aa::speed;
-	data["aahorizontal_only"] = aa::horizontal_only;
-	data["aafov"] = aa::fov;
-	data["aainvisibles"] = aa::invisibles;
-	data["aatargetFOV"] = aa::targetFOV;
-	data["aaalways_aim"] = aa::always_aim;
-	data["aamultipoint"] = aa::aim_at_closest_point;
-	data["aalockaim"] = aa::lock_aim;
+	data["aa_enabled"] = aa::enabled;
+	data["aa_distance"] = aa::distance;
+	data["aa_speed"] = aa::speed;
+	data["aa_horizontal_only"] = aa::horizontal_only;
+	data["aa_fov"] = aa::fov;
+	data["aa_invisibles"] = aa::invisibles;
+	data["aa_targetFOV"] = aa::targetFOV;
+	data["aa_always_aim"] = aa::always_aim;
+	data["aa_multipoint"] = aa::aim_at_closest_point;
+	data["aa_lockaim"] = aa::lock_aim;
 
 	// auto bridge
-	data["abenabled"] = auto_bridge::enabled;
-	data["abpitch_check"] = auto_bridge::pitch_check;
+	data["ab_enabled"] = auto_bridge::enabled;
+	data["ab_pitch_check"] = auto_bridge::pitch_check;
 
 	// velocity
-	data["velenabled"] = velocity::enabled;
-	data["veljumpreset"] = velocity::jump_reset;
-	data["velhorizontal"] = velocity::horizontal;
-	data["velvertical"] = velocity::vertical;
-	data["velchance"] = velocity::chance;
-	data["veldelay"] = velocity::delay;
+	data["vel_enabled"] = velocity::enabled;
+	data["vel_jumpreset"] = velocity::jump_reset;
+	data["vel_horizontal"] = velocity::horizontal;
+	data["vel_vertical"] = velocity::vertical;
+	data["vel_chance"] = velocity::chance;
+	data["vel_delay"] = velocity::delay;
+
+	// esp
+	data["esp_enabled"] = esp::enabled;
+	data["esp_linecolr"] = esp::lineCol[0];
+	data["esp_linecolg"] = esp::lineCol[1];
+	data["esp_linecolb"] = esp::lineCol[2];
+	data["esp_linecola"] = esp::lineCol[3];
+	data["esp_fillcolr"] = esp::fillCol[0];
+	data["esp_fillcolg"] = esp::fillCol[1];
+	data["esp_fillcolb"] = esp::fillCol[2];
+	data["esp_fillcola"] = esp::fillCol[3];
 
 	std::stringstream ss;
 	ss << data << "END";

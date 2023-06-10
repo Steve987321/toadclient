@@ -2,10 +2,18 @@
 #include "Toad/Toad.h"
 #include "esp.h"
 
+using namespace toad;
+
 namespace toadll {
 
 void CEsp::Update(const std::shared_ptr<c_Entity>& lPlayer)
 {
+	if (!esp::enabled)
+	{
+		SLOW_SLEEP(200);
+		return;
+	}
+
 	auto ari = Minecraft->get_active_render_info();
 	modelview = ari->get_modelview();
 	projection = ari->get_projection();
@@ -51,72 +59,7 @@ void CEsp::Update(const std::shared_ptr<c_Entity>& lPlayer)
 
 void CEsp::OnRender()
 {
-	auto drawOutlinedBox = [](bbox boundingBox)
-	{
-		glBegin(3);
-		glVertex3f(boundingBox.min.x, boundingBox.min.y, boundingBox.min.z);
-		glVertex3f(boundingBox.max.x, boundingBox.min.y, boundingBox.min.z);
-		glVertex3f(boundingBox.max.x, boundingBox.min.y, boundingBox.max.z);
-		glVertex3f(boundingBox.min.x, boundingBox.min.y, boundingBox.max.z);
-		glVertex3f(boundingBox.min.x, boundingBox.min.y, boundingBox.min.z);
-		glEnd();
-
-		glBegin(3);
-		glVertex3f(boundingBox.min.x, boundingBox.max.y, boundingBox.min.z);
-		glVertex3f(boundingBox.max.x, boundingBox.max.y, boundingBox.min.z);
-		glVertex3f(boundingBox.max.x, boundingBox.max.y, boundingBox.max.z);
-		glVertex3f(boundingBox.min.x, boundingBox.max.y, boundingBox.max.z);
-		glVertex3f(boundingBox.min.x, boundingBox.max.y, boundingBox.min.z);
-		glEnd();
-
-		glBegin(1);
-		glVertex3f(boundingBox.min.x, boundingBox.min.y, boundingBox.min.z);
-		glVertex3f(boundingBox.min.x, boundingBox.max.y, boundingBox.min.z);
-		glVertex3f(boundingBox.max.x, boundingBox.min.y, boundingBox.min.z);
-		glVertex3f(boundingBox.max.x, boundingBox.max.y, boundingBox.min.z);
-		glVertex3f(boundingBox.max.x, boundingBox.min.y, boundingBox.max.z);
-		glVertex3f(boundingBox.max.x, boundingBox.max.y, boundingBox.max.z);
-		glVertex3f(boundingBox.min.x, boundingBox.min.y, boundingBox.max.z);
-		glVertex3f(boundingBox.min.x, boundingBox.max.y, boundingBox.max.z);
-		glEnd();
-	};
-
-	auto cross = [](const vec3& a, const vec3& b) -> vec3
-	{
-		vec3 result;
-		result.x = a.y * b.z - a.z * b.y;
-		result.y = a.z * b.x - a.x * b.z;
-		result.z = a.x * b.y - a.y * b.x;
-		return result;
-	};
-
-	auto drawOutlinedBox2D = [&](bbox boundingBox)
-	{
-		// Extract the camera orientation from the modelview matrix
-		vec3 cameraForward = { modelview[2], modelview[6], modelview[10] };
-		vec3 cameraUp = { modelview[1], modelview[5], modelview[9] };
-		vec3 cameraRight = cross(cameraForward, cameraUp);
-
-		// Calculate the size and position of the billboarded box
-		vec3 center = (boundingBox.min + boundingBox.max) * 0.5f;
-		vec3 extents = (boundingBox.max - boundingBox.min) * 0.5f;
-
-		// Calculate the vertices of the billboarded box
-		vec3 vertices[4] = {
-				center - cameraRight * extents.x - cameraUp * extents.y,
-				center + cameraRight * extents.x - cameraUp * extents.y,
-				center + cameraRight * extents.x + cameraUp * extents.y,
-				center - cameraRight * extents.x + cameraUp * extents.y
-		};
-
-		// Render the billboarded box as a quad
-		glBegin(GL_LINE_LOOP);
-		for (const auto& vertice : vertices)
-		{
-			glVertex3f(vertice.x, vertice.y, vertice.z);
-		}
-		glEnd();
-	};
+	if (!esp::enabled) return;
 
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
@@ -135,7 +78,7 @@ void CEsp::OnRender()
 
 	for (const auto& bb : bboxxesdud)
 	{
-		drawOutlinedBox2D(bb);
+		draw2dBox(bb);
 	}
 
 	glDisable(GL_BLEND);

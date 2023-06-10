@@ -52,23 +52,32 @@ namespace toad
             {
                 if (tab == 0)
                 {
-                    static bool is_Clicker = false;
+                    static bool is_LClicker = false;
+                    static bool is_RClicker = false;
                     static bool is_AA = false;
                     static bool is_Velocity = false;
-                    if (utils::checkboxButton("Clicker", ICON_FA_MOUSE, &clicker::enabled)) is_Clicker = true;
+                    if (utils::checkboxButton("Left Clicker", ICON_FA_MOUSE, &left_clicker::enabled)) is_LClicker = true;
+                    if (utils::checkboxButton("Right Clicker", ICON_FA_MOUSE, &right_clicker::enabled)) is_RClicker = true;
                     if (utils::checkboxButton("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) is_AA = true;
                     if (utils::checkboxButton("Velocity", ICON_FA_WIND, &velocity::enabled)) is_Velocity = true;
 
-                    if (is_Clicker)
-                        utils::setting_menu("Auto Clicker", is_Clicker, []
+                    if (is_LClicker)
+                        utils::setting_menu("LeftClicker", is_LClicker, []
                             {
-			                    ImGui::SliderInt("cps", &clicker::cps, 0, 20, "%dcps");
-			                    ImGui::Checkbox("weapons only", &clicker::weapons_only);
-			                    ImGui::Checkbox("break blocks", &clicker::break_blocks);
-			                    ImGui::Checkbox("block hit", &clicker::block_hit);
-			                    ImGui::SliderInt("block hit delay", &clicker::block_hit_ms, 0, 50);
-			                    ImGui::Checkbox("smart cps", &clicker::targeting_affects_cps);
-			                    ImGui::Checkbox("trade assist", &clicker::trade_assist);
+			                    ImGui::SliderInt("cps", &left_clicker::cps, 0, 20, "%dcps");
+			                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
+			                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
+			                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
+			                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
+			                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
+			                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
+                            });
+                    else if (is_RClicker)
+                        utils::setting_menu("RightClicker", is_RClicker, []
+                            {
+                                ImGui::SliderInt("cps", &right_clicker::cps, 0, 20, "%dcps");
+								ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
+								ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
                             });
                     else if (is_AA)
                         utils::setting_menu("Aim Assist", is_AA, []
@@ -100,7 +109,9 @@ namespace toad
                 else if (tab == 1)
                 {
                     static bool is_Bridge = false;
+                    static bool is_Esp = false;
                     if (utils::checkboxButton("Auto Bridge", ICON_FA_CUBE, &auto_bridge::enabled)) is_Bridge = true;
+                    if (utils::checkboxButton("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
 
                     if (is_Bridge)
                     {
@@ -119,6 +130,14 @@ namespace toad
                             draw->AddRect({ pos.x, pos.y + 60 }, { pos.x + 20, pos.y + 120 }, IM_COL32(100, 100, 100, 255));*/
 
                             });
+                    }
+                    if (is_Esp)
+                    {
+                        utils::setting_menu("ESP", is_Esp, []
+                            {
+                                ImGui::ColorEdit4("Outline Color", esp::lineCol);
+                                ImGui::ColorEdit4("Fill Color", esp::fillCol);
+                        });
                     }
                 }
             } ImGui::EndChild();

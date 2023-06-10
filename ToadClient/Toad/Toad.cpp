@@ -46,41 +46,58 @@ namespace toadll
 
 		using namespace toad;
 
-		// auto clicker
-		clicker::enabled = data["lcenabled"];
-		clicker::cps = data["lccps"];
-		clicker::break_blocks = data["lcbreakblocks"];
-		clicker::block_hit = data["lcblockhit"];
-		clicker::block_hit_ms = data["lcblockhitms"];
-		clicker::targeting_affects_cps = data["lcsmartcps"];
-		clicker::weapons_only = data["lcweaponsonly"];
-		clicker::trade_assist = data["lctradeassist"];
+		// left auto clicker
+		left_clicker::enabled = data["lc_enabled"];
+		left_clicker::cps = data["lc_cps"];
+		left_clicker::break_blocks = data["lc_breakblocks"];
+		left_clicker::block_hit = data["lc_blockhit"];
+		left_clicker::block_hit_ms = data["lc_blockhitms"];
+		left_clicker::targeting_affects_cps = data["lc_smartcps"];
+		left_clicker::weapons_only = data["lc_weaponsonly"];
+		left_clicker::trade_assist = data["lc_tradeassist"];
+
+		// right auto clicker
+		right_clicker::enabled = data["rc_enabled"];
+		right_clicker::blocks_only = data["rc_blocks_only"];
+		right_clicker::start_delayms = data["rc_start_delay"];
 
 		// aim assist
-		aa::enabled = data["aaenabled"];
-		aa::distance = data["aadistance"];
-		aa::speed = data["aaspeed"];
-		aa::horizontal_only = data["aahorizontal_only"];
-		aa::fov = data["aafov"];
-		aa::invisibles = data["aainvisibles"];
-		aa::targetFOV = data["aatargetFOV"];
-		aa::always_aim = data["aaalways_aim"];
-		aa::aim_at_closest_point = data["aamultipoint"];
-		aa::lock_aim = data["aalockaim"];
+		aa::enabled = data["aa_enabled"];
+		aa::distance = data["aa_distance"];
+		aa::speed = data["aa_speed"];
+		aa::horizontal_only = data["aa_horizontal_only"];
+		aa::fov = data["aa_fov"];
+		aa::invisibles = data["aa_invisibles"];
+		aa::targetFOV = data["aa_targetFOV"];
+		aa::always_aim = data["aa_always_aim"];
+		aa::aim_at_closest_point = data["aa_multipoint"];
+		aa::lock_aim = data["aa_lockaim"];
 
 		// auto bridge
-		auto_bridge::enabled = data["abenabled"];
-		auto_bridge::pitch_check = data["abpitch_check"];
+		auto_bridge::enabled = data["ab_enabled"];
+		auto_bridge::pitch_check = data["ab_pitch_check"];
 
 		// velocity
-		velocity::enabled = data["velenabled"];
-		velocity::horizontal = data["velhorizontal"];
-		velocity::vertical = data["velvertical"];
-		velocity::chance = data["velchance"];
-		velocity::delay = data["veldelay"];
-		velocity::jump_reset = data["veljumpreset"];
+		velocity::enabled = data["vel_enabled"];
+		velocity::jump_reset = data["vel_jumpreset"];
+		velocity::horizontal = data["vel_horizontal"];
+		velocity::vertical = data["vel_vertical"];
+		velocity::chance = data["vel_chance"];
+		velocity::delay = data["vel_delay"];
 
-		CLeftAutoClicker::SetDelays();
+		// esp
+		esp::enabled = data["esp_enabled"];
+		esp::lineCol[0] = data["esp_linecolr"];
+		esp::lineCol[1] = data["esp_linecolg"];
+		esp::lineCol[2] = data["esp_linecolb"];
+		esp::lineCol[3] = data["esp_linecola"];
+		esp::fillCol[0] = data["esp_fillcolr"];
+		esp::fillCol[1] = data["esp_fillcolg"];
+		esp::fillCol[2] = data["esp_fillcolb"];
+		esp::fillCol[3] = data["esp_fillcola"];
+
+		CLeftAutoClicker::SetDelays(left_clicker::cps);
+		CRightAutoClicker::SetDelays(right_clicker::cps);
 
 		UnmapViewOfFile(buf);
 		CloseHandle(hMapFile);

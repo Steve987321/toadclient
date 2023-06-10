@@ -59,12 +59,33 @@ namespace toadll
             return x == v.x && y == v.y && z == v.z;
         }
 
-        [[nodiscard]] float dist(const vec3& v) const {
+        _NODISCARD float dist(const vec3& v) const {
             return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
         }
 
+        _NODISCARD vec3 cross(const vec3& v) const{
+            return
+            {
+                    y * v.z - z * v.y,
+                    z * v.x - x * v.z,
+                    x * v.y - y * v.x
+            };
+        }
 
-    };
+        static vec3 normalize(const vec3& v)
+        {
+            float length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+            if (length > 0.0f)
+            {
+                float invLength = 1.0f / length;
+                return vec3(v.x * invLength, v.y * invLength, v.z * invLength);
+            }
+            else
+            {
+                return vec3(0.0f, 0.0f, 0.0f);
+            }
+        }
+	};
 
 	struct vec4 {
         vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}

@@ -7,9 +7,10 @@ std::once_flag flag;
 void toadll::modules::initialize()
 {
 	CLeftAutoClicker::get_instance();
-	CAimAssist::get_instance();
+	CRightAutoClicker::get_instance();
+	//CAimAssist::get_instance();
 	CEsp::get_instance();
-	CVelocity::get_instance();
+	//CVelocity::get_instance();
 
 	for (const auto& Module : CModule::moduleInstances)
 	{
