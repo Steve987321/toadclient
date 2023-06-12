@@ -6,7 +6,7 @@ using namespace toad;
 
 namespace toadll
 {
-	void CRightAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
+	void CRightAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	{
 		static bool is_starting_click = false;
 
@@ -16,11 +16,11 @@ namespace toadll
 			return;
 		}
 
-		if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_RBUTTON) && !Minecraft->isInGui())
+		if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_RBUTTON) && !CVarsUpdater::IsInGui)
 		{
 			m_start = std::chrono::high_resolution_clock::now();
 
-			m_pTick = Minecraft->get_partialTick();
+			m_pTick = CVarsUpdater::PartialTick;
 
 			if (!is_starting_click)
 			{
@@ -40,7 +40,7 @@ namespace toadll
 		
 
 			if (right_clicker::blocks_only)
-				if (lPlayer->get_heldItemStr().find("tile") == std::string::npos)
+				if (lPlayer->HeldItem.find("tile") == std::string::npos)
 					return;
 
 			if (!mouse_down())

@@ -6,12 +6,12 @@ using namespace toad;
 
 namespace toadll {
 
-void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
+void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 {
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
-	if (!aa::enabled || Minecraft->isInGui())
+	if (!aa::enabled || CVarsUpdater::IsInGui)
 	{
-		SLOW_SLEEP(10);
+		SLOW_SLEEP(50);
 		return;
 	}
 	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON))
@@ -20,37 +20,34 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 		return;
 	}
 
-	std::vector <std::pair<float, std::shared_ptr<c_Entity>>> distances = {};
+	std::vector <std::pair<float, EntityT>> distances = {};
 
-	static std::shared_ptr<c_Entity> target = nullptr;
+	static std::shared_ptr<EntityT> target = nullptr;
 	float speed = aa::speed;
 	float minimalAngleDiff = aa::fov / 2.f;
 
 	if (aa::lock_aim && target != nullptr)
 	{
 		if  (
-			abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), target->get_position()).first))) <= aa::fov 
+			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target->Pos).first))) <= aa::fov 
 			&&
-			target->get_position().dist(lPlayer->get_position()) <= aa::distance
+			target->Pos.dist(lPlayer->Pos) <= aa::distance
 			)
 			goto AIMING;
 	}
-		
 
 	target = nullptr;
 
-	// get a target
-	for (const auto& player : Minecraft->get_playerList())
+	//get a target
+	for (const auto& player : CVarsUpdater::PlayerList)
 	{
-		if (env->IsSameObject(lPlayer->obj, player->obj)) continue;
+		if (lPlayer->Pos.dist(player->Pos) > aa::distance) continue;
+		if (player->Invis && !aa::invisibles) continue;
 
-		if (lPlayer->get_position().dist(player->get_position()) > aa::distance) continue;
-		if (player->is_invisible() && !aa::invisibles) continue;
-
-		distances.emplace_back(lPlayer->get_position().dist(player->get_position()), player);
+		distances.emplace_back(lPlayer->Pos.dist(player->Pos), *player.get());
 		if (aa::targetFOV)
 		{
-			float yawDiff = abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), player->get_position()).first)));
+			float yawDiff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, player->Pos).first)));
 			if (yawDiff < minimalAngleDiff)
 			{
 				minimalAngleDiff = yawDiff;
@@ -63,15 +60,15 @@ void CAimAssist::Update(const std::shared_ptr<c_Entity>& lPlayer)
 	// getting target by distance
 	if (!aa::targetFOV)
 	{
-		auto t = std::ranges::min_element(distances);
-		target = t->second;
+		auto t = std::ranges::min_element(distances, [](const auto & l, const auto & r) { return l.first < r.first; });
+		target = std::make_shared<EntityT>(t->second);
 	}
-	if (target == nullptr) return;
 
 AIMING:
+	if (target == nullptr) return;
 
-	auto targetPos = target->get_position();
-	auto lplayerPos = lPlayer->get_position();
+	auto targetPos = target->Pos;
+	auto lplayerPos = lPlayer->Pos;
 	vec3 aimPoint;
 
 	const std::vector<vec3> bboxCorners
@@ -97,7 +94,7 @@ AIMING:
 	}
 	else // aims to target if players aim is not inside hitbox 
 	{
-		auto lplayeryaw = lPlayer->get_rotationYaw();
+		auto lplayeryaw = lPlayer->Yaw;
 		auto yawdiffToPos = wrap_to_180(-(lplayeryaw - get_angles(lplayerPos, targetPos).first));
 
 		const std::vector<float> yawdiffs = {
@@ -118,13 +115,13 @@ AIMING:
 				return;
 		}
 
-		aimPoint = target->get_position();
+		aimPoint = target->Pos;
 	}
 
-	auto [yawtarget, pitchtarget] = get_angles(lPlayer->get_position(), aimPoint/*target->get_position()*/);
+	auto [yawtarget, pitchtarget] = get_angles(lPlayer->Pos, aimPoint/*target->get_position()*/);
 
-	auto lyaw = lPlayer->get_rotationYaw();
-	auto lpitch = lPlayer->get_rotationPitch();
+	auto lyaw = lPlayer->Yaw;
+	auto lpitch = lPlayer->Pitch;
 
 	float yawDiff = wrap_to_180(-(lyaw - yawtarget));
 	float absYawDiff = abs(yawDiff);
@@ -141,23 +138,25 @@ AIMING:
 
 	const int rand_100 = toadll::rand_int(0, 100);
 
-	static float speed_rand_timer = 200;
+	static CTimer speed_rand_timer;
 	static float reaction_time_timer = 0;
 	static float long_speed_modifier = 1;
+	static float prev_long_speed_modifier = 1;
 	static float long_speed_modifier_smooth = 1;
 
 	float smooth = speed;
 
 	speed = std::lerp(speed, smooth, 0.05f);
 
-	if (speed_rand_timer < 0)
+	if (speed_rand_timer.Elapsed<>() >= 100)
 	{
+		prev_long_speed_modifier = long_speed_modifier;
 		long_speed_modifier = toadll::rand_float(0.7f, 1.3f);
-		speed_rand_timer = 200;
+		speed_rand_timer.Start();
 		//std::cout << "reset :" << long_speed_modifier << std::endl;
 	}
 
-	long_speed_modifier_smooth = std::lerp(long_speed_modifier_smooth, long_speed_modifier, 0.05f);
+	long_speed_modifier_smooth = slerp(prev_long_speed_modifier, long_speed_modifier, speed_rand_timer.Elapsed<>() / 100);
 	static float yawdiffSpeed = 0;
 
 	if (static bool once = false; !once || reaction_time_timer > aa::reaction_time)
@@ -167,26 +166,47 @@ AIMING:
 		reaction_time_timer = 0;
 	}
 
-	//log_Debug("%s | %f = %f + %f", target->get_name().c_str(), lyaw + yawdiffSpeed, lyaw, yawdiffSpeed);
-	lPlayer->set_rotationYaw(lyaw + yawdiffSpeed);
-	lPlayer->set_prevRotationYaw(lyaw + yawdiffSpeed);
+	auto EditableLocalPlayer = Minecraft->get_localplayer();
+	if (!EditableLocalPlayer)
+		return;
 
-	if (rand_100 <= 10) {
-		float pitchrand = toadll::rand_float(-0.005f, 0.005f);
-		lPlayer->set_rotationPitch(lpitch + pitchrand);
-		lPlayer->set_prevRotationPitch(lpitch + pitchrand);
+	auto updatedYaw = EditableLocalPlayer->get_rotationYaw();
+	//log_Debug("%s | %f = %f + %f", target->get_name().c_str(), lyaw + yawdiffSpeed, lyaw, yawdiffSpeed);
+	EditableLocalPlayer->set_rotationYaw(updatedYaw + yawdiffSpeed);
+	EditableLocalPlayer->set_prevRotationYaw(updatedYaw + yawdiffSpeed);
+
+	// pitch randomization
+	static CTimer pitch_rand_timer;
+	static float pitchrand = rand_float(-0.0025f, 0.0025f);
+	static float pitchupdatems = rand_float(100, 200);
+	static float pitchrandsmooth = 0;
+	static float pitchrandbegin = 0;
+	auto updatedPitch = EditableLocalPlayer->get_rotationPitch();
+	if (pitch_rand_timer.Elapsed<>() > pitchupdatems)
+	{
+		pitchrandbegin = pitchrand;
+		pitchupdatems = rand_float(100, 200);
+		pitchrand = rand_float(-0.0015f, 0.0015f);
+		pitch_rand_timer.Start();
 	}
+
+	pitchrandsmooth = slerp(pitchrandbegin, pitchrand, pitch_rand_timer.Elapsed<>() / pitchupdatems);
+
+	if (rand_100 < 10)
+		pitchrandsmooth += rand_float(-0.001f, 0.001f);
+
+	EditableLocalPlayer->set_rotationPitch(updatedPitch + pitchrandsmooth);
+	EditableLocalPlayer->set_prevRotationPitch(updatedPitch + pitchrandsmooth);
 
 	if (!aa::horizontal_only)
 	{
-		lPlayer->set_rotationPitch(lpitch + pitchDiff / (15000.f / speed));
-		lPlayer->set_prevRotationPitch(lpitch + pitchDiff / (15000.f / speed));
+		auto updatedPitch = EditableLocalPlayer->get_rotationPitch();
+		EditableLocalPlayer->set_rotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
+		EditableLocalPlayer->set_prevRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
 	}
 
-	toadll::preciseSleep(toadll::rand_float(0.0001f, 0.0005f));
-	auto ptick = Minecraft->get_partialTick();
-	speed_rand_timer -= ptick;
-	reaction_time_timer += ptick;
+	toadll::preciseSleep(toadll::rand_float(0.0001f, 0.0005f)); // 1-5ms
+	reaction_time_timer += CVarsUpdater::PartialTick;
 }
 
 }

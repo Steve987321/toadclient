@@ -41,7 +41,7 @@ protected:
 	void mouse_up() override;
 
 public:
-	void Update(const std::shared_ptr<c_Entity>& lPlayer) override;
+	void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) override;
 
 	static void SetDelays(int cps);
 

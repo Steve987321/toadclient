@@ -17,8 +17,8 @@ private:
 
 private:
 	inline static std::vector<bbox> bboxxesdud;
-	inline static std::vector<float> modelview;
-	inline static std::vector<float> projection;
+	/*inline static std::vector<float> modelview;
+	inline static std::vector<float> projection;*/
 
 	std::vector<EntityVisual> m_entity_list;
 
@@ -58,8 +58,8 @@ private:
 
 	static inline void draw2dBox(const bbox& b_box)
 	{
-		vec3 cameraForward = { modelview[2], modelview[6], modelview[10] };
-		vec3 cameraUp = { modelview[1], modelview[5], modelview[9] };
+		vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
+		vec3 cameraUp = { CVarsUpdater::ModelView[1], CVarsUpdater::ModelView[5], CVarsUpdater::ModelView[9] };
 		vec3 cameraRight = cameraForward.cross(cameraUp);
 
 		vec3 center = (b_box.min + b_box.max) * 0.5f;
@@ -98,7 +98,7 @@ private:
 	}
 
 public:
-	void Update(const std::shared_ptr<c_Entity>& lPlayer) override;
+	void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) override;
 	void OnRender() override;
 };
 

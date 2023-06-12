@@ -137,6 +137,30 @@ namespace toadll
         return o;
     }
 
+    struct EntityT
+    {
+        std::string Name;
+        std::string HeldItem;
+
+        bool Invis = false;
+
+        vec3 Pos = { 0,0,0 };
+        vec3 LastTickPos = { 0,0,0 };
+
+        int HurtTime = 0;
+
+        float Pitch;
+        float Yaw;
+
+        jobject obj;
+
+    };
+
+    struct LocalPlayerT : EntityT
+    {
+        vec3 motion = {};
+    };
+
     enum class minecraft_client
     {
         Lunar,
@@ -157,6 +181,10 @@ namespace toadll
         // .Minecraft
         theMcField,
         currentScreenField,
+        thePlayerField,
+
+        // .World
+        playerEntitiesField,
 
         // .GameSettings
         fovField,
@@ -181,7 +209,7 @@ namespace toadll
 		modelviewField,
 
         // Timer
-        renderPartialTickField
+        renderPartialTickField,
     };
 
     enum class static_mapping

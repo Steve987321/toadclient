@@ -19,6 +19,13 @@ namespace toadll
         return dis(gen);
     }
 
+    inline float slerp(float start, float end, float t)
+    {
+        std::clamp(t, 0.0f, 1.0f);
+        t = t * t * (3.0f - 2.0f * t);
+        return start + (end - start) * t;
+    }
+
     // very precise
     inline void preciseSleep(double seconds) {
         using namespace std;

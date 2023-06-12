@@ -6,9 +6,10 @@ std::once_flag flag;
 
 void toadll::modules::initialize()
 {
+	CVarsUpdater::get_instance();
 	CLeftAutoClicker::get_instance();
 	CRightAutoClicker::get_instance();
-	//CAimAssist::get_instance();
+	CAimAssist::get_instance();
 	CEsp::get_instance();
 	//CVelocity::get_instance();
 
@@ -17,7 +18,7 @@ void toadll::modules::initialize()
 		threads.emplace_back([&]()
 		{
 			JNIEnv* env = nullptr;
-
+			
 			g_jvm->GetEnv(reinterpret_cast<void**>(&env), g_env->GetVersion());
 			g_jvm->AttachCurrentThreadAsDaemon(reinterpret_cast<void**>(&env), nullptr);
 
@@ -34,21 +35,24 @@ void toadll::modules::initialize()
 
 			while (g_is_running)
 			{
-				auto lPlayer = mc->get_localplayer();
-				if (lPlayer == nullptr) 
+				Module->PreUpdate();
+
+				if (!CVarsUpdater::IsVerified) 
 				{
 					SLOW_SLEEP(100);
-					return;
 				}
-
-				Module->Update(lPlayer);
-
-				static auto timer = std::make_unique<CTimer>();
-
-				if (timer->Elapsed<>() > 50.f)
+				else
 				{
-					Module->OnTick(lPlayer);
-					timer->Start();
+					const auto& lPlayer = CVarsUpdater::LocalPlayer;
+					Module->Update(lPlayer);
+
+					static auto timer = std::make_unique<CTimer>();
+
+					if (timer->Elapsed<>() > 50.f)
+					{
+						Module->OnTick(lPlayer);
+						timer->Start();
+					}
 				}
 			}
 

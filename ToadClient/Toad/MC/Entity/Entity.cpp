@@ -26,12 +26,14 @@ toadll::vec3 toadll::c_Entity::get_lasttickposition() const
 
 float toadll::c_Entity::get_rotationYaw() const
 {
-	return env->CallDoubleMethod(obj, get_mid(obj, mapping::getRotationYaw, env));
+	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getRotationYaw, env));
+	return env->GetFloatField(obj, get_fid(obj, mappingFields::rotationYawField, env));
 }
 
 float toadll::c_Entity::get_rotationPitch() const
 {
-	return env->CallDoubleMethod(obj, get_mid(obj, mapping::getRotationPitch, env));
+	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getRotationPitch, env));
+	return env->GetFloatField(obj, get_fid(obj, mappingFields::rotationPitchField, env));
 }
 
 std::string toadll::c_Entity::get_name() const

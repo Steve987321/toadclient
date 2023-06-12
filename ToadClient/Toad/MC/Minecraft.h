@@ -24,31 +24,31 @@ namespace toadll
 
 		_NODISCARD std::unique_ptr<c_ActiveRenderInfo> get_active_render_info();
 
-		_NODISCARD jobject get_mc() const;
-		_NODISCARD jobject get_rendermanager() const;
-		_NODISCARD jobject get_localplayerobj() const;
+		_NODISCARD jobject get_mc();
+		_NODISCARD jobject get_rendermanager();
+		_NODISCARD jobject get_localplayerobj();
 		_NODISCARD static jobject get_localplayerobjstatic(JNIEnv* env);
-		_NODISCARD jobject get_world() const;
-		_NODISCARD jobject get_gamesettings() const;
+		_NODISCARD jobject get_world();
+		_NODISCARD jobject get_gamesettings();
 
-		_NODISCARD bool isInGui() const;
+		_NODISCARD bool isInGui();
 
-		_NODISCARD float get_partialTick() const;
-		_NODISCARD float get_renderPartialTick() const;
-		_NODISCARD float get_fov() const;
+		_NODISCARD float get_partialTick();
+		_NODISCARD float get_renderPartialTick();
+		_NODISCARD float get_fov();
 
-		_NODISCARD jobject get_mouseOverObj() const;
-		_NODISCARD std::string get_mouseOverStr() const;
+		_NODISCARD jobject get_mouseOverObj();
+		_NODISCARD std::string get_mouseOverStr();
 		_NODISCARD std::shared_ptr<c_Entity> get_mouseOverPlayer();
 
-		_NODISCARD bool is_AirBlock(jobject blockobj) const;
+		_NODISCARD bool is_AirBlock(jobject blockobj);
 
 		_NODISCARD std::vector<std::shared_ptr<c_Entity>> get_playerList();
 
 		_NODISCARD std::shared_ptr<c_Entity> get_localplayer();
 
 	public:
-		void set_gamma(float val) const;
+		void set_gamma(float val);
 
 		//void disableLightMap() const;
 		//void enableLightMap() const;

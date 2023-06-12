@@ -6,7 +6,7 @@ using namespace toad;
 
 namespace toadll
 {
-	void CVelocity::OnTick(const std::shared_ptr<c_Entity>& lPlayer)
+	void CVelocity::OnTick(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	{
 		if (!velocity::enabled)
 		{
@@ -18,43 +18,46 @@ namespace toadll
 
 		if (velocity::jump_reset)
 		{
-			if (lPlayer->get_hurt_time() > 0 && !StopFlag)
+			if (lPlayer->HurtTime > 0 && !StopFlag)
 			{
 				StopFlag = true;
 				SendKey(VK_SPACE);
 				SLOW_SLEEP(rand_int(40, 70));
 				SendKey(VK_SPACE, false);
 			}
-			else if (lPlayer->get_hurt_time() == 0)
+			else if (lPlayer->HurtTime == 0)
 				StopFlag = false;
 			return;
 		}
 
 		static int beginHurtTime = 0;
 
-		if (int hurttime = lPlayer->get_hurt_time(); hurttime > 0 && !StopFlag)
+		if (int hurttime = lPlayer->HurtTime; hurttime > 0 && !StopFlag)
 		{
 			if (beginHurtTime < hurttime) beginHurtTime = hurttime;
 
 			if (hurttime != beginHurtTime - (int)velocity::delay) return;
-			if (toadll::rand_int(0, 100) > velocity::chance) { StopFlag = true; return; }
+			if (rand_int(0, 100) > velocity::chance) { StopFlag = true; return; }
 
 			//if (velocity::delay > 0) toad::preciseSleep(velocity::delay * 0.05f);
 
-			auto motionX = lPlayer->get_motionX();
+			auto motionX = lPlayer->motion.x;
 			auto newMotionX = motionX * (velocity::horizontal / 100); /* std::lerp(motionX, motionX * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
-			auto motionZ = lPlayer->get_motionZ();
+			auto motionZ = lPlayer->motion.z;
 			auto newMotionZ = motionZ * (velocity::horizontal / 100); /*std::lerp(motionZ, motionZ * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
 
+			auto EditableLocalPlayer = Minecraft->get_localplayer();
+			if (!EditableLocalPlayer)
+				return;
+
 			if (abs(motionX) > 0)
-				lPlayer->set_motionX(newMotionX);
+				EditableLocalPlayer->set_motionX(newMotionX);
 			if (abs(motionZ) > 0)
-				lPlayer->set_motionZ(newMotionZ);
+				EditableLocalPlayer->set_motionZ(newMotionZ);
 
 			// TODO: separate horizontal and vertical velocity module in separate threads? 
-
-			if (lPlayer->get_motionY() > 0) // normal velocity when going down 
-				lPlayer->set_motionY(lPlayer->get_motionY() * (velocity::vertical / 100.f));
+			if (lPlayer->motion.y > 0) // normal velocity when going down 
+				EditableLocalPlayer->set_motionY(lPlayer->motion.y * (velocity::vertical / 100.f));
 
 			StopFlag = true;
 

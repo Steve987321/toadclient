@@ -16,6 +16,7 @@
 #include <winsock.h>
 #include <WinSock2.h>
 #include <iostream>
+#include <string>
 #include <unordered_map>
 #include <map>
 #include <thread>

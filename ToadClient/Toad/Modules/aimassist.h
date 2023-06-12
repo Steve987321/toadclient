@@ -6,7 +6,7 @@ class CAimAssist SET_MODULE_CLASS(CAimAssist)
 {
 
 public:
-	void Update(const std::shared_ptr<c_Entity>& lPlayer) override;
+	void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) override;
 };
 
 }

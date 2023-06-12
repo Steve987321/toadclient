@@ -35,12 +35,12 @@ std::unique_ptr<toadll::c_ActiveRenderInfo> toadll::c_Minecraft::get_active_rend
 }
 
  
-jobject toadll::c_Minecraft::get_mc() const
+jobject toadll::c_Minecraft::get_mc()
 {
     return env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft, env));
 }
 
-jobject toadll::c_Minecraft::get_rendermanager() const
+jobject toadll::c_Minecraft::get_rendermanager()
 {
     auto mc = get_mc();
     auto ret = env->CallObjectMethod(mc, get_mid(mc, mapping::getRenderManager, env));
@@ -50,14 +50,20 @@ jobject toadll::c_Minecraft::get_rendermanager() const
 
 std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_localplayer()
 {
-    auto mc = this->get_mc();
-	auto playermid = env->GetMethodID(env->GetObjectClass(mc), mappings::findName(mapping::getPlayer), mappings::findSig(mapping::getPlayer));
-    auto obj = !playermid ? nullptr : std::make_shared<c_Entity>(env->CallObjectMethod(mc, playermid), env, get_entity_living_class());
+    auto mc = get_mc();
+    auto obj = env->GetObjectField(mc, get_fid(mc, mappingFields::thePlayerField, env));
+    //auto playermid = get_mid(mc, mapping::getPlayer, env);
+    //auto obj = !playermid ? nullptr : std::make_shared<c_Entity>(env->CallObjectMethod(mc, playermid), env, get_entity_living_class());
+    if (env->ExceptionCheck())
+    {
+        std::cout << "OH NO EXCEPTION!\n";
+        return nullptr;
+    }
     env->DeleteLocalRef(mc);
-    return obj;
+    return std::make_shared<c_Entity>(obj, env, get_entity_living_class());
 }
 
-void toadll::c_Minecraft::set_gamma(float val) const
+void toadll::c_Minecraft::set_gamma(float val)
 {
     auto obj = get_gamesettings();
 
@@ -81,7 +87,7 @@ void toadll::c_Minecraft::set_gamma(float val) const
 //    env->DeleteLocalRef(EntityRenderer);
 //}
 
-jobject toadll::c_Minecraft::get_localplayerobj() const
+jobject toadll::c_Minecraft::get_localplayerobj()
 {
     auto playermid = get_mid(mcclass, mapping::getPlayer, env);
     auto mc = this->get_mc();
@@ -101,7 +107,7 @@ jobject toadll::c_Minecraft::get_localplayerobjstatic(JNIEnv* env)
     return obj;
 }
 
-jobject toadll::c_Minecraft::get_world() const
+jobject toadll::c_Minecraft::get_world() 
 {
     auto mc = this->get_mc();
 	auto worldmid = get_mid(mcclass, mapping::getWorld, env);
@@ -112,7 +118,7 @@ jobject toadll::c_Minecraft::get_world() const
     return obj;
 }
 
-jobject toadll::c_Minecraft::get_gamesettings() const
+jobject toadll::c_Minecraft::get_gamesettings()
 {
     auto mc = get_mc();
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getGameSettings, env));
@@ -120,7 +126,7 @@ jobject toadll::c_Minecraft::get_gamesettings() const
     return obj;
 }
 
-bool toadll::c_Minecraft::isInGui() const
+bool toadll::c_Minecraft::isInGui()
 {
     auto mc = get_mc();
     auto res = env->GetObjectField(mc, get_fid(mc, mappingFields::currentScreenField, env)) != nullptr;
@@ -128,7 +134,7 @@ bool toadll::c_Minecraft::isInGui() const
     return res;
 }
 
-float toadll::c_Minecraft::get_partialTick() const
+float toadll::c_Minecraft::get_partialTick() 
 {
     auto mc = get_mc();
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer, env));
@@ -138,7 +144,7 @@ float toadll::c_Minecraft::get_partialTick() const
     return res;
 }
 
-float toadll::c_Minecraft::get_renderPartialTick() const
+float toadll::c_Minecraft::get_renderPartialTick() 
 {
     auto mc = get_mc();
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer, env));
@@ -148,7 +154,7 @@ float toadll::c_Minecraft::get_renderPartialTick() const
     return res;
 }
 
-float toadll::c_Minecraft::get_fov() const
+float toadll::c_Minecraft::get_fov()
 {
     auto obj = get_gamesettings();
     auto objklass = env->GetObjectClass(obj);
@@ -161,7 +167,7 @@ float toadll::c_Minecraft::get_fov() const
     return res;
 }
 
-jobject toadll::c_Minecraft::get_mouseOverObj() const
+jobject toadll::c_Minecraft::get_mouseOverObj() 
 {
     auto mc = get_mc();
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getObjectMouseOver, env));
@@ -169,7 +175,7 @@ jobject toadll::c_Minecraft::get_mouseOverObj() const
     return obj;
 }
 
-std::string toadll::c_Minecraft::get_mouseOverStr() const
+std::string toadll::c_Minecraft::get_mouseOverStr()
 {
     auto obj = get_mouseOverObj();
     if (obj == nullptr)
@@ -208,7 +214,7 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_mouseOverPlayer()
     return std::make_shared<c_Entity>(entityObj, env, get_entity_living_class());
 }
 
-bool toadll::c_Minecraft::is_AirBlock(jobject blockobj) const
+bool toadll::c_Minecraft::is_AirBlock(jobject blockobj)
 {
     auto world = get_world();
     auto res = env->CallBooleanMethod(world, get_mid(world, mapping::isAirBlock, env), blockobj);
@@ -219,26 +225,36 @@ bool toadll::c_Minecraft::is_AirBlock(jobject blockobj) const
 std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerList()
 {
     auto world = get_world();
-    if (!world) return {};
-
-    auto entites = env->CallObjectMethod(world, get_mid(world, mapping::getPlayerEntities, env));
-    env->DeleteLocalRef(world);
-
-    if (!entites)
+    if (!world) 
         return {};
 
-    auto entitesklass = env->GetObjectClass(entites);
+    //auto entities = env->CallObjectMethod(world, get_mid(world, mapping::getPlayerEntities, env
+    auto entities = env->GetObjectField(world, get_fid(world, mappingFields::playerEntitiesField, env));
+    if (env->ExceptionCheck())
+    {
+        env->ExceptionDescribe();
+        return {};
+    }
+    env->DeleteLocalRef(world);
+
+    if (!entities)
+        return {};
+
+    auto entitesklass = env->GetObjectClass(entities);
+   
     auto to_arraymid = env->GetMethodID(entitesklass, "toArray", "()[Ljava/lang/Object;");
+   
     env->DeleteLocalRef(entitesklass);
 
-    auto entityarray = (jobjectArray)env->CallObjectMethod(entites, to_arraymid);
-    env->DeleteLocalRef(entites);
+    auto entityarray = (jobjectArray)env->CallObjectMethod(entities, to_arraymid);
+   
+    env->DeleteLocalRef(entities);
     if (!entityarray)
         return {};
 
     int size = env->GetArrayLength(entityarray);
-
-    std::vector<std::shared_ptr<c_Entity>> res;
+   
+    std::vector<std::shared_ptr<c_Entity>> res = {};
     res.reserve(size);
 
     for (int i = 0; i < size; i++)

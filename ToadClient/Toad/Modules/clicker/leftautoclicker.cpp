@@ -6,7 +6,7 @@ using namespace toad;
 
 namespace toadll {
 
-void CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
+void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 {
 	static bool is_starting_click = false;
 
@@ -36,11 +36,11 @@ void CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
 		}
 	}
 
-	if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_LBUTTON) && !Minecraft->isInGui())
+	if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_LBUTTON) && !CVarsUpdater::IsInGui)
 	{
 		m_start = std::chrono::high_resolution_clock::now();
 
-		m_pTick = Minecraft->get_partialTick();
+		m_pTick = CVarsUpdater::PartialTick;
 		static auto enemy = Minecraft->get_mouseOverPlayer();
 		if (enemy == nullptr)
 		{
@@ -48,13 +48,13 @@ void CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
 		}
 		else if (enemy != nullptr)
 		{
-			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->get_rotationYaw() - get_angles(lPlayer->get_position(), enemy->get_position()).first)));
-			if (enemy->get_position().dist(lPlayer->get_position()) > 4.0f || yawDiff > 120)
+			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, enemy->get_position()).first)));
+			if (enemy->get_position().dist(lPlayer->Pos) > 4.0f || yawDiff > 120)
 				enemy = nullptr;
 		}
 
 		auto mouse_over_type = get_mouse_over_type();
-		auto held_item = lPlayer->get_heldItemStr();
+		auto held_item = lPlayer->HeldItem;
 
 		if (!is_starting_click)
 		{
@@ -146,7 +146,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<c_Entity>& lPlayer)
 					else
 						is_enemy_hit = false;
 
-					if (!is_player_hit && lPlayer->get_hurt_time() > 0)
+					if (!is_player_hit && lPlayer->HurtTime > 0)
 					{
 						lplayer_hit_count++;
 						is_player_hit = true;

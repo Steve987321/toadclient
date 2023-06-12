@@ -102,7 +102,10 @@ namespace toadll
 
 	jfieldID get_fid(jobject obj, mappingFields name, JNIEnv* env)
 	{
-        return get_fid(env->GetObjectClass(obj), name, env);
+        auto klass = env->GetObjectClass(obj);
+        auto res = get_fid(klass, name, env);
+        env->DeleteLocalRef(klass);
+        return res;
 	}
     
 

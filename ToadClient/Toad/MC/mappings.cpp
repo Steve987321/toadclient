@@ -47,6 +47,9 @@ namespace toadll::mappings
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
 				log_Error("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
+			fieldnames.insert({mappingFields::thePlayerField, "thePlayer"});
+			fieldsigs.insert({mappingFields::thePlayerField, "Lnet/minecraft/client/entity/EntityPlayerSP;"});
+
 			methodnames.insert({ mapping::getGameSettings, "bridge$getGameSettings" });
 			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass, env))
 				log_Error("can't find gamesettings");
@@ -76,6 +79,9 @@ namespace toadll::mappings
 			// WORLD
 			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
 			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });
+
+			fieldnames.insert({ mappingFields::playerEntitiesField, "playerEntities" });
+			fieldsigs.insert({ mappingFields::playerEntitiesField, "Ljava/util/List;" });
 
 			methodnames.insert({ mapping::getRenderManager, "getRenderManager" });
 			methodsigs.insert({ mapping::getRenderManager, "()Lnet/minecraft/client/renderer/entity/RenderManager;" });

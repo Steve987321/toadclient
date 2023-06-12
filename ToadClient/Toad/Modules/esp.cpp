@@ -6,7 +6,7 @@ using namespace toad;
 
 namespace toadll {
 
-void CEsp::Update(const std::shared_ptr<c_Entity>& lPlayer)
+void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 {
 	if (!esp::enabled)
 	{
@@ -14,47 +14,38 @@ void CEsp::Update(const std::shared_ptr<c_Entity>& lPlayer)
 		return;
 	}
 
-	auto ari = Minecraft->get_active_render_info();
-	modelview = ari->get_modelview();
-	projection = ari->get_projection();
-
-	auto renderPartialTicks = Minecraft->get_renderPartialTick();
-
 	//std::vector<EntityVisual> entity_list = {};
 	std::vector<bbox> bboxes = {};
-	
-	for (const auto& entity : Minecraft->get_playerList())
+
+	for (const auto& entity : CVarsUpdater::PlayerList)
 	{
-		if (env->IsSameObject(lPlayer->obj, entity->obj))
+		if (entity->Invis)
 			continue;
 
-		if (entity->is_invisible())
-			continue;
+		auto playerlasttickpos = lPlayer->LastTickPos;
+		auto currPos = lPlayer->Pos;
+		auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * CVarsUpdater::RenderPartialTick;
 
-		auto playerlasttickpos = lPlayer->get_lasttickposition();
-		auto currPos = lPlayer->get_position();
-		auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * renderPartialTicks;
+		auto lasttickpos = entity->LastTickPos;
+		auto pos = entity->Pos;
 
-		auto lasttickpos = entity->get_lasttickposition();
-		auto pos = entity->get_position();
 		bbox b_box = {{}, {}};
-		b_box.min.x = pos.x - 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * renderPartialTicks;
-		b_box.min.y = pos.y        - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * renderPartialTicks;
-		b_box.min.z = pos.z - 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * renderPartialTicks;
-		b_box.max.x = pos.x + 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * renderPartialTicks;
-		b_box.max.y = pos.y + 1.8f - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * renderPartialTicks;
-		b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * renderPartialTicks;
+		b_box.min.x = pos.x - 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
+		b_box.min.y = pos.y        - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
+		b_box.min.z = pos.z - 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
+		b_box.max.x = pos.x + 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
+		b_box.max.y = pos.y + 1.8f - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
+		b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
 
 		bboxes.emplace_back(b_box);
 
-		/*visual_entity.name = entity->get_name();
+		/*visual_entity.name = entity->Name;
 		entity_list.push_back(visual_entity);*/
 	}
 
 	bboxxesdud = bboxes;
-	SLOW_SLEEP(1);
 	//m_entity_list = entity_list;
-
+	SLOW_SLEEP(1);
 }
 
 void CEsp::OnRender()
@@ -63,9 +54,9 @@ void CEsp::OnRender()
 
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(projection.data());
+	glLoadMatrixf(CVarsUpdater::Projection.data());
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(modelview.data());
+	glLoadMatrixf(CVarsUpdater::ModelView.data());
 
 	glPushMatrix();
 	glEnable(GL_LINE_SMOOTH);
