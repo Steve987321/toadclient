@@ -20,7 +20,8 @@ private:
 	/*inline static std::vector<float> modelview;
 	inline static std::vector<float> projection;*/
 
-	std::vector<EntityVisual> m_entity_list;
+	//std::vector<EntityVisual> m_entity_list;
+	std::vector<std::pair<std::string, bbox>> m_entityList;
 
 private:
 	static inline void draw3dBox(const bbox& b_box)
@@ -100,6 +101,7 @@ private:
 public:
 	void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) override;
 	void OnRender() override;
+	void OnImGuiRender(ImDrawList* draw) override;
 };
 
 }

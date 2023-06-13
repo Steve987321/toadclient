@@ -59,17 +59,10 @@ namespace toadll
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		//draw->AddRect({ 25,25 }, { 50, 50 }, IM_COL32_WHITE, 5.f);
+		const auto draw = ImGui::GetBackgroundDrawList();
 
-		/*for (const auto& [name, pos] : toadll::CEsp::get_instance()->get_playernames_map())
-		{
-			draw->AddText({ pos.x, pos.y }, IM_COL32(255, 255, 255, 255), name);
-		}*/
-		/*for (const auto& [name, v4] : toadll::CEsp::get_instance()->get_bounding_box_map())
-		{
-			draw->AddRect({v4.x, v4.y}, {v4.z, v4.w}, IM_COL32(255, 255, 255, 255));
-		}*/
-
+		for (const auto& Module : CModule::moduleInstances)
+			Module->OnImGuiRender(draw);
 
 		ImGui::EndFrame();
 		ImGui::Render();

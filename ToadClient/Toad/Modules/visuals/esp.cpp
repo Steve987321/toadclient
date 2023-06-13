@@ -14,8 +14,8 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		return;
 	}
 
-	//std::vector<EntityVisual> entity_list = {};
 	std::vector<bbox> bboxes = {};
+	std::vector<std::pair<std::string, bbox>> entityList = {};
 
 	for (const auto& entity : CVarsUpdater::PlayerList)
 	{
@@ -37,14 +37,17 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		b_box.max.y = pos.y + 1.8f - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
 		b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
 
+
+		entityList.emplace_back(entity->Name, bbox{{-b_box.min.x, -b_box.min.y, -b_box.min.z}, {-b_box.max.x, -b_box.max.y, -b_box.max.z}});
 		bboxes.emplace_back(b_box);
+
 
 		/*visual_entity.name = entity->Name;
 		entity_list.push_back(visual_entity);*/
 	}
 
 	bboxxesdud = bboxes;
-	//m_entity_list = entity_list;
+	m_entityList = entityList;
 	SLOW_SLEEP(1);
 }
 
@@ -80,6 +83,18 @@ void CEsp::OnRender()
 	glPopMatrix();
 
 	glPopMatrix();
+}
+
+void CEsp::OnImGuiRender(ImDrawList* draw)
+{
+	/*for (const auto& e : m_entityList)
+	{
+		vec2 screenPos;
+		if (WorldToScreen(e.second.min, screenPos, CVarsUpdater::ModelView, CVarsUpdater::Projection, screen_width, screen_height))
+		{
+			draw->AddText({screenPos.x, screenPos.y}, IM_COL32_WHITE, e.first.c_str());
+		}
+	}*/
 }
 
 }

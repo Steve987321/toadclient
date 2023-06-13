@@ -6,12 +6,14 @@ std::once_flag flag;
 
 void toadll::modules::initialize()
 {
+	// will create the module instances
 	CVarsUpdater::get_instance();
 	CLeftAutoClicker::get_instance();
 	CRightAutoClicker::get_instance();
 	CAimAssist::get_instance();
 	CEsp::get_instance();
-	//CVelocity::get_instance();
+	CVelocity::get_instance();
+	CAutoPot::get_instance();
 
 	for (const auto& Module : CModule::moduleInstances)
 	{

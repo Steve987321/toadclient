@@ -6,7 +6,7 @@ void toadll::CVarsUpdater::PreUpdate()
 {
 	auto world = Minecraft->get_world();
 	auto tmpPlayer = Minecraft->get_localplayer();
-	if (tmpPlayer == nullptr || world == nullptr)
+	if (world == nullptr || tmpPlayer == nullptr )
 	{
 		if (world == nullptr)
 			env->DeleteLocalRef(world);
@@ -17,36 +17,37 @@ void toadll::CVarsUpdater::PreUpdate()
 	
 	env->DeleteLocalRef(world);
 	
-	static auto lPlayerName = tmpPlayer->get_name(); 
+	static auto lPlayerName = tmpPlayer->getName();
 	LocalPlayer->Name = lPlayerName;
 	LocalPlayer->obj = tmpPlayer->obj;
-	LocalPlayer->Invis = tmpPlayer->is_invisible();
-	LocalPlayer->Pos = tmpPlayer->get_position();
-	LocalPlayer->HeldItem = tmpPlayer->get_heldItemStr();
-	LocalPlayer->HurtTime = tmpPlayer->get_hurt_time();
-	LocalPlayer->LastTickPos = tmpPlayer->get_lasttickposition();
-	LocalPlayer->Pitch = tmpPlayer->get_rotationPitch();
-	LocalPlayer->Yaw = tmpPlayer->get_rotationYaw();
-	LocalPlayer->motion = { tmpPlayer->get_motionX(), tmpPlayer->get_motionY(), tmpPlayer->get_motionZ() };
+	LocalPlayer->Health = tmpPlayer->getHealth();
+	LocalPlayer->Invis = tmpPlayer->isInvisible();
+	LocalPlayer->Pos = tmpPlayer->getPosition();
+	LocalPlayer->HeldItem = tmpPlayer->getHeldItemStr();
+	LocalPlayer->HurtTime = tmpPlayer->getHurtTime();
+	LocalPlayer->LastTickPos = tmpPlayer->getLastTickPosition();
+	LocalPlayer->Pitch = tmpPlayer->getRotationPitch();
+	LocalPlayer->Yaw = tmpPlayer->getRotationYaw();
+	LocalPlayer->Motion = { tmpPlayer->getMotionX(), tmpPlayer->getMotionY(), tmpPlayer->getMotionZ() };
 
 	auto entityList = Minecraft->get_playerList();
 	std::vector<std::shared_ptr<EntityT>> tmp = {};
 	for (const auto& e : entityList)
 	{
-		auto eName = e->get_name();
+		auto eName = e->getName();
 		if (LocalPlayer->Name == eName)
 			continue;
 
 		auto entity = std::make_shared<EntityT>();
 		entity->Name = eName;
 		entity->obj = e->obj;
-		entity->Pos = e->get_position();
-		entity->HurtTime = e->get_hurt_time();
-		entity->LastTickPos = e->get_lasttickposition();
-		entity->Invis = e->is_invisible();
-		entity->HeldItem = e->get_heldItemStr();
-		entity->Pitch = e->get_rotationPitch();
-		entity->Yaw = e->get_rotationYaw();
+		entity->Pos = e->getPosition();
+		entity->HurtTime = e->getHurtTime();
+		entity->LastTickPos = e->getLastTickPosition();
+		entity->Invis = e->isInvisible();
+		entity->HeldItem = e->getHeldItemStr();
+		entity->Pitch = e->getRotationPitch();
+		entity->Yaw = e->getRotationYaw();
 		tmp.emplace_back(entity);
 	}
 

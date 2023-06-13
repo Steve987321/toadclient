@@ -78,7 +78,7 @@
     <ClInclude Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\esp.h">
+    <ClInclude Include="Toad\Modules\visuals\esp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Toad\module.h">
@@ -115,6 +115,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Toad\Modules\vars_updater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Toad\Modules\visuals\block_esp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Toad\Modules\autopot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,7 +176,7 @@
     <ClCompile Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\esp.cpp">
+    <ClCompile Include="Toad\Modules\visuals\esp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\Modules\aimassist.cpp">
@@ -192,6 +198,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\Modules\vars_updater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Modules\visuals\block_esp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Modules\autopot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

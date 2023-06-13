@@ -48,13 +48,13 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		}
 		else if (enemy != nullptr)
 		{
-			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, enemy->get_position()).first)));
-			if (enemy->get_position().dist(lPlayer->Pos) > 4.0f || yawDiff > 120)
+			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, enemy->getPosition()).first)));
+			if (enemy->getPosition().dist(lPlayer->Pos) > 4.0f || yawDiff > 120)
 				enemy = nullptr;
 		}
 
 		auto mouse_over_type = get_mouse_over_type();
-		auto held_item = lPlayer->HeldItem;
+		const auto& held_item = lPlayer->HeldItem;
 
 		if (!is_starting_click)
 		{
@@ -138,7 +138,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 				{
 					static bool is_player_hit = false;
 					static bool is_enemy_hit = false;
-					if (!is_enemy_hit && enemy->get_hurt_time() <= 2)
+					if (!is_enemy_hit && enemy->getHurtTime() <= 2)
 					{
 						enemy_hit_count++;
 						is_enemy_hit = true;
@@ -213,7 +213,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			{
 				if (enemy != nullptr)
 				{
-					if (enemy->get_hurt_time() <= 2 && !block_hit_timer_started)
+					if (enemy->getHurtTime() <= 2 && !block_hit_timer_started)
 					{
 						// block
 						right_mouse_down();

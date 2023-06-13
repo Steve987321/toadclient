@@ -16,36 +16,39 @@ namespace toadll
 		~c_Entity();
 
 	public:
-		_NODISCARD vec3 get_position() const;
-		_NODISCARD vec3 get_lasttickposition() const;
+		_NODISCARD vec3 getPosition() const;
+		_NODISCARD vec3 getLastTickPosition() const;
 
-		_NODISCARD float get_rotationYaw() const;
-		_NODISCARD float get_rotationPitch() const;
+		_NODISCARD float getRotationYaw() const;
+		_NODISCARD float getRotationPitch() const;
 
-		_NODISCARD std::string get_name() const;
-		_NODISCARD std::string get_heldItemStr() const;
-		_NODISCARD jobject get_heldItem() const;
+		_NODISCARD std::string getName() const;
+		_NODISCARD std::string getHeldItemStr() const;
+		_NODISCARD jobject getHeldItem() const;
 
-		_NODISCARD int get_hurt_time() const;
+		_NODISCARD std::string getSlotStr(int slot) const;
 
-		_NODISCARD float get_motionX() const;
-		_NODISCARD float get_motionY() const;
-		_NODISCARD float get_motionZ() const;
+		_NODISCARD int getHurtTime() const;
+		_NODISCARD float getHealth() const;
 
-		_NODISCARD bool is_invisible() const;
+		_NODISCARD float getMotionX() const;
+		_NODISCARD float getMotionY() const;
+		_NODISCARD float getMotionZ() const;
+
+		_NODISCARD bool isInvisible() const;
 
 		//[[nodiscard]] jobject get_open_container() const;
 		_NODISCARD bbox get_BBox() const;
 
 	public:
-		void set_rotationYaw(float newYaw) const;
-		void set_prevRotationYaw(float newYaw) const;
-		void set_rotationPitch(float newPitch) const;
-		void set_prevRotationPitch(float newPitch) const;
-		void set_rotation(float yaw, float pitch) const;
-		void set_motionX(float val) const;
-		void set_motionY(float val) const;
-		void set_motionZ(float val) const;
+		void setRotationYaw(float newYaw) const;
+		void setPrevRotationYaw(float newYaw) const;
+		void setRotationPitch(float newPitch) const;
+		void setPrevRotationPitch(float newPitch) const;
+		void setRotation(float yaw, float pitch) const;
+		void setMotionX(float val) const;
+		void setMotionY(float val) const;
+		void setMotionZ(float val) const;
 
 	};
 

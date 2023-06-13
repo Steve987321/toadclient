@@ -149,6 +149,8 @@ namespace toadll
 
         int HurtTime = 0;
 
+        float Health = 0;
+
         float Pitch;
         float Yaw;
 
@@ -158,7 +160,7 @@ namespace toadll
 
     struct LocalPlayerT : EntityT
     {
-        vec3 motion = {};
+        vec3 Motion = {};
     };
 
     enum class minecraft_client
@@ -197,6 +199,7 @@ namespace toadll
         lastTickPosXField,
         lastTickPosYField,
         lastTickPosZField,
+        inventoryField,
 
         // jdouble
         motionXField,
@@ -259,8 +262,6 @@ namespace toadll
 
         getBBox,
 
-        getInventory,
-
         getName,
 
         getMotionX,
@@ -269,6 +270,9 @@ namespace toadll
 
         isInvisible,
 
+        // inv
+        getStackInSlot,
+
         // .EntityRenderer
         disableLightmap,
         enableLightmap,
@@ -276,6 +280,7 @@ namespace toadll
         // .EntityLivingBase
         getHeldItem,
         getHurtTime,
+        getHealth,
 
         // .ActiveRenderInfo
         getRenderPos,

@@ -34,7 +34,9 @@
 
 #include "Modules/clicker/leftautoclicker.h"
 #include "Modules/clicker/rightautoclicker.h"
-#include "Modules/esp.h"
+#include "Modules/visuals/esp.h"
+#include "Modules/visuals/block_esp.h"
+#include "Modules/autopot.h"
 #include "Modules/aimassist.h"
 #include "Modules/velocity.h"
 

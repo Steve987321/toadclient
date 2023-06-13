@@ -37,8 +37,6 @@ namespace toadll
 				is_starting_click = true;
 			}
 
-		
-
 			if (right_clicker::blocks_only)
 				if (lPlayer->HeldItem.find("tile") == std::string::npos)
 					return;

@@ -170,10 +170,10 @@ AIMING:
 	if (!EditableLocalPlayer)
 		return;
 
-	auto updatedYaw = EditableLocalPlayer->get_rotationYaw();
+	auto updatedYaw = EditableLocalPlayer->getRotationYaw();
 	//log_Debug("%s | %f = %f + %f", target->get_name().c_str(), lyaw + yawdiffSpeed, lyaw, yawdiffSpeed);
-	EditableLocalPlayer->set_rotationYaw(updatedYaw + yawdiffSpeed);
-	EditableLocalPlayer->set_prevRotationYaw(updatedYaw + yawdiffSpeed);
+	EditableLocalPlayer->setRotationYaw(updatedYaw + yawdiffSpeed);
+	EditableLocalPlayer->setPrevRotationYaw(updatedYaw + yawdiffSpeed);
 
 	// pitch randomization
 	static CTimer pitch_rand_timer;
@@ -181,7 +181,7 @@ AIMING:
 	static float pitchupdatems = rand_float(100, 200);
 	static float pitchrandsmooth = 0;
 	static float pitchrandbegin = 0;
-	auto updatedPitch = EditableLocalPlayer->get_rotationPitch();
+	auto updatedPitch = EditableLocalPlayer->getRotationPitch();
 	if (pitch_rand_timer.Elapsed<>() > pitchupdatems)
 	{
 		pitchrandbegin = pitchrand;
@@ -195,14 +195,14 @@ AIMING:
 	if (rand_100 < 10)
 		pitchrandsmooth += rand_float(-0.001f, 0.001f);
 
-	EditableLocalPlayer->set_rotationPitch(updatedPitch + pitchrandsmooth);
-	EditableLocalPlayer->set_prevRotationPitch(updatedPitch + pitchrandsmooth);
+	EditableLocalPlayer->setRotationPitch(updatedPitch + pitchrandsmooth);
+	EditableLocalPlayer->setPrevRotationPitch(updatedPitch + pitchrandsmooth);
 
 	if (!aa::horizontal_only)
 	{
-		auto updatedPitch = EditableLocalPlayer->get_rotationPitch();
-		EditableLocalPlayer->set_rotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
-		EditableLocalPlayer->set_prevRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
+		auto updatedPitch = EditableLocalPlayer->getRotationPitch();
+		EditableLocalPlayer->setRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
+		EditableLocalPlayer->setPrevRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
 	}
 
 	toadll::preciseSleep(toadll::rand_float(0.0001f, 0.0005f)); // 1-5ms

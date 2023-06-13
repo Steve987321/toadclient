@@ -41,9 +41,9 @@ namespace toadll
 
 			//if (velocity::delay > 0) toad::preciseSleep(velocity::delay * 0.05f);
 
-			auto motionX = lPlayer->motion.x;
+			auto motionX = lPlayer->Motion.x;
 			auto newMotionX = motionX * (velocity::horizontal / 100); /* std::lerp(motionX, motionX * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
-			auto motionZ = lPlayer->motion.z;
+			auto motionZ = lPlayer->Motion.z;
 			auto newMotionZ = motionZ * (velocity::horizontal / 100); /*std::lerp(motionZ, motionZ * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
 
 			auto EditableLocalPlayer = Minecraft->get_localplayer();
@@ -51,13 +51,13 @@ namespace toadll
 				return;
 
 			if (abs(motionX) > 0)
-				EditableLocalPlayer->set_motionX(newMotionX);
+				EditableLocalPlayer->setMotionX(newMotionX);
 			if (abs(motionZ) > 0)
-				EditableLocalPlayer->set_motionZ(newMotionZ);
+				EditableLocalPlayer->setMotionZ(newMotionZ);
 
 			// TODO: separate horizontal and vertical velocity module in separate threads? 
-			if (lPlayer->motion.y > 0) // normal velocity when going down 
-				EditableLocalPlayer->set_motionY(lPlayer->motion.y * (velocity::vertical / 100.f));
+			if (lPlayer->Motion.y > 0) // normal velocity when going down 
+				EditableLocalPlayer->setMotionY(lPlayer->Motion.y * (velocity::vertical / 100.f));
 
 			StopFlag = true;
 

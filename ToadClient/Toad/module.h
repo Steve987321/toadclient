@@ -5,10 +5,6 @@
 
 namespace toadll {
 
-//class CModule;
-
-//inline std::vector<CModule*> moduleInstances = {};
-
 /**
  * @brief
  * interface for cheat features
@@ -46,6 +42,9 @@ namespace toadll {
 
 		// Executes inside the wglswapbuffers hook 
 		virtual void OnRender() {}
+
+		// Executes inside the wglswapbuffers hook when ImGui is getting rendered
+		virtual void OnImGuiRender(ImDrawList* draw) {}
 
 };
 
