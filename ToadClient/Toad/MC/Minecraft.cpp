@@ -56,7 +56,7 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::get_localplayer()
     //auto obj = !playermid ? nullptr : std::make_shared<c_Entity>(env->CallObjectMethod(mc, playermid), env, get_entity_living_class());
     if (env->ExceptionCheck())
     {
-        std::cout << "OH NO EXCEPTION!\n";
+        log_Debug("OH NO EXCEPTION!");
         return nullptr;
     }
     env->DeleteLocalRef(mc);

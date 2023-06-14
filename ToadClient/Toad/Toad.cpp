@@ -22,13 +22,13 @@ namespace toadll
 		if (hMapFile == NULL)
 		{
 			g_is_running = false;
-			std::cout << "exit 11\n";
+			log_Debug("exit 11");
 			return;
 		}
 		const auto buf = (LPCSTR)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, bufsize);
 		if (buf == NULL)
 		{
-			std::cout << "buf = 0\n";
+			log_Debug("buf = 0");
 			//clean_up(12);
 			CloseHandle(hMapFile);
 			return;
@@ -105,8 +105,10 @@ namespace toadll
 
 	DWORD WINAPI init()
 	{
+#ifdef ENABLE_LOGGING
 		p_Log = std::make_unique<c_Logger>();
 		SetConsoleCtrlHandler(NULL, true);
+#endif
 
 		GetCurrWindowHWND(&g_hWnd);
 		if (!g_hWnd)
@@ -229,9 +231,10 @@ namespace toadll
 			g_env = nullptr;
 			g_jvm = nullptr;
 
+#ifdef ENABLE_LOGGING
 			log_Debug("console");
 			p_Log->dispose_console();
-
+#endif
 			FreeLibraryAndExitThread(g_hMod, 0);
 			});
 	}

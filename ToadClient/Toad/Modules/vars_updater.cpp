@@ -17,8 +17,8 @@ void toadll::CVarsUpdater::PreUpdate()
 	
 	env->DeleteLocalRef(world);
 	
-	static auto lPlayerName = tmpPlayer->getName();
-	LocalPlayer->Name = lPlayerName;
+	//static auto lPlayerName = tmpPlayer->getName();
+	//LocalPlayer->Name = lPlayerName;
 	LocalPlayer->obj = tmpPlayer->obj;
 	LocalPlayer->Health = tmpPlayer->getHealth();
 	LocalPlayer->Invis = tmpPlayer->isInvisible();
@@ -34,26 +34,22 @@ void toadll::CVarsUpdater::PreUpdate()
 	std::vector<std::shared_ptr<EntityT>> tmp = {};
 	for (const auto& e : entityList)
 	{
-		auto eName = e->getName();
-		if (LocalPlayer->Name == eName)
+		if (env->IsSameObject(tmpPlayer->obj, e->obj))
 			continue;
 
 		auto entity = std::make_shared<EntityT>();
-		entity->Name = eName;
+		//entity->Name = eName;
 		entity->obj = e->obj;
 		entity->Pos = e->getPosition();
 		entity->HurtTime = e->getHurtTime();
 		entity->LastTickPos = e->getLastTickPosition();
 		entity->Invis = e->isInvisible();
-		entity->HeldItem = e->getHeldItemStr();
 		entity->Pitch = e->getRotationPitch();
 		entity->Yaw = e->getRotationYaw();
 		tmp.emplace_back(entity);
 	}
 
 	PlayerList = tmp;
-
-	SLOW_SLEEP(5);
 }
 
 void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)

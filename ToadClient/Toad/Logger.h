@@ -104,7 +104,14 @@ inline std::unique_ptr<c_Logger> p_Log;
 
 }
 
+#ifdef ENABLE_LOGGING
 #define log_Ok(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LOK, msg, __VA_ARGS__) 
 #define log_Debug(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LDEBUG, msg, __VA_ARGS__) 
 #define log_Error(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LERROR, msg, __VA_ARGS__) 
 #define log_Warn(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LWARNING, msg, __VA_ARGS__)
+#else
+#define log_Ok(msg, ...)
+#define log_Debug(msg, ...)
+#define log_Error(msg, ...)
+#define log_Warn(msg, ...)
+#endif

@@ -1,5 +1,7 @@
 #pragma once
 
+//#define ENABLE_LOGGING
+
 #include <gl/GL.h>
 #pragma comment(lib, "opengl32.lib")
 

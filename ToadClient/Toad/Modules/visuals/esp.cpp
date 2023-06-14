@@ -15,7 +15,7 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	}
 
 	std::vector<bbox> bboxes = {};
-	std::vector<std::pair<std::string, bbox>> entityList = {};
+	//std::vector<std::pair<std::string, bbox>> entityList = {};
 
 	for (const auto& entity : CVarsUpdater::PlayerList)
 	{
@@ -38,7 +38,7 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
 
 
-		entityList.emplace_back(entity->Name, bbox{{-b_box.min.x, -b_box.min.y, -b_box.min.z}, {-b_box.max.x, -b_box.max.y, -b_box.max.z}});
+		//entityList.emplace_back(entity->Name, bbox{{-b_box.min.x, -b_box.min.y, -b_box.min.z}, {-b_box.max.x, -b_box.max.y, -b_box.max.z}});
 		bboxes.emplace_back(b_box);
 
 
@@ -47,13 +47,18 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	}
 
 	bboxxesdud = bboxes;
-	m_entityList = entityList;
+	//m_entityList = entityList;
 	SLOW_SLEEP(1);
 }
 
 void CEsp::OnRender()
 {
 	if (!esp::enabled) return;
+	if (!CVarsUpdater::IsVerified)
+	{
+		bboxxesdud.clear();
+		return;
+	}
 
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
@@ -87,6 +92,8 @@ void CEsp::OnRender()
 
 void CEsp::OnImGuiRender(ImDrawList* draw)
 {
+	if (!CVarsUpdater::IsVerified) return;
+
 	/*for (const auto& e : m_entityList)
 	{
 		vec2 screenPos;

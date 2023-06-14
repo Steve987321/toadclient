@@ -139,8 +139,7 @@ namespace toadll
 
     struct EntityT
     {
-        std::string Name;
-        std::string HeldItem;
+        //std::string Name;
 
         bool Invis = false;
 
@@ -161,6 +160,8 @@ namespace toadll
     struct LocalPlayerT : EntityT
     {
         vec3 Motion = {};
+        std::string HeldItem;
+
     };
 
     enum class minecraft_client
