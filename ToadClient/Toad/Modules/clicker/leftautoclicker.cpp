@@ -12,7 +12,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 	static bool break_blocks_flag = false;  // decides if the player is gonna hold down lmb
 	static bool block_hit_timer_started = false;
-	static bool is_clicking = false; // checks if we were already using the autoclicker
+	static bool is_already_clicking = false; // checks if we were already using the autoclicker
 
 	static int block_hit_rand_ms = left_clicker::block_hit_ms;
 
@@ -41,7 +41,6 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	{
 		m_start = std::chrono::high_resolution_clock::now();
 
-
 		m_pTick = CVarsUpdater::PartialTick;
 		static auto enemy = Minecraft->get_mouseOverPlayer();
 		if (enemy == nullptr)
@@ -64,6 +63,16 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			rand.edited_max = rand.max_delay;
 
 			is_starting_click = true;
+		}
+
+		if (left_clicker::break_blocks && !is_already_clicking)
+		{
+			while (mouse_over_type == "BLOCK" && GetAsyncKeyState(VK_LBUTTON))
+			{
+				SLOW_SLEEP(1);
+				mouse_over_type = get_mouse_over_type();
+				m_start = std::chrono::high_resolution_clock::now();
+			}
 		}
 
 		if (left_clicker::weapons_only)
@@ -174,7 +183,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		if (!mouse_down())
 			return;
 
-		is_clicking = true;
+		is_already_clicking = true;
 
 		if (left_clicker::break_blocks)
 		{
@@ -236,7 +245,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	{
 		if (!GetAsyncKeyState(VK_LBUTTON))
 		{
-			is_clicking = false;
+			is_already_clicking = false;
 		}
 		if (block_hit_timer_started)
 		{
