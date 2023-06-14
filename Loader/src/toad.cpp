@@ -69,6 +69,7 @@ void toad::Fupdate_settings()
 
 	// right auto clicker
 	data["rc_enabled"] = right_clicker::enabled;
+	data["rc_cps"] = right_clicker::cps;
 	data["rc_blocks_only"] = right_clicker::blocks_only;
 	data["rc_start_delay"] = right_clicker::start_delayms;
 

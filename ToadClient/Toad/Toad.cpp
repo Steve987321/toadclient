@@ -58,6 +58,7 @@ namespace toadll
 
 		// right auto clicker
 		right_clicker::enabled = data["rc_enabled"];
+		right_clicker::cps = data["rc_cps"];
 		right_clicker::blocks_only = data["rc_blocks_only"];
 		right_clicker::start_delayms = data["rc_start_delay"];
 
