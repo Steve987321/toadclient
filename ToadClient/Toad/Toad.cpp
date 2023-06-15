@@ -111,10 +111,6 @@ namespace toadll
 		SetConsoleCtrlHandler(NULL, true);
 #endif
 
-		GetCurrWindowHWND(&g_hWnd);
-		if (!g_hWnd)
-			return 1;
-
 		// get functions from jvm.dll
 		auto jvmHandle = GetModuleHandleA("jvm.dll");
 

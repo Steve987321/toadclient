@@ -13,19 +13,28 @@ namespace toadll
 
 	BOOL hook(HDC hDc)
 	{
-		GLint viewport[4];
-		glGetIntegerv(GL_VIEWPORT, viewport);
-		toadll::screen_width = viewport[2];
-		toadll::screen_height = viewport[3];
-
-		for (const auto& Module : CModule::moduleInstances)
-			Module->OnRender();
-
 		HWND hwnd = WindowFromDC(hDc);
 		HGLRC oCtx = wglGetCurrentContext();
 
 		static HGLRC ctx = nullptr;
 		static int init_stage = 0;
+
+		GLint viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+
+		// check for resolution change
+		if (screen_width != viewport[2] || screen_height != viewport[3])
+		{
+			// update window handle 
+			// window handle gets lost when switching between fullscreen and windowed
+			g_hWnd = hwnd;
+		}
+
+		screen_width = viewport[2];
+		screen_height = viewport[3];
+
+		for (const auto& Module : CModule::moduleInstances)
+			Module->OnRender();
 
 		if (init_stage == 0)
 		{

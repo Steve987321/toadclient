@@ -2,7 +2,6 @@
 
 namespace toadll
 {
-
     inline float rand_float(float min, float max)
     {
         std::random_device rd;
@@ -57,38 +56,6 @@ namespace toadll
         while ((high_resolution_clock::now() - start).count() / 1e9 < seconds);
     }
 
-    inline BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
-    {
-        constexpr DWORD TITLE_SIZE = 1024;
-        DWORD PID = 0;
-
-        WCHAR windowTitle[TITLE_SIZE];
-
-        GetWindowTextW(hwnd, windowTitle, TITLE_SIZE);
-
-        const int length = ::GetWindowTextLength(hwnd);
-
-        if (IsWindowVisible(hwnd) && length != 0) {
-            //convert to std::string
-            auto buf = new char[length + 1];
-
-            char DefChar = ' ';
-            WideCharToMultiByte(CP_ACP, 0, windowTitle, -1, buf, length + 1, &DefChar, NULL);
-
-            auto title = std::string(buf);
-            DWORD pid;
-            HWND* hWnd = reinterpret_cast<HWND*>(lParam);
-            GetWindowThreadProcessId(hwnd, &pid);
-            if (pid == GetCurrentProcessId())
-                *hWnd = hwnd;
-
-            delete[] buf;
-
-            return TRUE;
-        }
-        return TRUE;
-    }
-
     inline void SendKey(WORD vk_key, bool send_down = true)
     {
         static INPUT ip{INPUT_KEYBOARD};
@@ -100,10 +67,5 @@ namespace toadll
         ip.ki.dwFlags = send_down ? 0 : KEYEVENTF_KEYUP;
 
         SendInput(1, &ip, sizeof(INPUT));
-    }
-
-    inline void GetCurrWindowHWND(HWND* hwnd)
-    {
-        EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(hwnd));
     }
 }
