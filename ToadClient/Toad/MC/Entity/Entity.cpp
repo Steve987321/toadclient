@@ -98,7 +98,9 @@ int toadll::c_Entity::getHurtTime() const
 
 float toadll::c_Entity::getHealth() const
 {
-	auto mid = get_mid(elclass, mapping::getHealth, env);
+	auto mid = get_mid(obj, mapping::getHealth, env);
+	if (!mid)
+		return 0;
 	return env->CallFloatMethod(obj, mid);
 }
 

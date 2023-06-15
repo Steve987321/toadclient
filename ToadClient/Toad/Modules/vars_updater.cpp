@@ -34,6 +34,8 @@ void toadll::CVarsUpdater::PreUpdate()
 	std::vector<std::shared_ptr<EntityT>> tmp = {};
 	for (const auto& e : entityList)
 	{
+		if (!e || !e->obj)
+			continue;
 		if (env->IsSameObject(tmpPlayer->obj, e->obj))
 			continue;
 

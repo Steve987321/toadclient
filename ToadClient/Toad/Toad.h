@@ -1,6 +1,6 @@
 #pragma once
 
-//#define ENABLE_LOGGING
+#define ENABLE_LOGGING
 
 #include <gl/GL.h>
 #pragma comment(lib, "opengl32.lib")
@@ -11,7 +11,7 @@
 // macro that inherits from essential classes for a cheat module
 #define SET_MODULE_CLASS(T) final : public toadll::c_Singleton<T>, public CModule
 
-// Settings/config for modules are stored in the Loader folder
+// Settings/config variables for modules are stored in the Loader project
 #include "../../Loader/src/global_settings.h"
 
 #include "Toad/Types.h"

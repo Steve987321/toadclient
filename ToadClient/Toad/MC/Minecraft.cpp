@@ -232,7 +232,11 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::get_playerLi
     auto entities = env->GetObjectField(world, get_fid(world, mappingFields::playerEntitiesField, env));
     if (env->ExceptionCheck())
     {
+#ifdef ENABLE_LOGGING
+    	log_Error("Exception getting player entities");
         env->ExceptionDescribe();
+        SLOW_SLEEP(1000);
+#endif
         return {};
     }
     env->DeleteLocalRef(world);

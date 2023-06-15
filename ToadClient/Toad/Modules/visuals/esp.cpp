@@ -14,14 +14,18 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		return;
 	}
 
+	if (!CVarsUpdater::IsVerified)
+	{
+		SLOW_SLEEP(100);
+		return;
+	}
+
 	std::vector<bbox> bboxes = {};
 	//std::vector<std::pair<std::string, bbox>> entityList = {};
-
 	for (const auto& entity : CVarsUpdater::PlayerList)
 	{
 		if (entity->Invis)
 			continue;
-
 		auto playerlasttickpos = lPlayer->LastTickPos;
 		auto currPos = lPlayer->Pos;
 		auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * CVarsUpdater::RenderPartialTick;
@@ -53,13 +57,12 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 void CEsp::OnRender()
 {
-	if (!esp::enabled) return;
-	if (!CVarsUpdater::IsVerified)
+	if (!esp::enabled || !CVarsUpdater::IsVerified) 
 	{
 		bboxxesdud.clear();
 		return;
 	}
-
+	
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(CVarsUpdater::Projection.data());

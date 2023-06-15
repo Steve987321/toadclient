@@ -39,6 +39,7 @@ public:
 	{
 		AllocConsole();
 		freopen_s(&m_f, "CONOUT$", "w", stdout);
+		freopen_s(&m_f, "CONOUT$", "w", stderr);
 		m_hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	}
 	~c_Logger()
