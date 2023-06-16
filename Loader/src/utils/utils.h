@@ -301,12 +301,36 @@ namespace toad::utils
 
 	inline bool ToggleButton(const char* str_id, bool* v)
 	{
+		//ImVec2 p = ImGui::GetCursorScreenPos();
+		//p.x += 12; // +12 for button size change
+		//ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+		//float height = ImGui::GetFrameHeight();
+		//float width = height * 1.55f;
+		//float radius = height * 0.50f;
+
+		//if (ImGui::InvisibleButton(str_id, ImVec2(width, height)))
+		//	*v = !*v;
+		//ImU32 col_bg;
+
+		//bool res = ImGui::IsItemHovered();
+
+		//if (res)
+		//	col_bg = *v ? IM_COL32(145 + 20, 211, 68 + 20, 255) : IM_COL32(218 - 20, 218 - 20, 218 - 20, 255);
+		//else
+		//	col_bg = *v ? IM_COL32(145, 211, 68, 255) : IM_COL32(218, 218, 218, 255);
+
+		//draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
+		//draw_list->AddCircleFilled(ImVec2(*v ? (p.x + width - radius) : (p.x + radius), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
+		//return res;
+
+		// new "toggle button"
+
 		ImVec2 p = ImGui::GetCursorScreenPos();
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
 		float height = ImGui::GetFrameHeight();
 		float width = height * 1.55f;
-		float radius = height * 0.50f;
 
 		if (ImGui::InvisibleButton(str_id, ImVec2(width, height)))
 			*v = !*v;
@@ -315,12 +339,18 @@ namespace toad::utils
 		bool res = ImGui::IsItemHovered();
 
 		if (res)
-			col_bg = *v ? IM_COL32(145 + 20, 211, 68 + 20, 255) : IM_COL32(218 - 20, 218 - 20, 218 - 20, 255);
+			col_bg = *v ? IM_COL32(165, 211, 88, 255) : IM_COL32(231, 68, 91, 255);
 		else
-			col_bg = *v ? IM_COL32(145, 211, 68, 255) : IM_COL32(218, 218, 218, 255);
+			col_bg = *v ? IM_COL32(145, 211, 68, 255) /* #91D344 */ : IM_COL32(211, 68, 71, 255); /* #D34447 */
 
-		draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
-		draw_list->AddCircleFilled(ImVec2(*v ? (p.x + width - radius) : (p.x + radius), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
+		// horizontal
+		draw_list->AddRectFilled(p, ImVec2(p.x + 104, p.y + 5), col_bg);
+		draw_list->AddRectFilled(ImVec2(p.x, p.y + 70), ImVec2(p.x + 104, p.y + 75), col_bg);
+
+		// vertical
+		draw_list->AddRectFilled(ImVec2(p.x, p.y + 5), ImVec2(p.x + 5, p.y + 70), col_bg);
+		draw_list->AddRectFilled(ImVec2(p.x + 99, p.y + 5), ImVec2(p.x + 104, p.y + 70), col_bg);
+
 		return res;
 	}
 
@@ -335,7 +365,7 @@ namespace toad::utils
 
 		bool res = false;
 
-		ImGui::Button(id.c_str(), { 80, 75 });
+		ImGui::Button(id.c_str(), { 104, 75 });
 		
 		if (ImGui::IsItemHovered())
 		{
@@ -350,11 +380,16 @@ namespace toad::utils
 		}
 		ImGui::SetCursorPosY(oPosY + style.FramePadding.y);
 		ImGui::SetCursorPosX(oPosX + 25);
-		ToggleButton(id.c_str(), v);
-		ImGui::SetCursorPos({ oPosX + 40 - ImGui::CalcTextSize(icon).x / 2, oPosY + 37 });
+		//ToggleButton(id.c_str(), v);
+		ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(icon).x / 2, oPosY + 28 });
 		ImGui::Text(icon);
-		ImGui::SetCursorPos({ oPosX + 40 - ImGui::CalcTextSize(name).x / 2, oPosY + 57 });
+		ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(name).x / 2, oPosY + 48 });
 		ImGui::Text(name);
+
+		// green/red thing
+		ImGui::SetCursorPos({ oPosX, oPosY });
+		ToggleButton(id.c_str(), v);
+
 		ImGui::SetCursorPosY(oPosY + 75 + style.FramePadding.y * 2);
 		return res;
 	}

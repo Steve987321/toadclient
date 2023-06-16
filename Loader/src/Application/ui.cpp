@@ -30,13 +30,13 @@ namespace toad
 	        ImGui::BeginChild("main Tabs", {85, 0});
             {
                 // Tab Bar
-                //ImGui::ImageButton();
-                if (ImGui::Button("Combat", { 85, 75 }))
+                //ImGui::ImageButton(); 
+                if (ImGui::Button("Combat", { 85, 30 }))
                 {
                     tab = 0;
                 }
                 ImGui::Spacing();
-                if (ImGui::Button("Misc", { 85, 75 }))
+                if (ImGui::Button("Misc", { 85, 30 }))
                 {
                     tab = 1;
                 }
