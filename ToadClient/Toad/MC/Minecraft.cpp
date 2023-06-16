@@ -167,6 +167,7 @@ jobject toadll::c_Minecraft::getMouseOverBlock()
 int toadll::c_Minecraft::getBlockIdAt(const vec3& pos)
 {
     auto world = getWorld();
+    if (!world) return 0;
     auto blockatObj = env->CallObjectMethod(world, get_mid(world, mapping::getBlockAt, env), pos.x, pos.y, pos.z);
     auto blockatkClass = env->GetObjectClass(blockatObj);
     auto id = env->CallStaticIntMethod(blockatkClass, get_static_mid(blockatkClass, mapping::getIdFromBlockStatic, env), blockatObj);

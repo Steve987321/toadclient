@@ -30,6 +30,8 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		for (int y = static_cast<int>(lPos.y) - m_range; y < block_y_limit; y++)
 			for (int z = static_cast<int>(lPos.z) - m_range; z < block_z_limit; z++)
 			{
+				if (!CVarsUpdater::IsVerified)
+					break;
 				const int id = Minecraft->getBlockIdAt({ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) });
 				if (id == 0) continue; // airblock
 
