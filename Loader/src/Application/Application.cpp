@@ -123,7 +123,7 @@ namespace toad
         static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
         ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
         io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 24, &icons_config, icons_ranges);
-       
+
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
 

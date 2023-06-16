@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <set>
 
 #include "imgui/imgui.h"
 #include "Application/Fonts/Icons.h"
@@ -68,10 +69,56 @@ namespace toad::utils
 	};
 	ENUM_FLAG(center_text_flags)
 
-
 	// window scanner thread
 	inline std::thread Twin_scan;
 	void Fwin_scan();
+
+	template<typename T>
+	std::vector<std::pair<std::string, T>> GetFilteredSuggestions(const std::string& input, const std::unordered_map<std::string, T>& map, int max_suggestions = 3)
+	{
+		if (input.size() <= 1) // only suggest when atleast 2 characters
+			return {};
+
+		std::vector<std::pair<std::string, T>> res = {};
+
+		for (const auto& it : map)
+		{
+			if (it.first.find(input) != std::string::npos)
+				res.emplace_back(it.first, it.second);
+
+			if (res.size() > max_suggestions)
+			{
+				std::sort(res.begin(), res.end(), [](const auto& a, const auto& b) { return a.first < b.first;  });
+				return res;
+			}
+		}
+
+		std::sort(res.begin(), res.end(), [](const auto& a, const auto& b) { return a.first < b.first;  });
+		return res;
+	}
+
+	template<typename T>
+	std::vector<std::pair<T, std::string>> GetFilteredSuggestions(const std::string& input, const std::unordered_map<T, std::string>& map, const std::set<std::string> ignore = {}, int max_suggestions = 3)
+	{
+		if (input.size() <= 1) // only suggest when atleast 2 characters
+			return {};
+		std::vector<std::pair<T, std::string>> res = {};
+
+		for (const auto& it : map)
+		{
+			if (it.second.find(input) != std::string::npos && !ignore.contains(it.second))
+				res.emplace_back(it.first, it.second);
+
+			if (res.size() >= max_suggestions)
+			{
+				std::sort(res.begin(), res.end(), [](const auto& a, const auto& b) { return a.second < b.second; });
+				return res;
+			}
+		}
+
+		std::sort(res.begin(), res.end(), [](const auto& a, const auto& b) { return a.second < b.second; });
+		return res;
+	}
 
 	// only updated when still in init screen 
 	inline std::vector<window> winListVec = {};

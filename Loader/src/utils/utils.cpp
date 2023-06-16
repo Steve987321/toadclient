@@ -3,7 +3,6 @@
 
 namespace toad
 {
-
     bool ListProcessModules(DWORD dwPID)
     {
         auto hModuleSnap = INVALID_HANDLE_VALUE;
@@ -24,7 +23,7 @@ namespace toad
         // and exit if unsuccessful
         if (!Module32First(hModuleSnap, &me32))
         {
-            std::cout << (TEXT("Module32First"));  // show cause of failure
+            std::cout << ("Module32First");  // show cause of failure
             CloseHandle(hModuleSnap);           // clean the snapshot object
             return false;
         }

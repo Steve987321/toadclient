@@ -97,6 +97,22 @@ namespace toadll
 		esp::fillCol[2] = data["esp_fillcolb"];
 		esp::fillCol[3] = data["esp_fillcola"];
 
+		// block esp
+		block_esp::enabled = data["blockesp_enabled"];
+		json blockArray = data["block_esp_array"];
+		std::unordered_map<int, ImVec4> tmpList = {};
+		for (const auto& element : blockArray.items())
+		{
+			int id = std::stoi(element.key());
+			float r = element.value().at("x").get<float>();
+			float g = element.value().at("y").get<float>();
+			float b = element.value().at("z").get<float>();
+			float a = element.value().at("w").get<float>();
+			tmpList[id] = { r,g,b,a };
+		}
+
+		block_esp::block_list = tmpList;
+
 		CLeftAutoClicker::SetDelays(left_clicker::cps);
 		CRightAutoClicker::SetDelays(right_clicker::cps);
 
@@ -138,7 +154,7 @@ namespace toadll
 			return 0;
 		}
 
-		auto mcclass = c_Minecraft::get_mcclass(g_env);
+		auto mcclass = c_Minecraft::getMcClass(g_env);
 		if (mcclass == nullptr)
 		{
 			clean_up(4);

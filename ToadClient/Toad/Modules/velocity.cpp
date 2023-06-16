@@ -46,7 +46,7 @@ namespace toadll
 			auto motionZ = lPlayer->Motion.z;
 			auto newMotionZ = motionZ * (velocity::horizontal / 100); /*std::lerp(motionZ, motionZ * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
 
-			auto EditableLocalPlayer = Minecraft->get_localplayer();
+			auto EditableLocalPlayer = Minecraft->getLocalPlayer();
 			if (!EditableLocalPlayer)
 				return;
 

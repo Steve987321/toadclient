@@ -4,8 +4,8 @@
 
 void toadll::CVarsUpdater::PreUpdate()
 {
-	auto world = Minecraft->get_world();
-	auto tmpPlayer = Minecraft->get_localplayer();
+	auto world = Minecraft->getWorld();
+	auto tmpPlayer = Minecraft->getLocalPlayer();
 	if (world == nullptr || tmpPlayer == nullptr )
 	{
 		if (world == nullptr)
@@ -30,7 +30,7 @@ void toadll::CVarsUpdater::PreUpdate()
 	LocalPlayer->Yaw = tmpPlayer->getRotationYaw();
 	LocalPlayer->Motion = { tmpPlayer->getMotionX(), tmpPlayer->getMotionY(), tmpPlayer->getMotionZ() };
 
-	auto entityList = Minecraft->get_playerList();
+	auto entityList = Minecraft->getPlayerList();
 	std::vector<std::shared_ptr<EntityT>> tmp = {};
 	for (const auto& e : entityList)
 	{
@@ -56,12 +56,11 @@ void toadll::CVarsUpdater::PreUpdate()
 
 void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 {
-	static auto ari = Minecraft->get_active_render_info();
+	static auto ari = Minecraft->getActiveRenderInfo();
 	ModelView = ari->get_modelview();
 	Projection = ari->get_projection();
 
-	RenderPartialTick = Minecraft->get_renderPartialTick();
-	PartialTick = Minecraft->get_partialTick();
+	RenderPartialTick = Minecraft->getRenderPartialTick();
+	PartialTick = Minecraft->getPartialTick();
 	IsInGui = Minecraft->isInGui();
-	SLOW_SLEEP(1);
 }

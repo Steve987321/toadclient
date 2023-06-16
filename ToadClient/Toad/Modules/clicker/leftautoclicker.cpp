@@ -42,10 +42,10 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		m_start = std::chrono::high_resolution_clock::now();
 
 		m_pTick = CVarsUpdater::PartialTick;
-		static auto enemy = Minecraft->get_mouseOverPlayer();
+		static auto enemy = Minecraft->getMouseOverPlayer();
 		if (enemy == nullptr)
 		{
-			enemy = Minecraft->get_mouseOverPlayer();
+			enemy = Minecraft->getMouseOverPlayer();
 		}
 		else if (enemy != nullptr)
 		{
@@ -329,7 +329,7 @@ void CLeftAutoClicker::right_mouse_up()
 // TODO: instead of returning a string return an enum of object types
 std::string CLeftAutoClicker::get_mouse_over_type() const
 {
-	auto str = Minecraft->get_mouseOverStr();
+	auto str = Minecraft->getMouseOverBlockStr();
 	auto start = str.find("type=") + 5;
 	if (start == std::string::npos) return "";
 	auto end = str.find(',', start);

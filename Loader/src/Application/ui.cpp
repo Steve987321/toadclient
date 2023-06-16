@@ -135,9 +135,81 @@ namespace toad
                     {
                         utils::setting_menu("ESP", is_Esp, []
                             {
-                                ImGui::ColorEdit4("Outline Color", esp::lineCol);
-                                ImGui::ColorEdit4("Fill Color", esp::fillCol);
-                        });
+                                ImGui::ColorEdit4("Outline Color", esp::lineCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+                                ImGui::ColorEdit4("Fill Color", esp::fillCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+                                ImGui::Checkbox("Block Esp", &block_esp::enabled);
+
+                                static std::set<std::string> ignoreSuggestions = {};
+
+                                if (block_esp::enabled)
+                                {
+                                    static int blockIdInput = 54;
+                                    static char buf[20] = "";
+                                    ImGui::SetNextItemWidth(50);
+                                    ImGui::InputText("search", buf, 20);
+                                    ImGui::SameLine();
+                                    ImGui::SetNextItemWidth(50);
+                                    ImGui::InputInt("block ID", &blockIdInput, 0, 0, ImGuiInputTextFlags_NoMarkEdited);
+                                    ImGui::SameLine();
+                                    if (ImGui::Button("Add"))
+                                    {
+                                        if (!block_esp::block_list.contains(blockIdInput))
+                                        {
+                                            block_esp::block_list.insert({ blockIdInput, ImVec4{ 1, 1, 1, 0.3f } });
+                                         ignoreSuggestions.insert(ignoreSuggestions.end(), nameOfBlockId[blockIdInput]);
+                                            ZeroMemory(buf, 20);
+                                        }
+                                    }
+                                    auto listPos = ImGui::GetCursorPos();
+
+                                    ImGui::SetCursorPos(listPos);
+                                    ImGui::BeginChild("esp block list", {}, true);
+                                    for (auto& [id, col] : block_esp::block_list)
+                                    {
+                                        ImGui::PushID(id);
+
+                                        // Info
+                                        ImGui::Text("%s | %d", nameOfBlockId[id].c_str(), id);
+
+                                        // block color settings
+                                        auto& blockEspCol = col;
+                                        float coltmp[4] = { blockEspCol.x, blockEspCol.y, blockEspCol.z, blockEspCol.w };
+
+                                        ImGui::SameLine();
+                                        ImGui::ColorEdit4("##col", coltmp, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+
+                                        blockEspCol = { coltmp[0],coltmp[1],coltmp[2],coltmp[3] };
+
+                                        ImGui::SameLine();
+                                        if (ImGui::Button("Remove"))
+                                        {
+                                            block_esp::block_list.erase(id);
+                                            ignoreSuggestions.erase(nameOfBlockId[id]);
+                                        }
+
+                                        ImGui::PopID();
+
+                                    }
+                                    ImGui::EndChild();
+
+                                    ImGui::SetCursorPos(listPos);
+                                    auto suggestions = utils::GetFilteredSuggestions(buf, nameOfBlockId, ignoreSuggestions);
+                                    if (!suggestions.empty())
+                                    {
+                                        ImGui::BeginChild("suggestionlist", { 150, static_cast<float>(suggestions.size() * 20) + 10 }, true);
+                                        for (auto& [id, suggested] : suggestions)
+                                        {
+                                            if (ImGui::Selectable(suggested.c_str(), false))
+                                            {
+                                                blockIdInput = id;
+                                                strncpy_s(buf, suggested.c_str(), 20);
+                                            }
+
+                                        }
+                                        ImGui::EndChild();
+                                    }
+                                }
+							});
                     }
                 }
             } ImGui::EndChild();

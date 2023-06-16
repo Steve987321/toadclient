@@ -19,33 +19,33 @@ namespace toadll
 		//c_Minecraft() = delete;
 		~c_Minecraft();
 	public:
-		_NODISCARD static jclass get_mcclass(JNIEnv* env);
-		_NODISCARD jclass get_entity_living_class();
+		_NODISCARD static jclass getMcClass(JNIEnv* env);
+		_NODISCARD jclass getEntityLivingClass();
 
-		_NODISCARD std::unique_ptr<c_ActiveRenderInfo> get_active_render_info();
+		_NODISCARD std::unique_ptr<c_ActiveRenderInfo> getActiveRenderInfo();
 
-		_NODISCARD jobject get_mc();
-		_NODISCARD jobject get_rendermanager();
-		_NODISCARD jobject get_localplayerobj();
-		_NODISCARD static jobject get_localplayerobjstatic(JNIEnv* env);
-		_NODISCARD jobject get_world();
-		_NODISCARD jobject get_gamesettings();
+		_NODISCARD jobject getMc();
+		_NODISCARD jobject getRenderManager();
+		_NODISCARD jobject getLocalPlayerObject();
+		_NODISCARD jobject getWorld();
+		_NODISCARD jobject getGameSettings();
+		_NODISCARD jobject getMouseOverBlock();
+		_NODISCARD int getBlockIdAt(const vec3& pos);
 
 		_NODISCARD bool isInGui();
 
-		_NODISCARD float get_partialTick();
-		_NODISCARD float get_renderPartialTick();
-		_NODISCARD float get_fov();
+		_NODISCARD float getPartialTick();
+		_NODISCARD float getRenderPartialTick();
+		_NODISCARD float getFov();
 
-		_NODISCARD jobject get_mouseOverObj();
-		_NODISCARD std::string get_mouseOverStr();
-		_NODISCARD std::shared_ptr<c_Entity> get_mouseOverPlayer();
+		_NODISCARD std::string getMouseOverBlockStr();
 
-		_NODISCARD bool is_AirBlock(jobject blockobj);
+		_NODISCARD bool isAirBlock(jobject blockobj);
 
-		_NODISCARD std::vector<std::shared_ptr<c_Entity>> get_playerList();
+		_NODISCARD std::vector<std::shared_ptr<c_Entity>> getPlayerList();
 
-		_NODISCARD std::shared_ptr<c_Entity> get_localplayer();
+		_NODISCARD std::shared_ptr<c_Entity> getMouseOverPlayer();
+		_NODISCARD std::shared_ptr<c_Entity> getLocalPlayer();
 
 	public:
 		void set_gamma(float val);

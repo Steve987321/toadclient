@@ -12,8 +12,9 @@ void toadll::modules::initialize()
 	CRightAutoClicker::get_instance();
 	CAimAssist::get_instance();
 	CEsp::get_instance();
+	CBlockEsp::get_instance();
 	CVelocity::get_instance();
-	CAutoPot::get_instance();
+	//CAutoPot::get_instance();
 
 	for (const auto& Module : CModule::moduleInstances)
 	{
@@ -24,7 +25,7 @@ void toadll::modules::initialize()
 			g_jvm->GetEnv(reinterpret_cast<void**>(&env), g_env->GetVersion());
 			g_jvm->AttachCurrentThreadAsDaemon(reinterpret_cast<void**>(&env), nullptr);
 
-			auto mcclass = c_Minecraft::get_mcclass(env);
+			auto mcclass = c_Minecraft::getMcClass(env);
 			auto mc = std::make_shared<c_Minecraft>();
 
 			mc->env = env;
@@ -74,13 +75,13 @@ void toadll::modules::initialize()
 
 void toadll::modules::updateTick()
 {
-	auto mcclass = c_Minecraft::get_mcclass(g_env);
+	auto mcclass = c_Minecraft::getMcClass(g_env);
 	auto mc = std::make_unique<c_Minecraft>();
 
 	mc->env = g_env;
 	mc->mcclass = mcclass;
 
-	auto lPlayer = mc->get_localplayer();
+	auto lPlayer = mc->getLocalPlayer();
 	if (lPlayer == nullptr) return;
 
 	//auto klass = p_Minecraft->get_active_render_class();

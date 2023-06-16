@@ -43,6 +43,15 @@ namespace toadll::mappings
 			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
 				log_Error("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
+			// get world class (temp)
+			auto worldclass = findclass("net.minecraft.world.World", env);
+			
+			methodnames.insert({ mapping::getBlockAt, "bridge$getBlockAt" });
+			if (!getsig(mapping::getBlockAt, "bridge$getBlockAt", worldclass, env))
+				log_Error("can't find getBlockAt");
+
+			env->DeleteLocalRef(worldclass);
+
 			methodnames.insert({ mapping::getPlayer, "bridge$getPlayer" });
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
 				log_Error("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
@@ -88,6 +97,16 @@ namespace toadll::mappings
 
 			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
 			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
+
+			// .Block
+			methodnames.insert({ mapping::getBlockFromBlockState, "getBlock" });
+			methodsigs.insert({ mapping::getBlockFromBlockState, "()Lnet/minecraft/block/Block;" });
+
+			methodnames.insert({ mapping::getIdFromBlockStatic, "getIdFromBlock" });
+			methodsigs.insert({ mapping::getIdFromBlockStatic, "(Lnet/minecraft/block/Block;)I" });
+
+			
+
 
 			// Player
 			//auto mcobj = env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));

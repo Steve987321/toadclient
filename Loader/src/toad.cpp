@@ -108,6 +108,21 @@ void toad::Fupdate_settings()
 	data["esp_fillcolb"] = esp::fillCol[2];
 	data["esp_fillcola"] = esp::fillCol[3];
 
+	// block esp
+	data["blockesp_enabled"] = block_esp::enabled;
+	json blockArray = json::object();
+	for (const auto& [id, col] : block_esp::block_list)
+	{
+		blockArray[std::to_string(id)] =
+		{
+			{"x", col.x},
+			{"y", col.y},
+			{"z", col.z},
+			{"w", col.w}
+		};
+	}
+	data["block_esp_array"] = blockArray;
+
 	std::stringstream ss;
 	ss << data << "END";
 	OutputDebugStringA(ss.str().c_str());

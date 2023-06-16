@@ -166,7 +166,7 @@ AIMING:
 		reaction_time_timer = 0;
 	}
 
-	auto EditableLocalPlayer = Minecraft->get_localplayer();
+	auto EditableLocalPlayer = Minecraft->getLocalPlayer();
 	if (!EditableLocalPlayer)
 		return;
 

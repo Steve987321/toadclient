@@ -2,6 +2,10 @@
 
 // global settings for the modules are stored here
 
+#include <unordered_map>
+
+#include "imgui/imgui.h"
+
 namespace toad
 {
 	namespace left_clicker
@@ -77,10 +81,13 @@ namespace toad
 		inline bool enabled = false;
 		inline float lineCol[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 		inline float fillCol[4] = {1.0f, 1.0f, 1.0f, 0.3f};
-		
-
 	}
 
+	namespace block_esp
+	{
+		inline bool enabled = false;
+		inline std::unordered_map<int, ImVec4> block_list;
+	}
 	namespace auto_bridge
 	{
 		inline bool enabled = false;

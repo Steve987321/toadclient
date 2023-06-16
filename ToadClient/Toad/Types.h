@@ -161,7 +161,6 @@ namespace toadll
     {
         vec3 Motion = {};
         std::string HeldItem;
-
     };
 
     enum class minecraft_client
@@ -241,7 +240,12 @@ namespace toadll
         // .World
         getPlayerEntities,
         getRenderManager,
+        getBlockAt,
         isAirBlock,
+
+        // .Block
+        getBlockFromBlockState,
+        getIdFromBlockStatic,
 
         // player
         getOpenContainer,
