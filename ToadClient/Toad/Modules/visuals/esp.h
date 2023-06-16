@@ -67,25 +67,20 @@ private:
 		vec3 extents = (b_box.max - b_box.min) * 0.5f;
 
 		vec3 vertices[4] = {
-				center - cameraRight * extents.x - cameraUp * extents.y,
 				center + cameraRight * extents.x - cameraUp * extents.y,
-				center + cameraRight * extents.x + cameraUp * extents.y,
-				center - cameraRight * extents.x + cameraUp * extents.y
-		};
-		vec3 vertices2[4] = {
-				vec3(center.x - extents.x, center.y - extents.y, center.z),
-				vec3(center.x + extents.x, center.y - extents.y, center.z),
-				vec3(center.x + extents.x, center.y + extents.y, center.z),
-				vec3(center.x - extents.x, center.y + extents.y, center.z)
+				center - cameraRight * extents.x - cameraUp * extents.y,
+				center - cameraRight * extents.x + cameraUp * extents.y,
+				center + cameraRight * extents.x + cameraUp * extents.y
 		};
 
-		//glBegin(GL_QUADS);
-		//glColor4f(toad::esp::fillCol[0], toad::esp::fillCol[1], toad::esp::fillCol[2], toad::esp::fillCol[3]);
-		//glVertex2f(left, top);
-		//glVertex2f(right, top);
-		//glVertex2f(right, bottom);
-		//glVertex2f(left, bottom);
-		//glEnd();
+		// fill 
+		glColor4f(toad::esp::fillCol[0], toad::esp::fillCol[1], toad::esp::fillCol[2], toad::esp::fillCol[3]);
+		glBegin(GL_QUADS);
+		for (const auto& vertice : vertices)
+		{
+			glVertex3f(vertice.x, vertice.y, vertice.z);
+		}
+		glEnd();
 
 		// outlines
 		glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
