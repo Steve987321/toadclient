@@ -6,14 +6,14 @@ void toadll::CVarsUpdater::PreUpdate()
 {
 	auto world = Minecraft->getWorld();
 	auto tmpPlayer = Minecraft->getLocalPlayer();
-	if (world == nullptr || tmpPlayer == nullptr )
+	if (world == nullptr || tmpPlayer == nullptr)
 	{
 		if (world == nullptr)
 			env->DeleteLocalRef(world);
 		IsVerified = false;
 		return;
 	}
-	
+
 	env->DeleteLocalRef(world);
 
 	//static auto lPlayerName = tmpPlayer->getName();
@@ -52,6 +52,7 @@ void toadll::CVarsUpdater::PreUpdate()
 
 	PlayerList = tmp;
 
+	SLOW_SLEEP(1);
 	IsVerified = true;
 }
 
