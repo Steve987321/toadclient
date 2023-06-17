@@ -101,7 +101,6 @@ jobject toadll::c_Minecraft::getWorld()
     auto mc = this->getMc();
 	auto worldmid = get_mid(mcclass, mapping::getWorld, env);
 	auto obj = !worldmid ? nullptr : env->CallObjectMethod(mc, worldmid);
-
     env->DeleteLocalRef(mc);
 
     return obj;
@@ -128,6 +127,7 @@ float toadll::c_Minecraft::getPartialTick()
     auto mc = getMc();
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer, env));
     env->DeleteLocalRef(mc);
+    if (!obj) return 1;
     auto res = env->CallFloatMethod(obj, get_mid(obj, mapping::partialTick, env));
     env->DeleteLocalRef(obj);
     return res;
@@ -138,6 +138,7 @@ float toadll::c_Minecraft::getRenderPartialTick()
     auto mc = getMc();
     auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer, env));
     env->DeleteLocalRef(mc);
+    if (!obj) return 1;
     auto res = env->GetFloatField(obj, get_fid(obj, mappingFields::renderPartialTickField, env));
     env->DeleteLocalRef(obj);
     return res;
@@ -241,8 +242,10 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::getPlayerLis
         env->ExceptionDescribe();
         SLOW_SLEEP(1000);
 #endif
+        env->DeleteLocalRef(world);
         return {};
     }
+
     env->DeleteLocalRef(world);
 
     if (!entities)
@@ -251,17 +254,23 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::getPlayerLis
     auto entitesklass = env->GetObjectClass(entities);
    
     auto to_arraymid = env->GetMethodID(entitesklass, "toArray", "()[Ljava/lang/Object;");
-   
     env->DeleteLocalRef(entitesklass);
 
+    if (!to_arraymid)
+        return {};
+
     auto entityarray = (jobjectArray)env->CallObjectMethod(entities, to_arraymid);
-   
     env->DeleteLocalRef(entities);
+
     if (!entityarray)
         return {};
 
     int size = env->GetArrayLength(entityarray);
-   
+    if (size <= 1)
+    {
+        env->DeleteLocalRef(entityarray);
+        return {};
+    }
     std::vector<std::shared_ptr<c_Entity>> res = {};
     res.reserve(size);
 

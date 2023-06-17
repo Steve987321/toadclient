@@ -16,7 +16,7 @@ private:
 	};
 
 private:
-	inline static std::vector<bbox> bboxxesdud;
+	inline static std::vector<bbox> m_bboxes;
 	/*inline static std::vector<float> modelview;
 	inline static std::vector<float> projection;*/
 

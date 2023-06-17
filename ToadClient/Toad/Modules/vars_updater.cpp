@@ -13,10 +13,9 @@ void toadll::CVarsUpdater::PreUpdate()
 		IsVerified = false;
 		return;
 	}
-	IsVerified = true;
 	
 	env->DeleteLocalRef(world);
-	
+
 	//static auto lPlayerName = tmpPlayer->getName();
 	//LocalPlayer->Name = lPlayerName;
 	LocalPlayer->obj = tmpPlayer->obj;
@@ -52,6 +51,8 @@ void toadll::CVarsUpdater::PreUpdate()
 	}
 
 	PlayerList = tmp;
+
+	IsVerified = true;
 }
 
 void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
@@ -63,4 +64,5 @@ void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	RenderPartialTick = Minecraft->getRenderPartialTick();
 	PartialTick = Minecraft->getPartialTick();
 	IsInGui = Minecraft->isInGui();
+
 }

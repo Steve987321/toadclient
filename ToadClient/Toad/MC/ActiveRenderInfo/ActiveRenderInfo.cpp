@@ -10,6 +10,7 @@ std::vector<float> toadll::c_ActiveRenderInfo::get_modelview() const
 	auto bufklass = env->GetObjectClass(obj);
 	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
 
+	res.reserve(16);
 	for (int i = 0; i < 16; i++)
 	{
 		res.emplace_back(env->CallFloatMethod(obj, getIndexBuf, i));
@@ -28,6 +29,7 @@ std::vector<float>  toadll::c_ActiveRenderInfo::get_projection() const
 	auto bufklass = env->GetObjectClass(obj);
 	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
 
+	res.reserve(16);
 	for (int i = 0; i < 16; i++)
 	{
 		res.emplace_back(env->CallFloatMethod(obj, getIndexBuf, i));
