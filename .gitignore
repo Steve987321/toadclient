@@ -22,7 +22,6 @@ bin-inter/
 *.lai
 *.la
 *.a
-*.lib
 
 *.exe
 *.out
