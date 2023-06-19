@@ -21,6 +21,23 @@ std::vector<float> toadll::c_ActiveRenderInfo::get_modelview() const
 	return res;
 }
 
+void toadll::c_ActiveRenderInfo::set_modelview(std::vector<float>& vec) const
+{
+	vec.reserve(16);
+	auto fid = get_static_fid(ariclass, mappingFields::modelviewField, env);
+	auto obj = env->GetStaticObjectField(ariclass, fid);
+	auto bufklass = env->GetObjectClass(obj);
+	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
+
+	for (int i = 0; i < 16; i++)
+	{
+		vec[i] = env->CallFloatMethod(obj, getIndexBuf, i);
+	}
+
+	env->DeleteLocalRef(obj);
+	env->DeleteLocalRef(bufklass);
+}
+
 std::vector<float>  toadll::c_ActiveRenderInfo::get_projection() const
 {
 	std::vector<float> res = {};
@@ -38,6 +55,23 @@ std::vector<float>  toadll::c_ActiveRenderInfo::get_projection() const
 	env->DeleteLocalRef(obj);
 	env->DeleteLocalRef(bufklass);
 	return res;
+}
+
+void toadll::c_ActiveRenderInfo::set_projection(std::vector<float>& vec) const
+{
+	vec.reserve(16);
+	auto fid = get_static_fid(ariclass, mappingFields::projectionField, env);
+	auto obj = env->GetStaticObjectField(ariclass, fid);
+	auto bufklass = env->GetObjectClass(obj);
+	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
+
+	for (int i = 0; i < 16; i++)
+	{
+		vec[i] = env->CallFloatMethod(obj, getIndexBuf, i);
+	}
+
+	env->DeleteLocalRef(obj);
+	env->DeleteLocalRef(bufklass);
 }
 
 //void toadll::c_ActiveRenderInfo::get_viewport(GLint viewportBuf[4]) const

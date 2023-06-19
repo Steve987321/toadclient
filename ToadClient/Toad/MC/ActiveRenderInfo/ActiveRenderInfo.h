@@ -13,7 +13,10 @@ namespace toadll
 
 	public:
 		std::vector<float> get_modelview() const;
-		std::vector<float>  get_projection() const;
+		void set_modelview(std::vector<float>& vec) const;
+
+		std::vector<float> get_projection() const;
+		void set_projection(std::vector<float>& vec) const;
 		//void get_viewport(GLint viewportBuf[4]) const;
 
 	public:

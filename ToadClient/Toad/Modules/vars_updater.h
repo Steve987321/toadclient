@@ -13,10 +13,20 @@ public:
 	static inline float PartialTick = 0;
 	static inline float RenderPartialTick = 0;
 	static inline bool IsInGui = false;
-	static inline std::vector<std::shared_ptr<EntityT>> PlayerList = {};
 
 	static inline std::vector<float> ModelView = {};
 	static inline std::vector<float> Projection = {};
+	//static inline std::vector<std::shared_ptr<EntityT>> PlayerList = {};
+
+private:
+	static std::shared_mutex m_playerListMutex;
+	static inline std::vector<EntityT> m_playerList = {};
+
+public:
+	static std::vector<EntityT> GetPlayerList() { return m_playerList; }
+
+public:
+	CVarsUpdater() = default;
 
 public:
 	void PreUpdate() override;

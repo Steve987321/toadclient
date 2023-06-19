@@ -36,22 +36,22 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			goto AIMING;
 	}
 
-	target = nullptr;
+	target = nullptr; 
 
 	//get a target
-	for (const auto& player : CVarsUpdater::PlayerList)
+	for (const auto& player : CVarsUpdater::GetPlayerList())
 	{
-		if (lPlayer->Pos.dist(player->Pos) > aa::distance) continue;
-		if (player->Invis && !aa::invisibles) continue;
+		if (lPlayer->Pos.dist(player.Pos) > aa::distance) continue;
+		if (player.Invis && !aa::invisibles) continue;
 
-		distances.emplace_back(lPlayer->Pos.dist(player->Pos), *player.get());
+		distances.emplace_back(lPlayer->Pos.dist(player.Pos), player);
 		if (aa::targetFOV)
 		{
-			float yawDiff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, player->Pos).first)));
+			float yawDiff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, player.Pos).first)));
 			if (yawDiff < minimalAngleDiff)
 			{
 				minimalAngleDiff = yawDiff;
-				target = player;
+				target = std::make_shared<EntityT>(player);
 			}
 		}
 	}

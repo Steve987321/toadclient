@@ -20,24 +20,34 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		return;
 	}
 
+	try
+	{
+		m_playerList = CVarsUpdater::GetPlayerList();
+	}
+	catch(const std::exception& e)
+	{
+		log_Error(e.what());
+		m_playerList.clear();
+		return;
+	}
+
 	std::vector<bbox> bboxes = {};
 	//std::vector<std::pair<std::string, bbox>> entityList = {};
-	
-	for (const auto& entity : CVarsUpdater::PlayerList)
+	for (const auto& entity : m_playerList)
 	{
-		if (entity->Invis)
+		if (entity.Invis)
 			continue;
 
 		auto playerlasttickpos = lPlayer->LastTickPos;
 		auto currPos = lPlayer->Pos;
 		auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * CVarsUpdater::RenderPartialTick;
 
-		auto lasttickpos = entity->LastTickPos;
-		auto pos = entity->Pos;
+		auto lasttickpos = entity.LastTickPos;
+		auto pos = entity.Pos;
 
 		bbox b_box = {{}, {}};
 		b_box.min.x = pos.x - 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
-		b_box.min.y = pos.y        - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
+		b_box.min.y = pos.y -		 lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
 		b_box.min.z = pos.z - 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
 		b_box.max.x = pos.x + 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
 		b_box.max.y = pos.y + 1.8f - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;

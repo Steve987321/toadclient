@@ -7,20 +7,10 @@ namespace toadll
 class CEsp SET_MODULE_CLASS(CEsp)
 {
 private:
-	struct EntityVisual
-	{
-		std::string name = "?";
-		bbox b_box = {{0,0,0}, {0,0,0}};
-		vec3 lasttickpos = {0,0,0};
-		vec3 position = { 0,0,0 };
-	};
-
-private:
 	inline static std::vector<bbox> m_bboxes;
-	/*inline static std::vector<float> modelview;
-	inline static std::vector<float> projection;*/
 
 	//std::vector<EntityVisual> m_entity_list;
+	inline static std::vector<EntityT> m_playerList;
 	std::vector<std::pair<std::string, bbox>> m_entityList;
 
 private:
@@ -57,7 +47,7 @@ private:
 		glEnd();
 	}
 
-	static inline void draw2dBox(const bbox& b_box)
+	static void draw2dBox(const bbox& b_box)
 	{
 		vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
 		vec3 cameraUp = { CVarsUpdater::ModelView[1], CVarsUpdater::ModelView[5], CVarsUpdater::ModelView[9] };

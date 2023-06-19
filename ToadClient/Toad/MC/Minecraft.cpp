@@ -271,12 +271,14 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::getPlayerLis
         env->DeleteLocalRef(entityarray);
         return {};
     }
+
     std::vector<std::shared_ptr<c_Entity>> res = {};
     res.reserve(size);
 
     for (int i = 0; i < size; i++)
     {
         jobject obj = env->GetObjectArrayElement(entityarray, i);
+        if (!obj) continue;
         res.emplace_back(std::make_shared<c_Entity>(obj, env, getEntityLivingClass()));
     }
 
@@ -284,4 +286,3 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::getPlayerLis
 
     return res;
 }
-
