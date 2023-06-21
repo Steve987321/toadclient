@@ -32,27 +32,21 @@ void toadll::CVarsUpdater::PreUpdate()
 	LocalPlayer->Yaw = tmpPlayer->getRotationYaw();
 	LocalPlayer->Motion = { tmpPlayer->getMotionX(), tmpPlayer->getMotionY(), tmpPlayer->getMotionZ() };
 
-	const auto entityList = Minecraft->getPlayerList();
-	//std::vector<std::shared_ptr<EntityT>> tmp = {};
-	//for (const auto& e : entityList)
-	//{
-	//	if (!e || !e->obj)
-	//		continue;
-	//	if (env->IsSameObject(LocalPlayer->obj, e->obj))
-	//		continue;
+	if (auto tmpMouseOver = Minecraft->getMouseOverPlayer(); tmpMouseOver != nullptr)
+	{
+		MouseOverPlayer.Pos = tmpMouseOver->getPosition();
+		MouseOverPlayer.HurtTime = tmpMouseOver->getHurtTime();
+		// add other properties when needed ...
 
-	//	auto entity = std::make_shared<EntityT>();
-	//	//entity->Name = eName;
-	//	entity->obj = e->obj;
-	//	entity->Pos = e->getPosition();
-	//	entity->HurtTime = e->getHurtTime();
-	//	entity->LastTickPos = e->getLastTickPosition();
-	//	entity->Invis = e->isInvisible();
-	//	entity->Pitch = e->getRotationPitch();
-	//	entity->Yaw = e->getRotationYaw();
-	//	tmp.emplace_back(entity);
-	//}
-	//
+		IsMouseOverPlayer = true;
+	}
+	else
+	{
+		IsMouseOverPlayer = false;
+	}
+
+	const auto entityList = Minecraft->getPlayerList();
+	
 	std::vector<EntityT> tmp = {};
 	for (const auto& e : entityList)
 	{

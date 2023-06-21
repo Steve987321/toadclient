@@ -36,10 +36,20 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			goto AIMING;
 	}
 
-	target = nullptr; 
+	target = nullptr;
+
+	try
+	{
+		m_playerList = CVarsUpdater::GetPlayerList();
+	}
+	catch(const std::exception& e)
+	{
+		log_Error(e.what());
+		m_playerList = {};
+	}
 
 	//get a target
-	for (const auto& player : CVarsUpdater::GetPlayerList())
+	for (const auto& player : m_playerList)
 	{
 		if (lPlayer->Pos.dist(player.Pos) > aa::distance) continue;
 		if (player.Invis && !aa::invisibles) continue;

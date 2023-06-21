@@ -42,16 +42,17 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		m_start = std::chrono::high_resolution_clock::now();
 
 		m_pTick = CVarsUpdater::PartialTick;
-		static auto enemy = Minecraft->getMouseOverPlayer();
-		if (enemy == nullptr)
+		static auto enemy = CVarsUpdater::MouseOverPlayer;
+		static bool has_active_enemy = false;
+		if (!CVarsUpdater::IsMouseOverPlayer)
 		{
-			enemy = Minecraft->getMouseOverPlayer();
+			enemy = CVarsUpdater::MouseOverPlayer;
+			has_active_enemy = false;
 		}
-		else if (enemy != nullptr)
+		else
 		{
-			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, enemy->getPosition()).first)));
-			if (enemy->getPosition().dist(lPlayer->Pos) > 4.0f || yawDiff > 120)
-				enemy = nullptr;
+			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, enemy.Pos).first)));
+			has_active_enemy = enemy.Pos.dist(lPlayer->Pos) > 4.0f || yawDiff > 120;
 		}
 
 		auto mouse_over_type = get_mouse_over_type();
@@ -110,7 +111,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 			log_Debug("ENEMY HITS: %d | PLAYER HITS: %d | TRADING: %s", enemy_hit_count, lplayer_hit_count, is_trading ? "Y" : "N");
 
-			if (enemy != nullptr)
+			if (has_active_enemy)
 			{
 				if (first_hit)
 				{
@@ -149,7 +150,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 				{
 					static bool is_player_hit = false;
 					static bool is_enemy_hit = false;
-					if (!is_enemy_hit && enemy->getHurtTime() <= 2)
+					if (!is_enemy_hit && enemy.HurtTime <= 2)
 					{
 						enemy_hit_count++;
 						is_enemy_hit = true;
@@ -224,9 +225,9 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		{
 			if (held_item.find("sword") != std::string::npos && mouse_over_type == "ENTITY")
 			{
-				if (enemy != nullptr)
+				if (has_active_enemy)
 				{
-					if (enemy->getHurtTime() <= 2 && !block_hit_timer_started)
+					if (enemy.HurtTime <= 2 && !block_hit_timer_started)
 					{
 						// block
 						right_mouse_down();
