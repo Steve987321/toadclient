@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\Modules\blink.h" />
     <ClInclude Include="Toad\Modules\autopot.h" />
     <ClInclude Include="Toad\Modules\visuals\block_esp.h" />
     <ClInclude Include="Toad\Modules\clicker\clicker_base.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\Modules\blink.cpp" />
     <ClCompile Include="Toad\Modules\autopot.cpp" />
     <ClCompile Include="Toad\Modules\visuals\block_esp.cpp" />
     <ClCompile Include="Toad\Modules\clicker\rightautoclicker.cpp" />

@@ -135,8 +135,6 @@ namespace toadll
 		{
 		};
 
-		// add drops = negative boosts
-
 	};
 
 }

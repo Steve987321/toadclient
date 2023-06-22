@@ -89,6 +89,14 @@ void toad::Fupdate_settings()
 	data["ab_enabled"] = auto_bridge::enabled;
 	data["ab_pitch_check"] = auto_bridge::pitch_check;
 
+	// blink
+	data["bl_enabled"] = blink::enabled;
+	data["bl_key"] = blink::key;
+	data["bl_stop_on_hit"] = blink::disable_on_hit;
+	data["bl_stop_incoming_packets"] = blink::stop_rec_packets;
+	data["bl_show_trail"] = blink::show_trail;
+	data["bl_limit_seconds"] = blink::limit_seconds;
+
 	// velocity
 	data["vel_enabled"] = velocity::enabled;
 	data["vel_jumpreset"] = velocity::jump_reset;

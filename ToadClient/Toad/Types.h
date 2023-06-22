@@ -55,8 +55,8 @@ namespace toadll
             return { x / s, y / s, z / s };
         }
 
-        constexpr bool operator==(const vec3& v) const {
-            return x == v.x && y == v.y && z == v.z;
+		bool operator==(const vec3& v) const {
+            return fabs(x - v.x) < FLT_EPSILON && fabs(y - v.y) < FLT_EPSILON && fabs(z - v.z) < FLT_EPSILON;
         }
 
         _NODISCARD float dist(const vec3& v) const {

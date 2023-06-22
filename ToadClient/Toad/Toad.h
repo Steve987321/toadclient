@@ -40,6 +40,7 @@
 #include "Modules/visuals/block_esp.h"
 #include "Modules/autopot.h"
 #include "Modules/aimassist.h"
+#include "Modules/blink.h"
 #include "Modules/velocity.h"
 
 #include "Toad/Modules/modules.h"
