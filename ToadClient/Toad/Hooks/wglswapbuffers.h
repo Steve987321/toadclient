@@ -3,12 +3,16 @@
 namespace toadll
 {
 
-class c_Swapbuffershook final : public c_Hook, public c_Singleton<c_Swapbuffershook>
+class c_Swapbuffershook SET_HOOK_CLASS(c_Swapbuffershook)
 {
+private:
+	typedef BOOL(WINAPI* twglSwapBuffers) (HDC hDc);
+	static inline twglSwapBuffers owglSwapBuffers = nullptr;
+
+	static BOOL Hook(HDC hDc);
 
 public:
-	bool init();
-
+	bool Init() override;
 };
 
 }

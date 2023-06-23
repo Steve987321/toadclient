@@ -146,9 +146,6 @@
     <ClCompile Include="Toad\MC\Entity\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Hooks\Hooks.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Toad\Modules\modules.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

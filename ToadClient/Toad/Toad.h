@@ -9,7 +9,9 @@
 #define SLOW_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
 // macro that inherits from essential classes for a cheat module
-#define SET_MODULE_CLASS(T) final : public toadll::c_Singleton<T>, public CModule
+#define SET_MODULE_CLASS(T) final : public toadll::c_Singleton<T>, public toadll::CModule
+
+#define SET_HOOK_CLASS(T) final : public toadll::c_Singleton<T>, public toadll::CHook
 
 // Settings/config variables for modules are stored in the Loader project
 #include "../../Loader/src/global_settings.h"

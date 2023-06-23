@@ -7,11 +7,7 @@
 
 namespace toadll
 {
-	typedef BOOL(WINAPI* twglSwapBuffers) (_In_ HDC hDc);
-
-	twglSwapBuffers owglSwapBuffers = nullptr;
-
-	BOOL hook(HDC hDc)
+	BOOL c_Swapbuffershook::Hook(HDC hDc)
 	{
 		HWND hwnd = WindowFromDC(hDc);
 		HGLRC oCtx = wglGetCurrentContext();
@@ -81,8 +77,8 @@ namespace toadll
 		return owglSwapBuffers(hDc);
 	}
 
-	bool c_Swapbuffershook::init()
+	bool c_Swapbuffershook::Init()
 	{
-		return create_hook("opengl32.dll", "wglSwapBuffers", hook, reinterpret_cast<LPVOID*>(&owglSwapBuffers));
+		return create_hook("opengl32.dll", "wglSwapBuffers", &c_Swapbuffershook::Hook, reinterpret_cast<LPVOID*>(&owglSwapBuffers));
 	}
 }

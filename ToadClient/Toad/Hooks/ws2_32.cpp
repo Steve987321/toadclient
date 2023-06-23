@@ -13,7 +13,7 @@ namespace toadll
 		return oWSA_Send(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
 	}
 
-	bool c_WSASend::init()
+	bool c_WSASend::Init()
 	{
 		return create_hook("WS2_32.dll", "WSASend", &c_WSASend::Hook, reinterpret_cast<LPVOID*>(&oWSA_Send));
 	}
@@ -27,7 +27,7 @@ namespace toadll
 		return oWSA_Recv(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd, lpFlags, lpOverlapped, lpCompletionRoutine);
 	}
 
-	bool c_WSARecv::init()
+	bool c_WSARecv::Init()
 	{
 		return create_hook("WS2_32.dll", "WSARecv", &c_WSARecv::Hook, reinterpret_cast<LPVOID*>(&oWSA_Recv));
 	}

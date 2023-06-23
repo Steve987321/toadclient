@@ -2,7 +2,7 @@
 
 namespace toadll {
 
-class c_WSASend final : public c_Hook, public c_Singleton<c_WSASend>
+class c_WSASend SET_HOOK_CLASS(c_WSASend)
 {
 private:
 	typedef int (WINAPI* tWSA_Send)(SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
@@ -14,10 +14,10 @@ public:
 	inline static bool StopSends = false;
 
 public:
-	bool init();
+	bool Init() override;
 };
 
-class c_WSARecv final : public c_Hook, public c_Singleton<c_WSARecv>
+class c_WSARecv SET_HOOK_CLASS(c_WSARecv)
 {
 private:
 	typedef int (WINAPI* tWSA_Recv)(SOCKET, LPWSABUF, DWORD, LPDWORD, LPDWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
@@ -29,7 +29,7 @@ public:
 	inline static bool StopRecvs = false;
 
 public:
-	bool init();
+	bool Init() override;
 };
 
 }

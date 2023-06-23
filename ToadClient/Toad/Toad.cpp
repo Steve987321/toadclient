@@ -169,26 +169,13 @@ namespace toadll
 			return 0;
 		}
 
-		if (!c_Swapbuffershook::get_instance()->init())
-		{
-			log_Error("failed to hook swapbuffers");
-			clean_up(3);
-			return 0;
-		}
+		log_Debug("Creating hooks");
+		c_Swapbuffershook::get_instance();
+		c_WSASend::get_instance();
+		c_WSARecv::get_instance();
 
-		if (!c_WSASend::get_instance()->init())
-		{
-			log_Error("failed to hook WSASend");
-			clean_up(22);
-			return 0;
-		}
-
-		if (!c_WSARecv::get_instance()->init())
-		{
-			log_Error("failed to hook WSARecv");
-			clean_up(33);
-			return 0;
-		}
+		log_Debug("Initialize hooks");
+		CHook::InitializeAllHooks();
 
 		auto eclasstemp = findclass("net.minecraft.entity.Entity", g_env);
 		if (eclasstemp == nullptr)
@@ -204,18 +191,13 @@ namespace toadll
 
 		g_is_running = true;
 
-		log_Debug("enabling hooks");
-
-		c_Swapbuffershook::get_instance()->enable();
-		c_WSASend::get_instance()->enable();
-		c_WSARecv::get_instance()->enable();
+		log_Debug("Enabling hooks");
+		CHook::EnableAllHooks();
 
 		log_Debug("Starting modules");
-
 		modules::initialize();
 
-		log_Debug("Initialized modules");
-
+		log_Debug("entering main loop");
 		// main loop
 		while (g_is_running)
 		{
@@ -238,11 +220,9 @@ namespace toadll
 			{
 			g_is_running = false;
 			log_Debug("closing: %d", exitcode);
-			if (!c_Swapbuffershook::get_instance()->is_null())
-				c_Swapbuffershook::get_instance()->dispose();
 
-			if (!c_WSASend::get_instance()->is_null())
-				c_WSASend::get_instance()->dispose();
+			log_Debug("hooks");
+			CHook::CleanAllHooks();
 
 			log_Debug("jvm");
 			if (g_jvm != nullptr)
