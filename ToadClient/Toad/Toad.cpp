@@ -178,8 +178,15 @@ namespace toadll
 
 		if (!c_WSASend::get_instance()->init())
 		{
-			log_Error("failed to hook WSA");
+			log_Error("failed to hook WSASend");
 			clean_up(22);
+			return 0;
+		}
+
+		if (!c_WSARecv::get_instance()->init())
+		{
+			log_Error("failed to hook WSARecv");
+			clean_up(33);
 			return 0;
 		}
 
@@ -201,6 +208,7 @@ namespace toadll
 
 		c_Swapbuffershook::get_instance()->enable();
 		c_WSASend::get_instance()->enable();
+		c_WSARecv::get_instance()->enable();
 
 		log_Debug("Starting modules");
 

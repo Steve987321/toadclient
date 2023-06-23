@@ -19,6 +19,15 @@ public:
 
 class c_WSARecv final : public c_Hook, public c_Singleton<c_WSARecv>
 {
+private:
+	typedef int (WINAPI* tWSA_Recv)(SOCKET, LPWSABUF, DWORD, LPDWORD, LPDWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
+	static inline tWSA_Recv oWSA_Recv = nullptr;
+
+	static int Hook(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesRecvd, LPDWORD lpFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine);
+
+public:
+	inline static bool StopRecvs = false;
+
 public:
 	bool init();
 };
