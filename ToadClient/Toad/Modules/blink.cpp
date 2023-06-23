@@ -4,6 +4,13 @@
 
 using namespace toad;
 
+void toadll::CBlink::DisableBlink()
+{
+	c_WSASend::StopSends = false;
+	if (c_WSARecv::StopRecvs)
+		c_WSARecv::StopRecvs = false;
+}
+
 void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 {
 	if (!blink::enabled || !CVarsUpdater::IsVerified)
@@ -20,7 +27,6 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		if (blink::show_trail)
 		{
 			static CTimer savePosTimer;
-
 			
 			if (!tmp.empty() && savePosTimer.Elapsed<>() >= 200)
 			{
@@ -42,13 +48,14 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		if (blink::disable_on_hit)
 		{
 			if (lPlayer->HurtTime > 0)
-				c_WSASend::StopSends = false;
+				DisableBlink();
+
 			canEnableFlag = false;
 		}
 
 		if (m_timer.Elapsed<>() >= blink::limit_seconds * 1000)
 		{
-			c_WSASend::StopSends = false;
+			DisableBlink();
 			canEnableFlag = false;
 		}
 	}
@@ -73,12 +80,15 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		if (GetAsyncKeyState(blink::key) && canEnableFlag)
 		{
 			c_WSASend::StopSends = true;
+			if (blink::stop_rec_packets)
+				c_WSARecv::StopRecvs = true;
+
 			m_timer.Start();
 			canEnableFlag = false;
 		}
 		else if (!GetAsyncKeyState(blink::key))
 		{
-			c_WSASend::StopSends = false;
+			DisableBlink();
 			canEnableFlag = true;
 		}
 	}
