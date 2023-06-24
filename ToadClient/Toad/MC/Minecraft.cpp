@@ -43,7 +43,10 @@ jobject toadll::c_Minecraft::getMc()
 jobject toadll::c_Minecraft::getRenderManager()
 {
     auto mc = getMc();
-    auto ret = env->CallObjectMethod(mc, get_mid(mc, mapping::getRenderManager, env));
+    auto mId = get_mid(mc, mapping::getRenderManager, env);
+    if (!mId)
+        return nullptr;
+    auto ret = env->CallObjectMethod(mc, mId);
     env->DeleteLocalRef(mc); 
     return ret;
 }
@@ -51,14 +54,12 @@ jobject toadll::c_Minecraft::getRenderManager()
 std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getLocalPlayer()
 {
     auto mc = getMc();
-    auto obj = env->GetObjectField(mc, get_fid(mc, mappingFields::thePlayerField, env));
-    //auto playermid = get_mid(mc, mapping::getPlayer, env);
-    //auto obj = !playermid ? nullptr : std::make_shared<c_Entity>(env->CallObjectMethod(mc, playermid), env, get_entity_living_class());
-    if (env->ExceptionCheck())
-    {
-        log_Debug("OH NO EXCEPTION!");
+    auto fId = get_fid(mc, mappingFields::thePlayerField, env);
+    if (!fId)
         return nullptr;
-    }
+    auto obj = env->GetObjectField(mc, fId);
+    if (!obj) 
+        return nullptr;
     env->DeleteLocalRef(mc);
     return std::make_shared<c_Entity>(obj, env, getEntityLivingClass());
 }
@@ -67,7 +68,11 @@ void toadll::c_Minecraft::set_gamma(float val)
 {
     auto obj = getGameSettings();
 
-    env->CallVoidMethod(obj, get_mid(obj, mapping::setGamma, env), val);
+    auto mId = get_mid(obj, mapping::setGamma, env);
+    if (!mId)
+        return;
+
+    env->CallVoidMethod(obj, mId, val);
 
     env->DeleteLocalRef(obj);
 }
@@ -90,6 +95,8 @@ void toadll::c_Minecraft::set_gamma(float val)
 jobject toadll::c_Minecraft::getLocalPlayerObject()
 {
     auto playermid = get_mid(mcclass, mapping::getPlayer, env);
+    if (!playermid)
+        return nullptr;
     auto mc = this->getMc();
     auto obj = env->CallObjectMethod(mc, playermid);
     env->DeleteLocalRef(mc);
@@ -109,7 +116,13 @@ jobject toadll::c_Minecraft::getWorld()
 jobject toadll::c_Minecraft::getGameSettings()
 {
     auto mc = getMc();
-    auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getGameSettings, env));
+    auto mId = get_mid(mc, mapping::getGameSettings, env);
+    if (!mId)
+    {
+        env->DeleteLocalRef(mc);
+        return nullptr;
+    }
+    auto obj = env->CallObjectMethod(mc, mId);
     env->DeleteLocalRef(mc);
     return obj;
 }
@@ -117,7 +130,13 @@ jobject toadll::c_Minecraft::getGameSettings()
 bool toadll::c_Minecraft::isInGui()
 {
     auto mc = getMc();
-    auto res = env->GetObjectField(mc, get_fid(mc, mappingFields::currentScreenField, env)) != nullptr;
+    auto fId = get_fid(mc, mappingFields::currentScreenField, env);
+    if (!fId)
+    {
+        env->DeleteLocalRef(mc);
+        return false;
+    }
+    auto res = env->GetObjectField(mc, fId) != nullptr;
     env->DeleteLocalRef(mc);
     return res;
 }
@@ -125,9 +144,13 @@ bool toadll::c_Minecraft::isInGui()
 float toadll::c_Minecraft::getPartialTick() 
 {
     auto mc = getMc();
-    auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer, env));
+    auto mId = get_mid(mc, mapping::getTimer, env);
+    if (!mId)
+        return 1;
+    auto obj = env->CallObjectMethod(mc, mId);
     env->DeleteLocalRef(mc);
-    if (!obj) return 1;
+    if (!obj) 
+        return 1;
     auto res = env->CallFloatMethod(obj, get_mid(obj, mapping::partialTick, env));
     env->DeleteLocalRef(obj);
     return res;
@@ -136,10 +159,22 @@ float toadll::c_Minecraft::getPartialTick()
 float toadll::c_Minecraft::getRenderPartialTick() 
 {
     auto mc = getMc();
-    auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getTimer, env));
+    auto mId = get_mid(mc, mapping::getTimer, env);
+    if (!mId)
+    {
+        env->DeleteLocalRef(mc);
+        return 1;
+    }
+    auto obj = env->CallObjectMethod(mc, mId);
     env->DeleteLocalRef(mc);
-    if (!obj) return 1;
-    auto res = env->GetFloatField(obj, get_fid(obj, mappingFields::renderPartialTickField, env));
+    if (!obj)
+        return 1;
+
+    auto fId = get_fid(obj, mappingFields::renderPartialTickField, env);
+    if (!fId)
+        return 1;
+
+    auto res = env->GetFloatField(obj, fId);
     env->DeleteLocalRef(obj);
     return res;
 }
@@ -147,20 +182,25 @@ float toadll::c_Minecraft::getRenderPartialTick()
 float toadll::c_Minecraft::getFov()
 {
     auto obj = getGameSettings();
-    auto objklass = env->GetObjectClass(obj);
+    auto fId = get_fid(obj, mappingFields::fovField, env);
+    if (!fId)
+        return 0;
 
-    auto res = env->GetFloatField(obj, get_fid(objklass, mappingFields::fovField, env));
-
+    auto res = env->GetFloatField(obj, fId);
     env->DeleteLocalRef(obj);
-    env->DeleteLocalRef(objklass);
-
     return res;
 }
 
 jobject toadll::c_Minecraft::getMouseOverBlock() 
 {
     auto mc = getMc();
-    auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getObjectMouseOver, env));
+    auto mId = get_mid(mc, mapping::getObjectMouseOver, env);
+    if (!mId)
+    {
+        env->DeleteLocalRef(mc);
+        return nullptr;
+    }
+    auto obj = env->CallObjectMethod(mc, mId);
     env->DeleteLocalRef(mc);
     return obj;
 }
@@ -168,8 +208,16 @@ jobject toadll::c_Minecraft::getMouseOverBlock()
 int toadll::c_Minecraft::getBlockIdAt(const vec3& pos)
 {
     auto world = getWorld();
-    if (!world) return 0;
-    auto blockatObj = env->CallObjectMethod(world, get_mid(world, mapping::getBlockAt, env), pos.x, pos.y, pos.z);
+    if (!world)
+    	return 0;
+    auto mId = get_mid(world, mapping::getBlockAt, env);
+    if (!mId)
+    {
+        env->DeleteLocalRef(world);
+        return 0;
+    }
+
+    auto blockatObj = env->CallObjectMethod(world, mId, pos.x, pos.y, pos.z);
     auto blockatkClass = env->GetObjectClass(blockatObj);
     auto id = env->CallStaticIntMethod(blockatkClass, get_static_mid(blockatkClass, mapping::getIdFromBlockStatic, env), blockatObj);
 
@@ -185,7 +233,14 @@ std::string toadll::c_Minecraft::getMouseOverBlockStr()
     auto obj = getMouseOverBlock();
     if (obj == nullptr)
         return "TYPE=null,";
-    auto jstr = static_cast<jstring>(env->CallObjectMethod(obj, get_mid(obj, mapping::toString, env)));
+    auto mId = get_mid(obj, mapping::toString, env);
+    if (!mId)
+    {
+        env->DeleteLocalRef(obj);
+        return "TYPE=null,";
+    }
+
+    auto jstr = static_cast<jstring>(env->CallObjectMethod(obj, mId));
 
     auto res = jstring2string(jstr, env);
     env->DeleteLocalRef(obj);
@@ -195,7 +250,8 @@ std::string toadll::c_Minecraft::getMouseOverBlockStr()
 
 std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getMouseOverPlayer()
 {
-    if (getMouseOverBlockStr().find("MISS") != std::string::npos) return nullptr;
+    auto str = getMouseOverBlockStr();
+    if (str.find("MISS") != std::string::npos || str.find("null") != std::string::npos) return nullptr;
 
     auto obj = getMouseOverBlock();
     if (obj == nullptr)
@@ -205,6 +261,11 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getMouseOverPlayer()
     if (static bool init_map = false; !init_map)
     {
         auto klass = env->GetObjectClass(obj);
+        if (!klass)
+        {
+            env->DeleteLocalRef(obj);
+            return nullptr;
+        }
         mappings::methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
         if (!mappings::getsig(mapping::getEntityHit, "bridge$getEntityHit", klass, env))
             log_Error("can't find getEntityHit");
@@ -214,7 +275,10 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getMouseOverPlayer()
 
     auto mId = get_mid(obj, mapping::getEntityHit, env);
     if (!mId)
+    {
+        env->DeleteLocalRef(obj);
         return nullptr;
+    }
 
     auto entityObj = env->CallObjectMethod(obj, mId);
     env->DeleteLocalRef(obj);
@@ -227,7 +291,10 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getMouseOverPlayer()
 bool toadll::c_Minecraft::isAirBlock(jobject blockobj)
 {
     auto world = getWorld();
-    auto res = env->CallBooleanMethod(world, get_mid(world, mapping::isAirBlock, env), blockobj);
+    auto mId = get_mid(world, mapping::isAirBlock, env);
+    if (!mId)
+        return false;
+    auto res = env->CallBooleanMethod(world, mId, blockobj);
     env->DeleteLocalRef(world);
     return res;
 }
@@ -235,34 +302,38 @@ bool toadll::c_Minecraft::isAirBlock(jobject blockobj)
 std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::getPlayerList()
 {
     auto world = getWorld();
-    if (!world) 
+    if (!world)
         return {};
 
     //auto entities = env->CallObjectMethod(world, get_mid(world, mapping::getPlayerEntities, env
-    auto entities = env->GetObjectField(world, get_fid(world, mappingFields::playerEntitiesField, env));
-    if (env->ExceptionCheck())
+    auto fId = get_fid(world, mappingFields::playerEntitiesField, env);
+    if (!fId)
     {
-#ifdef ENABLE_LOGGING
-    	log_Error("Exception getting player entities");
-        env->ExceptionDescribe();
-        SLOW_SLEEP(1000);
-#endif
         env->DeleteLocalRef(world);
         return {};
     }
 
+    auto entities = env->GetObjectField(world, fId);
     env->DeleteLocalRef(world);
 
     if (!entities)
         return {};
 
     auto entitesklass = env->GetObjectClass(entities);
+    if (!entitesklass)
+    {
+        env->DeleteLocalRef(entities);
+        return {};
+    }
    
     auto to_arraymid = env->GetMethodID(entitesklass, "toArray", "()[Ljava/lang/Object;");
     env->DeleteLocalRef(entitesklass);
 
     if (!to_arraymid)
+    {
+        env->DeleteLocalRef(entities);
         return {};
+    }
 
     auto entityarray = (jobjectArray)env->CallObjectMethod(entities, to_arraymid);
     env->DeleteLocalRef(entities);
@@ -271,7 +342,7 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::getPlayerLis
         return {};
 
     int size = env->GetArrayLength(entityarray);
-    if (size <= 1)
+    if (size == 0)
     {
         env->DeleteLocalRef(entityarray);
         return {};

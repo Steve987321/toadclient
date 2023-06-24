@@ -61,7 +61,11 @@ jobject toadll::c_Entity::getNameObj() const
 
 std::string toadll::c_Entity::getName() const
 {
-	auto strobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getName, env));
+	auto mId = get_mid(obj, mapping::getName, env);
+	if (!mId)
+		return "";
+
+	auto strobj = env->CallObjectMethod(obj, mId);
 	auto ret = jstring2string((jstring)strobj, env);
 	env->DeleteLocalRef(strobj);
 	return ret;
@@ -101,7 +105,7 @@ std::string toadll::c_Entity::getSlotStr(int slot) const
 
 	auto inventory = env->GetObjectField(obj, fId);
 	auto mId = get_mid(inventory, mapping::getStackInSlot, env);
-	if (mId)
+	if (!mId)
 	{
 		env->DeleteLocalRef(inventory);
 		return "NONE";
@@ -144,7 +148,7 @@ float toadll::c_Entity::getMotionX() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionX));
 	auto fId = get_fid(obj, mappingFields::motionXField, env);
-	if (fId)
+	if (!fId)
 		return 0;
 	return env->GetDoubleField(obj, fId);
 }
@@ -153,7 +157,7 @@ float toadll::c_Entity::getMotionY() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionY));
 	auto fId = get_fid(obj, mappingFields::motionYField, env);
-	if (fId)
+	if (!fId)
 		return 0;
 	return env->GetDoubleField(obj, fId);
 }

@@ -12,7 +12,11 @@ void toadll::CVarsUpdater::PreUpdate()
 			env->DeleteLocalRef(world);
 		IsVerified = false;
 
+		std::unique_lock lock(PlayerListMutex);
+
 		m_playerList = {};
+
+		lock.unlock();
 
 		return;
 	}
@@ -65,7 +69,11 @@ void toadll::CVarsUpdater::PreUpdate()
 		tmp.emplace_back(entity);
 	}
 
+	std::unique_lock lock(PlayerListMutex);
+
 	m_playerList = tmp;
+
+	lock.unlock();
 
 	SLOW_SLEEP(1);
 	IsVerified = true;

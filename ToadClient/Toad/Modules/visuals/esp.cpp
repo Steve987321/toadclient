@@ -20,17 +20,10 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		return;
 	}
 
-	try
-	{
-		m_playerList = CVarsUpdater::GetPlayerList();
-	}
-	catch(const std::exception& e)
-	{
-		log_Error(e.what());
-		m_playerList.clear();
-		return;
-	}
-
+	std::shared_lock lock(CVarsUpdater::get_instance()->PlayerListMutex);
+	m_playerList = CVarsUpdater::GetPlayerList();
+	lock.unlock();
+	
 	std::vector<bbox> bboxes = {};
 	//std::vector<std::pair<std::string, bbox>> entityList = {};
 	for (const auto& entity : m_playerList)

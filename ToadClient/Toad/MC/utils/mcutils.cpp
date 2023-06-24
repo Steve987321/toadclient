@@ -58,9 +58,17 @@ namespace toadll
             return "";
 
         const jclass stringClass = env->GetObjectClass(jStr);
-        const jmethodID getBytes = env->GetMethodID(stringClass, "getBytes", "(Ljava/lang/String;)[B");
-        const auto stringJbytes = (jbyteArray)env->CallObjectMethod(jStr, getBytes, env->NewStringUTF("UTF-8"));
-
+        if (!stringClass)
+            return "";
+        const auto getBytesmId = env->GetMethodID(stringClass, "getBytes", "(Ljava/lang/String;)[B");
+        if (!getBytesmId)
+        {
+            env->DeleteLocalRef(stringClass);
+            return "";
+        }
+        const auto strUTF = env->NewStringUTF("UTF-8");
+        const auto stringJbytes = (jbyteArray)env->CallObjectMethod(jStr, getBytesmId, strUTF);
+        env->DeleteLocalRef(strUTF);
         auto length = (size_t)env->GetArrayLength(stringJbytes);
         jbyte* pBytes = env->GetByteArrayElements(stringJbytes, NULL);
 
@@ -107,9 +115,14 @@ namespace toadll
 
 	jfieldID get_fid(jobject obj, mappingFields name, JNIEnv* env)
 	{
-        auto klass = env->GetObjectClass(obj);
-        auto res = get_fid(klass, name, env);
-        env->DeleteLocalRef(klass);
+        auto objKlass = env->GetObjectClass(obj);
+        if (!objKlass)
+        {
+            log_Error("objKlass is nullptr with mapping name: %s", mappings::findNameField(name));
+            return nullptr;
+        }
+        auto res = get_fid(objKlass, name, env);
+        env->DeleteLocalRef(objKlass);
         return res;
 	}
     

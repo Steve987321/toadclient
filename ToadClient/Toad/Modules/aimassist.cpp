@@ -26,55 +26,54 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	float speed = aa::speed;
 	float minimalAngleDiff = aa::fov / 2.f;
 
+	bool skip_get_target = false;
+
 	if (aa::lock_aim && target != nullptr)
 	{
-		if  (
-			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target->Pos).first))) <= aa::fov 
+		if (
+			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target->Pos).first))) <= aa::fov
 			&&
 			target->Pos.dist(lPlayer->Pos) <= aa::distance
 			)
-			goto AIMING;
+			skip_get_target = true;
 	}
-
-	target = nullptr;
-
-	try
+	
+	if (!skip_get_target)
 	{
+		target = nullptr;
+
+		std::shared_lock lock(CVarsUpdater::get_instance()->PlayerListMutex);
 		m_playerList = CVarsUpdater::GetPlayerList();
-	}
-	catch(const std::exception& e)
-	{
-		log_Error(e.what());
-		m_playerList = {};
-	}
+		lock.unlock();
 
-	//get a target
-	for (const auto& player : m_playerList)
-	{
-		if (lPlayer->Pos.dist(player.Pos) > aa::distance) continue;
-		if (player.Invis && !aa::invisibles) continue;
-
-		distances.emplace_back(lPlayer->Pos.dist(player.Pos), player);
-		if (aa::targetFOV)
+		//get a target
+		for (const auto& player : m_playerList)
 		{
-			float yawDiff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, player.Pos).first)));
-			if (yawDiff < minimalAngleDiff)
+			if (lPlayer->Pos.dist(player.Pos) > aa::distance) continue;
+			if (player.Invis && !aa::invisibles) continue;
+
+			distances.emplace_back(lPlayer->Pos.dist(player.Pos), player);
+			if (aa::targetFOV)
 			{
-				minimalAngleDiff = yawDiff;
-				target = std::make_shared<EntityT>(player);
+				float yawDiff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, player.Pos).first)));
+				if (yawDiff < minimalAngleDiff)
+				{
+					minimalAngleDiff = yawDiff;
+					target = std::make_shared<EntityT>(player);
+				}
 			}
 		}
-	}
-	if (distances.empty()) return; // atleast one other player
+		if (distances.empty()) return; // atleast one other player
 
-	// getting target by distance
-	if (!aa::targetFOV)
-	{
-		auto t = std::ranges::min_element(distances, [](const auto & l, const auto & r) { return l.first < r.first; });
-		target = std::make_shared<EntityT>(t->second);
+		// getting target by distance
+		if (!aa::targetFOV)
+		{
+			auto t = std::ranges::min_element(distances, [](const auto& l, const auto& r) { return l.first < r.first; });
+			target = std::make_shared<EntityT>(t->second);
+		}
 	}
+	
 
-AIMING:
 	if (target == nullptr) return;
 
 	auto targetPos = target->Pos;

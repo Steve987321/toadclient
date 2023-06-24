@@ -8,13 +8,13 @@ struct LocalPlayerT;
 class CVarsUpdater SET_MODULE_CLASS(CVarsUpdater)
 {
 public:
-	static inline bool IsVerified = false;
+	static inline std::atomic_bool IsVerified = false;
 	static inline std::shared_ptr<LocalPlayerT> LocalPlayer = std::make_shared<LocalPlayerT>();
-	static inline bool IsMouseOverPlayer = false;
+	static inline std::atomic_bool IsMouseOverPlayer = false;
 	static inline EntityT MouseOverPlayer;
-	static inline float PartialTick = 0;
-	static inline float RenderPartialTick = 0;
-	static inline bool IsInGui = false;
+	static inline std::atomic<float> PartialTick = 0;
+	static inline std::atomic<float> RenderPartialTick = 0;
+	static inline std::atomic_bool IsInGui = false;
 
 	static inline std::vector<float> ModelView = {};
 	static inline std::vector<float> Projection = {};
@@ -24,6 +24,7 @@ private:
 	static inline std::vector<EntityT> m_playerList = {};
 
 public:
+	std::shared_mutex PlayerListMutex;
 	static std::vector<EntityT> GetPlayerList() { return m_playerList; }
 
 public:
