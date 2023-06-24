@@ -22,6 +22,7 @@ namespace toadll
 		_NODISCARD float getRotationYaw() const;
 		_NODISCARD float getRotationPitch() const;
 
+		_NODISCARD jobject getNameObj() const;
 		_NODISCARD std::string getName() const;
 		_NODISCARD std::string getHeldItemStr() const;
 		_NODISCARD jobject getHeldItem() const;

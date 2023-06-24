@@ -62,7 +62,15 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		entity_list.push_back(visual_entity);*/
 	}
 
-	m_bboxes = bboxes;
+	if (!m_canSave)
+	{
+		while (!m_canSave)
+			SLOW_SLEEP(1);
+	}
+	else
+	{
+		m_bboxes = bboxes;
+	}
 	//m_entityList = entityList;
 	SLOW_SLEEP(1);
 }
@@ -93,10 +101,12 @@ void CEsp::OnRender()
 	glEnable(GL_BLEND);
 	glLineWidth(1.f);
 
+	m_canSave = false;
 	for (const auto& bb : m_bboxes)
 	{
 		draw2dBox(bb);
 	}
+	m_canSave = true;
 
 	glDisable(GL_BLEND);
 	glDepthMask(true);

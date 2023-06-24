@@ -9,6 +9,8 @@ class CEsp SET_MODULE_CLASS(CEsp)
 private:
 	inline static std::vector<bbox> m_bboxes;
 
+	inline static std::atomic_bool m_canSave = true;
+
 	//std::vector<EntityVisual> m_entity_list;
 	inline static std::vector<EntityT> m_playerList;
 	std::vector<std::pair<std::string, bbox>> m_entityList;

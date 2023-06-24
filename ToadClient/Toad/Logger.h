@@ -7,8 +7,10 @@ class c_Logger
 {
 private:
 	std::shared_mutex m_mutex;
+	std::shared_mutex m_closeMutex;
 	HANDLE m_hOutput;
-	FILE* m_f = nullptr;
+	FILE* m_fcout = nullptr;
+	FILE* m_fcerr = nullptr;
 	bool m_closed = false;
 
 private:
@@ -38,8 +40,10 @@ public:
 	c_Logger()
 	{
 		AllocConsole();
-		freopen_s(&m_f, "CONOUT$", "w", stdout);
-		freopen_s(&m_f, "CONOUT$", "w", stderr);
+		AttachConsole(GetCurrentProcessId());
+		SetConsoleTitle(L"Console");
+		freopen_s(&m_fcout, "CONOUT$", "w", stdout);
+		freopen_s(&m_fcerr, "CONOUT$", "w", stderr);
 		m_hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	}
 	~c_Logger()
@@ -50,10 +54,14 @@ public:
 public:
 	void dispose_console()
 	{
+		std::unique_lock lock(m_closeMutex);
+
 		if (m_closed) return;
 
 		FreeConsole();
-		fclose(m_f);
+		fclose(m_fcout);
+		fclose(m_fcerr);
+		CloseHandle(m_hOutput);
 		m_closed = true;
 	}
 
@@ -89,7 +97,7 @@ public:
 
 		std::cout << logtypec << ' ';
 
-		SetConsoleTextAttribute(m_hOutput, 8); // white
+		SetConsoleTextAttribute(m_hOutput, 8);
 
 		std::cout << time << ' ';
 

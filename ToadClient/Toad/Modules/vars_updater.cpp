@@ -8,7 +8,7 @@ void toadll::CVarsUpdater::PreUpdate()
 	auto tmpPlayer = Minecraft->getLocalPlayer();
 	if (world == nullptr || tmpPlayer == nullptr)
 	{
-		if (world == nullptr)
+		if (world != nullptr)
 			env->DeleteLocalRef(world);
 		IsVerified = false;
 
@@ -46,7 +46,6 @@ void toadll::CVarsUpdater::PreUpdate()
 	}
 
 	const auto entityList = Minecraft->getPlayerList();
-	
 	std::vector<EntityT> tmp = {};
 	for (const auto& e : entityList)
 	{
@@ -56,7 +55,6 @@ void toadll::CVarsUpdater::PreUpdate()
 			continue;
 
 		EntityT entity;
-		//entity->Name = eName;
 		entity.obj = e->obj;
 		entity.Pos = e->getPosition();
 		entity.HurtTime = e->getHurtTime();

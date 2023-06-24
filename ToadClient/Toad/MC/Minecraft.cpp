@@ -212,10 +212,15 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getMouseOverPlayer()
         init_map = true;
     }
 
-    auto entityObj = env->CallObjectMethod(obj, get_mid(obj, mapping::getEntityHit, env));
+    auto mId = get_mid(obj, mapping::getEntityHit, env);
+    if (!mId)
+        return nullptr;
+
+    auto entityObj = env->CallObjectMethod(obj, mId);
     env->DeleteLocalRef(obj);
     if (entityObj == nullptr)
         return nullptr;
+
     return std::make_shared<c_Entity>(entityObj, env, getEntityLivingClass());
 }
 

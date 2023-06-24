@@ -9,7 +9,11 @@ toadll::c_Entity::~c_Entity()
 
 toadll::vec3 toadll::c_Entity::getPosition() const
 {
-	auto vecobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getPos, env));
+	auto mId = get_mid(obj, mapping::getPos, env);
+	if (!mId)
+		return { 0,0,0 };
+	
+	auto vecobj = env->CallObjectMethod(obj, mId);
 	auto ret = to_vec3(vecobj, env);
 	env->DeleteLocalRef(vecobj);
 	return ret;
@@ -17,23 +21,42 @@ toadll::vec3 toadll::c_Entity::getPosition() const
 
 toadll::vec3 toadll::c_Entity::getLastTickPosition() const
 {
+	auto x = get_fid(obj, mappingFields::lastTickPosXField, env);
+	if (!x)
+		return { 0,0,0 };
+	auto y = get_fid(obj, mappingFields::lastTickPosYField, env);
+	auto z = get_fid(obj, mappingFields::lastTickPosZField, env);
 	return {
-		static_cast<float>(env->GetDoubleField(obj, get_fid(obj, mappingFields::lastTickPosXField, env))),
-		static_cast<float>(env->GetDoubleField(obj, get_fid(obj, mappingFields::lastTickPosYField, env))),
-		static_cast<float>(env->GetDoubleField(obj, get_fid(obj, mappingFields::lastTickPosZField, env))),
+		static_cast<float>(env->GetDoubleField(obj, x)),
+		static_cast<float>(env->GetDoubleField(obj, y)),
+		static_cast<float>(env->GetDoubleField(obj, z)),
 	};
 }
 
 float toadll::c_Entity::getRotationYaw() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getRotationYaw, env));
-	return env->GetFloatField(obj, get_fid(obj, mappingFields::rotationYawField, env));
+	auto fId = get_fid(obj, mappingFields::rotationYawField, env);
+	if (!fId)
+		return 0;
+	return env->GetFloatField(obj, fId);
 }
 
 float toadll::c_Entity::getRotationPitch() const
 {
-	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getRotationPitch, env));
-	return env->GetFloatField(obj, get_fid(obj, mappingFields::rotationPitchField, env));
+	auto fId = get_fid(obj, mappingFields::rotationPitchField, env);
+	if (!fId)
+		return 0;
+	return env->GetFloatField(obj, fId);
+}
+
+jobject toadll::c_Entity::getNameObj() const
+{
+	auto fId = get_mid(obj, mapping::getName, env);
+	if (!fId)
+		return nullptr;
+	auto strobj = env->CallObjectMethod(obj, fId);
+	return strobj;
 }
 
 std::string toadll::c_Entity::getName() const
@@ -64,24 +87,34 @@ std::string toadll::c_Entity::getHeldItemStr() const
 
 jobject toadll::c_Entity::getHeldItem() const
 {
-	auto mid = get_mid(obj, mapping::getHeldItem, env);
-	if (mid == NULL) // no item held 
+	auto mId = get_mid(obj, mapping::getHeldItem, env);
+	if (!mId) // no item held 
 		return nullptr;
-	return env->CallObjectMethod(obj, mid);
+	return env->CallObjectMethod(obj, mId);
 }
 
 std::string toadll::c_Entity::getSlotStr(int slot) const
 {
-	auto inventory = env->GetObjectField(obj, get_fid(obj, mappingFields::inventoryField, env));
-	auto mid = get_mid(inventory, mapping::getStackInSlot, env);
+	auto fId = get_fid(obj, mappingFields::inventoryField, env);
+	if (!fId)
+		return "NONE";
 
-	auto mainInv = env->CallObjectMethod(inventory, mid, slot);
+	auto inventory = env->GetObjectField(obj, fId);
+	auto mId = get_mid(inventory, mapping::getStackInSlot, env);
+	if (mId)
+	{
+		env->DeleteLocalRef(inventory);
+		return "NONE";
+	}
+
+	auto mainInv = env->CallObjectMethod(inventory, mId, slot);
 	env->DeleteLocalRef(inventory);
 	
 	if (!mainInv) // no item held
 	{
 		return "NONE";
 	}
+
 	auto juice = env->GetObjectClass(mainInv);
 	loop_through_class(juice, env);
 	env->DeleteLocalRef(juice);
@@ -92,8 +125,11 @@ std::string toadll::c_Entity::getSlotStr(int slot) const
 
 int toadll::c_Entity::getHurtTime() const
 {
-	auto mid = get_mid(elclass, mapping::getHurtTime, env);
-	return env->CallIntMethod(obj, mid);
+	auto mId = get_mid(elclass, mapping::getHurtTime, env);
+	if (!mId)
+		return 0;
+	auto res = env->CallIntMethod(obj, mId);
+	return res;
 }
 
 float toadll::c_Entity::getHealth() const
@@ -107,24 +143,36 @@ float toadll::c_Entity::getHealth() const
 float toadll::c_Entity::getMotionX() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionX));
-	return env->GetDoubleField(obj, get_fid(obj, mappingFields::motionXField, env));
+	auto fId = get_fid(obj, mappingFields::motionXField, env);
+	if (fId)
+		return 0;
+	return env->GetDoubleField(obj, fId);
 }
 
 float toadll::c_Entity::getMotionY() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionY));
-	return env->GetDoubleField(obj, get_fid(obj, mappingFields::motionYField, env));
+	auto fId = get_fid(obj, mappingFields::motionYField, env);
+	if (fId)
+		return 0;
+	return env->GetDoubleField(obj, fId);
 }
 
 float toadll::c_Entity::getMotionZ() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionZ));
-	return env->GetDoubleField(obj, get_fid(obj, mappingFields::motionZField, env));
+	auto fId = get_fid(obj, mappingFields::motionZField, env);
+	if (!fId)
+		return 0;
+	return env->GetDoubleField(obj, fId);
 }
 
 bool toadll::c_Entity::isInvisible() const
 {
-	return env->CallBooleanMethod(obj, get_mid(obj, mapping::isInvisible, env));
+	auto mId = get_mid(obj, mapping::isInvisible, env);
+	if (!mId)
+		return false;
+	return env->CallBooleanMethod(obj, mId);
 }
 
 toadll::bbox toadll::c_Entity::get_BBox() const

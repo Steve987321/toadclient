@@ -80,6 +80,11 @@ namespace toadll
     jmethodID get_mid(jobject obj, mapping name, JNIEnv* env)
     {
         auto objKlass = env->GetObjectClass(obj);
+        if (!objKlass)
+        {
+            log_Error("objKlass is nullptr with mapping name: %s", mappings::findName(name));
+            return nullptr;
+        }
         auto mid = get_mid(objKlass, name, env);
         env->DeleteLocalRef(objKlass);
         return mid;
