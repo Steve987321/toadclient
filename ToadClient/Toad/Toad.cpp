@@ -18,6 +18,10 @@ namespace toadll
 {
 	void Fupdate_settings()
 	{
+		using namespace toad;
+
+		using json = nlohmann::json;
+
 		HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"ToadClientMappingObj");
 		if (hMapFile == NULL)
 		{
@@ -25,15 +29,16 @@ namespace toadll
 			log_Debug("exit 11");
 			return;
 		}
-		const auto buf = (LPCSTR)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, bufsize);
-		if (buf == NULL)
+
+		const auto pMem = MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, bufsize);
+		if (pMem == NULL)
 		{
 			log_Debug("buf = 0");
-			//clean_up(12);
 			CloseHandle(hMapFile);
 			return;
 		}
-		std::string s = buf;
+
+		std::string s = (LPCSTR)pMem;
 		//log_Debug(s.c_str());
 		// parse buf as json and read them and set them and 
 
@@ -41,10 +46,54 @@ namespace toadll
 		std::string settings = s.substr(0, endof);
 		//log_Debug(settings.c_str());
 
-		using json = nlohmann::json;
 		json data = json::parse(settings);
 
-		using namespace toad;
+		// flag that will make sure the menu will show when switching to internal ui
+		static bool openMenuOnceFlag = true; 
+		if (data.contains("ui_internal_should_close"))
+		{
+			if (data["ui_internal_should_close"])
+			{
+				if (CInternalUI::ShouldClose && !data["ui_internal"])
+				{
+					openMenuOnceFlag = true;
+					CInternalUI::ShouldClose = false;
+				}
+			}
+		}
+
+		data["ui_internal_should_close"] = CInternalUI::ShouldClose;
+
+		std::stringstream ss;
+		ss << data << "END";
+		memcpy(pMem, ss.str().c_str(), ss.str().length());
+
+		if (CInternalUI::ShouldClose)
+		{
+			g_is_ui_internal = false;
+			CInternalUI::MenuIsOpen = false;
+		}
+		else
+		{
+			g_is_ui_internal = data["ui_internal"];
+			CInternalUI::ShouldClose = false;
+
+			if (openMenuOnceFlag && g_is_ui_internal)
+			{
+				CInternalUI::MenuIsOpen = true;
+				openMenuOnceFlag = false;
+			}
+		}
+
+		if (g_is_ui_internal)
+		{
+			UnmapViewOfFile(pMem);
+			CloseHandle(hMapFile);
+			SLOW_SLEEP(1000);
+			return;
+		}
+
+		g_curr_client = data["client_type"];
 
 		// left auto clicker
 		left_clicker::enabled = data["lc_enabled"];
@@ -124,7 +173,7 @@ namespace toadll
 		CLeftAutoClicker::SetDelays(left_clicker::cps);
 		CRightAutoClicker::SetDelays(right_clicker::cps);
 
-		UnmapViewOfFile(buf);
+		UnmapViewOfFile(pMem);
 		CloseHandle(hMapFile);
 	}
 
@@ -162,20 +211,32 @@ namespace toadll
 			return 0;
 		}
 
+		CSwapBuffers::get_instance();
+		CWSASend::get_instance();
+		c_WSARecv::get_instance();
+
+		log_Debug("Initialize hooks");
+		CHook::InitializeAllHooks();
+
+		log_Debug("Enabling hooks");
+		CHook::EnableAllHooks();
+
+		Fupdate_settings();
+
+		if (toad::g_curr_client == toad::minecraft_client::NOT_UPDATED)
+		{
+			clean_up(44);
+			return 0;
+		}
+
+		log_Debug("client type %d", toad::g_curr_client);
+
 		auto mcclass = c_Minecraft::getMcClass(g_env);
 		if (mcclass == nullptr)
 		{
 			clean_up(4);
 			return 0;
 		}
-
-		log_Debug("Creating hooks");
-		c_Swapbuffershook::get_instance();
-		c_WSASend::get_instance();
-		c_WSARecv::get_instance();
-
-		log_Debug("Initialize hooks");
-		CHook::InitializeAllHooks();
 
 		auto eclasstemp = findclass("net.minecraft.entity.Entity", g_env);
 		if (eclasstemp == nullptr)
@@ -184,21 +245,17 @@ namespace toadll
 			return 0;
 		}
 
-		mappings::init_map(g_env, mcclass, eclasstemp, curr_client);
+		mappings::init_map(g_env, mcclass, eclasstemp, toad::g_curr_client);
 
 		g_env->DeleteLocalRef(eclasstemp);
 		g_env->DeleteLocalRef(mcclass);
 
-		g_is_running = true;
-
-		log_Debug("Enabling hooks");
-		CHook::EnableAllHooks();
-
 		log_Debug("Starting modules");
 		modules::initialize();
 
+		g_is_running = true;
+
 		log_Debug("entering main loop");
-		// main loop
 		while (g_is_running)
 		{
 			if (GetAsyncKeyState(VK_END)) break;

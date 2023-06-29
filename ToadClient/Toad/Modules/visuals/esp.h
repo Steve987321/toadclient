@@ -88,7 +88,6 @@ private:
 public:
 	void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) override;
 	void OnRender() override;
-	void OnImGuiRender(ImDrawList* draw) override;
 };
 
 }

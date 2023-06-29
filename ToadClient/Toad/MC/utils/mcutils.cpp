@@ -82,7 +82,17 @@ namespace toadll
 
     jmethodID get_mid(jclass cls, mapping name, JNIEnv* env)
     {
+#ifdef ENABLE_LOGGING
+        auto mid = env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
+        if (!mid)
+        {
+            log_Error("methodId is null with mapping name: %s, and index %d", mappings::findName(name), name);
+            SLOW_SLEEP(300);
+        }
+        return mid; 
+#else
         return env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
+#endif
     }
 
     jmethodID get_mid(jobject obj, mapping name, JNIEnv* env)
@@ -90,7 +100,10 @@ namespace toadll
         auto objKlass = env->GetObjectClass(obj);
         if (!objKlass)
         {
-            log_Error("objKlass is nullptr with mapping name: %s", mappings::findName(name));
+#ifdef ENABLE_LOGGING
+            log_Error("getting object class for methodid returned null with mapping name: %s, and index", mappings::findName(name), name);
+            SLOW_SLEEP(300);
+#endif
             return nullptr;
         }
         auto mid = get_mid(objKlass, name, env);
@@ -100,17 +113,50 @@ namespace toadll
 
     jmethodID get_static_mid(jclass cls, mapping name, JNIEnv* env)
     {
+#ifdef ENABLE_LOGGING
+        auto smId = env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
+        if (!smId)
+        {
+            log_Error("static methodId is null with mapping name: %s and index: %d", mappings::findName(name), name);
+            SLOW_SLEEP(300);
+            return nullptr;
+        }
+        return smId;
+#else
         return env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
+#endif
     }
 
     jfieldID get_static_fid(jclass cls, mappingFields name, JNIEnv* env)
 	{
+#ifdef ENABLE_LOGGING
+        auto sfId = env->GetStaticFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
+        if (!sfId)
+        {
+            log_Error("static fieldId is null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
+            SLOW_SLEEP(300);
+            return nullptr;
+        }
+        return sfId;
+#else
         return env->GetStaticFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
+#endif
 	}
     
     jfieldID get_fid(jclass cls, mappingFields name, JNIEnv* env)
 	{
+#ifdef ENABLE_LOGGING
+        auto fId = env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
+        if (!fId)
+        {
+            log_Error("fieldId is null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
+            SLOW_SLEEP(300);
+            return nullptr;
+        }
+        return fId;
+#else
         return env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
+#endif
 	}
 
 	jfieldID get_fid(jobject obj, mappingFields name, JNIEnv* env)
@@ -118,8 +164,11 @@ namespace toadll
         auto objKlass = env->GetObjectClass(obj);
         if (!objKlass)
         {
-            log_Error("objKlass is nullptr with mapping name: %s", mappings::findNameField(name));
-            return nullptr;
+#ifdef ENABLE_LOGGING
+            log_Error("getting object class for fieldid returned null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
+            SLOW_SLEEP(300);
+#endif
+        	return nullptr;
         }
         auto res = get_fid(objKlass, name, env);
         env->DeleteLocalRef(objKlass);

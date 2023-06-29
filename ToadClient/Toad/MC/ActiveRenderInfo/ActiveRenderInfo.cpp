@@ -6,6 +6,8 @@ std::vector<float> toadll::c_ActiveRenderInfo::get_modelview() const
 {
 	std::vector<float> res = {}; 
 	auto fid = get_static_fid(ariclass, mappingFields::modelviewField, env);
+	if (!fid)
+		return {};
 	auto obj = env->GetStaticObjectField(ariclass, fid);
 	auto bufklass = env->GetObjectClass(obj);
 	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
@@ -25,6 +27,8 @@ void toadll::c_ActiveRenderInfo::set_modelview(std::vector<float>& vec) const
 {
 	vec.reserve(16);
 	auto fid = get_static_fid(ariclass, mappingFields::modelviewField, env);
+	if (!fid)
+		return;
 	auto obj = env->GetStaticObjectField(ariclass, fid);
 	auto bufklass = env->GetObjectClass(obj);
 	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
@@ -42,6 +46,8 @@ std::vector<float>  toadll::c_ActiveRenderInfo::get_projection() const
 {
 	std::vector<float> res = {};
 	auto fid = get_static_fid(ariclass, mappingFields::projectionField, env);
+	if (!fid)
+		return {};
 	auto obj = env->GetStaticObjectField(ariclass, fid);
 	auto bufklass = env->GetObjectClass(obj);
 	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
@@ -61,6 +67,8 @@ void toadll::c_ActiveRenderInfo::set_projection(std::vector<float>& vec) const
 {
 	vec.reserve(16);
 	auto fid = get_static_fid(ariclass, mappingFields::projectionField, env);
+	if (!fid)
+		return;
 	auto obj = env->GetStaticObjectField(ariclass, fid);
 	auto bufklass = env->GetObjectClass(obj);
 	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");

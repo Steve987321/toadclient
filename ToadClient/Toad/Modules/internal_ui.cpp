@@ -1,45 +1,32 @@
-#pragma once
+#include "pch.h"
+#include "Toad/Toad.h"
+#include "internal_ui.h"
 
-namespace toad::ui
+#include "../Loader/src/utils/utils.h"
+#include "../Loader/src/utils/block_map.h"
+#include "../Loader/src/Application/Fonts/Icons.h"
+
+#include "imgui/imgui_internal.h"
+
+using namespace toad;
+
+namespace toadll
 {
-    inline void UIStyle()
+
+    void CInternalUI::OnImGuiRender(ImDrawList* draw)
     {
-        //ImGuiStyle& s = ImGui::GetStyle();
-
-        //s.Colors[ImGuiCol_WindowBg] = ImColor(60, 65, 80, 60);
-        //s.Colors[ImGuiCol_ChildBg] = ImColor(0, 0, 0, 0);
-        //s.Colors[ImGuiCol_PopupBg] = ImColor(30, 35, 40, 180);
-        //s.Colors[ImGuiCol_Text] = ImColor(120, 120, 120, 255);
-        //s.Colors[ImGuiCol_TextDisabled] = ImColor(100, 100, 100, 255);
-        //s.Colors[ImGuiCol_Border] = ImColor(35, 40, 45, 200);
-        //s.Colors[ImGuiCol_TextSelectedBg] = ImColor(25, 22, 33, 100);
-        //s.WindowBorderSize = 0;
-        //s.WindowPadding = ImVec2(0, 0);
-        //s.WindowRounding = 10.f;
-        //s.PopupBorderSize = 0.f;
-        //s.PopupRounding = 7.f;
-        //s.ChildRounding = 10;
-        //s.ChildBorderSize = 1.f;
-        //s.FrameBorderSize = 0.0f;
-        //s.ScrollbarSize = 10.f;
-        //s.FrameRounding = 8.f;
-        //s.ItemSpacing = ImVec2(0, 5);
-        //s.ItemInnerSpacing = ImVec2(10, 0);
-    }
-
-
-	inline void UI(const ImGuiIO* io)
-	{
-
         //UIStyle();
+        if (!g_is_ui_internal)
+            return;
+
+        if (!MenuIsOpen)
+            return;
+
+        ImGuiIO* io = &ImGui::GetIO();
 
         // ui settings
         static bool tooltips = false;
-#ifdef TOAD_LOADER
-        ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
-#else
         ImGui::Begin("main", nullptr, ImGuiWindowFlags_None | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse);
-#endif
         {
             // Tab Bar
             static int tab = 0;
@@ -77,16 +64,16 @@ namespace toad::ui
                     if (utils::checkboxButton("Velocity", ICON_FA_WIND, &velocity::enabled)) is_Velocity = true;
 
                     if (is_LClicker)
-                        utils::setting_menu("LeftClicker", is_LClicker, []
-                            {
-                                ImGui::SliderInt("cps", &left_clicker::cps, 0, 20, "%dcps");
-                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
-                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
-                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
-                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
-                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
-                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
-                            });
+	                    utils::setting_menu("LeftClicker", is_LClicker, []
+	                    {
+		                    ImGui::SliderInt("cps", &left_clicker::cps, 0, 20, "%dcps");
+		                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
+		                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
+		                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
+		                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
+		                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
+		                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
+	                    });
 
                     else if (is_RClicker)
                         utils::setting_menu("RightClicker", is_RClicker, []
@@ -230,7 +217,7 @@ namespace toad::ui
                                 ImGui::EndChild();
                             }
                         }
-                        });
+                            });
                     }
 
                     else if (is_Blink)
@@ -238,10 +225,10 @@ namespace toad::ui
                         utils::setting_menu("Blink", is_Blink, []
                             {
                                 ImGui::InputInt("keycode", &blink::key);
-								ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");
-                                ImGui::Checkbox("disable on hit", &blink::disable_on_hit);
-                                ImGui::Checkbox("render trail", &blink::show_trail);
-                                ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
+                        ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");
+                        ImGui::Checkbox("disable on hit", &blink::disable_on_hit);
+                        ImGui::Checkbox("render trail", &blink::show_trail);
+                        ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
                             }
                         );
                     }
@@ -251,7 +238,7 @@ namespace toad::ui
             // side extra settings bar 
             static bool is_settings_open = false;
             static float setting_bar_t = 1;
-        	static float setting_bar_posX = io->DisplaySize.x - 40;
+            static float setting_bar_posX = io->DisplaySize.x - 40;
             static float setting_bar_posXsmooth = io->DisplaySize.x - 40;
             static float setting_bar_alpha = 0;
 
@@ -270,18 +257,18 @@ namespace toad::ui
             const static auto border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
             //const static auto childbg_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
             //ImGui::PushStyleColor(ImGuiCol_ChildBg, { childbg_col.x + 0.1f, childbg_col.y + 0.1f, childbg_col.z + 0.1f, childbg_col.w });
-            ImGui::PushStyleColor(ImGuiCol_Border, {border_col.x, border_col.y, border_col.z, setting_bar_alpha});
-            ImGui::BeginChild("settings bar", { 150, io->DisplaySize.y - 20}, true);
+            ImGui::PushStyleColor(ImGuiCol_Border, { border_col.x, border_col.y, border_col.z, setting_bar_alpha });
+            ImGui::BeginChild("settings bar", { 150, io->DisplaySize.y - 20 }, true);
             {
                 ImGui::PopStyleColor(1);
                 ImGui::SetCursorPosY(20);
                 ImGui::PushID("Settings");
                 ImGui::Text(ICON_FA_BARS);
-                ImGui::SetCursorPos({ImGui::GetCursorPosX() - 10, ImGui::GetCursorPosY() - 28});
-                ImGui::PushStyleColor(ImGuiCol_Button, {0,0,0,0});
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {1,1,1,0.2f});
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive, {1,1,1,0.1f});
-                if (ImGui::Button("##", {35, 24}))
+                ImGui::SetCursorPos({ ImGui::GetCursorPosX() - 10, ImGui::GetCursorPosY() - 28 });
+                ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 1,1,1,0.2f });
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 1,1,1,0.1f });
+                if (ImGui::Button("##", { 35, 24 }))
                 {
                     if (!is_settings_open)
                     {
@@ -304,11 +291,11 @@ namespace toad::ui
                 {
                     ImGui::Checkbox("tooltips", &tooltips);
 
-                    if (ImGui::Button("internal ui"))
+                    if (ImGui::Button("external ui"))
                     {
-                        g_is_ui_internal = true;
-                        ShowWindow(AppInstance->get_window(), SW_HIDE);
+                        ShouldClose = true;
                     }
+                    // open key 
                 }
                 ImGui::EndChild();
             }
@@ -332,5 +319,6 @@ namespace toad::ui
             }
         }
         ImGui::End();
-	}
+    }
+
 }

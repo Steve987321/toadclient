@@ -4,7 +4,11 @@
 #include <set>
 
 #include "imgui/imgui.h"
+#ifndef TOAD_LOADER
+#include "../Loader/src/Application/Fonts/Icons.h"
+#else
 #include "Application/Fonts/Icons.h"
+#endif
 #include "imgui/imgui_internal.h"
 
 // make enum work as flags
@@ -72,6 +76,19 @@ namespace toad::utils
 	// window scanner thread
 	inline std::thread Twin_scan;
 	void Fwin_scan();
+
+	inline minecraft_client GetClientType(std::string_view window_title)
+	{
+		std::cout << window_title << std::endl;
+		if (window_title.find("lunar client") == std::string::npos)
+			return minecraft_client::NOT_SUPPORTED;
+		if (window_title.find("1.8.9") != std::string::npos)
+			return minecraft_client::Lunar_189;
+		if (window_title.find("1.7.10") != std::string::npos)
+			return minecraft_client::Lunar_171;
+
+		return minecraft_client::NOT_SUPPORTED;
+	}
 
 	template<typename T>
 	std::vector<std::pair<std::string, T>> GetFilteredSuggestions(const std::string& input, const std::unordered_map<std::string, T>& map, int max_suggestions = 3)

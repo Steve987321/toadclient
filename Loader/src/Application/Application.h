@@ -6,7 +6,7 @@
 
 namespace toad
 {
-	class c_Application
+	class CApplication
 	{
 	private:
 		HWND				     hwnd = {};
@@ -47,4 +47,5 @@ namespace toad
 			return this->hwnd;
 		}
 	};
+	inline auto AppInstance = std::make_unique<CApplication>();
 }

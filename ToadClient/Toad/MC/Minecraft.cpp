@@ -12,7 +12,7 @@ toadll::c_Minecraft::~c_Minecraft()
 
 jclass toadll::c_Minecraft::getMcClass(JNIEnv* env)
 {
-    return findclass(curr_client == minecraft_client::Vanilla ? "ave" : "net.minecraft.client.Minecraft", env);
+    return findclass(toad::g_curr_client == toad::minecraft_client::Vanilla ? "ave" : "net.minecraft.client.Minecraft", env);
 }
 
 jclass toadll::c_Minecraft::getEntityLivingClass()
@@ -54,12 +54,24 @@ jobject toadll::c_Minecraft::getRenderManager()
 std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getLocalPlayer()
 {
     auto mc = getMc();
-    auto fId = get_fid(mc, mappingFields::thePlayerField, env);
+    auto mId = get_mid(mc, mapping::getPlayer, env);
+    if (!mId)
+    {
+        env->DeleteLocalRef(mc);
+        return nullptr;
+    }
+    auto obj = env->CallObjectMethod(mc, mId);
+    if (!obj)
+    {
+        env->DeleteLocalRef(mc);
+        return nullptr;
+    }
+   /* auto fId = get_fid(mc, mappingFields::thePlayerField, env);
     if (!fId)
         return nullptr;
     auto obj = env->GetObjectField(mc, fId);
     if (!obj) 
-        return nullptr;
+        return nullptr;*/
     env->DeleteLocalRef(mc);
     return std::make_shared<c_Entity>(obj, env, getEntityLivingClass());
 }
@@ -129,6 +141,9 @@ jobject toadll::c_Minecraft::getGameSettings()
 
 bool toadll::c_Minecraft::isInGui()
 {
+    if (CInternalUI::MenuIsOpen)
+        return true;
+
     auto mc = getMc();
     auto fId = get_fid(mc, mappingFields::currentScreenField, env);
     if (!fId)
@@ -305,15 +320,23 @@ std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::getPlayerLis
     if (!world)
         return {};
 
-    //auto entities = env->CallObjectMethod(world, get_mid(world, mapping::getPlayerEntities, env
-    auto fId = get_fid(world, mappingFields::playerEntitiesField, env);
+
+   /* auto fId = get_fid(world, mappingFields::playerEntitiesField, env);
     if (!fId)
     {
         env->DeleteLocalRef(world);
         return {};
-    }
+    }*/
 
-    auto entities = env->GetObjectField(world, fId);
+    //auto entities = env->GetObjectField(world, fId);
+    auto mId = get_mid(world, mapping::getPlayerEntities, env);
+    if (!mId)
+    {
+        env->DeleteLocalRef(world);
+        return {};
+    }
+    auto entities = env->CallObjectMethod(world, mId);
+
     env->DeleteLocalRef(world);
 
     if (!entities)

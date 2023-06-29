@@ -126,6 +126,9 @@
     <ClInclude Include="Toad\Modules\blink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Toad\Modules\internal_ui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -207,6 +210,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\Modules\blink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Modules\internal_ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

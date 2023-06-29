@@ -50,12 +50,42 @@ bool toad::init()
 void toad::Fupdate_settings()
 {
 	std::unique_lock lock(mutex);
-	auto pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE, 0, 0, 0);
+	auto pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0);
 	if (pMem == NULL)
+	{
 		std::cout << "[!] something went wrong calling MapViewOfFile\n";
+		return;
+	}
 
 	using json = nlohmann::json;
+
+	auto s = std::string(static_cast<LPCSTR>(pMem));
+	json data2;
+	if (!s.empty())
+	{
+		auto endof = s.find("END");
+		std::string settings = s.substr(0, endof);
+		data2 = json::parse(settings);
+	}
+
 	json data;
+
+	if (data2.contains("ui_internal_should_close"))
+	{
+		if (data2["ui_internal_should_close"])
+		{
+			if (g_is_ui_internal)
+			{
+				ShowWindow(AppInstance->get_window(), SW_SHOW);
+				data["ui_internal_should_close"] = false;
+				data["ui_internal"] = false;
+				g_is_ui_internal = false;
+			}
+		}
+	}
+
+	data["ui_internal"] = g_is_ui_internal;
+	data["client_type"] = g_curr_client;
 
 	// left auto clicker
 	data["lc_enabled"] = left_clicker::enabled;
@@ -133,7 +163,7 @@ void toad::Fupdate_settings()
 
 	std::stringstream ss;
 	ss << data << "END";
-	OutputDebugStringA(ss.str().c_str());
+	//OutputDebugStringA(ss.str().c_str());
 	memcpy(pMem, ss.str().c_str(), ss.str().length());
 
 	UnmapViewOfFile(pMem);

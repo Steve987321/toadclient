@@ -111,18 +111,4 @@ void CEsp::OnRender()
 	glPopMatrix();
 }
 
-void CEsp::OnImGuiRender(ImDrawList* draw)
-{
-	if (!CVarsUpdater::IsVerified) return;
-
-	/*for (const auto& e : m_entityList)
-	{
-		vec2 screenPos;
-		if (WorldToScreen(e.second.min, screenPos, CVarsUpdater::ModelView, CVarsUpdater::Projection, screen_width, screen_height))
-		{
-			draw->AddText({screenPos.x, screenPos.y}, IM_COL32_WHITE, e.first.c_str());
-		}
-	}*/
-}
-
 }

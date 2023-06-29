@@ -163,13 +163,6 @@ namespace toadll
         std::string HeldItem;
     };
 
-    enum class minecraft_client
-    {
-        Lunar,
-        Vanilla,
-        Forge
-    };
-
     struct MCMap
     {
         MCMap(const char* n, const char* s) : name(n), sig(s) {}

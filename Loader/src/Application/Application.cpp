@@ -23,7 +23,7 @@ static D3DPRESENT_PARAMETERS    g_d3dpp;
 
 namespace toad
 {
-    bool c_Application::CreateDeviceD3D(const HWND& hWnd)
+    bool CApplication::CreateDeviceD3D(const HWND& hWnd)
     {
         if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
             return false;
@@ -43,13 +43,13 @@ namespace toad
         return true;
     }
 
-    void c_Application::CleanupDeviceD3D()
+    void CApplication::CleanupDeviceD3D()
     {
         if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = NULL; }
         if (g_pD3D) { g_pD3D->Release(); g_pD3D = NULL; }
     }
 
-    void c_Application::ResetDevice()
+    void CApplication::ResetDevice()
     {
         ImGui_ImplDX9_InvalidateDeviceObjects();
         HRESULT hr = g_pd3dDevice->Reset(&g_d3dpp);
@@ -58,7 +58,7 @@ namespace toad
         ImGui_ImplDX9_CreateDeviceObjects();
     }
 
-    LRESULT WINAPI c_Application::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+    LRESULT WINAPI CApplication::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
 
         if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
@@ -85,13 +85,13 @@ namespace toad
         return ::DefWindowProcW(hWnd, msg, wParam, lParam);
     }
 
-    void c_Application::InitConsole()
+    void CApplication::InitConsole()
     {
         AllocConsole();
         freopen_s(&f, "CONOUT$", "w", stdout);
     }
 
-    bool c_Application::SetupMenu()
+    bool CApplication::SetupMenu()
     {
         GetWindowRect(GetDesktopWindow(), &rect);
         auto x = float(rect.right - WINDOW_WIDTH) / 2.f;
@@ -142,7 +142,7 @@ namespace toad
         return true;
     }
 
-    void c_Application::MenuLoop()
+    void CApplication::MenuLoop()
     {
         MSG msg;
         while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
@@ -200,7 +200,7 @@ namespace toad
     //    }
     //}
 
-    bool c_Application::Init()
+    bool CApplication::Init()
     {
 #ifdef _DEBUG
         InitConsole();
@@ -214,7 +214,7 @@ namespace toad
         return true;
     }
 
-    void c_Application::MainLoop()
+    void CApplication::MainLoop()
     {
         while (g_is_running)
         {
@@ -224,7 +224,7 @@ namespace toad
     }
 
     std::shared_mutex mutex;
-    void c_Application::Exit() const
+    void CApplication::Exit() const
     {
         std::unique_lock lock(mutex);
         std::cout << "closing\n";

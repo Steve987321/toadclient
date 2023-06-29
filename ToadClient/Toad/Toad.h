@@ -44,6 +44,7 @@
 #include "Modules/aimassist.h"
 #include "Modules/blink.h"
 #include "Modules/velocity.h"
+#include "Modules/internal_ui.h"
 
 #include "Toad/Modules/modules.h"
 
@@ -57,8 +58,6 @@
 // global vars and functions 
 namespace toadll
 {
-	inline minecraft_client curr_client = minecraft_client::Lunar;
-
 	inline std::atomic_bool g_is_running = false;
 
 	inline int screen_height = -1, screen_width = -1;

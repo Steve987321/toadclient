@@ -1,6 +1,7 @@
 #pragma once
 
 // global settings for the modules are stored here
+// this file is also included inside the dll project
 
 #include <unordered_map>
 
@@ -8,6 +9,19 @@
 
 namespace toad
 {
+	enum class minecraft_client
+	{
+		NOT_UPDATED,
+		NOT_SUPPORTED,
+		Lunar_189,
+		Lunar_171,
+		Vanilla,
+		Forge
+	};
+
+	inline minecraft_client g_curr_client = minecraft_client::NOT_UPDATED;
+	inline bool g_is_ui_internal = false;
+
 	namespace left_clicker
 	{
 		inline bool enabled = false;

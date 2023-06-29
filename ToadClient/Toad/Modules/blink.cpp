@@ -6,7 +6,7 @@ using namespace toad;
 
 void toadll::CBlink::DisableBlink()
 {
-	c_WSASend::StopSends = false;
+	CWSASend::StopSends = false;
 	if (c_WSARecv::StopRecvs)
 		c_WSARecv::StopRecvs = false;
 }
@@ -22,7 +22,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	static bool canEnableFlag = true;
 	static std::vector<vec3> tmp = {};
 
-	if (c_WSASend::StopSends)
+	if (CWSASend::StopSends)
 	{
 		if (blink::show_trail)
 		{
@@ -79,7 +79,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	{
 		if (GetAsyncKeyState(blink::key) && canEnableFlag)
 		{
-			c_WSASend::StopSends = true;
+			CWSASend::StopSends = true;
 			if (blink::stop_rec_packets)
 				c_WSARecv::StopRecvs = true;
 
@@ -96,7 +96,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 void toadll::CBlink::OnRender()
 {
-	if (!blink::show_trail || !blink::enabled || !c_WSASend::StopSends || m_positions.empty())
+	if (!blink::show_trail || !blink::enabled || !CWSASend::StopSends || m_positions.empty())
 		return;
 
 	glPushMatrix();

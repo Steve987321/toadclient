@@ -50,17 +50,17 @@ public:
 	{
 		return m_oPtr == nullptr;
 	}
-	void Enable()
+	virtual void Enable()
 	{
 		m_isHookEnabled = true;
 		MH_EnableHook(m_oPtr);
 	}
-	void Disable()
+	virtual void Disable()
 	{
 		m_isHookEnabled = false;
 		MH_DisableHook(m_oPtr);
 	}
-	void Dispose() const
+	virtual void Dispose()
 	{
 		if (m_isHookEnabled)
 			MH_DisableHook(m_oPtr);

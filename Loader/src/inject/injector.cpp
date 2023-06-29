@@ -349,6 +349,7 @@ bool inject(DWORD pid)
 	std::ifstream dllFile;
 	HANDLE hProc;
 
+	inject_status = "init #2";
 	do
 	{
 		auto dllPath =  toad::g_dll_debug_mode ? "D:\\VSProjects\\ToadClient\\ToadClient\\bin\\Debug\\ToadClient.dll" : "D:\\VSProjects\\ToadClient\\ToadClient\\bin\\Release\\ToadClient.dll";

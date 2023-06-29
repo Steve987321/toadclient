@@ -50,6 +50,7 @@ void toadll::CVarsUpdater::PreUpdate()
 	}
 
 	const auto entityList = Minecraft->getPlayerList();
+
 	std::vector<EntityT> tmp = {};
 	for (const auto& e : entityList)
 	{
@@ -88,5 +89,5 @@ void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	RenderPartialTick = Minecraft->getRenderPartialTick();
 	PartialTick = Minecraft->getPartialTick();
 	IsInGui = Minecraft->isInGui();
-
+	SLOW_SLEEP(1);
 }

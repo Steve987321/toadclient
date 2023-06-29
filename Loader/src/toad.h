@@ -17,6 +17,7 @@
 #include "global_settings.h"
 #include "utils/utils.h"
 #include "utils/block_map.h"
+#include "Application/Application.h"
 #include "Application/ui.h"
 
 // use this when precision isn't required but the CPU should be saved

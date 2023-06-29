@@ -4,7 +4,7 @@
 
 namespace toadll
 {
-	int c_WSASend::Hook(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+	int CWSASend::Hook(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 	{
 		while (StopSends)
 		{
@@ -13,9 +13,9 @@ namespace toadll
 		return oWSA_Send(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
 	}
 
-	bool c_WSASend::Init()
+	bool CWSASend::Init()
 	{
-		return create_hook("WS2_32.dll", "WSASend", &c_WSASend::Hook, reinterpret_cast<LPVOID*>(&oWSA_Send));
+		return create_hook("WS2_32.dll", "WSASend", &CWSASend::Hook, reinterpret_cast<LPVOID*>(&oWSA_Send));
 	}
 
 	int c_WSARecv::Hook(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesRecvd, LPDWORD lpFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)

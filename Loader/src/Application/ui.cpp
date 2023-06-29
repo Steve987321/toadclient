@@ -57,6 +57,7 @@ namespace toad
                 static bool count = false;
                 static bool failed_shared_mem = false;
                 static bool failed_inject = false;
+                static bool invalid_client_type = false;
                 static bool loading = false;
 
                 if (count)
@@ -78,7 +79,7 @@ namespace toad
 
 	            if (shownWindowList.empty())
 	            {
-                    utils::center_text_Multi(ImVec4(0.2f, 0.2f, 0.2f, 1), "make sure minecraft is opened. \n Supported clients: (Lunar Client, Forge or Vanilla)");
+                    utils::center_text_Multi(ImVec4(0.2f, 0.2f, 0.2f, 1), "make sure minecraft is opened. \n Supported clients: Lunar Client (1.8.9 & 1.7.10)");
 	            }
 	            else
 	            {
@@ -89,20 +90,36 @@ namespace toad
                         if (ImGui::Button(btn_name.c_str()))
                         {
                             loading = true;
-                            init_thread = std::thread([=]
-                                {
-                                    if (!init())
-										failed_shared_mem = true;
 
-									if (!failed_shared_mem)
-										 if (!inject(window.pid))
-                                             failed_inject = true;
+                            // get client type
+                            inject_status = "getting client type";
 
-                                    if (!failed_shared_mem && !failed_inject)
-                                        g_is_verified = true;
+                            g_curr_client = utils::GetClientType(window.title);
+                            std::cout << "currclient type: " << (int)g_curr_client << std::endl;
+                            if (g_curr_client != minecraft_client::NOT_SUPPORTED)
+                            {
+                                init_thread = std::thread([&]
+                                    {
+                                        inject_status = "init #1";
 
-                                    loading = false;
-                                });                                        
+                                        if (!init())
+                                        failed_shared_mem = true;
+											
+		                                if (!failed_shared_mem)
+		                                    if (!inject(window.pid))
+		                                        failed_inject = true;
+
+		                                if (!failed_shared_mem && !failed_inject)
+		                                    g_is_verified = true;
+
+										loading = false;
+                                    });
+                            }
+                            else
+                            {
+                                invalid_client_type = true;
+                                loading = false;
+                            }
                         }
                     }
                 }
@@ -125,6 +142,12 @@ namespace toad
                     loading = false;
                     utils::show_mBox("failed", "failed to inject", failed_inject, true, utils::mboxType::ERR);
                 }
+                else if (invalid_client_type)
+                {
+                    if (init_thread.joinable()) init_thread.join();
+                    loading = false;
+                    utils::show_mBox("failed", "client is not supported", invalid_client_type, true, utils::mboxType::ERR);
+                }
                 ImGui::Checkbox("Debug", &g_dll_debug_mode);
             }
             ImGui::EndChild(); // mc windows
@@ -134,7 +157,7 @@ namespace toad
         ImGui::PopStyleVar();
     }
 
-    void c_Application::render_UI()
+    void CApplication::render_UI()
     {
 #ifdef _DEBUG
         ui_main(io);

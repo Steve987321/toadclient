@@ -9,11 +9,24 @@ toadll::c_Entity::~c_Entity()
 
 toadll::vec3 toadll::c_Entity::getPosition() const
 {
-	auto mId = get_mid(obj, mapping::getPos, env);
+	//static bool once = false;
+	//if (!once)
+	//{
+	//	loop_through_class(elclass, env);
+	//	once = true;
+	//}
+	auto mId = toad::g_curr_client == toad::minecraft_client::Lunar_189
+		? get_mid(obj, mapping::getPos, env)
+		: get_mid(elclass, mapping::getPos, env);
+
 	if (!mId)
 		return { 0,0,0 };
-	
+
 	auto vecobj = env->CallObjectMethod(obj, mId);
+	if (!vecobj)
+	{
+		return { 0,0,0 };
+	}
 	auto ret = to_vec3(vecobj, env);
 	env->DeleteLocalRef(vecobj);
 	return ret;
@@ -113,7 +126,7 @@ std::string toadll::c_Entity::getSlotStr(int slot) const
 
 	auto mainInv = env->CallObjectMethod(inventory, mId, slot);
 	env->DeleteLocalRef(inventory);
-	
+
 	if (!mainInv) // no item held
 	{
 		return "NONE";
@@ -192,7 +205,7 @@ toadll::bbox toadll::c_Entity::get_BBox() const
 
 	env->DeleteLocalRef(bboxobj);
 
-	return {{ minX, minY, minZ }, { maxX, maxY, maxZ } };
+	return { { minX, minY, minZ }, { maxX, maxY, maxZ } };
 }
 
 //jobject toadll::c_Entity::get_open_container() const

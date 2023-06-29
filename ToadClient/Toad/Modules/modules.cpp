@@ -15,6 +15,7 @@ void toadll::modules::initialize()
 	CBlockEsp::get_instance();
 	CVelocity::get_instance();
 	CBlink::get_instance();
+	CInternalUI::get_instance();
 
 	//CAutoPot::get_instance();
 
