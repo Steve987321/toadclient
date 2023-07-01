@@ -27,7 +27,6 @@ namespace toadll
 			ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam);
 			return true;
 		}
-
 		return CallWindowProc(oWndProc, hwnd, msg, wParam, lParam);
 	}
 

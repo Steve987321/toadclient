@@ -24,9 +24,14 @@ namespace toadll
 
         ImGuiIO* io = &ImGui::GetIO();
 
+        static std::once_flag flag;
+        std::call_once(flag, []
+            {
+                ImGui::SetNextWindowSize({500, 500});
+            });
         // ui settings
         static bool tooltips = false;
-        ImGui::Begin("main", nullptr, ImGuiWindowFlags_None | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin("main", nullptr, ImGuiWindowFlags_None | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
         {
             // Tab Bar
             static int tab = 0;
@@ -235,21 +240,24 @@ namespace toadll
                 }
             } ImGui::EndChild();
 
-            // side extra settings bar 
+            // side extra settings bar
+            const auto window_size = ImGui::GetWindowSize();
+
             static bool is_settings_open = false;
             static float setting_bar_t = 1;
-            static float setting_bar_posX = io->DisplaySize.x - 40;
-            static float setting_bar_posXsmooth = io->DisplaySize.x - 40;
+            static float setting_bar_posX = window_size.x - 40;
+            static float setting_bar_posXsmooth = window_size.x - 40;
             static float setting_bar_alpha = 0;
+
 
             if (is_settings_open)
             {
-                setting_bar_posXsmooth = std::lerp(io->DisplaySize.x - 40, setting_bar_posX, setting_bar_t);
+                setting_bar_posXsmooth = std::lerp(window_size.x - 40, setting_bar_posX, setting_bar_t);
                 setting_bar_alpha = std::lerp(0, 1, setting_bar_t);
             }
             else
             {
-                setting_bar_posXsmooth = std::lerp(io->DisplaySize.x - 150, setting_bar_posX, setting_bar_t);
+                setting_bar_posXsmooth = std::lerp(window_size.x - 150, setting_bar_posX, setting_bar_t);
                 setting_bar_alpha = std::lerp(1, 0, setting_bar_t);
             }
             ImGui::SetCursorPosX(setting_bar_posXsmooth);
@@ -258,7 +266,7 @@ namespace toadll
             //const static auto childbg_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
             //ImGui::PushStyleColor(ImGuiCol_ChildBg, { childbg_col.x + 0.1f, childbg_col.y + 0.1f, childbg_col.z + 0.1f, childbg_col.w });
             ImGui::PushStyleColor(ImGuiCol_Border, { border_col.x, border_col.y, border_col.z, setting_bar_alpha });
-            ImGui::BeginChild("settings bar", { 150, io->DisplaySize.y - 20 }, true);
+            ImGui::BeginChild("settings bar", { 150, window_size.y - 20 }, true);
             {
                 ImGui::PopStyleColor(1);
                 ImGui::SetCursorPosY(20);
@@ -272,14 +280,16 @@ namespace toadll
                 {
                     if (!is_settings_open)
                     {
+                        // open side-bar settings
                         is_settings_open = true;
-                        setting_bar_posX = io->DisplaySize.x - 150;
+                        setting_bar_posX = window_size.x - 150;
                         setting_bar_t = 0;
                     }
                     else
                     {
+                        // close side-bar settings
                         is_settings_open = false;
-                        setting_bar_posX = io->DisplaySize.x - 40;
+                        setting_bar_posX = window_size.x - 40;
                         setting_bar_t = 0;
                     }
                 }
@@ -302,10 +312,11 @@ namespace toadll
             ImGui::EndChild();
 
             if (is_settings_open && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && setting_bar_t > 0.1f)
-                if (ImGui::IsMouseHoveringRect({ 0, 0 }, { setting_bar_posX, ImGui::GetWindowWidth() }))
+                if (ImGui::IsMouseHoveringRect( ImGui::GetWindowPos(), { ImGui::GetWindowPos().x + setting_bar_posX, ImGui::GetWindowHeight() }))
                 {
+                    log_Debug("%f %f, %f %f", ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, setting_bar_posX, ImGui::GetWindowHeight());
                     is_settings_open = false;
-                    setting_bar_posX = io->DisplaySize.x - 40;
+                    setting_bar_posX = ImGui::GetWindowSize().x - 40;
                     setting_bar_t = 0;
                 }
 
