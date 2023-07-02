@@ -31,7 +31,7 @@ namespace toadll
             });
         // ui settings
         static bool tooltips = false;
-        ImGui::Begin("main", nullptr, ImGuiWindowFlags_None | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+        ImGui::Begin("main", nullptr, ImGuiWindowFlags_None | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
         {
             // Tab Bar
             static int tab = 0;
@@ -230,10 +230,10 @@ namespace toadll
                         utils::setting_menu("Blink", is_Blink, []
                             {
                                 ImGui::InputInt("keycode", &blink::key);
-                        ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");
-                        ImGui::Checkbox("disable on hit", &blink::disable_on_hit);
-                        ImGui::Checkbox("render trail", &blink::show_trail);
-                        ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
+		                        ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");
+		                        ImGui::Checkbox("disable on hit", &blink::disable_on_hit);
+		                        ImGui::Checkbox("render trail", &blink::show_trail);
+		                        ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
                             }
                         );
                     }
@@ -312,9 +312,8 @@ namespace toadll
             ImGui::EndChild();
 
             if (is_settings_open && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && setting_bar_t > 0.1f)
-                if (ImGui::IsMouseHoveringRect( ImGui::GetWindowPos(), { ImGui::GetWindowPos().x + setting_bar_posX, ImGui::GetWindowHeight() }))
+                if (ImGui::IsMouseHoveringRect( ImGui::GetWindowPos(), { ImGui::GetWindowPos().x + setting_bar_posXsmooth, ImGui::GetWindowHeight() }))
                 {
-                    log_Debug("%f %f, %f %f", ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, setting_bar_posX, ImGui::GetWindowHeight());
                     is_settings_open = false;
                     setting_bar_posX = ImGui::GetWindowSize().x - 40;
                     setting_bar_t = 0;
