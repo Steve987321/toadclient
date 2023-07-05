@@ -18,7 +18,7 @@ void toadll::CVarsUpdater::PreUpdate()
 
 		lock.unlock();
 
-		SLOW_SLEEP(5);
+		SLOW_SLEEP(20);
 		return;
 	}
 

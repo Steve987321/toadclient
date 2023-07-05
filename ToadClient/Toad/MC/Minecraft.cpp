@@ -141,7 +141,7 @@ jobject toadll::c_Minecraft::getGameSettings()
 
 bool toadll::c_Minecraft::isInGui()
 {
-    if (CInternalUI::MenuIsOpen)
+    if (toad::g_is_ui_internal && CInternalUI::MenuIsOpen)
         return true;
 
     auto mc = getMc();
