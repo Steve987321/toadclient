@@ -56,6 +56,9 @@ namespace toadll
     std::string jstring2string(jstring jStr, JNIEnv* env) {
         if (!jStr)
             return "";
+        auto name = env->GetStringUTFChars(jStr, nullptr);
+        env->ReleaseStringUTFChars(jStr, name);
+        return std::string(name);
 
         const jclass stringClass = env->GetObjectClass(jStr);
         if (!stringClass)
@@ -87,7 +90,7 @@ namespace toadll
         if (!mid)
         {
             log_Error("methodId is null with mapping name: %s, and index %d", mappings::findName(name), name);
-            SLOW_SLEEP(300);
+            SLEEP(300);
         }
         return mid; 
 #else
@@ -102,7 +105,7 @@ namespace toadll
         {
 #ifdef ENABLE_LOGGING
             log_Error("getting object class for methodid returned null with mapping name: %s, and index", mappings::findName(name), name);
-            SLOW_SLEEP(300);
+            SLEEP(300);
 #endif
             return nullptr;
         }
@@ -118,7 +121,7 @@ namespace toadll
         if (!smId)
         {
             log_Error("static methodId is null with mapping name: %s and index: %d", mappings::findName(name), name);
-            SLOW_SLEEP(300);
+            SLEEP(300);
             return nullptr;
         }
         return smId;
@@ -134,7 +137,7 @@ namespace toadll
         if (!sfId)
         {
             log_Error("static fieldId is null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
-            SLOW_SLEEP(300);
+            SLEEP(300);
             return nullptr;
         }
         return sfId;
@@ -150,7 +153,7 @@ namespace toadll
         if (!fId)
         {
             log_Error("fieldId is null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
-            SLOW_SLEEP(300);
+            SLEEP(300);
             return nullptr;
         }
         return fId;
@@ -166,7 +169,7 @@ namespace toadll
         {
 #ifdef ENABLE_LOGGING
             log_Error("getting object class for fieldid returned null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
-            SLOW_SLEEP(300);
+            SLEEP(300);
 #endif
         	return nullptr;
         }

@@ -8,12 +8,7 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 {
 	if (!block_esp::enabled)
 	{
-		SLOW_SLEEP(200);
-		return;
-	}
-	if (!CVarsUpdater::IsVerified)
-	{
-		SLOW_SLEEP(100);
+		SLEEP(250);
 		return;
 	}
 

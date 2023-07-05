@@ -18,7 +18,7 @@ void toadll::CVarsUpdater::PreUpdate()
 
 		lock.unlock();
 
-		SLOW_SLEEP(20);
+		SLEEP(20);
 		return;
 	}
 
@@ -77,7 +77,7 @@ void toadll::CVarsUpdater::PreUpdate()
 
 	lock.unlock();
 
-	SLOW_SLEEP(1);
+	SLEEP(1);
 	IsVerified = true;
 
 }
@@ -90,5 +90,5 @@ void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	RenderPartialTick = Minecraft->getRenderPartialTick();
 	PartialTick = Minecraft->getPartialTick();
 	IsInGui = Minecraft->isInGui();
-	SLOW_SLEEP(1);
+	SLEEP(1);
 }

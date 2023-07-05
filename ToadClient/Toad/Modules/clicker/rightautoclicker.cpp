@@ -12,7 +12,7 @@ namespace toadll
 
 		if (!right_clicker::enabled)
 		{
-			SLOW_SLEEP(250);
+			SLEEP(250);
 			return;
 		}
 
@@ -57,7 +57,7 @@ namespace toadll
 				is_starting_click = false;
 			}
 
-			SLOW_SLEEP(10);
+			SLEEP(50);
 		}
 	}
 

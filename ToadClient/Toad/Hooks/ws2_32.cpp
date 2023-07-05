@@ -8,7 +8,7 @@ namespace toadll
 	{
 		while (StopSends)
 		{
-			SLOW_SLEEP(1);
+			SLEEP(1);
 		}
 		return oWSA_Send(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
 	}
@@ -22,7 +22,7 @@ namespace toadll
 	{
 		while (StopRecvs)
 		{
-			SLOW_SLEEP(1);
+			SLEEP(1);
 		}
 		return oWSA_Recv(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd, lpFlags, lpOverlapped, lpCompletionRoutine);
 	}

@@ -6,7 +6,7 @@
 #pragma comment(lib, "opengl32.lib")
 
 // use this when precision isn't required but the CPU should be saved
-#define SLOW_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
+#define SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
 // macro that inherits from essential classes for a cheat module
 #define SET_MODULE_CLASS(T) final : public toadll::c_Singleton<T>, public toadll::CModule

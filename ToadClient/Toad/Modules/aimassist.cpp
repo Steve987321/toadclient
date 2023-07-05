@@ -11,12 +11,12 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
 	if (!aa::enabled || CVarsUpdater::IsInGui)
 	{
-		SLOW_SLEEP(50);
+		SLEEP(250);
 		return;
 	}
 	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON))
 	{
-		SLOW_SLEEP(10);
+		SLEEP(100);
 		return;
 	}
 
@@ -63,7 +63,12 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 				}
 			}
 		}
-		if (distances.empty()) return; // atleast one other player
+		// atleast one other player
+		if (distances.empty())
+		{
+			SLEEP(10);
+			return;
+		} 
 
 		// getting target by distance
 		if (!aa::targetFOV)
@@ -72,14 +77,18 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			target = std::make_shared<EntityT>(t->second);
 		}
 	}
-	
 
-	if (target == nullptr) return;
+	if (target == nullptr)
+	{
+		SLEEP(1);
+		return;
+	}
 
 	auto targetPos = target->Pos;
 	auto lplayerPos = lPlayer->Pos;
 	vec3 aimPoint;
 
+	// hitbox vertices
 	const std::vector<vec3> bboxCorners
 	{
 		{ targetPos.x - 0.3f, targetPos.y, targetPos.z + 0.3f },
@@ -116,12 +125,18 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		if (yawdiffToPos < 0)
 		{
 			if (*std::ranges::max_element(yawdiffs) > 0)
+			{
+				SLEEP(1);
 				return;
+			}
 		}
 		else
 		{
 			if (*std::ranges::min_element(yawdiffs) < 0)
+			{
+				SLEEP(1);
 				return;
+			}
 		}
 
 		aimPoint = target->Pos;
@@ -134,12 +149,19 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 	float yawDiff = wrap_to_180(-(lyaw - yawtarget));
 	float absYawDiff = abs(yawDiff);
-	if (absYawDiff < 3.f) return;
+	if (absYawDiff < 3.f)
+	{
+		SLEEP(1);
+		return;
+	}
 	float pitchDiff = wrap_to_180(-(lpitch - pitchtarget));
 
 	if (!aa::targetFOV) // don't have to check if this is enabled because already checked
 		if (absYawDiff > minimalAngleDiff)
+		{
+			SLEEP(1);
 			return;
+		}
 	// got target and yaw and pitch offsets
 
 	yawDiff += toadll::rand_float(-2.f, 2.f);
@@ -177,7 +199,10 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 	auto EditableLocalPlayer = Minecraft->getLocalPlayer();
 	if (!EditableLocalPlayer)
+	{
+		SLEEP(1);
 		return;
+	}
 
 	auto updatedYaw = EditableLocalPlayer->getRotationYaw();
 	//log_Debug("%s | %f = %f + %f", target->get_name().c_str(), lyaw + yawdiffSpeed, lyaw, yawdiffSpeed);
@@ -186,23 +211,23 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 	// pitch randomization
 	static CTimer pitch_rand_timer;
-	static float pitchrand = rand_float(-0.0025f, 0.0025f);
-	static float pitchupdatems = rand_float(100, 200);
+	static float pitchrand = rand_float(-0.0150f, 0.0150f);
+	static float pitchupdatems = rand_float(100, 300);
 	static float pitchrandsmooth = 0;
 	static float pitchrandbegin = 0;
 	auto updatedPitch = EditableLocalPlayer->getRotationPitch();
 	if (pitch_rand_timer.Elapsed<>() > pitchupdatems)
 	{
 		pitchrandbegin = pitchrand;
-		pitchupdatems = rand_float(100, 200);
-		pitchrand = rand_float(-0.0015f, 0.0015f);
+		pitchupdatems = rand_float(300, 400);
+		pitchrand = rand_float(-0.0150f, 0.0150f);
 		pitch_rand_timer.Start();
 	}
 
 	pitchrandsmooth = slerp(pitchrandbegin, pitchrand, pitch_rand_timer.Elapsed<>() / pitchupdatems);
 
 	if (rand_100 < 10)
-		pitchrandsmooth += rand_float(-0.001f, 0.001f);
+		pitchrandsmooth += rand_float(-0.002f, 0.002f);
 
 	EditableLocalPlayer->setRotationPitch(updatedPitch + pitchrandsmooth);
 	EditableLocalPlayer->setPrevRotationPitch(updatedPitch + pitchrandsmooth);
@@ -214,7 +239,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		EditableLocalPlayer->setPrevRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
 	}
 
-	toadll::preciseSleep(toadll::rand_float(0.0001f, 0.0005f)); // 1-5ms
+	SLEEP(1);
 	reaction_time_timer += CVarsUpdater::PartialTick;
 }
 

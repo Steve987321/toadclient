@@ -39,7 +39,7 @@ bool toad::init()
 			while (g_is_running)
 			{
 				Fupdate_settings();
-				SLOW_SLEEP(100);
+				SLEEP(100);
 			}
 		});
 

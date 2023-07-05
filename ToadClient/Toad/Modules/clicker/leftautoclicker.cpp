@@ -23,7 +23,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 	if (!left_clicker::enabled)
 	{
-		SLOW_SLEEP(250);
+		SLEEP(250);
 		return;
 	}
 
@@ -70,7 +70,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		{
 			while (mouse_over_type == "BLOCK" && GetAsyncKeyState(VK_LBUTTON))
 			{
-				SLOW_SLEEP(1);
+				SLEEP(1);
 				mouse_over_type = get_mouse_over_type();
 				m_start = std::chrono::high_resolution_clock::now();
 			}
@@ -208,7 +208,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 				while (mouse_over_type == "BLOCK" && break_blocks_flag)
 				{
-					SLOW_SLEEP(1);
+					SLEEP(1);
 					mouse_over_type = get_mouse_over_type();
 					m_start = std::chrono::high_resolution_clock::now();
 				}
@@ -266,7 +266,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			is_starting_click = false;
 		}
 
-		SLOW_SLEEP(10);
+		SLEEP(50);
 	}
 
 }

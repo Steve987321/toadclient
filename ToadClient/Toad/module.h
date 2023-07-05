@@ -32,13 +32,10 @@ namespace toadll {
 
 	public:
 		// Executes every tick or 100ms(when not in game) even when player is null
-		virtual void PreUpdate() {}
+		virtual void PreUpdate() { SLEEP(1); }
 
 		// Executes every system tick when player is not null
-		virtual void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) {}
-
-		// Executes every in game tick 
-		virtual void OnTick(const std::shared_ptr<LocalPlayerT>& lPlayer) {}
+		virtual void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) { SLEEP(1); }
 
 		// Executes inside the wglswapbuffers hook 
 		virtual void OnRender() {}

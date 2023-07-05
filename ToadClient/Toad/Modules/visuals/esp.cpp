@@ -10,13 +10,7 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 {
 	if (!esp::enabled)
 	{
-		SLOW_SLEEP(200);
-		return;
-	}
-
-	if (!CVarsUpdater::IsVerified)
-	{
-		SLOW_SLEEP(100);
+		SLEEP(250);
 		return;
 	}
 
@@ -58,14 +52,14 @@ void CEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	if (!m_canSave)
 	{
 		while (!m_canSave)
-			SLOW_SLEEP(1);
+			SLEEP(1);
 	}
 	else
 	{
 		m_bboxes = bboxes;
 	}
 	//m_entityList = entityList;
-	SLOW_SLEEP(1);
+	SLEEP(1);
 }
 
 void CEsp::OnRender()

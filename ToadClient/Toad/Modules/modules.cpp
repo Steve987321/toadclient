@@ -45,20 +45,12 @@ void toadll::modules::initialize()
 
 				if (!CVarsUpdater::IsVerified) 
 				{
-					SLOW_SLEEP(100);
+					SLEEP(200);
 				}
 				else
 				{
 					const auto& lPlayer = CVarsUpdater::LocalPlayer;
 					Module->Update(lPlayer);
-
-					static auto timer = std::make_unique<CTimer>();
-
-					if (timer->Elapsed<>() > 50.f)
-					{
-						Module->OnTick(lPlayer);
-						timer->Start();
-					}
 				}
 			}
 
@@ -73,66 +65,6 @@ void toadll::modules::initialize()
 		it = std::ranges::find_if(CModule::moduleInstances, [](const auto& mod) { return !mod->Initialized; });
 
 	} while (it != CModule::moduleInstances.end());
-
-}
-
-void toadll::modules::updateTick()
-{
-	auto mcclass = c_Minecraft::getMcClass(g_env);
-	auto mc = std::make_unique<c_Minecraft>();
-
-	mc->env = g_env;
-	mc->mcclass = mcclass;
-
-	auto lPlayer = mc->getLocalPlayer();
-	if (lPlayer == nullptr) return;
-
-	//auto klass = p_Minecraft->get_active_render_class();
-	//auto vec = to_vec3(env->CallStaticObjectMethod(klass, get_static_mid(klass, mapping::getRenderPos)));
-	//p_Log->LogToConsole("%f, %f, %f", vec.x, vec.y, vec.z);
-	//log_Debug("%f, %f, %f", vec.x, vec.y, vec.z);
-	
-	/*std::cout << env->GetStaticFieldID(klass, "MODELVIEW", "Ljava/nio/FloatBuffer;") << std::endl;
-	std::cout << env->GetStaticFieldID(klass, "VIEWPORT", "Ljava/nio/IntBuffer;") << std::endl;
-	std::cout << env->GetStaticFieldID(klass, "PROJECTION", "Ljava/nio/FloatBuffer;") << std::endl;*/
-
-	//std::call_once(flag, []
-	//	{
-	//		auto mc = p_Minecraft->get_mc();
-	//		auto obj = env->CallObjectMethod(mc, get_mid(mc, mapping::getGameSettings));
-	//		auto objklass = env->GetObjectClass(obj);
-	//		std::cout << env->GetFieldID(objklass, "fovSetting", "F") << std::endl;
-	//		std::cout << env->GetFloatField(obj, env->GetFieldID(objklass, "fovSetting", "F"));
-	//		//loop_through_class(objklass);
-	//		env->DeleteLocalRef(mc);
-	//		env->DeleteLocalRef(obj);
-	//		env->DeleteLocalRef(objklass);
-	//	});
-	
-	//g_partialTick = mc->get_partialTick();
-
-	/*for (auto Module : moduleInstances)
-		Module->Update(player);*/
-
-	//CAimAssist::get_instance()->Update(player, partial_tick);
-	//CVelocity::get_instance()->Update(player, partial_tick);
-	////auto_bridge(player);
-	//CEsp::get_instance()->Update(player, partial_tick);
-
-	//log_Debug("%s", player->get_heldItemStr().c_str());
-	/*auto heldItem = player->get_heldItem();
-	if (heldItem != NULL)
-	{
-		log_Debug("%s", jstring2string(jstring(env->CallObjectMethod(heldItem, env->GetMethodID(env->GetObjectClass(heldItem), "toString", "()Ljava/lang/String;")))).c_str());
-		env->DeleteLocalRef(heldItem);
-	}
-	else
-	{
-		log_Debug("no");
-	}*/
-
-	//aa();
-	//auto_bridge();
 
 }
 

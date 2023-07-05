@@ -219,7 +219,7 @@ namespace toad
         while (g_is_running)
         {
             MenuLoop();
-			SLOW_SLEEP(1);
+			SLEEP(1);
         }
     }
 

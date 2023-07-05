@@ -21,7 +21,7 @@
 #include "Application/ui.h"
 
 // use this when precision isn't required but the CPU should be saved
-#define SLOW_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
+#define SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
 namespace toad
 {

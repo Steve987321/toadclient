@@ -6,11 +6,11 @@ using namespace toad;
 
 namespace toadll
 {
-	void CVelocity::OnTick(const std::shared_ptr<LocalPlayerT>& lPlayer)
+	void CVelocity::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	{
 		if (!velocity::enabled)
 		{
-			SLOW_SLEEP(250);
+			SLEEP(250);
 			return;
 		}
 
@@ -22,11 +22,13 @@ namespace toadll
 			{
 				StopFlag = true;
 				SendKey(VK_SPACE);
-				SLOW_SLEEP(rand_int(40, 70));
+				SLEEP(rand_int(40, 70));
 				SendKey(VK_SPACE, false);
 			}
 			else if (lPlayer->HurtTime == 0)
 				StopFlag = false;
+
+			SLEEP(1);
 			return;
 		}
 
@@ -36,8 +38,17 @@ namespace toadll
 		{
 			if (beginHurtTime < hurttime) beginHurtTime = hurttime;
 
-			if (hurttime != beginHurtTime - (int)velocity::delay) return;
-			if (rand_int(0, 100) > velocity::chance) { StopFlag = true; return; }
+			if (hurttime != beginHurtTime - (int)velocity::delay)
+			{
+				SLEEP(1);
+				return;
+			}
+			if (rand_int(0, 100) > velocity::chance)
+			{
+				StopFlag = true;
+				SLEEP(1);
+				return;
+			}
 
 			//if (velocity::delay > 0) toad::preciseSleep(velocity::delay * 0.05f);
 
@@ -48,7 +59,10 @@ namespace toadll
 
 			auto EditableLocalPlayer = Minecraft->getLocalPlayer();
 			if (!EditableLocalPlayer)
+			{
+				SLEEP(1);
 				return;
+			}
 
 			if (abs(motionX) > 0)
 				EditableLocalPlayer->setMotionX(newMotionX);
@@ -69,5 +83,7 @@ namespace toadll
 			StopFlag = false;
 			beginHurtTime = 0;
 		}
+
+		SLEEP(1);
 	}
 }

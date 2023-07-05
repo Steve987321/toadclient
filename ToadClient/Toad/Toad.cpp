@@ -3,6 +3,8 @@
 
 #include "nlohmann/json.hpp"
 
+#include <jvmti.h>
+
 //#include <glew-2.1.0/include/GL/glew.h>
 //#include <gl/GL.h>
 
@@ -89,7 +91,7 @@ namespace toadll
 		{
 			UnmapViewOfFile(pMem);
 			CloseHandle(hMapFile);
-			SLOW_SLEEP(1000);
+			SLEEP(1000);
 			return;
 		}
 
@@ -205,6 +207,42 @@ namespace toadll
 		if (g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&g_env), nullptr) != JNI_OK)
 			return 1;
 
+		/*jvmtiEnv* jvmtiEnv = nullptr;
+		if (g_jvm->GetEnv(reinterpret_cast<void**>(&jvmtiEnv), JVMTI_VERSION_1) == JNI_OK)
+		{
+			log_Debug("yoooo");
+			jint n;
+			jclass* classes;
+			jvmtiEnv->GetLoadedClasses(&n, &classes);
+			
+			for (int i = 0; i < n; i++)
+			{
+				auto klass = classes[i];
+				auto cls = findclass("java/lang/Class", g_env);
+				if (!cls)
+					continue;
+
+				auto mId = g_env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
+				if (!mId)
+				{
+					g_env->DeleteLocalRef(cls);
+					continue;
+				}
+				g_env->DeleteLocalRef(cls);
+
+				const auto jstrname = static_cast<jstring>(g_env->CallObjectMethod(klass, mId));
+				if (!jstrname)
+				{
+					log_Error("jstrname = nit shjicyed");
+					continue;
+				}
+				log_Debug(jstring2string(jstrname, g_env).c_str());
+			}
+		}
+		else
+		{
+			log_Debug("NOOO");
+		}*/
 		if (!g_env)
 		{
 			clean_up(2);
@@ -262,7 +300,7 @@ namespace toadll
 
 			Fupdate_settings();
 
-			SLOW_SLEEP(100);
+			SLEEP(100);
 
 		}
 		clean_up(0);

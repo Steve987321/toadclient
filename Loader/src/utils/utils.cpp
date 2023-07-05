@@ -91,7 +91,7 @@ namespace toad
                 winListVec.clear();
                 EnumWindows(enumWindowCallback, 0);
             }
-            SLOW_SLEEP(1000);
+            SLEEP(1000);
         }
     }
 

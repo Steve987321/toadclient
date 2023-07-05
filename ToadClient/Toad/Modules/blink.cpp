@@ -13,9 +13,9 @@ void toadll::CBlink::DisableBlink()
 
 void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 {
-	if (!blink::enabled || !CVarsUpdater::IsVerified)
+	if (!blink::enabled)
 	{
-		SLOW_SLEEP(100);
+		SLEEP(250);
 		return;
 	}
 
@@ -68,11 +68,12 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		else
 		{
 			while (!m_canSavePos)
-				SLOW_SLEEP(1);
+				SLEEP(1);
 
 			m_positions.clear();
 		}
 		tmp.clear();
+		SLEEP(10);
 	}
 
 	if (!CVarsUpdater::IsInGui)
@@ -90,8 +91,11 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		{
 			DisableBlink();
 			canEnableFlag = true;
+			SLEEP(10);
 		}
 	}
+
+	SLEEP(1);
 }
 
 void toadll::CBlink::OnRender()
