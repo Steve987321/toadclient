@@ -183,14 +183,22 @@ float toadll::c_Minecraft::getRenderPartialTick()
     auto obj = env->CallObjectMethod(mc, mId);
     env->DeleteLocalRef(mc);
     if (!obj)
+    {
+        env->DeleteLocalRef(mc);
         return 1;
+    }
 
     auto fId = get_fid(obj, mappingFields::renderPartialTickField, env);
     if (!fId)
+    {
+        env->DeleteLocalRef(obj);
+        env->DeleteLocalRef(mc);
         return 1;
+    }
 
     auto res = env->GetFloatField(obj, fId);
     env->DeleteLocalRef(obj);
+    env->DeleteLocalRef(mc);
     return res;
 }
 

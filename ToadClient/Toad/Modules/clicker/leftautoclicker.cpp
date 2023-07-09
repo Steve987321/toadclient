@@ -199,8 +199,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 				}
 				else
 				{
-					// reaction time of 200 ms
-					if (break_blocks_timer.Elapsed<>() > 200)
+					// reaction time in ms
+					if (break_blocks_timer.Elapsed<>() > rand_int(50, 200))
 					{
 						break_blocks_flag = true;
 					}
