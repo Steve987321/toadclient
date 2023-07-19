@@ -1,47 +1,54 @@
 #pragma once
 
+#include <utility>
+
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_win32.h"
 
 namespace toadll {
 
-/**
- * @brief
- * interface for cheat features
- */
-	class CModule
+///
+/// Interface for Cheat Modules
+///
+class CModule
+{
+protected:
+	JNIEnv* env = nullptr;
+
+	std::shared_ptr<Minecraft> MC = nullptr;
+
+public:
+	bool Initialized = false;
+	inline static std::vector<CModule*> moduleInstances = {};
+
+public:
+	CModule()
 	{
-	protected:
-		JNIEnv* env = nullptr;
+		moduleInstances.emplace_back(this);
+	}
 
-		std::shared_ptr<c_Minecraft> Minecraft = nullptr;
+public:
+	void SetEnv(JNIEnv* Env) { env = Env; }
 
-	public:
-		bool Initialized = false;
-		inline static std::vector<CModule*> moduleInstances = {};
+	/// Sets a newly made unique instance of Minecraft to this Cheat Module
+	void SetMC(std::unique_ptr<Minecraft>& mc) { MC = std::move(mc); }
 
-	public:
-		CModule()
-		{
-			moduleInstances.emplace_back(this);
-		}
+public:
+	/// Executes every tick or 100ms(when not in game) even when player is null
+	virtual void PreUpdate() { SLEEP(1); }
 
-	public:
-		void SetEnv(JNIEnv* Env) { env = Env; }
-		void SetMC(std::shared_ptr<c_Minecraft> mc) { Minecraft = mc; }
+	/// Executes every system tick when player is not null
+	virtual void Update(const std::shared_ptr<LocalPlayer>& lPlayer) { SLEEP(1); }
 
-	public:
-		// Executes every tick or 100ms(when not in game) even when player is null
-		virtual void PreUpdate() { SLEEP(1); }
+	/// Executes inside the wglswapbuffers hook.
+	///
+	///	@see HSwapBuffers
+	virtual void OnRender() {}
 
-		// Executes every system tick when player is not null
-		virtual void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) { SLEEP(1); }
-
-		// Executes inside the wglswapbuffers hook 
-		virtual void OnRender() {}
-
-		// Executes inside the wglswapbuffers hook when ImGui is getting rendered
-		virtual void OnImGuiRender(ImDrawList* draw) {}
+	/// Executes inside the wglswapbuffers hook when ImGui is getting rendered.
+	///
+	///	@see HSwapBuffers
+	virtual void OnImGuiRender(ImDrawList* draw) {}
 
 };
 

@@ -11,7 +11,7 @@ void toadll::CBlink::DisableBlink()
 		c_WSARecv::StopRecvs = false;
 }
 
-void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
+void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	if (!blink::enabled)
 	{
@@ -19,29 +19,31 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		return;
 	}
 
-	static bool canEnableFlag = true;
-	static std::vector<vec3> tmp = {};
+	static std::vector<Vec3> tmpPositions = {};
 
 	if (CWSASend::StopSends)
 	{
 		if (blink::show_trail)
 		{
-			static CTimer savePosTimer;
-			
-			if (!tmp.empty() && savePosTimer.Elapsed<>() >= 200)
+			static Timer savePosTimer;
+
+			// save the current position in intervals of 200 ms
+			if (!tmpPositions.empty() && savePosTimer.Elapsed<>() >= 200)
 			{
 				savePosTimer.Start();
-				if (tmp.back() != lPlayer->Pos)
-					tmp.emplace_back(lPlayer->Pos);
+
+				// don't need to save when player is standing still 
+				if (tmpPositions.back() != lPlayer->Pos)
+					tmpPositions.emplace_back(lPlayer->Pos);
 			}
-			else if (tmp.empty())
+			else if (tmpPositions.empty())
 			{
-				tmp.emplace_back(lPlayer->Pos);
+				tmpPositions.emplace_back(lPlayer->Pos);
 			}
 
 			if (m_canSavePos)
 			{
-				m_positions = tmp;
+				m_positions = tmpPositions;
 			}
 		}
 
@@ -50,13 +52,14 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			if (lPlayer->HurtTime > 0)
 				DisableBlink();
 
-			canEnableFlag = false;
+			m_canEnable = false;
 		}
 
+		// check if blink has been enabled longer than the specified limit
 		if (m_timer.Elapsed<>() >= blink::limit_seconds * 1000)
 		{
 			DisableBlink();
-			canEnableFlag = false;
+			m_canEnable = false;
 		}
 	}
 	else
@@ -68,29 +71,32 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		else
 		{
 			while (!m_canSavePos)
+			{
+				LOGWARN("yooo look out man it is saving a position in blink!");
 				SLEEP(1);
+			}
 
 			m_positions.clear();
 		}
-		tmp.clear();
+		tmpPositions.clear();
 		SLEEP(10);
 	}
 
 	if (!CVarsUpdater::IsInGui)
 	{
-		if (GetAsyncKeyState(blink::key) && canEnableFlag)
+		if (GetAsyncKeyState(blink::key) && m_canEnable)
 		{
 			CWSASend::StopSends = true;
 			if (blink::stop_rec_packets)
 				c_WSARecv::StopRecvs = true;
 
 			m_timer.Start();
-			canEnableFlag = false;
+			m_canEnable = false;
 		}
 		else if (!GetAsyncKeyState(blink::key))
 		{
 			DisableBlink();
-			canEnableFlag = true;
+			m_canEnable = true;
 			SLEEP(10);
 		}
 	}
@@ -120,11 +126,12 @@ void toadll::CBlink::OnRender()
 
 	m_canSavePos = false;
 
+	// draw lines connecting the positions when blinking
 	for (unsigned int i = 1, j = 0; i < m_positions.size(); i++, j++)
 	{
-		const auto lPos = CVarsUpdater::LocalPlayer->LastTickPos + (CVarsUpdater::LocalPlayer->Pos - CVarsUpdater::LocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
+		const auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
 
-		vec3
+		Vec3
 		pos1 = m_positions[j] - lPos,
 		pos2 = m_positions[i] - lPos;
 

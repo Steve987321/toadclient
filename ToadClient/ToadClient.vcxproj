@@ -188,7 +188,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Toad\MC\Minecraft.h" />
     <ClInclude Include="Toad\MC\utils\mcutils.h" />
-    <ClInclude Include="Toad\Modules\modules.h" />
     <ClInclude Include="Toad\timer.h" />
     <ClInclude Include="Toad\Toad.h" />
     <ClInclude Include="Toad\Types.h" />
@@ -197,6 +196,7 @@
     <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\Modules\clicker\clicker_base.cpp" />
     <ClCompile Include="Toad\Modules\internal_ui.cpp" />
     <ClCompile Include="Toad\Modules\blink.cpp" />
     <ClCompile Include="Toad\Modules\autopot.cpp" />
@@ -246,7 +246,6 @@
     <ClCompile Include="Toad\MC\mappings.cpp" />
     <ClCompile Include="Toad\MC\Minecraft.cpp" />
     <ClCompile Include="Toad\MC\utils\mcutils.cpp" />
-    <ClCompile Include="Toad\Modules\modules.cpp" />
     <ClCompile Include="Toad\Toad.cpp" />
     <ClCompile Include="Toad\Modules\velocity.cpp" />
     <ClCompile Include="Toad\Hooks\ws2_32.cpp" />

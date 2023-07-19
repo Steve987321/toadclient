@@ -3,7 +3,7 @@
 namespace toadll
 {
 
-class CSwapBuffers SET_HOOK_CLASS(CSwapBuffers)
+class HSwapBuffers SET_HOOK_CLASS(HSwapBuffers)
 {
 private:
 	static inline bool is_imgui_initialized = false;

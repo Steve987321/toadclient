@@ -2,68 +2,68 @@
 
 namespace toadll
 {
-    struct vec2 {
-        vec2(float x, float y) : x(x), y(y) {}
-        vec2() = default;
+    struct Vec2 {
+        Vec2(float x, float y) : x(x), y(y) {}
+        Vec2() = default;
 
         float x, y;
 
-        vec2 operator+(const vec2& v) const {
+        Vec2 operator+(const Vec2& v) const {
             return { x + v.x, y + v.y };
         }
 
-        vec2 operator-(const vec2& v) const {
+        Vec2 operator-(const Vec2& v) const {
             return { x - v.x, y - v.y };
         }
 
-        vec2 operator*(float s) const {
+        Vec2 operator*(float s) const {
             return { x * s, y * s};
         }
 
-        vec2 operator/(float s) const {
+        Vec2 operator/(float s) const {
             return { x / s, y / s};
         }
 
-        constexpr bool operator==(const vec2& v) const{
+        constexpr bool operator==(const Vec2& v) const{
             return x == v.x && y == v.y;
         }
 
-        [[nodiscard]] float dist(const vec2& v) const {
+        [[nodiscard]] float dist(const Vec2& v) const {
             return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
         }
     };
 
-	struct vec3 {
-        vec3(float x, float y, float z) : x(x), y(y), z(z) {}
-        vec3() : x(0), y(0), z(0) {}
+	struct Vec3 {
+        Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+        Vec3() : x(0), y(0), z(0) {}
 
         float x, y, z;
 
-        vec3 operator+(const vec3& v) const {
+        Vec3 operator+(const Vec3& v) const {
             return { x + v.x, y + v.y, z + v.z };
         }
 
-        vec3 operator-(const vec3& v) const {
+        Vec3 operator-(const Vec3& v) const {
             return { x - v.x, y - v.y, z - v.z };
         }
 
-        vec3 operator*(float s) const {
+        Vec3 operator*(float s) const {
             return { x * s, y * s, z * s };
         }
 
-        vec3 operator/(float s) const {
+        Vec3 operator/(float s) const {
             return { x / s, y / s, z / s };
         }
 
-		bool operator==(const vec3& v) const {
+		bool operator==(const Vec3& v) const {
             return fabs(x - v.x) < FLT_EPSILON && fabs(y - v.y) < FLT_EPSILON && fabs(z - v.z) < FLT_EPSILON;
         }
 
-        _NODISCARD float dist(const vec3& v) const {
+        _NODISCARD float dist(const Vec3& v) const {
             return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
         }
 
-        _NODISCARD vec3 cross(const vec3& v) const{
+        _NODISCARD Vec3 cross(const Vec3& v) const{
             return
             {
                     y * v.z - z * v.y,
@@ -72,79 +72,79 @@ namespace toadll
             };
         }
 
-        static vec3 normalize(const vec3& v)
+        static Vec3 normalize(const Vec3& v)
         {
             float length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
             if (length > 0.0f)
             {
                 float invLength = 1.0f / length;
-                return vec3(v.x * invLength, v.y * invLength, v.z * invLength);
+                return Vec3(v.x * invLength, v.y * invLength, v.z * invLength);
             }
             else
             {
-                return vec3(0.0f, 0.0f, 0.0f);
+                return Vec3(0.0f, 0.0f, 0.0f);
             }
         }
 	};
 
-	struct vec4 {
-        vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-        vec4() = default;
+	struct Vec4 {
+        Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+        Vec4() = default;
         float x, y, z, w;
 
-        vec4 operator+(const vec4& v) const {
+        Vec4 operator+(const Vec4& v) const {
             return { x + v.x, y + v.y, z + v.z, w + v.w};
         }
 
-        vec4 operator-(const vec4& v) const {
+        Vec4 operator-(const Vec4& v) const {
             return { x - v.x, y - v.y, z - v.z, w - v.w};
         }
 
-        vec4 operator*(float s) const {
+        Vec4 operator*(float s) const {
             return { x * s, y * s, z * s, w * s };
         }
 
-        vec4 operator/(float s) const {
+        Vec4 operator/(float s) const {
             return { x / s, y / s, z / s, w/ s };
         }
     };
 
-    struct bbox
+    struct BBox
     {
-        bbox(const vec3& min, const vec3& max) : min(min), max(max) {}
+        BBox(const Vec3& min, const Vec3& max) : min(min), max(max) {}
 
-        vec3 min, max;
+        Vec3 min, max;
     };
 
     // for logging
-    inline std::ostream& operator<<(std::ostream& o, const vec2& v) {
+    inline std::ostream& operator<<(std::ostream& o, const Vec2& v) {
         o << "(X:" << v.x << ", Y:" << v.y << ")";
         return o;
     }
 
-    inline std::ostream& operator<<(std::ostream& o, const vec3& v) {
+    inline std::ostream& operator<<(std::ostream& o, const Vec3& v) {
 	    o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.z << ")";
 	    return o;
     }
 
-	inline std::ostream& operator<<(std::ostream& o, const vec4& v) {
+	inline std::ostream& operator<<(std::ostream& o, const Vec4& v) {
         o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.y << ", W:" << v.w << ")";
         return o;
     }
 
-    inline std::ostream& operator<<(std::ostream& o, const bbox& v){
+    inline std::ostream& operator<<(std::ostream& o, const BBox& v){
         o << "(min: " << v.min << "), max(" << v.max << ")";
         return o;
     }
 
-    struct EntityT
+    struct Entity
     {
         //std::string Name;
 
         bool Invis = false;
 
-        vec3 Pos = { 0,0,0 };
-        vec3 LastTickPos = { 0,0,0 };
+        Vec3 Pos = { 0,0,0 };
+        Vec3 LastTickPos = { 0,0,0 };
 
         int HurtTime = 0;
 
@@ -157,9 +157,9 @@ namespace toadll
 
     };
 
-    struct LocalPlayerT : EntityT
+    struct LocalPlayer : Entity
     {
-        vec3 Motion = {};
+        Vec3 Motion = {};
         std::string HeldItem;
     };
 

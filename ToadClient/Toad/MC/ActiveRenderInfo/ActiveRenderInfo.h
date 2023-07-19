@@ -20,6 +20,6 @@ namespace toadll
 		//void get_viewport(GLint viewportBuf[4]) const;
 
 	public:
-		_NODISCARD vec3 get_render_pos() const;
+		_NODISCARD Vec3 get_render_pos() const;
 	};
 }

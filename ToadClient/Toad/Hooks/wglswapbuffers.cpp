@@ -12,7 +12,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 
 namespace toadll
 {
-	LONG_PTR WINAPI CSwapBuffers::WndProcHook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	LONG_PTR WINAPI HSwapBuffers::WndProcHook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		if (msg == WM_KEYDOWN)
 		{
@@ -30,7 +30,7 @@ namespace toadll
 		return CallWindowProc(oWndProc, hwnd, msg, wParam, lParam);
 	}
 
-	BOOL CSwapBuffers::Hook(HDC hDc)
+	BOOL HSwapBuffers::Hook(HDC hDc)
 	{
 		hwnd = WindowFromDC(hDc);
 		if (!oWndProc)
@@ -47,15 +47,15 @@ namespace toadll
 		glGetIntegerv(GL_VIEWPORT, viewport);
 
 		// check for resolution change
-		if (screen_width != viewport[2] || screen_height != viewport[3])
+		if (g_screen_width != viewport[2] || g_screen_height != viewport[3])
 		{
 			// update window handle 
 			// window handle gets lost when switching between fullscreen and windowed
 			g_hWnd = hwnd;
 		}
 
-		screen_width = viewport[2];
-		screen_height = viewport[3];
+		g_screen_width = viewport[2];
+		g_screen_height = viewport[3];
 
 		for (const auto& Module : CModule::moduleInstances)
 			Module->OnRender();
@@ -95,7 +95,7 @@ namespace toadll
 		}
 
 		auto& io = ImGui::GetIO();
-		io.DisplaySize = { static_cast<float>(screen_width), static_cast<float>(screen_height) };
+		io.DisplaySize = { static_cast<float>(g_screen_width), static_cast<float>(g_screen_height) };
 
 		ImGui_ImplOpenGL2_NewFrame();
 		ImGui_ImplWin32_NewFrame();
@@ -114,15 +114,15 @@ namespace toadll
 		return owglSwapBuffers(hDc);
 	}
 
-	bool CSwapBuffers::Init()
+	bool HSwapBuffers::Init()
 	{
-		return create_hook("opengl32.dll", "wglSwapBuffers", &CSwapBuffers::Hook, reinterpret_cast<LPVOID*>(&owglSwapBuffers));
+		return create_hook("opengl32.dll", "wglSwapBuffers", &HSwapBuffers::Hook, reinterpret_cast<LPVOID*>(&owglSwapBuffers));
 	}
 
-	void CSwapBuffers::Dispose()
+	void HSwapBuffers::Dispose()
 	{
 		SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(oWndProc));
 
-		CHook::Dispose();
+		Hook::Dispose();
 	}
 }

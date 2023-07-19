@@ -8,17 +8,16 @@
 //#include <glew-2.1.0/include/GL/glew.h>
 //#include <gl/GL.h>
 
-// for getting settings
+// for getting settings from loader
 constexpr static size_t bufsize = 1000;
-
-int stage = 0;
-
 std::thread Tupdate_settings;
-std::thread Tupdate_cursorinfo;
+
+inline std::vector<std::thread> cmodule_threads;
+
 
 namespace toadll
 {
-	void Fupdate_settings()
+	void UpdateSettings()
 	{
 		using namespace toad;
 
@@ -28,14 +27,14 @@ namespace toadll
 		if (hMapFile == NULL)
 		{
 			g_is_running = false;
-			log_Debug("exit 11");
+			//LOGDEBUG("exit 11");
 			return;
 		}
 
 		const auto pMem = MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, bufsize);
 		if (pMem == NULL)
 		{
-			log_Debug("buf = 0");
+			//LOGDEBUG("buf = 0");
 			CloseHandle(hMapFile);
 			return;
 		}
@@ -181,8 +180,10 @@ namespace toadll
 
 	DWORD WINAPI init()
 	{
+		UpdateSettings();
+
 #ifdef ENABLE_LOGGING
-		p_Log = std::make_unique<c_Logger>();
+		Logger::GetInstance();
 		SetConsoleCtrlHandler(NULL, true);
 #endif
 
@@ -249,27 +250,24 @@ namespace toadll
 			return 0;
 		}
 
-		CSwapBuffers::get_instance();
-		CWSASend::get_instance();
-		c_WSARecv::get_instance();
+		HSwapBuffers::GetInstance();
+		CWSASend::GetInstance();
+		c_WSARecv::GetInstance();
 
-		log_Debug("Initialize hooks");
-		CHook::InitializeAllHooks();
+		LOGDEBUG("Initialize hooks");
+		Hook::InitializeAllHooks();
 
-		log_Debug("Enabling hooks");
-		CHook::EnableAllHooks();
+		LOGDEBUG("Enabling hooks");
+		Hook::EnableAllHooks();
 
-		Fupdate_settings();
-
-		if (toad::g_curr_client == toad::minecraft_client::NOT_UPDATED)
+		if (toad::g_curr_client == toad::MC_CLIENT::NOT_UPDATED)
 		{
 			clean_up(44);
 			return 0;
 		}
+		LOGDEBUG("client type {}", static_cast<int>(toad::g_curr_client));
 
-		log_Debug("client type %d", toad::g_curr_client);
-
-		auto mcclass = c_Minecraft::getMcClass(g_env);
+		auto mcclass = Minecraft::getMcClass(g_env);
 		if (mcclass == nullptr)
 		{
 			clean_up(4);
@@ -288,23 +286,86 @@ namespace toadll
 		g_env->DeleteLocalRef(eclasstemp);
 		g_env->DeleteLocalRef(mcclass);
 
-		log_Debug("Starting modules");
-		modules::initialize();
+		LOGDEBUG("starting modules");
+		init_modules();
 
 		g_is_running = true;
 
-		log_Debug("entering main loop");
+		LOGDEBUG("entering main loop");
 		while (g_is_running)
 		{
 			if (GetAsyncKeyState(VK_END)) break;
 
-			Fupdate_settings();
+			UpdateSettings();
 
 			SLEEP(100);
-
 		}
 		clean_up(0);
 		return 0;
+	}
+
+	void init_modules()
+	{
+		// Instantiate all cheat modules
+		CVarsUpdater::GetInstance();
+		CLeftAutoClicker::GetInstance();
+		CRightAutoClicker::GetInstance();
+		CAimAssist::GetInstance();
+		CEsp::GetInstance();
+		CBlockEsp::GetInstance();
+		CVelocity::GetInstance();
+		CBlink::GetInstance();
+		CInternalUI::GetInstance();
+
+		//CAutoPot::get_instance();
+
+		for (const auto& Module : CModule::moduleInstances)
+		{
+			cmodule_threads.emplace_back([&]()
+				{
+					JNIEnv* env = nullptr;
+
+			g_jvm->GetEnv(reinterpret_cast<void**>(&env), g_env->GetVersion());
+			g_jvm->AttachCurrentThreadAsDaemon(reinterpret_cast<void**>(&env), nullptr);
+
+			auto mcclass = Minecraft::getMcClass(env);
+			auto mc = std::make_unique<Minecraft>();
+
+			mc->env = env;
+			mc->mcclass = mcclass;
+
+			Module->SetEnv(env);
+			Module->SetMC(mc);
+
+			Module->Initialized = true;
+
+			while (g_is_running)
+			{
+				Module->PreUpdate();
+
+				if (!CVarsUpdater::IsVerified)
+				{
+					SLEEP(100);
+				}
+				else
+				{
+					const auto& lPlayer = CVarsUpdater::theLocalPlayer;
+					Module->Update(lPlayer);
+				}
+			}
+
+			g_jvm->DetachCurrentThread();
+				});
+		}
+
+		// wait for all modules to be initalized before updating 
+		std::ranges::borrowed_iterator_t<std::vector<CModule*>&> it;
+		do
+		{
+			it = std::ranges::find_if(CModule::moduleInstances, [](const auto& mod) { return !mod->Initialized; });
+
+		} while (it != CModule::moduleInstances.end());
+
 	}
 
 	void clean_up(int exitcode)
@@ -314,30 +375,29 @@ namespace toadll
 		std::call_once(flag, [&]
 			{
 			g_is_running = false;
-			log_Debug("closing: %d", exitcode);
+			LOGDEBUG("closing: {}", exitcode);
 
-			log_Debug("hooks");
-			CHook::CleanAllHooks();
+			LOGDEBUG("hooks");
+			Hook::CleanAllHooks();
 
-			log_Debug("jvm");
+			LOGDEBUG("jvm");
 			if (g_jvm != nullptr)
 			{
 				g_jvm->DetachCurrentThread();
 			}
 
-			log_Debug("threads");
+			LOGDEBUG("threads");
 			if (Tupdate_settings.joinable()) Tupdate_settings.join();
-			if (Tupdate_cursorinfo.joinable()) Tupdate_cursorinfo.join();
 
-			for (auto& ModuleThread : modules::threads)
+			for (auto& ModuleThread : cmodule_threads)
 				if (ModuleThread.joinable()) ModuleThread.join();
 
 			g_env = nullptr;
 			g_jvm = nullptr;
 
 #ifdef ENABLE_LOGGING
-			log_Debug("console");
-			p_Log->dispose_console();
+			LOGDEBUG("console");
+			Logger::GetInstance()->DisposeConsole();
 #endif
 			FreeLibraryAndExitThread(g_hMod, 0);
 			});

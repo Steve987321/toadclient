@@ -3,44 +3,44 @@
 #include "Toad/MC/Utils/mcutils.h"
 #include "Minecraft.h"
 
-toadll::c_Minecraft::~c_Minecraft()
+toadll::Minecraft::~Minecraft()
 {
     env->DeleteLocalRef(mcclass);
-    if (elbclass != nullptr) env->DeleteGlobalRef(elbclass);
-    if (ariclass != nullptr) env->DeleteGlobalRef(ariclass);
+    if (m_elbclass != nullptr) env->DeleteGlobalRef(m_elbclass);
+    if (m_ariclass != nullptr) env->DeleteGlobalRef(m_ariclass);
 }
 
-jclass toadll::c_Minecraft::getMcClass(JNIEnv* env)
+jclass toadll::Minecraft::getMcClass(JNIEnv* env)
 {
-    return findclass(toad::g_curr_client == toad::minecraft_client::Vanilla ? "ave" : "net.minecraft.client.Minecraft", env);
+    return findclass(toad::g_curr_client == toad::MC_CLIENT::Vanilla ? "ave" : "net.minecraft.client.Minecraft", env);
 }
 
-jclass toadll::c_Minecraft::getEntityLivingClass()
+jclass toadll::Minecraft::getEntityLivingClass()
 {
-	if (elbclass == nullptr)
+	if (m_elbclass == nullptr)
 	{
-        elbclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.entity.EntityLivingBase", env));
+        m_elbclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.entity.EntityLivingBase", env));
 	}
-    return elbclass;
+    return m_elbclass;
 }
 
-std::unique_ptr<toadll::c_ActiveRenderInfo> toadll::c_Minecraft::getActiveRenderInfo()
+std::unique_ptr<toadll::c_ActiveRenderInfo> toadll::Minecraft::getActiveRenderInfo()
 {
-	if (ariclass == nullptr)
+	if (m_ariclass == nullptr)
 	{
-        ariclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.client.renderer.ActiveRenderInfo", env));
+        m_ariclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.client.renderer.ActiveRenderInfo", env));
 	}
     
-    return std::make_unique<c_ActiveRenderInfo>(ariclass, env);
+    return std::make_unique<c_ActiveRenderInfo>(m_ariclass, env);
 }
 
  
-jobject toadll::c_Minecraft::getMc()
+jobject toadll::Minecraft::getMc()
 {
     return env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft, env));
 }
 
-jobject toadll::c_Minecraft::getRenderManager()
+jobject toadll::Minecraft::getRenderManager()
 {
     auto mc = getMc();
     auto mId = get_mid(mc, mapping::getRenderManager, env);
@@ -51,7 +51,7 @@ jobject toadll::c_Minecraft::getRenderManager()
     return ret;
 }
 
-std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getLocalPlayer()
+std::shared_ptr<toadll::c_Entity> toadll::Minecraft::getLocalPlayer()
 {
     auto mc = getMc();
     auto mId = get_mid(mc, mapping::getPlayer, env);
@@ -76,7 +76,7 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getLocalPlayer()
     return std::make_shared<c_Entity>(obj, env, getEntityLivingClass());
 }
 
-void toadll::c_Minecraft::set_gamma(float val)
+void toadll::Minecraft::set_gamma(float val)
 {
     auto obj = getGameSettings();
 
@@ -104,7 +104,7 @@ void toadll::c_Minecraft::set_gamma(float val)
 //    env->DeleteLocalRef(EntityRenderer);
 //}
 
-jobject toadll::c_Minecraft::getLocalPlayerObject()
+jobject toadll::Minecraft::getLocalPlayerObject()
 {
     auto playermid = get_mid(mcclass, mapping::getPlayer, env);
     if (!playermid)
@@ -115,7 +115,7 @@ jobject toadll::c_Minecraft::getLocalPlayerObject()
     return obj;
 }
 
-jobject toadll::c_Minecraft::getWorld() 
+jobject toadll::Minecraft::getWorld() 
 {
     auto mc = this->getMc();
 	auto worldmid = get_mid(mcclass, mapping::getWorld, env);
@@ -125,7 +125,7 @@ jobject toadll::c_Minecraft::getWorld()
     return obj;
 }
 
-jobject toadll::c_Minecraft::getGameSettings()
+jobject toadll::Minecraft::getGameSettings()
 {
     auto mc = getMc();
     auto mId = get_mid(mc, mapping::getGameSettings, env);
@@ -139,7 +139,7 @@ jobject toadll::c_Minecraft::getGameSettings()
     return obj;
 }
 
-bool toadll::c_Minecraft::isInGui()
+bool toadll::Minecraft::isInGui()
 {
     if (toad::g_is_ui_internal && CInternalUI::MenuIsOpen)
         return true;
@@ -156,7 +156,7 @@ bool toadll::c_Minecraft::isInGui()
     return res;
 }
 
-float toadll::c_Minecraft::getPartialTick() 
+float toadll::Minecraft::getPartialTick() 
 {
     auto mc = getMc();
     auto mId = get_mid(mc, mapping::getTimer, env);
@@ -171,7 +171,7 @@ float toadll::c_Minecraft::getPartialTick()
     return res;
 }
 
-float toadll::c_Minecraft::getRenderPartialTick() 
+float toadll::Minecraft::getRenderPartialTick() 
 {
     auto mc = getMc();
     auto mId = get_mid(mc, mapping::getTimer, env);
@@ -202,7 +202,7 @@ float toadll::c_Minecraft::getRenderPartialTick()
     return res;
 }
 
-float toadll::c_Minecraft::getFov()
+float toadll::Minecraft::getFov()
 {
     auto obj = getGameSettings();
     auto fId = get_fid(obj, mappingFields::fovField, env);
@@ -214,7 +214,7 @@ float toadll::c_Minecraft::getFov()
     return res;
 }
 
-jobject toadll::c_Minecraft::getMouseOverBlock() 
+jobject toadll::Minecraft::getMouseOverBlock() 
 {
     auto mc = getMc();
     auto mId = get_mid(mc, mapping::getObjectMouseOver, env);
@@ -228,7 +228,7 @@ jobject toadll::c_Minecraft::getMouseOverBlock()
     return obj;
 }
 
-int toadll::c_Minecraft::getBlockIdAt(const vec3& pos)
+int toadll::Minecraft::getBlockIdAt(const Vec3& pos)
 {
     auto world = getWorld();
     if (!world)
@@ -251,7 +251,7 @@ int toadll::c_Minecraft::getBlockIdAt(const vec3& pos)
     return id;
 }
 
-std::string toadll::c_Minecraft::getMouseOverBlockStr()
+std::string toadll::Minecraft::getMouseOverBlockStr()
 {
     auto obj = getMouseOverBlock();
     if (obj == nullptr)
@@ -271,7 +271,7 @@ std::string toadll::c_Minecraft::getMouseOverBlockStr()
     return res;
 }
 
-std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getMouseOverPlayer()
+std::shared_ptr<toadll::c_Entity> toadll::Minecraft::getMouseOverPlayer()
 {
     auto str = getMouseOverBlockStr();
     if (str.find("MISS") != std::string::npos || str.find("null") != std::string::npos) return nullptr;
@@ -291,7 +291,7 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getMouseOverPlayer()
         }
         mappings::methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
         if (!mappings::getsig(mapping::getEntityHit, "bridge$getEntityHit", klass, env))
-            log_Error("can't find getEntityHit");
+            LOGERROR("can't find getEntityHit");
         env->DeleteLocalRef(klass);
         init_map = true;
     }
@@ -311,7 +311,7 @@ std::shared_ptr<toadll::c_Entity> toadll::c_Minecraft::getMouseOverPlayer()
     return std::make_shared<c_Entity>(entityObj, env, getEntityLivingClass());
 }
 
-bool toadll::c_Minecraft::isAirBlock(jobject blockobj)
+bool toadll::Minecraft::isAirBlock(jobject blockobj)
 {
     auto world = getWorld();
     auto mId = get_mid(world, mapping::isAirBlock, env);
@@ -322,7 +322,7 @@ bool toadll::c_Minecraft::isAirBlock(jobject blockobj)
     return res;
 }
 
-std::vector<std::shared_ptr<toadll::c_Entity>> toadll::c_Minecraft::getPlayerList()
+std::vector<std::shared_ptr<toadll::c_Entity>> toadll::Minecraft::getPlayerList()
 {
     auto world = getWorld();
     if (!world)

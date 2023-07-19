@@ -2,7 +2,7 @@
 
 namespace toadll
 {
-    inline float rand_float(float min, float max)
+    inline float RandFloat(float min, float max)
     {
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -10,7 +10,7 @@ namespace toadll
         return dis(gen);
     }
 
-    inline int rand_int(int min, int max)
+    inline int RandInt(int min, int max)
     {
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -18,14 +18,15 @@ namespace toadll
         return dis(gen);
     }
 
+    /// Smooth interpolation  
     inline float slerp(float start, float end, float t)
     {
-        std::clamp(t, 0.0f, 1.0f);
+        t = std::clamp(t, 0.0f, 1.0f);
         t = t * t * (3.0f - 2.0f * t);
         return start + (end - start) * t;
     }
 
-    // very precise
+    /// very precise
     inline void preciseSleep(double seconds) {
         using namespace std;
         using namespace std::chrono;
@@ -56,6 +57,7 @@ namespace toadll
         while ((high_resolution_clock::now() - start).count() / 1e9 < seconds);
     }
 
+    /// Sends a keyboard key press
     inline void SendKey(WORD vk_key, bool send_down = true)
     {
         static INPUT ip{INPUT_KEYBOARD};

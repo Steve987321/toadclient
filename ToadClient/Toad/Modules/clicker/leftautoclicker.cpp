@@ -6,20 +6,25 @@ using namespace toad;
 
 namespace toadll {
 
-void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
+void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
+	/// True when first click
 	static bool is_starting_click = false;
 
-	static bool break_blocks_flag = false;  // decides if the player is gonna hold down lmb
-	static bool block_hit_timer_started = false;
-	static bool is_already_clicking = false; // checks if we were already using the autoclicker
+	/// True when already using the autoclicker
+	static bool is_already_clicking = false;
 
-	static int block_hit_rand_ms = left_clicker::block_hit_ms;
+	/// randomized time in ms that the right button (for blocking) is held
+	static int block_hit_mdown_rand_ms = left_clicker::block_hit_ms;
+	static bool block_hit_timer_started = false;
+	static Timer block_hit_timer;
 
 	// TODO: test trade assist 
-	static CTimer trade_assist_timer;
-	static CTimer break_blocks_timer; // a delay before breaking a block after aiming at one
-	static CTimer block_hit_timer;
+	static Timer trade_assist_timer;
+
+	/// a delay before breaking a block after aiming at one
+	static Timer break_blocks_timer;
+
 
 	if (!left_clicker::enabled)
 	{
@@ -27,10 +32,10 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		return;
 	}
 
-	// also check when not holding lmb
+	// also checking outside of autoclicking
 	if (block_hit_timer_started)
 	{
-		if (static_cast<int>(block_hit_timer.Elapsed<>()) >= block_hit_rand_ms)
+		if (static_cast<int>(block_hit_timer.Elapsed<>()) >= block_hit_mdown_rand_ms)
 		{
 			right_mouse_up();
 			block_hit_timer_started = false;
@@ -52,6 +57,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		else
 		{
 			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, enemy.Pos).first)));
+
+			// enemy is not valid anymore after it has gone out of these limits
 			has_active_enemy = enemy.Pos.dist(lPlayer->Pos) > 4.0f || yawDiff > 120;
 		}
 
@@ -109,7 +116,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			static int lplayer_hit_count = 0;
 			static int trade_count_threshold = 3;
 
-			log_Debug("ENEMY HITS: %d | PLAYER HITS: %d | TRADING: %s", enemy_hit_count, lplayer_hit_count, is_trading ? "Y" : "N");
+			//LOGDEBUG("ENEMY HITS: %d | PLAYER HITS: %d | TRADING: {}", enemy_hit_count, lplayer_hit_count, is_trading ? "Y" : "N");
 
 			if (has_active_enemy)
 			{
@@ -188,6 +195,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 		if (left_clicker::break_blocks)
 		{
+			static bool break_blocks_flag = false;
 			static bool start_once = false;
 
 			if (mouse_over_type == "BLOCK")
@@ -200,7 +208,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 				else
 				{
 					// reaction time in ms
-					if (break_blocks_timer.Elapsed<>() > rand_int(50, 200))
+					if (break_blocks_timer.Elapsed<>() > RandInt(50, 200))
 					{
 						break_blocks_flag = true;
 					}
@@ -232,7 +240,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 						// block
 						right_mouse_down();
 
-						block_hit_rand_ms = rand_int(left_clicker::block_hit_ms - 5, left_clicker::block_hit_ms + 5);
+						block_hit_mdown_rand_ms = RandInt(left_clicker::block_hit_ms - 5, left_clicker::block_hit_ms + 5);
 						block_hit_timer.Start();
 						block_hit_timer_started = true;
 					}
@@ -273,7 +281,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 bool CLeftAutoClicker::mouse_down()
 {
-	rand.delay = rand_float(rand.edited_min, rand.edited_max);
+	rand.delay = RandFloat(rand.edited_min, rand.edited_max);
 
 	apply_rand(rand.inconsistencies);
 
@@ -296,7 +304,7 @@ bool CLeftAutoClicker::mouse_down()
 
 void CLeftAutoClicker::mouse_up()
 {
-	rand.delay = rand_float(rand.edited_min, rand.edited_max);
+	rand.delay = RandFloat(rand.edited_min, rand.edited_max);
 
 	apply_rand(rand.inconsistencies2);
 
@@ -330,7 +338,7 @@ void CLeftAutoClicker::right_mouse_up()
 // TODO: instead of returning a string return an enum of object types
 std::string CLeftAutoClicker::get_mouse_over_type() const
 {
-	auto str = Minecraft->getMouseOverBlockStr();
+	auto str = MC->getMouseOverBlockStr();
 	auto start = str.find("type=") + 5;
 	if (start == std::string::npos) return "";
 	auto end = str.find(',', start);

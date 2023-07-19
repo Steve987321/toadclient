@@ -77,17 +77,17 @@ namespace toad::utils
 	inline std::thread Twin_scan;
 	void Fwin_scan();
 
-	inline minecraft_client GetClientType(std::string_view window_title)
+	inline MC_CLIENT GetClientType(std::string_view window_title)
 	{
 		std::cout << window_title << std::endl;
 		if (window_title.find("lunar client") == std::string::npos)
-			return minecraft_client::NOT_SUPPORTED;
+			return MC_CLIENT::NOT_SUPPORTED;
 		if (window_title.find("1.8.9") != std::string::npos)
-			return minecraft_client::Lunar_189;
+			return MC_CLIENT::Lunar_189;
 		if (window_title.find("1.7.10") != std::string::npos)
-			return minecraft_client::Lunar_171;
+			return MC_CLIENT::Lunar_171;
 
-		return minecraft_client::NOT_SUPPORTED;
+		return MC_CLIENT::NOT_SUPPORTED;
 	}
 
 	template<typename T>
@@ -412,20 +412,37 @@ namespace toad::utils
 	}
 
 	// use on modules
-	inline void setting_menu(const char* name, bool& opened, const std::function<void()>& components)
+	inline void setting_menu(const char* name, bool& opened, const std::function<void()>& components, bool use_extra_options = false, const std::function<void()>& extra_options = {})
 	{
 		if (!opened) return;
 		auto io = &ImGui::GetIO();
 		//ImGuiContext& g = *GImGui;
 		//const ImGuiStyle& style = g.Style;
 
-		auto cboxCol = ImGui::GetColorU32(ImGuiCol_PopupBg);
+		constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+		auto cbox_col = ImGui::GetColorU32(ImGuiCol_PopupBg);
 		auto mid = get_middle_point();
-		const ImVec2 boxSizeReal = { mid.x + 120, mid.y + 120};
-		static ImVec2 m_boxSize = { mid.x + 15, mid.y + 15 };
-		static float wBgAlpha = 0;
-		m_boxSize = ImLerp(m_boxSize, boxSizeReal, 20 * io->DeltaTime);
-		wBgAlpha = ImLerp(wBgAlpha, 0.5f, 10 * io->DeltaTime);
+		const ImVec2 box_size_real = { mid.x + 120, mid.y + 120 };
+		static ImVec2 box_size_smooth = { mid.x + 15, mid.y + 15 };
+		static float box_pos_X = get_middle_point().x - box_size_smooth.x / 2;
+		static float box_pos_X_smooth = get_middle_point().x - box_size_smooth.x / 2;
+		static float bg_alpha_smooth = 0;
+
+		// extra options
+		static bool options_open = false;
+		static float options_bg_alpha_smooth = 0;
+		static float options_bg_alpha_target = 0;
+		static float options_box_pos_X = box_pos_X + box_size_smooth.x / 2 + 10;
+		static float options_box_pos_X_smooth = box_pos_X + box_size_smooth.x / 2 + 10;
+
+		const float options_box_size_X = box_size_smooth.x / 2 + 10;
+
+		box_size_smooth = ImLerp(box_size_smooth, options_open ? ImVec2{mid.x + 100, mid.y + 120} : box_size_real, 20 * io->DeltaTime);
+		bg_alpha_smooth = ImLerp(bg_alpha_smooth, 0.5f, 10 * io->DeltaTime);
+		box_pos_X_smooth = ImLerp(box_pos_X_smooth, box_pos_X, 10 * io->DeltaTime);
+
+		options_bg_alpha_smooth = ImLerp(options_bg_alpha_smooth, options_bg_alpha_target, 3 * io->DeltaTime);
+		options_box_pos_X_smooth = ImLerp(options_box_pos_X_smooth, options_box_pos_X, 10 * io->DeltaTime);
 
 		// darker bg
 
@@ -439,21 +456,62 @@ namespace toad::utils
 		ImGui::SetNextWindowSize(io->DisplaySize);
 #endif
 
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.1f,0.1f,0.1f, wBgAlpha });
-		ImGui::Begin("overlay", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.1f,0.1f,0.1f, bg_alpha_smooth });
+		ImGui::Begin("overlay", nullptr, window_flags);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.f);
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, cboxCol);
-		ImGui::SetCursorPos({ get_middle_point().x - m_boxSize.x / 2, utils::get_middle_point().y - m_boxSize.y / 2 });
-		ImGui::BeginChild(name, m_boxSize, true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, cbox_col);
+		ImGui::SetCursorPos({ box_pos_X_smooth , get_middle_point().y - box_size_smooth.y / 2 });
+		ImGui::BeginChild(name, box_size_smooth, true, window_flags);
 		{
 			center_textX({1,1,1,1}, name);
 			
 			ImGui::Separator();
 
 			components();
+		}
+		ImGui::EndChild();
 
-		}ImGui::EndChild();
+		if (use_extra_options)
+		{
+			if (options_open)
+			{
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, { 0.1f, 0.1f, 0.1f, options_bg_alpha_smooth });
+				ImGui::SetCursorPos({ options_box_pos_X_smooth, get_middle_point().y - box_size_smooth.y / 2 });
+				ImGui::BeginChild("extra options", { box_size_smooth.x / 2 + 10, box_size_smooth.y }, true, window_flags);
+				{
+					center_textX({ 1,1,1,1 }, "Extra Options");
+
+					ImGui::Separator();
+
+					extra_options();
+				}
+				ImGui::EndChild();
+
+				ImGui::PopStyleColor();
+			}
+
+			ImGui::SetCursorPos({ options_open ? get_middle_point().x + box_size_smooth.x / 3 : get_middle_point().x + box_size_smooth.x / 2, get_middle_point().y - box_size_smooth.y / 2 });
+
+			ImGui::Text(ICON_FA_SLIDERS_H);
+			ImGui::SetCursorPos({ options_open ? get_middle_point().x + box_size_smooth.x / 3 : get_middle_point().x + box_size_smooth.x / 2, get_middle_point().y - box_size_smooth.y / 2 });
+			ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 1,1,1,0.2f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 1,1,1,0.1f });
+			ImGui::PushID(name);
+			if (ImGui::Button("##", {20, 20}))
+			{
+				options_open = !options_open;
+
+				options_bg_alpha_target = options_open ? 0.5f : 0.0f;
+				options_box_pos_X = options_open ? get_middle_point().x + box_size_smooth.x / 4: box_pos_X + box_size_smooth.x / 2;
+				box_pos_X = options_open ? 10 : get_middle_point().x - box_size_smooth.x / 2;
+
+			}
+			ImGui::PopID();
+			ImGui::PopStyleColor(3);
+			
+		}
 
 		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();
@@ -462,7 +520,7 @@ namespace toad::utils
 		const bool mbdown = ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right);
 		if (mbdown && ImGui::IsWindowHovered())
 		{
-			m_boxSize = { mid.x + 15, mid.y + 15 };
+			box_size_smooth = { mid.x + 15, mid.y + 15 };
 			opened = false;
 		}
 
@@ -471,7 +529,7 @@ namespace toad::utils
 	}
 
 	/**
-	 * \brief wrapper for drawing begging a group box, Don't forget to call ImGui::EndChild();
+	 * \brief wrapper for drawing a group box, Don't forget to call ImGui::EndChild();
 	 * \param strID id
 	 */
 	inline void groupBox(const char* strID)

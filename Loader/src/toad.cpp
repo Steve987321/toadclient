@@ -83,7 +83,6 @@ void toad::Fupdate_settings()
 			}
 		}
 	}
-
 	data["ui_internal"] = g_is_ui_internal;
 	data["client_type"] = g_curr_client;
 

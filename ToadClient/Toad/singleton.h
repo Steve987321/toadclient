@@ -7,17 +7,17 @@ namespace toadll
  * @brief Singleton class to inherit from
  */
 template <class T>
-class c_Singleton
+class Singleton
 {
 	friend T;
 public:
-	virtual ~c_Singleton() = default;
-	c_Singleton() = default;
-	c_Singleton(const c_Singleton&) = delete;
+	virtual ~Singleton() = default;
+	Singleton() = default;
+	Singleton(const Singleton&) = delete;
 
-	void operator=(const c_Singleton&) = delete;
+	void operator=(const Singleton&) = delete;
 
-	static T* get_instance()
+	static T* GetInstance()
 	{
 		static auto instance = std::make_shared<T>();
 		return instance.get();

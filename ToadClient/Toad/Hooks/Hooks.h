@@ -6,14 +6,12 @@
 namespace toadll
 {
 
-/**
- * @brief
- * 
- */
-class CHook
+class Hook
 {
 protected:
 	bool m_isHookEnabled = false;
+
+	// pointer to original adress of hook 
 	void* m_oPtr = nullptr;
 
 protected:
@@ -28,7 +26,7 @@ protected:
 		isMHInitialized = true;
 
 		m_oPtr = GetProcAddress(GetModuleHandleA(modName), procName);
-		log_Debug("modName: %s procName %s optr: %p", modName, procName, m_oPtr);
+		LOGDEBUG("[HOOK] [Creating hook] modName: {} procName {} optr: {}", modName, procName, m_oPtr);
 
 		if (m_oPtr == nullptr)
 			return false;
@@ -37,16 +35,16 @@ protected:
 	}
 
 public:
-	static inline std::vector<CHook*> hookInstances = {}; 
+	static inline std::vector<Hook*> hookInstances = {}; 
 
 public:
-	CHook()
+	Hook()
 	{
 		hookInstances.emplace_back(this);
 	}
 
 public:
-	bool isNull() const
+	_NODISCARD bool isNull() const
 	{
 		return m_oPtr == nullptr;
 	}
@@ -70,21 +68,21 @@ public:
 	virtual bool Init() = 0;
 
 public:
-	// calls Enable() on all hook instances
+	/// calls Enable() on all hook instances
 	static void EnableAllHooks()
 	{
 		for (const auto& hook : hookInstances)
 			hook->Enable();
 	}
 
-	// calls Disable() on all hook instances
+	/// calls Disable() on all hook instances
 	static void DisableAllHooks()
 	{
 		for (const auto& hook : hookInstances)
 			hook->Disable();
 	}
 
-	// calls Dispose() on all hook instances that are valid
+	/// calls Dispose() on all hook instances that are valid
 	static void CleanAllHooks()
 	{
 		for (const auto& hook : hookInstances)
@@ -92,7 +90,7 @@ public:
 				hook->Dispose();
 	}
 
-	// calls Init() on all hook instances
+	/// calls Init() on all hook instances
 	static void InitializeAllHooks()
 	{
 		for (const auto& hook : hookInstances)

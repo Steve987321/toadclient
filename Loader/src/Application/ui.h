@@ -80,20 +80,24 @@ namespace toad::ui
                         utils::setting_menu("LeftClicker", is_LClicker, []
                             {
                                 ImGui::SliderInt("cps", &left_clicker::cps, 0, 20, "%dcps");
-                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
-                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
-                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
-                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
-                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
-                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
+			                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
+			                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
+			                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
+			                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
+			                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
+			                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
+                            }, true, 
+                            []
+                            {
+                                ImGui::Text("this is jesus");
                             });
 
                     else if (is_RClicker)
                         utils::setting_menu("RightClicker", is_RClicker, []
                             {
                                 ImGui::SliderInt("cps", &right_clicker::cps, 0, 20, "%dcps");
-                    ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
-                    ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
+								ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
+								ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
                             });
 
                     else if (is_AA)

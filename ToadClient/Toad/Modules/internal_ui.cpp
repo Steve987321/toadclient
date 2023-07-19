@@ -37,7 +37,6 @@ namespace toadll
             static int tab = 0;
             ImGui::BeginChild("main Tabs", { 85, 0 });
             {
-                //ImGui::ImageButton(); 
                 if (ImGui::Button("Combat", { 85, 30 }))
                 {
                     tab = 0;

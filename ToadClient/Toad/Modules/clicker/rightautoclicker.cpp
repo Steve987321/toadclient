@@ -6,7 +6,7 @@ using namespace toad;
 
 namespace toadll
 {
-	void CRightAutoClicker::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
+	void CRightAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		static bool is_starting_click = false;
 
@@ -27,7 +27,7 @@ namespace toadll
 				rand.edited_min = rand.min_delay;
 				rand.edited_max = rand.max_delay;
 
-				CTimer start_delay_timer;
+				Timer start_delay_timer;
 				while (start_delay_timer.Elapsed<>() < right_clicker::start_delayms)
 				{
 					if (!GetAsyncKeyState(VK_RBUTTON))
@@ -69,7 +69,7 @@ namespace toadll
 
 	bool CRightAutoClicker::mouse_down()
 	{
-		rand.delay = rand_float(rand.edited_min, rand.edited_max);
+		rand.delay = RandFloat(rand.edited_min, rand.edited_max);
 
 		apply_rand(rand.inconsistencies);
 
@@ -92,7 +92,7 @@ namespace toadll
 
 	void CRightAutoClicker::mouse_up()
 	{
-		rand.delay = rand_float(rand.edited_min, rand.edited_max);
+		rand.delay = RandFloat(rand.edited_min, rand.edited_max);
 
 		apply_rand(rand.inconsistencies2);
 

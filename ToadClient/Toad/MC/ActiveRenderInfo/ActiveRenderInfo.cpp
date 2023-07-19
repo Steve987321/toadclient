@@ -98,7 +98,7 @@ void toadll::c_ActiveRenderInfo::set_projection(std::vector<float>& vec) const
 //	env->DeleteLocalRef(ibufklass);
 //}
 
-toadll::vec3 toadll::c_ActiveRenderInfo::get_render_pos() const
+toadll::Vec3 toadll::c_ActiveRenderInfo::get_render_pos() const
 {
 	return to_vec3(env->CallStaticObjectMethod(ariclass, get_static_mid(ariclass, mapping::getRenderPos, env)), env);
 }

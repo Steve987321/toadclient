@@ -1,56 +1,61 @@
 #pragma once
 namespace toadll
 {
-	class c_Minecraft
-	{
-	public:
-		JNIEnv* env = nullptr;
-		jclass mcclass = nullptr;
 
-	private:
-		//jclass mcclass = nullptr;
-		jclass gsclass = nullptr; // game settings
+///
+/// 
+///
+class Minecraft
+{
+public:
+	JNIEnv* env = nullptr;
+	jclass mcclass = nullptr;
 
-		jclass elbclass = nullptr; // entity living base
-		jclass ariclass = nullptr; // active render info
+private:
+	//jclass mcclass = nullptr;
+	jclass m_gsclass = nullptr; // game settings
 
-	public:
-		explicit c_Minecraft() = default;
-		//c_Minecraft() = delete;
-		~c_Minecraft();
-	public:
-		_NODISCARD static jclass getMcClass(JNIEnv* env);
-		_NODISCARD jclass getEntityLivingClass();
+	jclass m_elbclass = nullptr; // entity living base
+	jclass m_ariclass = nullptr; // active render info
 
-		_NODISCARD std::unique_ptr<c_ActiveRenderInfo> getActiveRenderInfo();
+public:
+	explicit Minecraft() = default;
+	~Minecraft();
 
-		_NODISCARD jobject getMc();
-		_NODISCARD jobject getRenderManager();
-		_NODISCARD jobject getLocalPlayerObject();
-		_NODISCARD jobject getWorld();
-		_NODISCARD jobject getGameSettings();
-		_NODISCARD jobject getMouseOverBlock();
-		_NODISCARD int getBlockIdAt(const vec3& pos);
+public:
+	_NODISCARD static jclass getMcClass(JNIEnv* env);
+	_NODISCARD jclass getEntityLivingClass();
 
-		_NODISCARD bool isInGui();
+	_NODISCARD std::unique_ptr<c_ActiveRenderInfo> getActiveRenderInfo();
 
-		_NODISCARD float getPartialTick();
-		_NODISCARD float getRenderPartialTick();
-		_NODISCARD float getFov();
+	_NODISCARD jobject getMc();
+	_NODISCARD jobject getRenderManager();
+	_NODISCARD jobject getLocalPlayerObject();
+	_NODISCARD jobject getWorld();
+	_NODISCARD jobject getGameSettings();
+	_NODISCARD jobject getMouseOverBlock();
+	_NODISCARD int getBlockIdAt(const Vec3& pos);
 
-		_NODISCARD std::string getMouseOverBlockStr();
+	_NODISCARD bool isInGui();
 
-		_NODISCARD bool isAirBlock(jobject blockobj);
+	_NODISCARD float getPartialTick();
+	_NODISCARD float getRenderPartialTick();
+	_NODISCARD float getFov();
 
-		_NODISCARD std::vector<std::shared_ptr<c_Entity>> getPlayerList();
+	_NODISCARD std::string getMouseOverBlockStr();
 
-		_NODISCARD std::shared_ptr<c_Entity> getMouseOverPlayer();
-		_NODISCARD std::shared_ptr<c_Entity> getLocalPlayer();
+	_NODISCARD bool isAirBlock(jobject blockobj);
 
-	public:
-		void set_gamma(float val);
+	_NODISCARD std::vector<std::shared_ptr<c_Entity>> getPlayerList();
 
-		//void disableLightMap() const;
-		//void enableLightMap() const;
-	};
+	_NODISCARD std::shared_ptr<c_Entity> getMouseOverPlayer();
+	_NODISCARD std::shared_ptr<c_Entity> getLocalPlayer();
+
+public:
+	void set_gamma(float val);
+
+	//void disableLightMap() const;
+	//void enableLightMap() const;
+};
+
 }

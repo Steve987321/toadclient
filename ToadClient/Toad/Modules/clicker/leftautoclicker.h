@@ -58,7 +58,7 @@ private:
 	_NODISCARD inline std::string get_mouse_over_type() const;
 	
 public:
-	void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) override;
+	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 	static void SetDelays(int cps);
 };
 

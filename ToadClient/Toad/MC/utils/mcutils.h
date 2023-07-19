@@ -83,16 +83,16 @@ namespace toadll
     jfieldID get_static_fid(jclass cls, mappingFields name, JNIEnv* env);
 
 	// minecraft Vec3 object to vec3
-	vec3 to_vec3(jobject vecObj, JNIEnv* env);
-	vec3 to_vec3i(jobject vecObj, JNIEnv* env);
+	Vec3 to_vec3(jobject vecObj, JNIEnv* env);
+	Vec3 to_vec3i(jobject vecObj, JNIEnv* env);
 
     //vec3 get_closest_point()
 
-    std::pair<float, float> get_angles(const vec3& pos1, const vec3& pos2);
+    std::pair<float, float> get_angles(const Vec3& pos1, const Vec3& pos2);
     float wrap_to_180(float value);
 
-    bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, float fov, vec2& screenpos);
-    bool WorldToScreen(const vec3& worldPoint, vec2& screen, const std::vector<float>& modelView, const std::vector<float>& projection, int width, int height);
+    bool WorldToScreen(const Vec3& source, const Vec3& target, const Vec2& viewAngles, float fov, Vec2& screenpos);
+    bool WorldToScreen(const Vec3& worldPoint, Vec2& screen, const std::vector<float>& modelView, const std::vector<float>& projection, int width, int height);
 
     void loop_through_class(const jclass klass, JNIEnv* env);
 

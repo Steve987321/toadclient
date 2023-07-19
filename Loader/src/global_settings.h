@@ -1,7 +1,9 @@
 #pragma once
 
-// global settings for the modules are stored here
-// this file is also included inside the dll project
+///
+/// global settings for the modules are stored here
+/// this file is also included inside the dll project
+///
 
 #include <unordered_map>
 
@@ -9,7 +11,7 @@
 
 namespace toad
 {
-	enum class minecraft_client
+	enum class MC_CLIENT
 	{
 		NOT_UPDATED,
 		NOT_SUPPORTED,
@@ -19,7 +21,7 @@ namespace toad
 		Forge
 	};
 
-	inline minecraft_client g_curr_client = minecraft_client::NOT_UPDATED;
+	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;
 	inline bool g_is_ui_internal = false;
 
 	namespace left_clicker
@@ -56,13 +58,14 @@ namespace toad
 		inline bool targetFOV = false;
 		inline bool always_aim = false;
 		inline bool aim_at_closest_point = false;
-		inline bool lock_aim = false; // locks the aim to a player until mouse is released for a short time
+		inline bool aim_at_target = false; // aims while inside target hitbox
+		inline bool lock_aim = false; // locks the aim to a target until mouse is released for a short time
 
 		inline int fov = 180.f;
 
 		inline float distance = 5.f;
 		inline float speed = 5.f;
-		inline float reaction_time = 40; //ms
+		inline float reaction_time = 10; //ms
 	}
 
 	namespace reach

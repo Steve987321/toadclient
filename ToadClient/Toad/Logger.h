@@ -1,126 +1,155 @@
 #pragma once
+#include "singleton.h"
 
 namespace toadll
 {
 
-class c_Logger
+///
+/// Handles the console window and output 
+///
+class Logger final : public Singleton<Logger>
 {
 private:
-	std::shared_mutex m_mutex;
-	std::shared_mutex m_closeMutex;
-	HANDLE m_hOutput;
+	HANDLE m_hconsole {};
+	std::shared_mutex m_mutex {};
+	std::shared_mutex m_closeMutex {};
+	std::atomic_bool m_isConsoleClosed = false;
 	FILE* m_fcout = nullptr;
 	FILE* m_fcerr = nullptr;
-	bool m_closed = false;
+
+public:
+	enum class CONSOLE_COLOR : WORD
+	{
+		GREY = 8,
+		WHITE = 15,
+		RED = 12,
+		GREEN = 10,
+		BLUE = 9,
+		YELLOW = 14,
+		MAGENTA = 13,
+	};
+
+	enum class LOG_TYPE : WORD
+	{
+		DEBUG = static_cast<WORD>(CONSOLE_COLOR::BLUE),
+		ERROR = static_cast<WORD>(CONSOLE_COLOR::RED),
+		WARNING = static_cast<WORD>(CONSOLE_COLOR::YELLOW),
+		EXCEPTION = static_cast<WORD>(CONSOLE_COLOR::MAGENTA)
+	};
 
 private:
-	static std::string get_time()
+	std::unordered_map<LOG_TYPE, const char*> logTypeAsStr
 	{
-		std::ostringstream ss;
-		std::string time;
+	{LOG_TYPE::DEBUG, "DEBUG"},
+	{LOG_TYPE::ERROR, "ERROR"},
+	{LOG_TYPE::EXCEPTION, "EXCEPTION"},
+	{LOG_TYPE::WARNING, "WARNING"},
+	};
 
-		auto t = std::time(nullptr);
-		tm newtime{};
-		localtime_s(&newtime, &t);
+private:
+	template <typename ... Args>
+	std::string formatStr(const char* format, Args ... args)
+	{
+		try
+		{
+			return std::vformat(format, std::make_format_args(args...));
+		}
+		catch (std::format_error& e)
+		{
+			LogException("Invalid formatting on string with '{}' | {}", std::string(format).c_str(), e.what());
+			return "";
+		}
+	}
 
-		ss << std::put_time(&newtime, "%H:%M:%S");
-		return ss.str();
+	template<typename ... Args>
+	void Print(const char* frmt, LOG_TYPE type, Args... args)
+	{
+		std::shared_lock lock(m_mutex);
+		std::string formatted_str = formatStr(frmt, args...);
+
+		std::cout << '[';
+
+		SetConsoleTextAttribute(m_hconsole, static_cast<WORD>(type));
+		std::cout << logTypeAsStr[type];
+		SetConsoleTextAttribute(m_hconsole, static_cast<WORD>(CONSOLE_COLOR::WHITE));
+
+		std::cout << ']' << ' ';
+
+		bool isTypeDbg = type == LOG_TYPE::DEBUG;
+
+		SetConsoleTextAttribute(m_hconsole, static_cast<WORD>(isTypeDbg ? CONSOLE_COLOR::GREY : CONSOLE_COLOR::WHITE));
+
+		std::cout << formatted_str << std::endl;
+
+		if (isTypeDbg)
+		{
+			SetConsoleTextAttribute(m_hconsole, static_cast<WORD>(CONSOLE_COLOR::WHITE));
+		}
 	}
 
 public:
-	enum class log_type
-	{
-		LOK = 10,	    // green
-		LERROR = 12,	// red
-		LDEBUG = 9,		// blue
-		LWARNING = 14	// yellow
-	};
-
-public:
-	c_Logger()
+	Logger()
 	{
 		AllocConsole();
-		AttachConsole(GetCurrentProcessId());
+		AttachConsole(ATTACH_PARENT_PROCESS);
 		SetConsoleTitle(L"Console");
 		freopen_s(&m_fcout, "CONOUT$", "w", stdout);
 		freopen_s(&m_fcerr, "CONOUT$", "w", stderr);
-		m_hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+		m_hconsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	}
-	~c_Logger()
-	{
-		dispose_console();
+    ~Logger() override
+    {
+		DisposeConsole();
 	}
 
 public:
-	void dispose_console()
+	void DisposeConsole()
 	{
 		std::unique_lock lock(m_closeMutex);
 
-		if (m_closed) return;
+		if (m_isConsoleClosed) return;
 
-		FreeConsole();
 		fclose(m_fcout);
 		fclose(m_fcerr);
-		CloseHandle(m_hOutput);
-		m_closed = true;
+		CloseHandle(m_hconsole);
+		FreeConsole();
+		m_isConsoleClosed = true;
+	}
+public:
+	template <typename ... Args>
+	void Log(const char* frmt, Args... args)
+	{
+		Print(frmt, LOG_TYPE::DEBUG, args...);
 	}
 
-	template <typename ... args>
-	void Print(log_type type, args... Args)
+	template <typename ... Args>
+	void LogWarning(const char* frmt, Args... args)
 	{
-		std::unique_lock lock(m_mutex);
+		Print(frmt, LOG_TYPE::WARNING, args...);
+	}
 
-		SetConsoleTextAttribute(m_hOutput, (WORD)type);
+	template <typename ... Args>
+	void LogError(const char* frmt, Args... args)
+	{
+		Print(frmt, LOG_TYPE::ERROR, args...);
+	}
 
-		const char* logtypec;
-		std::string time = get_time();
-
-		switch (type)
-		{
-		case log_type::LDEBUG:
-			logtypec = "[#]";
-			break;
-		case log_type::LERROR:
-			logtypec = "[-]";
-			break;
-		case log_type::LOK:
-			logtypec = "[+]";
-			break;
-		case log_type::LWARNING:
-			logtypec = "[!]";
-			break;
-		default:
-			logtypec = "[?]";
-			break;
-
-		}
-
-		std::cout << logtypec << ' ';
-
-		SetConsoleTextAttribute(m_hOutput, 8);
-
-		std::cout << time << ' ';
-
-		if (type != log_type::LDEBUG) SetConsoleTextAttribute(m_hOutput, 15);
-
-		printf(Args..., Args...);
-		std::cout << std::endl;
+	template <typename ... Args>
+	void LogException(const char* frmt, Args... args)
+	{
+		Print(frmt, LOG_TYPE::EXCEPTION, args...);
 	}
 
 };
 
-inline std::unique_ptr<c_Logger> p_Log;
-
 }
 
 #ifdef ENABLE_LOGGING
-#define log_Ok(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LOK, msg, __VA_ARGS__) 
-#define log_Debug(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LDEBUG, msg, __VA_ARGS__) 
-#define log_Error(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LERROR, msg, __VA_ARGS__) 
-#define log_Warn(msg, ...) toadll::p_Log->Print(toadll::c_Logger::log_type::LWARNING, msg, __VA_ARGS__)
+#define LOGDEBUG(msg, ...) toadll::Logger::GetInstance()->Log(msg, __VA_ARGS__) 
+#define LOGERROR(msg, ...) toadll::Logger::GetInstance()->LogError(msg, __VA_ARGS__) 
+#define LOGWARN(msg, ...)  toadll::Logger::GetInstance()->LogWarning(msg, __VA_ARGS__)
 #else
-#define log_Ok(msg, ...)
-#define log_Debug(msg, ...)
-#define log_Error(msg, ...)
-#define log_Warn(msg, ...)
+#define LOGDEBUG(msg, ...)
+#define LOGERROR(msg, ...)
+#define LOGWARN(msg, ...)
 #endif

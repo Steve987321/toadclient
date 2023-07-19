@@ -2,16 +2,19 @@
 
 #define ENABLE_LOGGING
 
+#undef ERROR
+
 #include <gl/GL.h>
 #pragma comment(lib, "opengl32.lib")
 
-// use this when precision isn't required but the CPU should be saved
+// used when precision isn't required but the CPU should be saved
 #define SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
-// macro that inherits from essential classes for a cheat module
-#define SET_MODULE_CLASS(T) final : public toadll::c_Singleton<T>, public toadll::CModule
+// inherits from essential classes for a cheat module
+#define SET_MODULE_CLASS(T) final : public toadll::Singleton<T>, public toadll::CModule
 
-#define SET_HOOK_CLASS(T) final : public toadll::c_Singleton<T>, public toadll::CHook
+// inherits from essential classes for a hook
+#define SET_HOOK_CLASS(T) final : public toadll::Singleton<T>, public toadll::Hook
 
 // Settings/config variables for modules are stored in the Loader project
 #include "../../Loader/src/global_settings.h"
@@ -46,8 +49,6 @@
 #include "Modules/velocity.h"
 #include "Modules/internal_ui.h"
 
-#include "Toad/Modules/modules.h"
-
 #include "MinHook/include/MinHook.h"
 #pragma comment(lib, "minhook.x64.lib")
 
@@ -60,7 +61,7 @@ namespace toadll
 {
 	inline std::atomic_bool g_is_running = false;
 
-	inline int screen_height = -1, screen_width = -1;
+	inline int g_screen_height = -1, g_screen_width = -1;
 
 	inline HMODULE g_hMod;
 	inline HWND g_hWnd; 
@@ -68,12 +69,12 @@ namespace toadll
 	inline JNIEnv* g_env = nullptr;
 	inline JavaVM* g_jvm = nullptr;
 
-	// called when dll has injected
+	/// called when dll has injected
 	DWORD WINAPI init();
 
-	// the main loop when init was succesfull
-	void update();
+	/// starts the cheat modules 
+	void init_modules();
 
-	// called when wanting to uninject and cleans up
+	/// called when wanting to un-inject and cleans up
 	void clean_up(int exitcode = 0);
 }

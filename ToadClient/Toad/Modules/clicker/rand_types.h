@@ -5,37 +5,42 @@ namespace toadll
 	struct Inconsistency
 	{
 		Inconsistency(float min, float max, int chance, int frequency) :
-			min_amount_ms(min), max_amount_ms(max), chance(chance), frequency(frequency)
+			min_amount_ms(min), max_amount_ms(max), frequency(frequency), chance(chance)
 		{
 			Reset();
 		}
 
 		void Reset()
 		{
-			should_start = false;
-			frequency_counter = rand_int(frequency / 5, frequency / 4);
+			start = false;
+			frequency_counter = RandInt(frequency / 5, frequency / 4);
 		}
 
-		bool should_start = false;
+		/// True when this inconsistency should be applied to the rand
+		bool start = false;
 
-		// picks a random number inbetween
+		/// picks a random number between..
 		const float min_amount_ms = 0.0f, max_amount_ms = 1.0f;
 
-		// how frequently this inconsistency should occur
-		// this is based of clicks, a higher value will occur less and a lower value will occur more.
+		/// How frequently this inconsistency should occur
+		/// this frequency is based of clicks.
+		///
+		/// A higher value will occur less and a lower value will occur more
 		const int frequency = 10;
 
-		// chance in %, depends on the frequency: chance is used when counter > frequency. 
+		/// chance in %.
+		///
+		/// Depends on the frequency: chance is used when counter > frequency 
 		const int chance = 50;
 
-		// increments every click
+		/// increments every click
 		int frequency_counter = 0;
 	};
 
 	struct Boost
 	{
-		Boost(float amount, float dur, float transition_dur, vec2 freq, int id) :
-			amount_ms(amount), duration(dur), transition_duration(transition_dur), frequency(rand_int(freq.x, freq.y)), frequency_range(freq), id(id) {}
+		Boost(float amount, float dur, float transition_dur, Vec2 freq, int id) :
+			amount_ms(amount), duration(dur), transition_duration(transition_dur), frequency(RandInt(freq.x, freq.y)), frequency_range(freq), id(id) {}
 
 		void Reset()
 		{
@@ -43,7 +48,7 @@ namespace toadll
 			paused = false;
 			counter = 0;
 			frequency_counter = frequency_counter -= static_cast<float>(frequency_counter) * (static_cast<float>(frequency_counter) / static_cast<float>(frequency) * 0.75f);
-			frequency = rand_int(frequency_range.x, frequency_range.y);
+			frequency = RandInt(frequency_range.x, frequency_range.y);
 		}
 
 		bool start = false;
@@ -66,7 +71,7 @@ namespace toadll
 		int frequency = 0;
 
 		// frequency random range
-		const vec2 frequency_range = { 10, 20 };
+		const Vec2 frequency_range = { 10, 20 };
 
 		// how many clicks it takes to boost up / down
 		// amount must be so that transition_duration < duration / 2

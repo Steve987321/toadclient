@@ -28,9 +28,9 @@ namespace toad
 	inline bool g_dll_debug_mode = false;
 
 	// before init
-	[[nodiscard]] bool pre_init();
+	_NODISCARD bool pre_init();
 
-	[[nodiscard]] bool init();
+	_NODISCARD bool init();
 
 	void Fupdate_settings();
 	inline std::thread Tupdate_settings;

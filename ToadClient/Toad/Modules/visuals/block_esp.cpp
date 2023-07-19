@@ -4,7 +4,7 @@
 
 using namespace toad;
 
-void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
+void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	if (!block_esp::enabled)
 	{
@@ -12,7 +12,7 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		return;
 	}
 
-	std::vector<std::pair<bbox, vec4>> blockPositions = {};
+	std::vector<std::pair<BBox, Vec4>> blockPositions = {};
 
 	auto lastTickPos = lPlayer->LastTickPos;
 	auto lPos = lastTickPos + (lPlayer->Pos - lastTickPos) * CVarsUpdater::RenderPartialTick;
@@ -27,28 +27,28 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 			{
 				if (!CVarsUpdater::IsVerified)
 					break;
-				const int id = Minecraft->getBlockIdAt({ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) });
+				const int id = MC->getBlockIdAt({ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) });
 				if (id == 0) continue; // airblock
 
 				if (block_esp::block_list.contains(id))
 				{
 					blockPositions.emplace_back(
-						bbox{
-								vec3
+						BBox{
+								Vec3
 								{
 								static_cast<float>(x),
 								static_cast<float>(y),
 								static_cast<float>(z)
 								},
 
-								vec3
+								Vec3
 								{
 								x + 1.0f,
 								y + 1.0f,
 								z + 1.0f
 								}
 						},
-						vec4{
+						Vec4{
 							block_esp::block_list[id].x,
 							block_esp::block_list[id].y,
 							block_esp::block_list[id].z,
@@ -83,10 +83,10 @@ void toadll::CBlockEsp::OnRender()
 	glEnable(GL_BLEND);
 	glLineWidth(1.f);
 
-	auto lPos = CVarsUpdater::LocalPlayer->LastTickPos + (CVarsUpdater::LocalPlayer->Pos - CVarsUpdater::LocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
-
+	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
+	
 	for (const auto& [block, col] : m_blocks)
-		draw3dBox(bbox{ block.min - lPos, block.max - lPos }, col);
+		draw3dBox(BBox{ block.min - lPos, block.max - lPos }, col);
 
 	glDisable(GL_BLEND);
 	glDepthMask(true);

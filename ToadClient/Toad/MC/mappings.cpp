@@ -4,12 +4,12 @@
 
 namespace toadll::mappings
 {
-	const char* findName( mapping name)
+	const char* findName(mapping name)
 	{
 		return methodnames.find(name)->second;
 	}
 
-	const char* findSig( mapping name)
+	const char* findSig(mapping name)
 	{
 		return methodsigs.find(name)->second;
 	}
@@ -24,56 +24,56 @@ namespace toadll::mappings
 		return fieldsigs.find(name)->second;
 	}
 
-	void init_map(JNIEnv* env, jclass mcclass, jclass entity_class, toad::minecraft_client client)
+	void init_map(JNIEnv* env, jclass mcclass, jclass entity_class, toad::MC_CLIENT client)
 	{
-		if (client == toad::minecraft_client::Vanilla)
+		if (client == toad::MC_CLIENT::Vanilla)
 		{
 			
 		}
-		else if (client == toad::minecraft_client::Forge)
+		else if (client == toad::MC_CLIENT::Forge)
 		{
 
 		}
-		else if (client == toad::minecraft_client::Lunar_189)
+		else if (client == toad::MC_CLIENT::Lunar_189)
 		{
 			methodnames.insert({ mapping::getMinecraft, "getMinecraft" });
 			methodsigs.insert({ mapping::getMinecraft, "()Lnet/minecraft/client/Minecraft;" });
 
 			methodnames.insert({ mapping::getWorld, "bridge$getWorld" });
 			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
-				log_Error("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
+				LOGERROR("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
 			// get world class (temp)
 			auto worldclass = findclass("net.minecraft.world.World", env);
 			
 			methodnames.insert({ mapping::getBlockAt, "bridge$getBlockAt" });
 			if (!getsig(mapping::getBlockAt, "bridge$getBlockAt", worldclass, env))
-				log_Error("can't find getBlockAt");
+				LOGERROR("can't find getBlockAt");
 
 			env->DeleteLocalRef(worldclass);
 
 			methodnames.insert({ mapping::getPlayer, "bridge$getPlayer" });
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
-				log_Error("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
+				LOGERROR("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
 			fieldnames.insert({mappingFields::thePlayerField, "thePlayer"});
 			fieldsigs.insert({mappingFields::thePlayerField, "Lnet/minecraft/client/entity/EntityPlayerSP;"});
 
 			methodnames.insert({ mapping::getGameSettings, "bridge$getGameSettings" });
 			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass, env))
-				log_Error("can't find gamesettings");
+				LOGERROR("can't find gamesettings");
 
 			methodnames.insert({ mapping::getObjectMouseOver, "bridge$getObjectMouseOver" });
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
-				log_Error("can't find getobjectmouseover");// methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
+				LOGERROR("can't find getobjectmouseover");// methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
 
 			methodnames.insert({ mapping::getEntityRenderer, "bridge$getEntityRenderer" });
 			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass, env))
-				log_Error("can't find entityRenderer");// methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
+				LOGERROR("can't find entityRenderer");// methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
 
 			methodnames.insert({ mapping::getTimer, "bridge$getTimer" });
 			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
-				log_Error("can't find timer");
+				LOGERROR("can't find timer");
 
 			fieldnames.insert({mappingFields::currentScreenField, "currentScreen"});
 			fieldsigs.insert({mappingFields::currentScreenField, "Lnet/minecraft/client/gui/GuiScreen;"});
@@ -183,7 +183,7 @@ namespace toadll::mappings
 
 			methodnames.insert({ mapping::getBBox, "bridge$getBoundingBox" });
 			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
-				log_Error("can't find bbox");
+				LOGERROR("can't find bbox");
 
 			methodnames.insert({ mapping::getName, "getName" });
 			methodsigs.insert({ mapping::getName, "()Ljava/lang/String;" });
@@ -267,46 +267,46 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::partialTick, "bridge$partialTick" });
 			methodsigs.insert({ mapping::partialTick, "()F" });
 		}
-		else if (client == toad::minecraft_client::Lunar_171)
+		else if (client == toad::MC_CLIENT::Lunar_171)
 		{
 			methodnames.insert({ mapping::getMinecraft, "getMinecraft" });
 			methodsigs.insert({ mapping::getMinecraft, "()Lnet/minecraft/client/Minecraft;" });
 
 			methodnames.insert({ mapping::getWorld, "bridge$getWorld" });
 			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
-				log_Error("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
+				LOGERROR("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
 			// get world class (temp)
 			auto worldclass = findclass("net.minecraft.world.World", env);
 
 			methodnames.insert({ mapping::getBlockAt, "bridge$getBlockAt" });
 			if (!getsig(mapping::getBlockAt, "bridge$getBlockAt", worldclass, env))
-				log_Error("can't find getBlockAt");
+				LOGERROR("can't find getBlockAt");
 
 			env->DeleteLocalRef(worldclass);
 
 			methodnames.insert({ mapping::getPlayer, "bridge$getPlayer" });
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
-				log_Error("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
+				LOGERROR("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
 			fieldnames.insert({ mappingFields::thePlayerField, "thePlayer" });
 			fieldsigs.insert({ mappingFields::thePlayerField, "Lnet/minecraft/client/entity/EntityClientPlayerMP;" });
 
 			methodnames.insert({ mapping::getGameSettings, "bridge$getGameSettings" });
 			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass, env))
-				log_Error("can't find gamesettings");
+				LOGERROR("can't find gamesettings");
 
 			methodnames.insert({ mapping::getObjectMouseOver, "bridge$getObjectMouseOver" });
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
-				log_Error("can't find getobjectmouseover");// methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
+				LOGERROR("can't find getobjectmouseover");// methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
 
 			methodnames.insert({ mapping::getEntityRenderer, "bridge$getEntityRenderer" });
 			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass, env))
-				log_Error("can't find entityRenderer");// methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
+				LOGERROR("can't find entityRenderer");// methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
 
 			methodnames.insert({ mapping::getTimer, "bridge$getTimer" });
 			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
-				log_Error("can't find timer");
+				LOGERROR("can't find timer");
 
 			fieldnames.insert({ mappingFields::currentScreenField, "currentScreen" });
 			fieldsigs.insert({ mappingFields::currentScreenField, "Lnet/minecraft/client/gui/GuiScreen;" });
@@ -413,7 +413,7 @@ namespace toadll::mappings
 
 			methodnames.insert({ mapping::getBBox, "bridge$getBoundingBox" });
 			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
-				log_Error("can't find bbox");
+				LOGERROR("can't find bbox");
 
 			methodnames.insert({ mapping::getName, "getName" });
 			methodsigs.insert({ mapping::getName, "()Ljava/lang/String;" });

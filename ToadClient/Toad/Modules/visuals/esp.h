@@ -7,86 +7,26 @@ namespace toadll
 class CEsp SET_MODULE_CLASS(CEsp)
 {
 private:
-	inline static std::vector<bbox> m_bboxes;
+	inline static std::vector<BBox> m_bboxes;
 
 	inline static std::atomic_bool m_canSave = true;
 
-	//std::vector<EntityVisual> m_entity_list;
-	inline static std::vector<EntityT> m_playerList;
-	std::vector<std::pair<std::string, bbox>> m_entityList;
+	inline static std::vector<Entity> m_playerList;
+	std::vector<std::pair<std::string, BBox>> m_entityList;
 
 private:
-	static inline void draw3dBox(const bbox& b_box)
-	{
-		glBegin(3);
-		glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
-		glVertex3f(b_box.min.x, b_box.min.y, b_box.min.z);
-		glVertex3f(b_box.max.x, b_box.min.y, b_box.min.z);
-		glVertex3f(b_box.max.x, b_box.min.y, b_box.max.z);
-		glVertex3f(b_box.min.x, b_box.min.y, b_box.max.z);
-		glVertex3f(b_box.min.x, b_box.min.y, b_box.min.z);
-		glEnd();
+	/// Returns a vector of bounding boxes of the player list.
+	/// 
+	/// the bounding boxes are relative to the player 
+	static std::vector<BBox> GetBBoxes(const std::shared_ptr<LocalPlayer>& lPlayer);
 
-		glBegin(3);
-		glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
-		glVertex3f(b_box.min.x, b_box.max.y, b_box.min.z);
-		glVertex3f(b_box.max.x, b_box.max.y, b_box.min.z);
-		glVertex3f(b_box.max.x, b_box.max.y, b_box.max.z);
-		glVertex3f(b_box.min.x, b_box.max.y, b_box.max.z);
-		glVertex3f(b_box.min.x, b_box.max.y, b_box.min.z);
-		glEnd();
+private:
+	static void draw3dBox(const BBox& bbox);
 
-		glBegin(1);
-		glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
-		glVertex3f(b_box.min.x, b_box.min.y, b_box.min.z);
-		glVertex3f(b_box.min.x, b_box.max.y, b_box.min.z);
-		glVertex3f(b_box.max.x, b_box.min.y, b_box.min.z);
-		glVertex3f(b_box.max.x, b_box.max.y, b_box.min.z);
-		glVertex3f(b_box.max.x, b_box.min.y, b_box.max.z);
-		glVertex3f(b_box.max.x, b_box.max.y, b_box.max.z);
-		glVertex3f(b_box.min.x, b_box.min.y, b_box.max.z);
-		glVertex3f(b_box.min.x, b_box.max.y, b_box.max.z);
-		glEnd();
-	}
-
-	static void draw2dBox(const bbox& b_box)
-	{
-		vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
-		vec3 cameraUp = { CVarsUpdater::ModelView[1], CVarsUpdater::ModelView[5], CVarsUpdater::ModelView[9] };
-		vec3 cameraRight = cameraForward.cross(cameraUp);
-
-		vec3 center = (b_box.min + b_box.max) * 0.5f;
-		vec3 extents = (b_box.max - b_box.min) * 0.5f;
-
-		vec3 vertices[4] = {
-				center + cameraRight * extents.x - cameraUp * extents.y,
-				center - cameraRight * extents.x - cameraUp * extents.y,
-				center - cameraRight * extents.x + cameraUp * extents.y,
-				center + cameraRight * extents.x + cameraUp * extents.y
-		};
-
-		// fill 
-		glColor4f(toad::esp::fillCol[0], toad::esp::fillCol[1], toad::esp::fillCol[2], toad::esp::fillCol[3]);
-		glBegin(GL_QUADS);
-		for (const auto& vertice : vertices)
-		{
-			glVertex3f(vertice.x, vertice.y, vertice.z);
-		}
-		glEnd();
-
-		// outlines
-		glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
-		glBegin(GL_LINE_LOOP);
-		for (const auto& vertice : vertices)
-		{
-			glVertex3f(vertice.x, vertice.y, vertice.z);
-		}
-		glEnd();
-
-	}
+	static void draw2dBox(const BBox& bbox);
 
 public:
-	void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) override;
+	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 	void OnRender() override;
 };
 

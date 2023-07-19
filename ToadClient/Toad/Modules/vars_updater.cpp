@@ -4,19 +4,15 @@
 
 void toadll::CVarsUpdater::PreUpdate()
 {
-	auto world = Minecraft->getWorld();
-	auto tmpPlayer = Minecraft->getLocalPlayer();
-	if (world == nullptr || tmpPlayer == nullptr)
+	auto world = MC->getWorld();
+	auto localPlayer = MC->getLocalPlayer();
+	if (world == nullptr || localPlayer == nullptr)
 	{
 		if (world != nullptr)
 			env->DeleteLocalRef(world);
 		IsVerified = false;
 
-		std::unique_lock lock(PlayerListMutex);
-
-		m_playerList = {};
-
-		lock.unlock();
+		PlayerList = {};
 
 		SLEEP(20);
 		return;
@@ -26,18 +22,18 @@ void toadll::CVarsUpdater::PreUpdate()
 
 	//static auto lPlayerName = tmpPlayer->getName();
 	//LocalPlayer->Name = lPlayerName;
-	LocalPlayer->obj = tmpPlayer->obj;
-	LocalPlayer->Health = tmpPlayer->getHealth();
-	LocalPlayer->Invis = tmpPlayer->isInvisible();
-	LocalPlayer->Pos = tmpPlayer->getPosition();
-	LocalPlayer->HeldItem = tmpPlayer->getHeldItemStr();
-	LocalPlayer->HurtTime = tmpPlayer->getHurtTime();
-	LocalPlayer->LastTickPos = tmpPlayer->getLastTickPosition();
-	LocalPlayer->Pitch = tmpPlayer->getRotationPitch();
-	LocalPlayer->Yaw = tmpPlayer->getRotationYaw();
-	LocalPlayer->Motion = { tmpPlayer->getMotionX(), tmpPlayer->getMotionY(), tmpPlayer->getMotionZ() };
+	theLocalPlayer->obj = localPlayer->obj;
+	theLocalPlayer->Health = localPlayer->getHealth();
+	theLocalPlayer->Invis = localPlayer->isInvisible();
+	theLocalPlayer->Pos = localPlayer->getPosition();
+	theLocalPlayer->HeldItem = localPlayer->getHeldItemStr();
+	theLocalPlayer->HurtTime = localPlayer->getHurtTime();
+	theLocalPlayer->LastTickPos = localPlayer->getLastTickPosition();
+	theLocalPlayer->Pitch = localPlayer->getRotationPitch();
+	theLocalPlayer->Yaw = localPlayer->getRotationYaw();
+	theLocalPlayer->Motion = { localPlayer->getMotionX(), localPlayer->getMotionY(), localPlayer->getMotionZ() };
 
-	if (auto tmpMouseOver = Minecraft->getMouseOverPlayer(); tmpMouseOver != nullptr)
+	if (auto tmpMouseOver = MC->getMouseOverPlayer(); tmpMouseOver != nullptr)
 	{
 		MouseOverPlayer.Pos = tmpMouseOver->getPosition();
 		MouseOverPlayer.HurtTime = tmpMouseOver->getHurtTime();
@@ -50,17 +46,19 @@ void toadll::CVarsUpdater::PreUpdate()
 		IsMouseOverPlayer = false;
 	}
 
-	const auto entityList = Minecraft->getPlayerList();
+	/// Update the global player list
 
-	std::vector<EntityT> tmp = {};
-	for (const auto& e : entityList)
+	const auto playerList = MC->getPlayerList();
+
+	std::vector<Entity> tmp = {};
+	for (const auto& e : playerList)
 	{
 		if (!e || !e->obj)
 			continue;
-		if (env->IsSameObject(LocalPlayer->obj, e->obj))
+		if (env->IsSameObject(theLocalPlayer->obj, e->obj))
 			continue;
 
-		EntityT entity;
+		Entity entity;
 		entity.obj = e->obj;
 		entity.Pos = e->getPosition();
 		entity.HurtTime = e->getHurtTime();
@@ -71,24 +69,19 @@ void toadll::CVarsUpdater::PreUpdate()
 		tmp.emplace_back(entity);
 	}
 
-	std::unique_lock lock(PlayerListMutex);
-
-	m_playerList = tmp;
-
-	lock.unlock();
+	PlayerList = tmp;
 
 	SLEEP(1);
 	IsVerified = true;
 
 }
 
-void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
+void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	static auto ari = Minecraft->getActiveRenderInfo();
+	static auto ari = MC->getActiveRenderInfo();
 	ari->set_modelview(ModelView);
 	ari->set_projection(Projection);
-	RenderPartialTick = Minecraft->getRenderPartialTick();
-	PartialTick = Minecraft->getPartialTick();
-	IsInGui = Minecraft->isInGui();
-	SLEEP(1);
+	RenderPartialTick = MC->getRenderPartialTick();
+	PartialTick = MC->getPartialTick();
+	IsInGui = MC->isInGui();
 }

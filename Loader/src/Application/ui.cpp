@@ -96,7 +96,7 @@ namespace toad
 
                             g_curr_client = utils::GetClientType(window.title);
                             std::cout << "currclient type: " << (int)g_curr_client << std::endl;
-                            if (g_curr_client != minecraft_client::NOT_SUPPORTED)
+                            if (g_curr_client != MC_CLIENT::NOT_SUPPORTED)
                             {
                                 init_thread = std::thread([&]
                                     {

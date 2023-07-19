@@ -59,28 +59,6 @@ namespace toadll
         auto name = env->GetStringUTFChars(jStr, nullptr);
         env->ReleaseStringUTFChars(jStr, name);
         return std::string(name);
-
-        const jclass stringClass = env->GetObjectClass(jStr);
-        if (!stringClass)
-            return "";
-        const auto getBytesmId = env->GetMethodID(stringClass, "getBytes", "(Ljava/lang/String;)[B");
-        if (!getBytesmId)
-        {
-            env->DeleteLocalRef(stringClass);
-            return "";
-        }
-        const auto strUTF = env->NewStringUTF("UTF-8");
-        const auto stringJbytes = (jbyteArray)env->CallObjectMethod(jStr, getBytesmId, strUTF);
-        env->DeleteLocalRef(strUTF);
-        auto length = (size_t)env->GetArrayLength(stringJbytes);
-        jbyte* pBytes = env->GetByteArrayElements(stringJbytes, NULL);
-
-        auto ret = std::string(reinterpret_cast<char*>(pBytes), length);
-        env->ReleaseByteArrayElements(stringJbytes, pBytes, JNI_ABORT);
-
-        env->DeleteLocalRef(stringJbytes);
-        env->DeleteLocalRef(stringClass);
-        return ret;
     }
 
     jmethodID get_mid(jclass cls, mapping name, JNIEnv* env)
@@ -89,7 +67,7 @@ namespace toadll
         auto mid = env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
         if (!mid)
         {
-            log_Error("methodId is null with mapping name: %s, and index %d", mappings::findName(name), name);
+            LOGERROR("methodId is null with mapping name: {}, and index {}", mappings::findName(name), static_cast<int>(name));
             SLEEP(300);
         }
         return mid; 
@@ -104,7 +82,7 @@ namespace toadll
         if (!objKlass)
         {
 #ifdef ENABLE_LOGGING
-            log_Error("getting object class for methodid returned null with mapping name: %s, and index", mappings::findName(name), name);
+            LOGERROR("getting object class for methodid returned null with mapping name: {}, and index {}", mappings::findName(name), static_cast<int>(name));
             SLEEP(300);
 #endif
             return nullptr;
@@ -120,7 +98,7 @@ namespace toadll
         auto smId = env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
         if (!smId)
         {
-            log_Error("static methodId is null with mapping name: %s and index: %d", mappings::findName(name), name);
+            LOGERROR("static methodId is null with mapping name: {} and index: {}", mappings::findName(name), static_cast<int>(name));
             SLEEP(300);
             return nullptr;
         }
@@ -136,7 +114,7 @@ namespace toadll
         auto sfId = env->GetStaticFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
         if (!sfId)
         {
-            log_Error("static fieldId is null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
+            LOGERROR("static fieldId is null with mapping name: {}, and index: {}", mappings::findNameField(name), static_cast<int>(name));
             SLEEP(300);
             return nullptr;
         }
@@ -152,7 +130,7 @@ namespace toadll
         auto fId = env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
         if (!fId)
         {
-            log_Error("fieldId is null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
+            LOGERROR("fieldId is null with mapping name: {}, and index: {}", mappings::findNameField(name), static_cast<int>(name));
             SLEEP(300);
             return nullptr;
         }
@@ -168,7 +146,7 @@ namespace toadll
         if (!objKlass)
         {
 #ifdef ENABLE_LOGGING
-            log_Error("getting object class for fieldid returned null with mapping name: %s, and index: %d", mappings::findNameField(name), name);
+            LOGERROR("getting object class for fieldid returned null with mapping name: {}, and index: {}", mappings::findNameField(name), static_cast<int>(name));
             SLEEP(300);
 #endif
         	return nullptr;
@@ -179,7 +157,7 @@ namespace toadll
 	}
     
 
-    vec3 to_vec3(jobject vecObj, JNIEnv* env)
+    Vec3 to_vec3(jobject vecObj, JNIEnv* env)
     {
         auto posclass = env->GetObjectClass(vecObj);
 
@@ -198,7 +176,7 @@ namespace toadll
         };
     }
 
-	vec3 to_vec3i(jobject vecObj, JNIEnv* env)
+	Vec3 to_vec3i(jobject vecObj, JNIEnv* env)
     {
         auto posclass = env->GetObjectClass(vecObj);
 
@@ -217,7 +195,7 @@ namespace toadll
         };
     }
 
-    std::pair<float, float> toadll::get_angles(const vec3& pos1, const vec3& pos2)
+    std::pair<float, float> toadll::get_angles(const Vec3& pos1, const Vec3& pos2)
     {
         float d_x = pos2.x - pos1.x;
         float d_y = pos2.y - pos1.y;
@@ -246,17 +224,17 @@ namespace toadll
         return horizontalFOV;
     }
 
-    bool WorldToScreen(const vec3& source, const vec3& target, const vec2& viewAngles, float fov, vec2& screenpos)
+    bool WorldToScreen(const Vec3& source, const Vec3& target, const Vec2& viewAngles, float fov, Vec2& screenpos)
     {
         // Get screen dimensions
-        int hGameRes = screen_width;
-        int vGameRes = screen_height;
+        int hGameRes = g_screen_width;
+        int vGameRes = g_screen_height;
 
         // Calculate aspect ratio
         float aspectRatio = hGameRes / vGameRes;
 
         // Calculate horizontal and vertical field of view in radians
-        auto hFov = calculateHorizontalFOV(screen_height, screen_width, fov);
+        auto hFov = calculateHorizontalFOV(g_screen_height, g_screen_width, fov);
         float hFovRad = hFov * PI / 180.f;
         float vFovRad = 2 * atan(tan(fov * PI / 180.f / 2) / aspectRatio);
 
@@ -296,7 +274,7 @@ namespace toadll
         return true;
     }
 
-    vec4 Multiply(const vec4& vec, const std::vector<float>& mat)
+    Vec4 Multiply(const Vec4& vec, const std::vector<float>& mat)
     {
         return {
 	        vec.x * mat[0] + vec.y * mat[4] + vec.z * mat[8] + vec.w * mat[12],
@@ -306,19 +284,19 @@ namespace toadll
         };
     }
 
-    bool WorldToScreen(const vec3& worldPos, vec2& screen, const std::vector<float>& modelView, const std::vector<float>& projection, int width, int height)
+    bool WorldToScreen(const Vec3& worldPos, Vec2& screen, const std::vector<float>& modelView, const std::vector<float>& projection, int width, int height)
     {
         // csp = Clip Space Position
-        vec4 csp = Multiply(
+        Vec4 csp = Multiply(
             Multiply(
-                vec4{ worldPos.x, worldPos.y, worldPos.z, 1.0f },
+                Vec4{ worldPos.x, worldPos.y, worldPos.z, 1.0f },
                 modelView
             ),
             projection
         );
 
         // ndc = Native Device Coordinate
-        vec3 ndc{
+        Vec3 ndc{
             csp.x / csp.w,
             csp.y / csp.w,
             csp.z / csp.w
@@ -327,7 +305,7 @@ namespace toadll
         //Logger::Log("NDC.Z: " + std::to_string(ndc.z));
 
         if (ndc.z > 1 && ndc.z < 1.15) {
-            screen = vec2{
+            screen = Vec2{
                 ((ndc.x + 1.0f) / 2.0f) * width,
                 ((1.0f - ndc.y) / 2.0f) * height,
             };
@@ -341,7 +319,7 @@ namespace toadll
     {
         for (auto i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
         {
-            log_Debug("name: %s, sig: %s args size: %d", jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxArgsSize(env, klass, i));
+            LOGDEBUG("name: {}, sig: {} args size: %d", jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxArgsSize(env, klass, i));
 		}
 
     }

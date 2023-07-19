@@ -6,7 +6,7 @@ using namespace toad;
 
 namespace toadll
 {
-	void CVelocity::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
+	void CVelocity::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		if (!velocity::enabled)
 		{
@@ -14,6 +14,8 @@ namespace toadll
 			return;
 		}
 
+		// A flag to stop execution of the velocity or jump reset.
+		// Is resetted after local player is ready to receive a hit again
 		static bool StopFlag = false;
 
 		if (velocity::jump_reset)
@@ -22,7 +24,7 @@ namespace toadll
 			{
 				StopFlag = true;
 				SendKey(VK_SPACE);
-				SLEEP(rand_int(40, 70));
+				SLEEP(RandInt(40, 70));
 				SendKey(VK_SPACE, false);
 			}
 			else if (lPlayer->HurtTime == 0)
@@ -43,7 +45,7 @@ namespace toadll
 				SLEEP(1);
 				return;
 			}
-			if (rand_int(0, 100) > velocity::chance)
+			if (RandInt(0, 100) > velocity::chance)
 			{
 				StopFlag = true;
 				SLEEP(1);
@@ -57,7 +59,7 @@ namespace toadll
 			auto motionZ = lPlayer->Motion.z;
 			auto newMotionZ = motionZ * (velocity::horizontal / 100); /*std::lerp(motionZ, motionZ * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
 
-			auto EditableLocalPlayer = Minecraft->getLocalPlayer();
+			auto EditableLocalPlayer = MC->getLocalPlayer();
 			if (!EditableLocalPlayer)
 			{
 				SLEEP(1);

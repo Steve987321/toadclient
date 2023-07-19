@@ -7,7 +7,7 @@ toadll::c_Entity::~c_Entity()
 	env->DeleteLocalRef(obj);
 }
 
-toadll::vec3 toadll::c_Entity::getPosition() const
+toadll::Vec3 toadll::c_Entity::getPosition() const
 {
 	//static bool once = false;
 	//if (!once)
@@ -15,7 +15,7 @@ toadll::vec3 toadll::c_Entity::getPosition() const
 	//	loop_through_class(elclass, env);
 	//	once = true;
 	//}
-	auto mId = toad::g_curr_client == toad::minecraft_client::Lunar_189
+	auto mId = toad::g_curr_client == toad::MC_CLIENT::Lunar_189
 		? get_mid(obj, mapping::getPos, env)
 		: get_mid(elclass, mapping::getPos, env);
 
@@ -32,7 +32,7 @@ toadll::vec3 toadll::c_Entity::getPosition() const
 	return ret;
 }
 
-toadll::vec3 toadll::c_Entity::getLastTickPosition() const
+toadll::Vec3 toadll::c_Entity::getLastTickPosition() const
 {
 	auto x = get_fid(obj, mappingFields::lastTickPosXField, env);
 	if (!x)
@@ -192,7 +192,7 @@ bool toadll::c_Entity::isInvisible() const
 	return env->CallBooleanMethod(obj, mId);
 }
 
-toadll::bbox toadll::c_Entity::get_BBox() const
+toadll::BBox toadll::c_Entity::get_BBox() const
 {
 	auto bboxobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getBBox, env));
 

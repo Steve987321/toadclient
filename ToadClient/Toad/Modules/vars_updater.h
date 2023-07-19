@@ -3,36 +3,41 @@
 namespace toadll
 {
 
-struct LocalPlayerT;
+struct LocalPlayer;
 
 class CVarsUpdater SET_MODULE_CLASS(CVarsUpdater)
 {
 public:
+	/// True when player is in a world and the local player is valid.
 	static inline std::atomic_bool IsVerified = false;
-	static inline std::shared_ptr<LocalPlayerT> LocalPlayer = std::make_shared<LocalPlayerT>();
+
+	static inline std::shared_ptr<LocalPlayer> theLocalPlayer = std::make_shared<LocalPlayer>();
+
+	/// True when the local player is looking at another player 
 	static inline std::atomic_bool IsMouseOverPlayer = false;
-	static inline EntityT MouseOverPlayer;
+
+	/// The player the local player is looking at.
+	///	Only gets updated when IsMouseOverPlayer is true
+	static inline Entity MouseOverPlayer {};
+
 	static inline std::atomic<float> PartialTick = 0;
 	static inline std::atomic<float> RenderPartialTick = 0;
+
+	/// True when the player has any menu opened
 	static inline std::atomic_bool IsInGui = false;
 
 	static inline std::vector<float> ModelView = {};
 	static inline std::vector<float> Projection = {};
 	//static inline std::vector<std::shared_ptr<EntityT>> PlayerList = {};
 
-private:
-	static inline std::vector<EntityT> m_playerList = {};
-
-public:
-	std::shared_mutex PlayerListMutex;
-	static std::vector<EntityT> GetPlayerList() { return m_playerList; }
+	static inline std::vector<Entity> PlayerList = {};
 
 public:
 	CVarsUpdater() = default;
 
 public:
 	void PreUpdate() override;
-	void Update(const std::shared_ptr<LocalPlayerT>& lPlayer) override;
+	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 };
 
 }

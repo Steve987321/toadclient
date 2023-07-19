@@ -6,7 +6,7 @@ using namespace toad;
 
 namespace toadll {
 
-void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
+void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
 	if (!aa::enabled || CVarsUpdater::IsInGui)
@@ -20,9 +20,9 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		return;
 	}
 
-	std::vector <std::pair<float, EntityT>> distances = {};
+	std::vector <std::pair<float, Entity>> distances = {};
 
-	static std::shared_ptr<EntityT> target = nullptr;
+	static std::shared_ptr<Entity> target = nullptr;
 	float speed = aa::speed;
 	float minimal_angle_diff = aa::fov / 2.f;
 
@@ -43,9 +43,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	{
 		target = nullptr;
 
-		std::shared_lock lock(CVarsUpdater::get_instance()->PlayerListMutex);
-		m_playerList = CVarsUpdater::GetPlayerList();
-		lock.unlock();
+		m_playerList = CVarsUpdater::PlayerList;
 
 		//get a target
 		for (const auto& player : m_playerList)
@@ -60,7 +58,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 				if (yaw_diff < minimal_angle_diff)
 				{
 					minimal_angle_diff = yaw_diff;
-					target = std::make_shared<EntityT>(player);
+					target = std::make_shared<Entity>(player);
 				}
 			}
 		}
@@ -80,7 +78,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 				return l.first < r.first && l_yaw_diff < minimal_angle_diff;
 			});
 
-			target = std::make_shared<EntityT>(t->second);
+			target = std::make_shared<Entity>(t->second);
 		}
 	}
 
@@ -92,10 +90,10 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 
 	auto targetPos = target->Pos;
 	auto lplayer_pos = lPlayer->Pos;
-	vec3 aimPoint;
+	Vec3 aimPoint;
 
 	// hitbox vertices
-	const std::vector<vec3> bbox_corners
+	const std::vector<Vec3> bbox_corners
 	{
 		{ targetPos.x - 0.3f, targetPos.y, targetPos.z + 0.3f },
 		{ targetPos.x - 0.3f, targetPos.y, targetPos.z - 0.3f },
@@ -173,13 +171,13 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		}
 	// got target and yaw and pitch offsets
 
-	yawDiff += toadll::rand_float(-2.f, 2.f);
-	pitchDiff += toadll::rand_float(-2.f, 2.f);
+	yawDiff += toadll::RandFloat(-2.f, 2.f);
+	pitchDiff += toadll::RandFloat(-2.f, 2.f);
 
-	const int rand_100 = toadll::rand_int(0, 100);
+	const int rand_100 = toadll::RandInt(0, 100);
 
-	static CTimer speed_rand_timer;
-	static CTimer reaction_time_timer;
+	static Timer speed_rand_timer;
+	static Timer reaction_time_timer;
 	static float long_speed_modifier = 1;
 	static float prev_long_speed_modifier = 1;
 	static float long_speed_modifier_smooth = 1;
@@ -187,7 +185,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	if (speed_rand_timer.Elapsed<>() >= 400)
 	{
 		prev_long_speed_modifier = long_speed_modifier;
-		long_speed_modifier = toadll::rand_float(0.7f, 1.3f);
+		long_speed_modifier = toadll::RandFloat(0.7f, 1.3f);
 		speed_rand_timer.Start();
 		//std::cout << "reset :" << long_speed_modifier << std::endl;
 	}
@@ -202,7 +200,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		reaction_time_timer.Start();
 	}
 
-	auto editable_local_player = Minecraft->getLocalPlayer();
+	auto editable_local_player = MC->getLocalPlayer();
 	if (!editable_local_player)
 	{
 		SLEEP(1);
@@ -210,30 +208,30 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	}
 
 	auto updated_yaw = editable_local_player->getRotationYaw();
-	//log_Debug("%s | %f = %f + %f", target->get_name().c_str(), lyaw + yawdiffSpeed, lyaw, yawdiffSpeed);
+	//log_Debug("{} | %f = %f + %f", target->get_name().c_str(), lyaw + yawdiffSpeed, lyaw, yawdiffSpeed);
 	editable_local_player->setRotationYaw(updated_yaw + yawdiff_speed);
 	editable_local_player->setPrevRotationYaw(updated_yaw + yawdiff_speed);
 
 	// pitch randomization
-	static CTimer pitch_rand_timer;
-	static CTimer pitch_ms_rand_timer;
-	static float pitchrand = rand_float(-0.0100f, 0.0100f);
+	static Timer pitch_rand_timer;
+	static Timer pitch_ms_rand_timer;
+	static float pitchrand = RandFloat(-0.0100f, 0.0100f);
 
-	static const vec2 pitch_update_ms = {500, 800};
+	static const Vec2 pitch_update_ms = {500, 800};
 	static float pitch_update_ms_min = pitch_update_ms.x;
 	static float pitch_update_ms_max = pitch_update_ms.y;
 	static float pitch_update_ms_min_smooth = pitch_update_ms.x;
 	static float pitch_update_ms_max_smooth = pitch_update_ms.y;
 
-	static float pitchupdatems = rand_float(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
+	static float pitchupdatems = RandFloat(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
 	static float pitchrandsmooth = 0;
 	static float pitchrandbegin = 0;
 	auto updated_pitch = editable_local_player->getRotationPitch();
 	if (pitch_rand_timer.Elapsed<>() > pitchupdatems)
 	{
 		pitchrandbegin = pitchrand;
-		pitchupdatems = rand_float(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
-		pitchrand = rand_float(-0.0080f, 0.0080f);
+		pitchupdatems = RandFloat(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
+		pitchrand = RandFloat(-0.0080f, 0.0080f);
 		pitch_rand_timer.Start();
 	}
 
@@ -242,7 +240,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 	pitch_update_ms_max_smooth = std::lerp(pitch_update_ms_max, pitch_update_ms.y, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
 	if (rand_100 < 5)
 	{
-		const auto rand_f = rand_float(250.f, 400.f);
+		const auto rand_f = RandFloat(250.f, 400.f);
 		pitch_update_ms_min = std::clamp(rand_f - 10, 250.f, 400.f);
 		pitch_update_ms_max = std::clamp(rand_f + 10, 250.f, 400.f);
 		pitch_ms_rand_timer.Start();
@@ -257,8 +255,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayerT>& lPlayer)
 		editable_local_player->setRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
 		editable_local_player->setPrevRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
 	}
-
-	preciseSleep(0.0001);
 }
 
 }

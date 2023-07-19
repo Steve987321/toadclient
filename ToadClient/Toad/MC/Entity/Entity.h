@@ -16,8 +16,8 @@ namespace toadll
 		~c_Entity();
 
 	public:
-		_NODISCARD vec3 getPosition() const;
-		_NODISCARD vec3 getLastTickPosition() const;
+		_NODISCARD Vec3 getPosition() const;
+		_NODISCARD Vec3 getLastTickPosition() const;
 
 		_NODISCARD float getRotationYaw() const;
 		_NODISCARD float getRotationPitch() const;
@@ -39,7 +39,7 @@ namespace toadll
 		_NODISCARD bool isInvisible() const;
 
 		//[[nodiscard]] jobject get_open_container() const;
-		_NODISCARD bbox get_BBox() const;
+		_NODISCARD BBox get_BBox() const;
 
 	public:
 		void setRotationYaw(float newYaw) const;
