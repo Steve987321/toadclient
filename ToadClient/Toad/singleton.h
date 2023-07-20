@@ -3,9 +3,9 @@
 namespace toadll
 {
 
-/**
- * @brief Singleton class to inherit from
- */
+///
+/// Singleton class to inherit from
+///
 template <class T>
 class Singleton
 {

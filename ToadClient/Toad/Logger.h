@@ -1,5 +1,10 @@
 #pragma once
+
 #include "singleton.h"
+
+#ifdef ERROR
+#undef ERROR
+#endif 
 
 namespace toadll
 {
@@ -10,12 +15,13 @@ namespace toadll
 class Logger final : public Singleton<Logger>
 {
 private:
-	HANDLE m_hconsole {};
+	HANDLE m_hstdout {};
+
 	std::shared_mutex m_mutex {};
 	std::shared_mutex m_closeMutex {};
 	std::atomic_bool m_isConsoleClosed = false;
-	FILE* m_fcout = nullptr;
-	FILE* m_fcerr = nullptr;
+
+	std::ofstream m_logFile{};
 
 public:
 	enum class CONSOLE_COLOR : WORD
@@ -37,7 +43,6 @@ public:
 		EXCEPTION = static_cast<WORD>(CONSOLE_COLOR::MAGENTA)
 	};
 
-private:
 	std::unordered_map<LOG_TYPE, const char*> logTypeAsStr
 	{
 	{LOG_TYPE::DEBUG, "DEBUG"},
@@ -47,8 +52,33 @@ private:
 	};
 
 private:
+	static std::string getDateStr(const std::string_view format)
+	{
+		std::ostringstream ss;
+		std::string time;
+
+		auto t = std::time(nullptr);
+		tm newtime{};
+
+		localtime_s(&newtime, &t);
+
+		ss << std::put_time(&newtime, format.data());
+		return ss.str();
+	}
+
+	static std::string getDocumentsFolder()
+	{
+		CHAR documents[MAX_PATH];
+		HRESULT res = SHGetFolderPathA(nullptr, CSIDL_PERSONAL, nullptr, SHGFP_TYPE_CURRENT, documents);
+		if (res == S_OK)
+		{
+			return documents;
+		}
+		return "";
+	}
+
 	template <typename ... Args>
-	std::string formatStr(const char* format, Args ... args)
+	std::string formatStr(const std::string_view format, Args&& ... args)
 	{
 		try
 		{
@@ -61,83 +91,110 @@ private:
 		}
 	}
 
-	template<typename ... Args>
-	void Print(const char* frmt, LOG_TYPE type, Args... args)
+	/// Writes to created log file
+	void logToFile(const std::string_view str)
 	{
-		std::shared_lock lock(m_mutex);
-		std::string formatted_str = formatStr(frmt, args...);
+		m_logFile << str << std::endl;
+	}
 
+	/// Outputs string to console 
+	template<typename ... Args>
+	void Print(const std::string_view str, LOG_TYPE log_type)
+	{
 		std::cout << '[';
 
-		SetConsoleTextAttribute(m_hconsole, static_cast<WORD>(type));
-		std::cout << logTypeAsStr[type];
-		SetConsoleTextAttribute(m_hconsole, static_cast<WORD>(CONSOLE_COLOR::WHITE));
+		std::cout << logTypeAsStr[log_type];
 
 		std::cout << ']' << ' ';
 
-		bool isTypeDbg = type == LOG_TYPE::DEBUG;
+		std::cout << str << std::endl;
+	}
 
-		SetConsoleTextAttribute(m_hconsole, static_cast<WORD>(isTypeDbg ? CONSOLE_COLOR::GREY : CONSOLE_COLOR::WHITE));
+	/// Logs formatted string to console and log file
+	///
+	///	@param frmt Formatted string that gets formatted with the arguments using '{}'
+	///	@param log_type Type of log that affects console colors and beginning message of output
+	/// @param args Arguments that fit with the formatted string
+	template<typename ... Args>
+	void Log(const std::string_view frmt, LOG_TYPE log_type, Args&& ... args)
+	{
+		std::shared_lock lock(m_mutex);
 
-		std::cout << formatted_str << std::endl;
+		auto formattedStr = formatStr(frmt, args...);
 
-		if (isTypeDbg)
-		{
-			SetConsoleTextAttribute(m_hconsole, static_cast<WORD>(CONSOLE_COLOR::WHITE));
-		}
+		logToFile(getDateStr("[%T]") + ' ' + formattedStr);
+		Print(formattedStr, log_type);
 	}
 
 public:
 	Logger()
 	{
 		AllocConsole();
-		AttachConsole(ATTACH_PARENT_PROCESS);
-		SetConsoleTitle(L"Console");
-		freopen_s(&m_fcout, "CONOUT$", "w", stdout);
-		freopen_s(&m_fcerr, "CONOUT$", "w", stderr);
-		m_hconsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		freopen_s(reinterpret_cast<FILE**>(stdin), "CONIN$", "r", stdin);
+		freopen_s(reinterpret_cast<FILE**>(stdout), "CONOUT$", "w", stdout);
+		freopen_s(reinterpret_cast<FILE**>(stderr), "CONERR$", "w", stderr);
+
+		m_hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		// create log file in the documents folder
+		std::string logFileName = "Toad.log";
+		m_logFile.open(getDocumentsFolder() + "\\" + logFileName, std::fstream::out);
+
+		// log the date in the beginning
+		logToFile(getDateStr("%Y %d %b \n"));
 	}
+
     ~Logger() override
     {
-		DisposeConsole();
+		DisposeLogger();
 	}
 
 public:
-	void DisposeConsole()
+	void DisposeLogger()
 	{
 		std::unique_lock lock(m_closeMutex);
 
+		if (m_logFile.is_open())
+			m_logFile.close();
+
 		if (m_isConsoleClosed) return;
 
-		fclose(m_fcout);
-		fclose(m_fcerr);
-		CloseHandle(m_hconsole);
+		fclose(stdin);
+		fclose(stdout);
+		fclose(stderr);
+
+		CloseHandle(m_hstdout);
+		m_hstdout = nullptr;
+
 		FreeConsole();
+
 		m_isConsoleClosed = true;
 	}
+
 public:
 	template <typename ... Args>
-	void Log(const char* frmt, Args... args)
+	void LogDebug(const char* frmt, Args... args)
 	{
-		Print(frmt, LOG_TYPE::DEBUG, args...);
+		Log(frmt, LOG_TYPE::DEBUG, args...);
 	}
 
 	template <typename ... Args>
 	void LogWarning(const char* frmt, Args... args)
 	{
-		Print(frmt, LOG_TYPE::WARNING, args...);
+		Log(frmt, LOG_TYPE::WARNING, args...);
 	}
 
 	template <typename ... Args>
 	void LogError(const char* frmt, Args... args)
 	{
-		Print(frmt, LOG_TYPE::ERROR, args...);
+		Log(frmt, LOG_TYPE::ERROR, args...);
 	}
 
 	template <typename ... Args>
 	void LogException(const char* frmt, Args... args)
 	{
-		Print(frmt, LOG_TYPE::EXCEPTION, args...);
+		Log(frmt, LOG_TYPE::EXCEPTION, args...);
 	}
 
 };
@@ -145,7 +202,7 @@ public:
 }
 
 #ifdef ENABLE_LOGGING
-#define LOGDEBUG(msg, ...) toadll::Logger::GetInstance()->Log(msg, __VA_ARGS__) 
+#define LOGDEBUG(msg, ...) toadll::Logger::GetInstance()->LogDebug(msg, __VA_ARGS__) 
 #define LOGERROR(msg, ...) toadll::Logger::GetInstance()->LogError(msg, __VA_ARGS__) 
 #define LOGWARN(msg, ...)  toadll::Logger::GetInstance()->LogWarning(msg, __VA_ARGS__)
 #else

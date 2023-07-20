@@ -15,6 +15,8 @@
 #include <windows.h>
 #include <winsock.h>
 #include <WinSock2.h>
+#include <shlobj_core.h>
+
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -31,6 +33,9 @@
 #include <iomanip>
 #include <sstream>
 #include <format>
+#include <fstream>
+
 #include "jni.h"
+#include <jvmti.h>
 
 #endif //PCH_H

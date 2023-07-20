@@ -2,8 +2,6 @@
 
 #define ENABLE_LOGGING
 
-#undef ERROR
-
 #include <gl/GL.h>
 #pragma comment(lib, "opengl32.lib")
 
@@ -71,10 +69,4 @@ namespace toadll
 
 	/// called when dll has injected
 	DWORD WINAPI init();
-
-	/// starts the cheat modules 
-	void init_modules();
-
-	/// called when wanting to un-inject and cleans up
-	void clean_up(int exitcode = 0);
 }

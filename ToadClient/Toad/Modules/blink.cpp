@@ -6,9 +6,9 @@ using namespace toad;
 
 void toadll::CBlink::DisableBlink()
 {
-	CWSASend::StopSends = false;
-	if (c_WSARecv::StopRecvs)
-		c_WSARecv::StopRecvs = false;
+	HWSASend::StopSends = false;
+	if (HWSARecv::StopRecvs)
+		HWSARecv::StopRecvs = false;
 }
 
 void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
@@ -21,7 +21,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	static std::vector<Vec3> tmpPositions = {};
 
-	if (CWSASend::StopSends)
+	if (HWSASend::StopSends)
 	{
 		if (blink::show_trail)
 		{
@@ -86,9 +86,9 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		if (GetAsyncKeyState(blink::key) && m_canEnable)
 		{
-			CWSASend::StopSends = true;
+			HWSASend::StopSends = true;
 			if (blink::stop_rec_packets)
-				c_WSARecv::StopRecvs = true;
+				HWSARecv::StopRecvs = true;
 
 			m_timer.Start();
 			m_canEnable = false;
@@ -106,7 +106,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 void toadll::CBlink::OnRender()
 {
-	if (!blink::show_trail || !blink::enabled || !CWSASend::StopSends || m_positions.empty())
+	if (!blink::show_trail || !blink::enabled || !HWSASend::StopSends || m_positions.empty())
 		return;
 
 	glPushMatrix();
