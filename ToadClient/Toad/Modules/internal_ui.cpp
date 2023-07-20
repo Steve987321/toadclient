@@ -230,7 +230,6 @@ namespace toadll
                             {
                                 ImGui::InputInt("keycode", &blink::key);
 		                        ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");
-		                        ImGui::Checkbox("disable on hit", &blink::disable_on_hit);
 		                        ImGui::Checkbox("render trail", &blink::show_trail);
 		                        ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
                             }
