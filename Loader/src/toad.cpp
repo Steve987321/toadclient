@@ -121,7 +121,6 @@ void toad::Fupdate_settings()
 	// blink
 	data["bl_enabled"] = blink::enabled;
 	data["bl_key"] = blink::key;
-	data["bl_stop_on_hit"] = blink::disable_on_hit;
 	data["bl_stop_incoming_packets"] = blink::stop_rec_packets;
 	data["bl_show_trail"] = blink::show_trail;
 	data["bl_limit_seconds"] = blink::limit_seconds;

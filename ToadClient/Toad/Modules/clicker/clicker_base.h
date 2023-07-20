@@ -2,6 +2,7 @@
 
 namespace toadll
 {
+
 ///
 /// Base class for clicker modules
 ///
@@ -11,9 +12,12 @@ namespace toadll
 class CClickerBase
 {
 protected:
+	/// these are used for calculating the delay compensation
+	///
+	///	@see m_delay_compensation
 	std::chrono::high_resolution_clock::time_point m_start, m_end;
 
-	/// Minecraft PartialTick
+	/// Minecraft PartialTick, that should get updated in derived class
 	float m_pTick = 0;
 
 	/// Small delay that holds the time it took for calculating and updating the rand variables.
@@ -22,10 +26,10 @@ protected:
 	float m_delay_compensation = 0;
 
 protected:
-	/// returns the randomization struct defined inside the derived class
+	/// Returns the randomization struct defined inside the derived class
 	inline virtual Randomization& get_rand() = 0;
 
-	/// returns whether a mouse button has been send (for preventing double clicking)
+	/// Returns whether a mouse button has been send (for preventing double clicking)
 	inline virtual bool mouse_down() = 0;
 	inline virtual void mouse_up() = 0;
 

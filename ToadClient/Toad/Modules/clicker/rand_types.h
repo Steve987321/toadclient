@@ -13,7 +13,7 @@ namespace toadll
 		void Reset()
 		{
 			start = false;
-			frequency_counter = RandInt(frequency / 5, frequency / 4);
+			frequency_counter = rand_int(frequency / 5, frequency / 4);
 		}
 
 		/// True when this inconsistency should be applied to the rand
@@ -40,7 +40,7 @@ namespace toadll
 	struct Boost
 	{
 		Boost(float amount, float dur, float transition_dur, Vec2 freq, int id) :
-			amount_ms(amount), duration(dur), transition_duration(transition_dur), frequency(RandInt(freq.x, freq.y)), frequency_range(freq), id(id) {}
+			amount_ms(amount), duration(dur), transition_duration(transition_dur), frequency(rand_int(freq.x, freq.y)), frequency_range(freq), id(id) {}
 
 		void Reset()
 		{
@@ -48,7 +48,7 @@ namespace toadll
 			paused = false;
 			counter = 0;
 			frequency_counter = frequency_counter -= static_cast<float>(frequency_counter) * (static_cast<float>(frequency_counter) / static_cast<float>(frequency) * 0.75f);
-			frequency = RandInt(frequency_range.x, frequency_range.y);
+			frequency = rand_int(frequency_range.x, frequency_range.y);
 		}
 
 		bool start = false;

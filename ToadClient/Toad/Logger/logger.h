@@ -1,6 +1,6 @@
 #pragma once
 
-#include "singleton.h"
+#include "Toad/singleton.h"
 
 #ifdef ERROR
 #undef ERROR
@@ -10,18 +10,13 @@ namespace toadll
 {
 
 ///
-/// Handles the console window and output 
+/// Handles logs and console window
 ///
 class Logger final : public Singleton<Logger>
 {
-private:
-	HANDLE m_hstdout {};
-
-	std::shared_mutex m_mutex {};
-	std::shared_mutex m_closeMutex {};
-	std::atomic_bool m_isConsoleClosed = false;
-
-	std::ofstream m_logFile{};
+public:
+	Logger();
+	~Logger() override;
 
 public:
 	enum class CONSOLE_COLOR : WORD
@@ -51,32 +46,49 @@ public:
 	{LOG_TYPE::WARNING, "WARNING"},
 	};
 
+public:
+	/// Closes console and log file 
+	void DisposeLogger();
+
+public: 
+	template <typename ... Args>
+	void LogDebug(const char* frmt, Args... args)
+	{
+		Log(frmt, LOG_TYPE::DEBUG, args...);
+	}
+
+	template <typename ... Args>
+	void LogWarning(const char* frmt, Args... args)
+	{
+		Log(frmt, LOG_TYPE::WARNING, args...);
+	}
+
+	template <typename ... Args>
+	void LogError(const char* frmt, Args... args)
+	{
+		Log(frmt, LOG_TYPE::ERROR, args...);
+	}
+
+	template <typename ... Args>
+	void LogException(const char* frmt, Args... args)
+	{
+		Log(frmt, LOG_TYPE::EXCEPTION, args...);
+	}
+
 private:
-	static std::string getDateStr(const std::string_view format)
-	{
-		std::ostringstream ss;
-		std::string time;
+	/// Returns the current time or date based on the format as a string
+	static std::string getDateStr(const std::string_view format);
 
-		auto t = std::time(nullptr);
-		tm newtime{};
+	/// Returns the directory location to the Documents folder 
+	static std::string getDocumentsFolder();
 
-		localtime_s(&newtime, &t);
+	/// Writes to created log file
+	void logToFile(const std::string_view str);
 
-		ss << std::put_time(&newtime, format.data());
-		return ss.str();
-	}
-
-	static std::string getDocumentsFolder()
-	{
-		CHAR documents[MAX_PATH];
-		HRESULT res = SHGetFolderPathA(nullptr, CSIDL_PERSONAL, nullptr, SHGFP_TYPE_CURRENT, documents);
-		if (res == S_OK)
-		{
-			return documents;
-		}
-		return "";
-	}
-
+private:
+	/// Formats a string using std::vformat given a string and format arguments and returns it.
+	///
+	///	brackets '{}' are used for formatting
 	template <typename ... Args>
 	std::string formatStr(const std::string_view format, Args&& ... args)
 	{
@@ -89,12 +101,6 @@ private:
 			LogException("Invalid formatting on string with '{}' | {}", std::string(format).c_str(), e.what());
 			return "";
 		}
-	}
-
-	/// Writes to created log file
-	void logToFile(const std::string_view str)
-	{
-		m_logFile << str << std::endl;
 	}
 
 	/// Outputs string to console 
@@ -126,77 +132,15 @@ private:
 		Print(formattedStr, log_type);
 	}
 
-public:
-	Logger()
-	{
-		AllocConsole();
+private:
+	HANDLE m_hstdout{};
 
-		freopen_s(reinterpret_cast<FILE**>(stdin), "CONIN$", "r", stdin);
-		freopen_s(reinterpret_cast<FILE**>(stdout), "CONOUT$", "w", stdout);
-		freopen_s(reinterpret_cast<FILE**>(stderr), "CONERR$", "w", stderr);
+	std::shared_mutex m_mutex{};
+	std::shared_mutex m_closeMutex{};
 
-		m_hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::atomic_bool m_isConsoleClosed = false;
 
-		// create log file in the documents folder
-		std::string logFileName = "Toad.log";
-		m_logFile.open(getDocumentsFolder() + "\\" + logFileName, std::fstream::out);
-
-		// log the date in the beginning
-		logToFile(getDateStr("%Y %d %b \n"));
-	}
-
-    ~Logger() override
-    {
-		DisposeLogger();
-	}
-
-public:
-	void DisposeLogger()
-	{
-		std::unique_lock lock(m_closeMutex);
-
-		if (m_logFile.is_open())
-			m_logFile.close();
-
-		if (m_isConsoleClosed) return;
-
-		fclose(stdin);
-		fclose(stdout);
-		fclose(stderr);
-
-		CloseHandle(m_hstdout);
-		m_hstdout = nullptr;
-
-		FreeConsole();
-
-		m_isConsoleClosed = true;
-	}
-
-public:
-	template <typename ... Args>
-	void LogDebug(const char* frmt, Args... args)
-	{
-		Log(frmt, LOG_TYPE::DEBUG, args...);
-	}
-
-	template <typename ... Args>
-	void LogWarning(const char* frmt, Args... args)
-	{
-		Log(frmt, LOG_TYPE::WARNING, args...);
-	}
-
-	template <typename ... Args>
-	void LogError(const char* frmt, Args... args)
-	{
-		Log(frmt, LOG_TYPE::ERROR, args...);
-	}
-
-	template <typename ... Args>
-	void LogException(const char* frmt, Args... args)
-	{
-		Log(frmt, LOG_TYPE::EXCEPTION, args...);
-	}
-
+	std::ofstream m_logFile{};
 };
 
 }

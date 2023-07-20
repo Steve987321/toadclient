@@ -5,7 +5,12 @@ namespace toadll
 
 class CLeftAutoClicker SET_MODULE_CLASS(CLeftAutoClicker), public CClickerBase
 {
-protected:
+public:
+	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
+
+	static void SetDelays(int cps);
+
+private:
 	inline static Randomization rand = Randomization(
 		0,
 		0,
@@ -34,7 +39,7 @@ protected:
 			Boost(0.4f, 100, 5, {150, 200}, 2),
 			Boost(1.0f, 120, 5, {150, 200}, 3),
 
-		// DROPS
+			// DROPS
 			Boost(-1.0f, 190, 5, {150, 200}, 4),
 			Boost(-1.5f, 50, 3, {100, 200}, 5),
 
@@ -46,20 +51,18 @@ protected:
 		return rand;
 	}
 
-protected:
+private:
+	// mouse press functions with randomization 
 	inline bool mouse_down() override;
 	inline void mouse_up() override;
 
-	// No randomization on these
+	// No randomization on these, because they are used for block hitting and not for clicking
 	static inline void right_mouse_down();
 	static inline void right_mouse_up();
 
 private:
+	// TODO: instead of returning a string return an enum of object types
 	_NODISCARD inline std::string get_mouse_over_type() const;
-	
-public:
-	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
-	static void SetDelays(int cps);
 };
 
 }

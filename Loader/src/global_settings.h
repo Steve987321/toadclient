@@ -117,7 +117,6 @@ namespace toad
 		inline bool enabled = false;
 		inline int key = 0; // key to be pressed/held to blink
 		inline float limit_seconds = 5.f; // max limit in seconds for blink to be enabled
-		inline bool disable_on_hit = false; // disables blink when localplayer gets hit
 		inline bool stop_rec_packets = false; // also stops/pauses incoming packets
 		inline bool show_trail = false; // renders a trail from the position when enabled to current position
 	}

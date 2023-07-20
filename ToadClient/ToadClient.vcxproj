@@ -182,7 +182,7 @@
     <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="Toad\helpers.h" />
     <ClInclude Include="Toad\Hooks\Hooks.h" />
-    <ClInclude Include="Toad\Logger.h" />
+    <ClInclude Include="Toad\Logger\logger.h" />
     <ClInclude Include="Toad\MC\mappings.h" />
     <ClInclude Include="Toad\MC\Entity\Entity.h" />
     <ClInclude Include="pch.h" />
@@ -196,6 +196,7 @@
     <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\Logger\logger.cpp" />
     <ClCompile Include="Toad\Modules\clicker\clicker_base.cpp" />
     <ClCompile Include="Toad\Modules\internal_ui.cpp" />
     <ClCompile Include="Toad\Modules\blink.cpp" />

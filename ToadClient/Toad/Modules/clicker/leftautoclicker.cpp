@@ -208,7 +208,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				else
 				{
 					// reaction time in ms
-					if (break_blocks_timer.Elapsed<>() > RandInt(50, 200))
+					if (break_blocks_timer.Elapsed<>() > rand_int(50, 200))
 					{
 						break_blocks_flag = true;
 					}
@@ -240,7 +240,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 						// block
 						right_mouse_down();
 
-						block_hit_mdown_rand_ms = RandInt(left_clicker::block_hit_ms - 5, left_clicker::block_hit_ms + 5);
+						block_hit_mdown_rand_ms = rand_int(left_clicker::block_hit_ms - 5, left_clicker::block_hit_ms + 5);
 						block_hit_timer.Start();
 						block_hit_timer_started = true;
 					}
@@ -281,14 +281,14 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 bool CLeftAutoClicker::mouse_down()
 {
-	rand.delay = RandFloat(rand.edited_min, rand.edited_max);
+	rand.delay = rand_float(rand.edited_min, rand.edited_max);
 
 	apply_rand(rand.inconsistencies);
 
 	m_end = std::chrono::high_resolution_clock::now();
 	m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-	preciseSleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+	precise_sleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 	if (!GetAsyncKeyState(VK_LBUTTON))
 		return false;
@@ -304,14 +304,14 @@ bool CLeftAutoClicker::mouse_down()
 
 void CLeftAutoClicker::mouse_up()
 {
-	rand.delay = RandFloat(rand.edited_min, rand.edited_max);
+	rand.delay = rand_float(rand.edited_min, rand.edited_max);
 
 	apply_rand(rand.inconsistencies2);
 
 	m_end = std::chrono::high_resolution_clock::now();
 	m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-	preciseSleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+	precise_sleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 	POINT pt{};
 	GetCursorPos(&pt);
@@ -335,7 +335,6 @@ void CLeftAutoClicker::right_mouse_up()
 	PostMessage(g_hWnd, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 }
 
-// TODO: instead of returning a string return an enum of object types
 std::string CLeftAutoClicker::get_mouse_over_type() const
 {
 	auto str = MC->getMouseOverBlockStr();

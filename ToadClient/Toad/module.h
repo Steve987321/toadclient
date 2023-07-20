@@ -30,7 +30,7 @@ public:
 public:
 	void SetEnv(JNIEnv* Env) { env = Env; }
 
-	/// Sets a newly made unique instance of Minecraft to this Cheat Module
+	/// Moves a newly made unique instance of Minecraft to this Cheat Module
 	void SetMC(std::unique_ptr<Minecraft>& mc) { MC = std::move(mc); }
 
 public:

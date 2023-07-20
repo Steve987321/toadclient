@@ -10,7 +10,7 @@ namespace toadll
 
 		rand.inconsistency_delay = std::lerp(rand.inconsistency_delay, 0, m_pTick * 1.5f);
 
-		const int rand_100 = RandInt(0, 100);
+		const int rand_100 = rand_int(0, 100);
 
 		for (auto& i : rand.inconsistencies)
 			if (!i.start && ++i.frequency_counter >= i.frequency)
@@ -62,7 +62,7 @@ namespace toadll
 		{
 			if (i.start)
 			{
-				rand.inconsistency_delay = RandFloat(i.min_amount_ms, i.max_amount_ms);
+				rand.inconsistency_delay = rand_float(i.min_amount_ms, i.max_amount_ms);
 				i.Reset();
 				break;
 			}

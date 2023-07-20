@@ -18,7 +18,7 @@
 #include "../../Loader/src/global_settings.h"
 
 #include "Toad/Types.h"
-#include "Toad/Logger.h"
+#include "Toad/Logger/logger.h"
 
 #include "helpers.h"
 

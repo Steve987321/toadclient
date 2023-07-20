@@ -47,14 +47,6 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			}
 		}
 
-		if (blink::disable_on_hit)
-		{
-			if (lPlayer->HurtTime > 0)
-				DisableBlink();
-
-			m_canEnable = false;
-		}
-
 		// check if blink has been enabled longer than the specified limit
 		if (m_timer.Elapsed<>() >= blink::limit_seconds * 1000)
 		{

@@ -171,10 +171,10 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		}
 	// got target and yaw and pitch offsets
 
-	yawDiff += toadll::RandFloat(-2.f, 2.f);
-	pitchDiff += toadll::RandFloat(-2.f, 2.f);
+	yawDiff += toadll::rand_float(-2.f, 2.f);
+	pitchDiff += toadll::rand_float(-2.f, 2.f);
 
-	const int rand_100 = toadll::RandInt(0, 100);
+	const int rand_100 = toadll::rand_int(0, 100);
 
 	static Timer speed_rand_timer;
 	static Timer reaction_time_timer;
@@ -185,7 +185,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	if (speed_rand_timer.Elapsed<>() >= 400)
 	{
 		prev_long_speed_modifier = long_speed_modifier;
-		long_speed_modifier = toadll::RandFloat(0.7f, 1.3f);
+		long_speed_modifier = toadll::rand_float(0.7f, 1.3f);
 		speed_rand_timer.Start();
 		//std::cout << "reset :" << long_speed_modifier << std::endl;
 	}
@@ -215,7 +215,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// pitch randomization
 	static Timer pitch_rand_timer;
 	static Timer pitch_ms_rand_timer;
-	static float pitchrand = RandFloat(-0.0100f, 0.0100f);
+	static float pitchrand = rand_float(-0.0100f, 0.0100f);
 
 	static const Vec2 pitch_update_ms = {500, 800};
 	static float pitch_update_ms_min = pitch_update_ms.x;
@@ -223,15 +223,15 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static float pitch_update_ms_min_smooth = pitch_update_ms.x;
 	static float pitch_update_ms_max_smooth = pitch_update_ms.y;
 
-	static float pitchupdatems = RandFloat(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
+	static float pitchupdatems = rand_float(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
 	static float pitchrandsmooth = 0;
 	static float pitchrandbegin = 0;
 	auto updated_pitch = editable_local_player->getRotationPitch();
 	if (pitch_rand_timer.Elapsed<>() > pitchupdatems)
 	{
 		pitchrandbegin = pitchrand;
-		pitchupdatems = RandFloat(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
-		pitchrand = RandFloat(-0.0080f, 0.0080f);
+		pitchupdatems = rand_float(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
+		pitchrand = rand_float(-0.0080f, 0.0080f);
 		pitch_rand_timer.Start();
 	}
 
@@ -240,7 +240,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	pitch_update_ms_max_smooth = std::lerp(pitch_update_ms_max, pitch_update_ms.y, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
 	if (rand_100 < 5)
 	{
-		const auto rand_f = RandFloat(250.f, 400.f);
+		const auto rand_f = rand_float(250.f, 400.f);
 		pitch_update_ms_min = std::clamp(rand_f - 10, 250.f, 400.f);
 		pitch_update_ms_max = std::clamp(rand_f + 10, 250.f, 400.f);
 		pitch_ms_rand_timer.Start();

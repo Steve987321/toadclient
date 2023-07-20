@@ -69,14 +69,14 @@ namespace toadll
 
 	bool CRightAutoClicker::mouse_down()
 	{
-		rand.delay = RandFloat(rand.edited_min, rand.edited_max);
+		rand.delay = rand_float(rand.edited_min, rand.edited_max);
 
 		apply_rand(rand.inconsistencies);
 
 		m_end = std::chrono::high_resolution_clock::now();
 		m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-		preciseSleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+		precise_sleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 		if (!GetAsyncKeyState(VK_RBUTTON))
 			return false;
@@ -92,14 +92,14 @@ namespace toadll
 
 	void CRightAutoClicker::mouse_up()
 	{
-		rand.delay = RandFloat(rand.edited_min, rand.edited_max);
+		rand.delay = rand_float(rand.edited_min, rand.edited_max);
 
 		apply_rand(rand.inconsistencies2);
 
 		m_end = std::chrono::high_resolution_clock::now();
 		m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-		preciseSleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+		precise_sleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 		POINT pt{};
 		GetCursorPos(&pt);

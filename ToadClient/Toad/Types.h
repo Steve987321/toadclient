@@ -2,309 +2,310 @@
 
 namespace toadll
 {
-    struct Vec2 {
-        Vec2(float x, float y) : x(x), y(y) {}
-        Vec2() = default;
 
-        float x, y;
+struct Vec2 {
+    Vec2(float x, float y) : x(x), y(y) {}
+    Vec2() = default;
 
-        Vec2 operator+(const Vec2& v) const {
-            return { x + v.x, y + v.y };
-        }
+    float x, y;
 
-        Vec2 operator-(const Vec2& v) const {
-            return { x - v.x, y - v.y };
-        }
+    Vec2 operator+(const Vec2& v) const {
+        return { x + v.x, y + v.y };
+    }
 
-        Vec2 operator*(float s) const {
-            return { x * s, y * s};
-        }
+    Vec2 operator-(const Vec2& v) const {
+        return { x - v.x, y - v.y };
+    }
 
-        Vec2 operator/(float s) const {
-            return { x / s, y / s};
-        }
+    Vec2 operator*(float s) const {
+        return { x * s, y * s};
+    }
 
-        constexpr bool operator==(const Vec2& v) const{
-            return x == v.x && y == v.y;
-        }
+    Vec2 operator/(float s) const {
+        return { x / s, y / s};
+    }
 
-        [[nodiscard]] float dist(const Vec2& v) const {
-            return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
-        }
-    };
+    constexpr bool operator==(const Vec2& v) const{
+        return x == v.x && y == v.y;
+    }
 
-	struct Vec3 {
-        Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
-        Vec3() : x(0), y(0), z(0) {}
+    _NODISCARD float dist(const Vec2& v) const {
+        return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
+    }
+};
 
-        float x, y, z;
+struct Vec3 {
+    Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+    Vec3() : x(0), y(0), z(0) {}
 
-        Vec3 operator+(const Vec3& v) const {
-            return { x + v.x, y + v.y, z + v.z };
-        }
+    float x, y, z;
 
-        Vec3 operator-(const Vec3& v) const {
-            return { x - v.x, y - v.y, z - v.z };
-        }
+    Vec3 operator+(const Vec3& v) const {
+        return { x + v.x, y + v.y, z + v.z };
+    }
 
-        Vec3 operator*(float s) const {
-            return { x * s, y * s, z * s };
-        }
+    Vec3 operator-(const Vec3& v) const {
+        return { x - v.x, y - v.y, z - v.z };
+    }
 
-        Vec3 operator/(float s) const {
-            return { x / s, y / s, z / s };
-        }
+    Vec3 operator*(float s) const {
+        return { x * s, y * s, z * s };
+    }
 
-		bool operator==(const Vec3& v) const {
-            return fabs(x - v.x) < FLT_EPSILON && fabs(y - v.y) < FLT_EPSILON && fabs(z - v.z) < FLT_EPSILON;
-        }
+    Vec3 operator/(float s) const {
+        return { x / s, y / s, z / s };
+    }
 
-        _NODISCARD float dist(const Vec3& v) const {
-            return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
-        }
+	bool operator==(const Vec3& v) const {
+        return fabs(x - v.x) < FLT_EPSILON && fabs(y - v.y) < FLT_EPSILON && fabs(z - v.z) < FLT_EPSILON;
+    }
 
-        _NODISCARD Vec3 cross(const Vec3& v) const{
-            return
-            {
-                    y * v.z - z * v.y,
-                    z * v.x - x * v.z,
-                    x * v.y - y * v.x
-            };
-        }
+    _NODISCARD float dist(const Vec3& v) const {
+        return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
+    }
 
-        static Vec3 normalize(const Vec3& v)
+    _NODISCARD Vec3 cross(const Vec3& v) const{
+        return
         {
-            float length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-            if (length > 0.0f)
-            {
-                float invLength = 1.0f / length;
-                return Vec3(v.x * invLength, v.y * invLength, v.z * invLength);
-            }
-            else
-            {
-                return Vec3(0.0f, 0.0f, 0.0f);
-            }
-        }
-	};
-
-	struct Vec4 {
-        Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-        Vec4() = default;
-        float x, y, z, w;
-
-        Vec4 operator+(const Vec4& v) const {
-            return { x + v.x, y + v.y, z + v.z, w + v.w};
-        }
-
-        Vec4 operator-(const Vec4& v) const {
-            return { x - v.x, y - v.y, z - v.z, w - v.w};
-        }
-
-        Vec4 operator*(float s) const {
-            return { x * s, y * s, z * s, w * s };
-        }
-
-        Vec4 operator/(float s) const {
-            return { x / s, y / s, z / s, w/ s };
-        }
-    };
-
-    struct BBox
-    {
-        BBox(const Vec3& min, const Vec3& max) : min(min), max(max) {}
-
-        Vec3 min, max;
-    };
-
-    // for logging
-    inline std::ostream& operator<<(std::ostream& o, const Vec2& v) {
-        o << "(X:" << v.x << ", Y:" << v.y << ")";
-        return o;
+                y * v.z - z * v.y,
+                z * v.x - x * v.z,
+                x * v.y - y * v.x
+        };
     }
 
-    inline std::ostream& operator<<(std::ostream& o, const Vec3& v) {
-	    o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.z << ")";
-	    return o;
+    static Vec3 normalize(const Vec3& v)
+    {
+        float length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+        if (length > 0.0f)
+        {
+            float invLength = 1.0f / length;
+            return Vec3(v.x * invLength, v.y * invLength, v.z * invLength);
+        }
+        else
+        {
+            return Vec3(0.0f, 0.0f, 0.0f);
+        }
+    }
+};
+
+struct Vec4 {
+    Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+    Vec4() = default;
+    float x, y, z, w;
+
+    Vec4 operator+(const Vec4& v) const {
+        return { x + v.x, y + v.y, z + v.z, w + v.w};
     }
 
-	inline std::ostream& operator<<(std::ostream& o, const Vec4& v) {
-        o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.y << ", W:" << v.w << ")";
-        return o;
+    Vec4 operator-(const Vec4& v) const {
+        return { x - v.x, y - v.y, z - v.z, w - v.w};
     }
 
-    inline std::ostream& operator<<(std::ostream& o, const BBox& v){
-        o << "(min: " << v.min << "), max(" << v.max << ")";
-        return o;
+    Vec4 operator*(float s) const {
+        return { x * s, y * s, z * s, w * s };
     }
 
-    struct Entity
-    {
-        //std::string Name;
+    Vec4 operator/(float s) const {
+        return { x / s, y / s, z / s, w/ s };
+    }
+};
 
-        bool Invis = false;
+struct BBox
+{
+    BBox(const Vec3& min, const Vec3& max) : min(min), max(max) {}
 
-        Vec3 Pos = { 0,0,0 };
-        Vec3 LastTickPos = { 0,0,0 };
+    Vec3 min, max;
+};
 
-        int HurtTime = 0;
+// for logging
+inline std::ostream& operator<<(std::ostream& o, const Vec2& v) {
+    o << "(X:" << v.x << ", Y:" << v.y << ")";
+    return o;
+}
 
-        float Health = 0;
+inline std::ostream& operator<<(std::ostream& o, const Vec3& v) {
+    o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.z << ")";
+    return o;
+}
 
-        float Pitch;
-        float Yaw;
+inline std::ostream& operator<<(std::ostream& o, const Vec4& v) {
+    o << "(X:" << v.x << ", Y:" << v.y << ", Z:" << v.y << ", W:" << v.w << ")";
+    return o;
+}
 
-        jobject obj;
+inline std::ostream& operator<<(std::ostream& o, const BBox& v){
+    o << "(min: " << v.min << "), max(" << v.max << ")";
+    return o;
+}
 
-    };
+struct Entity
+{
+    //std::string Name;
 
-    struct LocalPlayer : Entity
-    {
-        Vec3 Motion = {};
-        std::string HeldItem;
-    };
+    bool Invis = false;
 
-    struct MCMap
-    {
-        MCMap(const char* n, const char* s) : name(n), sig(s) {}
+    Vec3 Pos = { 0,0,0 };
+    Vec3 LastTickPos = { 0,0,0 };
 
-        const char* name;
-        const char* sig;
-    };
+    int HurtTime = 0;
 
-    enum class mappingFields
-    {
-        // .Minecraft
-        theMcField,
-        currentScreenField,
-        thePlayerField,
+    float Health = 0;
 
-        // .World
-        playerEntitiesField,
+    float Pitch;
+    float Yaw;
 
-        // .GameSettings
-        fovField,
+    jobject obj;
 
-        // .Entity
-        rotationYawField,
-        rotationPitchField,
-        prevRotationYawField,
-        prevRotationPitchField,
-        lastTickPosXField,
-        lastTickPosYField,
-        lastTickPosZField,
-        inventoryField,
+};
 
-        // jdouble
-        motionXField,
-        motionYField,
-        motionZField,
+struct LocalPlayer : Entity
+{
+    Vec3 Motion = {};
+    std::string HeldItem;
+};
 
-        // .ActiveRenderInfo
-        viewportField,
-        projectionField,
-		modelviewField,
+struct MCMap
+{
+    MCMap(const char* n, const char* s) : name(n), sig(s) {}
 
-        // Timer
-        renderPartialTickField,
-    };
+    const char* name;
+    const char* sig;
+};
 
-    enum class static_mapping
-    {
-	    
-    };
+enum class mappingFields
+{
+    // .Minecraft
+    theMcField,
+    currentScreenField,
+    thePlayerField,
 
-    enum class mapping
-    {
-        // .Minecraft
-        getMinecraft,
-        getWorld,
-        getPlayer,
-        getGameSettings,
-        getObjectMouseOver,
-        getEntityRenderer,
-        getTimer,
+    // .World
+    playerEntitiesField,
 
-        // objectmouseover
-        getEntityHit,
+    // .GameSettings
+    fovField,
 
-        // General
-        toString,
+    // .Entity
+    rotationYawField,
+    rotationPitchField,
+    prevRotationYawField,
+    prevRotationPitchField,
+    lastTickPosXField,
+    lastTickPosYField,
+    lastTickPosZField,
+    inventoryField,
 
-        // .World
-        getPlayerEntities,
-        getRenderManager,
-        getBlockAt,
-        isAirBlock,
+    // jdouble
+    motionXField,
+    motionYField,
+    motionZField,
 
-        // .Block
-        getBlockFromBlockState,
-        getIdFromBlockStatic,
+    // .ActiveRenderInfo
+    viewportField,
+    projectionField,
+	modelviewField,
 
-        // player
-        getOpenContainer,
+    // Timer
+    renderPartialTickField,
+};
 
-        // .GameSettings
-        setGamma,
+enum class static_mapping
+{
+    
+};
 
-        // .Entity
-        getPos,
-        getRotationYaw,
-        getRotationPitch,
+enum class mapping
+{
+    // .Minecraft
+    getMinecraft,
+    getWorld,
+    getPlayer,
+    getGameSettings,
+    getObjectMouseOver,
+    getEntityRenderer,
+    getTimer,
 
-        getBlockPosition,
-        getBlockPos,
+    // objectmouseover
+    getEntityHit,
 
-        setRotationYaw,
-        setRotationPitch,
-        setRotation,
+    // General
+    toString,
 
-        getBBox,
+    // .World
+    getPlayerEntities,
+    getRenderManager,
+    getBlockAt,
+    isAirBlock,
 
-        getName,
+    // .Block
+    getBlockFromBlockState,
+    getIdFromBlockStatic,
 
-        getMotionX,
-        getMotionY,
-        getMotionZ,
+    // player
+    getOpenContainer,
 
-        isInvisible,
+    // .GameSettings
+    setGamma,
 
-        // inv
-        getStackInSlot,
+    // .Entity
+    getPos,
+    getRotationYaw,
+    getRotationPitch,
 
-        // .EntityRenderer
-        disableLightmap,
-        enableLightmap,
+    getBlockPosition,
+    getBlockPos,
 
-        // .EntityLivingBase
-        getHeldItem,
-        getHurtTime,
-        getHealth,
+    setRotationYaw,
+    setRotationPitch,
+    setRotation,
 
-        // .ActiveRenderInfo
-        getRenderPos,
+    getBBox,
 
-        // .Vec3
-        Vec3X,
-        Vec3Y,
-        Vec3Z,
+    getName,
 
-        //. Vec3I
-    	Vec3IX,
-        Vec3IY,
-        Vec3IZ,
+    getMotionX,
+    getMotionY,
+    getMotionZ,
 
-        // bounding box
-        bboxMinX,
-        bboxMinY,
-        bboxMinZ,
-        bboxMaxX,
-        bboxMaxY,
-        bboxMaxZ,
+    isInvisible,
 
-        // Timer
-        partialTick,
-    };
+    // inv
+    getStackInSlot,
 
-    constexpr static auto PI = 3.14159265358979323846f;
+    // .EntityRenderer
+    disableLightmap,
+    enableLightmap,
+
+    // .EntityLivingBase
+    getHeldItem,
+    getHurtTime,
+    getHealth,
+
+    // .ActiveRenderInfo
+    getRenderPos,
+
+    // .Vec3
+    Vec3X,
+    Vec3Y,
+    Vec3Z,
+
+    //. Vec3I
+    Vec3IX,
+    Vec3IY,
+    Vec3IZ,
+
+    // bounding box
+    bboxMinX,
+    bboxMinY,
+    bboxMinZ,
+    bboxMaxX,
+    bboxMaxY,
+    bboxMaxZ,
+
+    // Timer
+    partialTick,
+};
+
+constexpr static auto g_PI = 3.14159265358979323846f;
 
 }

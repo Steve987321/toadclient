@@ -36,7 +36,7 @@
     <ClInclude Include="Toad\MC\mappings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Logger.h">
+    <ClInclude Include="Toad\Logger\logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Toad\Hooks\Hooks.h">
@@ -210,6 +210,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\Modules\clicker\clicker_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Logger\logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

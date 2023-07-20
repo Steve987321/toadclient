@@ -23,9 +23,9 @@ namespace toadll
 			if (lPlayer->HurtTime > 0 && !StopFlag)
 			{
 				StopFlag = true;
-				SendKey(VK_SPACE);
-				SLEEP(RandInt(40, 70));
-				SendKey(VK_SPACE, false);
+				send_key(VK_SPACE);
+				SLEEP(rand_int(40, 70));
+				send_key(VK_SPACE, false);
 			}
 			else if (lPlayer->HurtTime == 0)
 				StopFlag = false;
@@ -45,7 +45,7 @@ namespace toadll
 				SLEEP(1);
 				return;
 			}
-			if (RandInt(0, 100) > velocity::chance)
+			if (rand_int(0, 100) > velocity::chance)
 			{
 				StopFlag = true;
 				SLEEP(1);

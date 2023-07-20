@@ -314,7 +314,6 @@ bool UpdateSettings()
 	// blink
 	blink::enabled = data["bl_enabled"];
 	blink::key = data["bl_key"];
-	blink::disable_on_hit = data["bl_stop_on_hit"];
 	blink::stop_rec_packets = data["bl_stop_incoming_packets"];
 	blink::show_trail = data["bl_show_trail"];
 	blink::limit_seconds = data["bl_limit_seconds"];

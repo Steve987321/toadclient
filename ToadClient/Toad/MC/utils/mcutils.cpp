@@ -202,8 +202,8 @@ namespace toadll
         float d_z = pos2.z - pos1.z;
 
         float hypothenuse = sqrt(d_x * d_x + d_z * d_z);
-        float yaw = atan2(d_z, d_x) * 180.f / PI - 90.f;
-        float pitch = -atan2(d_y, hypothenuse) * 180 / PI;
+        float yaw = atan2(d_z, d_x) * 180.f / g_PI - 90.f;
+        float pitch = -atan2(d_y, hypothenuse) * 180 / g_PI;
 
         return std::make_pair(yaw, pitch);
     }
@@ -218,9 +218,9 @@ namespace toadll
 
     double calculateHorizontalFOV(double screenHeight, double screenWidth, double verticalFOV) {
         double aspectRatio = screenWidth / screenHeight;
-        double verticalFOVRad = verticalFOV * PI / 180; // convert to radians
+        double verticalFOVRad = verticalFOV * g_PI / 180; // convert to radians
         double horizontalFOVRad = 2 * atan(tan(verticalFOVRad / 2) * aspectRatio);
-        double horizontalFOV = horizontalFOVRad * 180 / PI; // convert back to degrees
+        double horizontalFOV = horizontalFOVRad * 180 / g_PI; // convert back to degrees
         return horizontalFOV;
     }
 
@@ -235,12 +235,12 @@ namespace toadll
 
         // Calculate horizontal and vertical field of view in radians
         auto hFov = calculateHorizontalFOV(g_screen_height, g_screen_width, fov);
-        float hFovRad = hFov * PI / 180.f;
-        float vFovRad = 2 * atan(tan(fov * PI / 180.f / 2) / aspectRatio);
+        float hFovRad = hFov * g_PI / 180.f;
+        float vFovRad = 2 * atan(tan(fov * g_PI / 180.f / 2) / aspectRatio);
 
         // Get view angles
-        float yaw = viewAngles.x * PI / 180.f + 1.55f;
-        float pitch = viewAngles.y * PI / 180.f;
+        float yaw = viewAngles.x * g_PI / 180.f + 1.55f;
+        float pitch = viewAngles.y * g_PI / 180.f;
 
         // Get the position of the target relative to the source
         float dx = source.x - target.x;
