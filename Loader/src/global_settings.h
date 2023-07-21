@@ -58,7 +58,7 @@ namespace toad
 		inline bool targetFOV = false;
 		inline bool always_aim = false;
 		inline bool aim_at_closest_point = false;
-		inline bool aim_at_target = false; // aims while inside target hitbox
+		inline bool aim_in_target = false; // aims while inside target hitbox
 		inline bool lock_aim = false; // locks the aim to a target until mouse is released for a short time
 
 		inline int fov = 180.f;

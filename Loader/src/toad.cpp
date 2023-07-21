@@ -31,22 +31,21 @@ bool toad::pre_init()
 
 bool toad::init()
 {
-	bool res = false;
-	std::call_once(init_once_flag, [&]
+	// setup ipc
+	static bool once = false;
+	if (!once)
 	{
-		// setup ipc
-
 		hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, bufSize, L"ToadClientMappingObj");
 		if (hMapFile == NULL)
 		{
-			return;
+			return false;
 		}
 
 		LPVOID pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE, 0, 0, 0);
 		if (pMem == NULL)
 		{
 			CloseHandle(hMapFile);
-			return;
+			return false;
 		}
 
 		memset(pMem, L'\0', bufSize);
@@ -55,18 +54,17 @@ bool toad::init()
 
 		// update settings for ipc 
 		updateSettingsThread = std::thread([]
-		{
-			while (g_is_running)
 			{
-				update_settings();
-				SLEEP(100);
-			}
-		});
+				while (g_is_running)
+				{
+					update_settings();
+					SLEEP(100);
+				}
+			});
 
-		res = true;
-	});
-
-	return res;
+		once = true;
+	}
+	return true;
 }
 
 void update_settings()

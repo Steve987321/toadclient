@@ -9,11 +9,6 @@ class CEsp SET_MODULE_CLASS(CEsp)
 private:
 	inline static std::vector<BBox> m_bboxes;
 
-	inline static std::atomic_bool m_canSave = true;
-
-	inline static std::vector<Entity> m_playerList;
-	std::vector<std::pair<std::string, BBox>> m_entityList;
-
 private:
 	/// Returns a vector of bounding boxes of the player list.
 	/// 

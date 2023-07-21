@@ -30,12 +30,13 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (aa::lock_aim && target != nullptr)
 	{
+		// check if the target is still inside bounds and valid 
 		if (
 			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target->Pos).first))) <= aa::fov
 			&&
 			target->Pos.dist(lPlayer->Pos) <= aa::distance
 			)
-			
+
 			skip_get_target = true;
 	}
 	
@@ -43,10 +44,8 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		target = nullptr;
 
-		m_playerList = CVarsUpdater::PlayerList;
-
-		//get a target
-		for (const auto& player : m_playerList)
+		// get a target
+		for (const auto& player : CVarsUpdater::PlayerList)
 		{
 			if (lPlayer->Pos.dist(player.Pos) > aa::distance) continue;
 			if (player.Invis && !aa::invisibles) continue;
@@ -126,7 +125,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, bbox_corners.at(3)).first)),
 		};
 
-		if (!aa::aim_at_target)
+		if (!aa::aim_in_target)
 		{
 			if (yawdiff_to_pos < 0)
 			{
@@ -156,7 +155,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	float yawDiff = wrap_to_180(-(lyaw - yawtarget));
 	float absYawDiff = abs(yawDiff);
-	if (!aa::aim_at_target && absYawDiff < 3.f)
+	if (!aa::aim_in_target && absYawDiff < 3.f)
 	{
 		SLEEP(1);
 		return;
@@ -169,7 +168,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			SLEEP(1);
 			return;
 		}
-	// got target and yaw and pitch offsets
 
 	yawDiff += toadll::rand_float(-2.f, 2.f);
 	pitchDiff += toadll::rand_float(-2.f, 2.f);
@@ -185,12 +183,12 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	if (speed_rand_timer.Elapsed<>() >= 400)
 	{
 		prev_long_speed_modifier = long_speed_modifier;
-		long_speed_modifier = toadll::rand_float(0.7f, 1.3f);
+		long_speed_modifier = toadll::rand_float(0.5f, 1.5f);
 		speed_rand_timer.Start();
 		//std::cout << "reset :" << long_speed_modifier << std::endl;
 	}
 
-	long_speed_modifier_smooth = std::lerp(prev_long_speed_modifier, long_speed_modifier, speed_rand_timer.Elapsed<>() / 400);
+	long_speed_modifier_smooth = slerp(prev_long_speed_modifier, long_speed_modifier, speed_rand_timer.Elapsed<>() / 400);
 	static float yawdiff_speed = 0;
 
 	if (static bool once = false; !once || reaction_time_timer.Elapsed<>() > aa::reaction_time)

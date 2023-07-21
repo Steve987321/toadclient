@@ -43,7 +43,7 @@ std::vector<BBox> CEsp::GetBBoxes(const std::shared_ptr<LocalPlayer>& lPlayer)
 void CEsp::draw3dBox(const BBox& bbox)
 {
 	glBegin(3);
-	glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
+	glColor4f(esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]);
 	glVertex3f(bbox.min.x, bbox.min.y, bbox.min.z);
 	glVertex3f(bbox.max.x, bbox.min.y, bbox.min.z);
 	glVertex3f(bbox.max.x, bbox.min.y, bbox.max.z);
@@ -52,7 +52,7 @@ void CEsp::draw3dBox(const BBox& bbox)
 	glEnd();
 
 	glBegin(3);
-	glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
+	glColor4f(esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]);
 	glVertex3f(bbox.min.x, bbox.max.y, bbox.min.z);
 	glVertex3f(bbox.max.x, bbox.max.y, bbox.min.z);
 	glVertex3f(bbox.max.x, bbox.max.y, bbox.max.z);
@@ -61,7 +61,7 @@ void CEsp::draw3dBox(const BBox& bbox)
 	glEnd();
 
 	glBegin(1);
-	glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
+	glColor4f(esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]);
 	glVertex3f(bbox.min.x, bbox.min.y, bbox.min.z);
 	glVertex3f(bbox.min.x, bbox.max.y, bbox.min.z);
 	glVertex3f(bbox.max.x, bbox.min.y, bbox.min.z);
@@ -90,7 +90,7 @@ void CEsp::draw2dBox(const BBox& bbox)
 	};
 
 	// fill 
-	glColor4f(toad::esp::fillCol[0], toad::esp::fillCol[1], toad::esp::fillCol[2], toad::esp::fillCol[3]);
+	glColor4f(esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3]);
 	glBegin(GL_QUADS);
 	for (const auto& vertice : vertices)
 	{
@@ -99,7 +99,7 @@ void CEsp::draw2dBox(const BBox& bbox)
 	glEnd();
 
 	// outlines
-	glColor4f(toad::esp::lineCol[0], toad::esp::lineCol[1], toad::esp::lineCol[2], toad::esp::lineCol[3]);
+	glColor4f(esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]);
 	glBegin(GL_LINE_LOOP);
 	for (const auto& vertice : vertices)
 	{

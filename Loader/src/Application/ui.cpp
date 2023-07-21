@@ -103,7 +103,7 @@ namespace toad::ui
                                         inject_status = "init #1";
 
                                         if (!init())
-                                        failed_shared_mem = true;
+											failed_shared_mem = true;
 											
 		                                if (!failed_shared_mem)
 		                                    if (!inject(window.pid))
@@ -134,13 +134,13 @@ namespace toad::ui
                 {
                     if (init_thread.joinable()) init_thread.join();
                     loading = false;
-                    show_message_box("failed", "failed to initialize", failed_shared_mem, true, mboxType::ERR);
+                    show_message_box("failed to initialize", "failed setting up ipc", failed_shared_mem, true, mboxType::ERR);
                 }
                 else if (failed_inject)
                 {
                     if (init_thread.joinable()) init_thread.join();
                     loading = false;
-                    show_message_box("failed", (std::string("failed to inject ") + inject_status).c_str(), failed_inject, true, mboxType::ERR);
+                    show_message_box("failed to inject", inject_status.c_str(), failed_inject, true, mboxType::ERR);
                 }
                 else if (invalid_client_type)
                 {
