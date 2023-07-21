@@ -71,13 +71,13 @@ namespace toad::ui
                     static bool is_RClicker = false;
                     static bool is_AA = false;
                     static bool is_Velocity = false;
-                    if (utils::checkboxButton("Left Clicker", ICON_FA_MOUSE, &left_clicker::enabled)) is_LClicker = true;
-                    if (utils::checkboxButton("Right Clicker", ICON_FA_MOUSE, &right_clicker::enabled)) is_RClicker = true;
-                    if (utils::checkboxButton("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) is_AA = true;
-                    if (utils::checkboxButton("Velocity", ICON_FA_WIND, &velocity::enabled)) is_Velocity = true;
+                    if (checkbox_button("Left Clicker", ICON_FA_MOUSE, &left_clicker::enabled)) is_LClicker = true;
+                    if (checkbox_button("Right Clicker", ICON_FA_MOUSE, &right_clicker::enabled)) is_RClicker = true;
+                    if (checkbox_button("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) is_AA = true;
+                    if (checkbox_button("Velocity", ICON_FA_WIND, &velocity::enabled)) is_Velocity = true;
 
                     if (is_LClicker)
-                        utils::setting_menu("LeftClicker", is_LClicker, []
+                        setting_menu("LeftClicker", is_LClicker, []
                             {
                                 ImGui::SliderInt("cps", &left_clicker::cps, 0, 20, "%dcps");
 			                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
@@ -93,7 +93,7 @@ namespace toad::ui
                             });
 
                     else if (is_RClicker)
-                        utils::setting_menu("RightClicker", is_RClicker, []
+                        setting_menu("RightClicker", is_RClicker, []
                             {
                                 ImGui::SliderInt("cps", &right_clicker::cps, 0, 20, "%dcps");
 								ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
@@ -101,23 +101,23 @@ namespace toad::ui
                             });
 
                     else if (is_AA)
-                        utils::setting_menu("Aim Assist", is_AA, []
+                        setting_menu("Aim Assist", is_AA, []
                             {
-                                ImGui::SliderFloat("Speed", &aa::speed, 0, 10);
-                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
-                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
-                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
-                    ImGui::Checkbox("Invisibles", &aa::invisibles);
-                    ImGui::Checkbox("Always Aim", &aa::always_aim);
-                    ImGui::Checkbox("Target Lock", &aa::lock_aim);
-                    ImGui::Checkbox("Multi Point", &aa::aim_at_closest_point);
-                    ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
-                    if (ImGui::IsItemClicked())
-                        aa::targetFOV = !aa::targetFOV;
+                                ImGui::SliderFloat("Speed", &aa::speed, 0, 100);
+			                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
+			                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
+			                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
+			                    ImGui::Checkbox("Invisibles", &aa::invisibles);
+			                    ImGui::Checkbox("Always Aim", &aa::always_aim);
+			                    ImGui::Checkbox("Target Lock", &aa::lock_aim);
+			                    ImGui::Checkbox("Multi Point", &aa::aim_at_closest_point);
+			                    ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
+			                    if (ImGui::IsItemClicked())
+			                        aa::targetFOV = !aa::targetFOV;
                             });
 
                     else if (is_Velocity)
-                        utils::setting_menu("Velocity", is_Velocity, []
+                        setting_menu("Velocity", is_Velocity, []
                             {
                                 ImGui::Checkbox("Use Jump Reset", &velocity::jump_reset);
                     ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
@@ -133,13 +133,13 @@ namespace toad::ui
                     static bool is_Bridge = false;
                     static bool is_Esp = false;
                     static bool is_Blink = false;
-                    if (utils::checkboxButton("Auto Bridge", ICON_FA_CUBE, &auto_bridge::enabled)) is_Bridge = true;
-                    if (utils::checkboxButton("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
-                    if (utils::checkboxButton("Blink", ICON_FA_GHOST, &blink::enabled)) is_Blink = true;
+                    if (checkbox_button("Auto Bridge", ICON_FA_CUBE, &auto_bridge::enabled)) is_Bridge = true;
+                    if (checkbox_button("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
+                    if (checkbox_button("Blink", ICON_FA_GHOST, &blink::enabled)) is_Blink = true;
 
                     if (is_Bridge)
                     {
-                        utils::setting_menu("Auto Bridge", is_Bridge, []
+                        setting_menu("Auto Bridge", is_Bridge, []
                             {
 
                                 ImGui::SliderFloat("pitch check", &auto_bridge::pitch_check, 1, 70);
@@ -158,7 +158,7 @@ namespace toad::ui
 
                     else if (is_Esp)
                     {
-                        utils::setting_menu("ESP", is_Esp, []
+                        setting_menu("ESP", is_Esp, []
                             {
                                 ImGui::ColorEdit4("Outline Color", esp::lineCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
                         ImGui::ColorEdit4("Fill Color", esp::fillCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
@@ -218,7 +218,7 @@ namespace toad::ui
                             ImGui::EndChild();
 
                             ImGui::SetCursorPos(listPos);
-                            auto suggestions = utils::GetFilteredSuggestions(buf, nameOfBlockId, ignoreSuggestions);
+                            auto suggestions = get_filtered_suggestions(buf, nameOfBlockId, ignoreSuggestions);
                             if (!suggestions.empty())
                             {
                                 ImGui::BeginChild("suggestionlist", { 150, static_cast<float>(suggestions.size() * 20) + 10 }, true);
@@ -239,7 +239,7 @@ namespace toad::ui
 
                     else if (is_Blink)
                     {
-                        utils::setting_menu("Blink", is_Blink, []
+                        setting_menu("Blink", is_Blink, []
                             {
                                 ImGui::InputInt("keycode", &blink::key);
 								ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");

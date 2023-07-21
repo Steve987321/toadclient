@@ -45,7 +45,7 @@
     <ClInclude Include="src\toad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\utils.h">
+    <ClInclude Include="src\utils\helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Application\Fonts\Icons.h">
@@ -95,7 +95,7 @@
     <ClCompile Include="src\Application\ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\utils.cpp">
+    <ClCompile Include="src\utils\helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\inject\injector.cpp">

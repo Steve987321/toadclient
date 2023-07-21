@@ -9,7 +9,7 @@ std::shared_mutex mutex;
 
 bool toad::pre_init()
 {
-	utils::Twin_scan = std::thread(utils::Fwin_scan);
+	window_scanner_thread = std::thread(window_scanner);
 	return true;
 }
 
@@ -169,7 +169,7 @@ void toad::Fupdate_settings()
 
 void toad::stop_all_threads()
 {
-	if (utils::Twin_scan.joinable()) utils::Twin_scan.join();
+	if (window_scanner_thread.joinable()) window_scanner_thread.join();
 	if (Tupdate_settings.joinable()) Tupdate_settings.join();
 }
 

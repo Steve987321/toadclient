@@ -149,7 +149,7 @@
     <ClInclude Include="src\Application\Fonts\Icons.h" />
     <ClInclude Include="src\toad.h" />
     <ClInclude Include="src\utils\block_map.h" />
-    <ClInclude Include="src\utils\utils.h" />
+    <ClInclude Include="src\utils\helpers.h" />
     <ClInclude Include="vendor\imgui\backends\imgui_impl_dx9.h" />
     <ClInclude Include="vendor\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
@@ -166,7 +166,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\toad.cpp" />
     <ClCompile Include="src\Application\ui.cpp" />
-    <ClCompile Include="src\utils\utils.cpp" />
+    <ClCompile Include="src\utils\helpers.cpp" />
     <ClCompile Include="vendor\imgui\backends\imgui_impl_dx9.cpp" />
     <ClCompile Include="vendor\imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="vendor\imgui\imgui.cpp" />

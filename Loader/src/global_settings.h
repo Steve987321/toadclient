@@ -64,7 +64,7 @@ namespace toad
 		inline int fov = 180.f;
 
 		inline float distance = 5.f;
-		inline float speed = 5.f;
+		inline float speed = 50.f;
 		inline float reaction_time = 10; //ms
 	}
 
