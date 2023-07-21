@@ -188,7 +188,7 @@ namespace toad
     void Application::render_UI() const
     {
 #ifdef _DEBUG
-        ui::ui_main(io);
+        ui::ui_main(m_io);
 #else
         g_is_verified ? ui::ui_main(m_io) : ui::ui_init(m_io);
 #endif
