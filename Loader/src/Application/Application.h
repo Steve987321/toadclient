@@ -6,20 +6,20 @@
 
 namespace toad
 {
-	class CApplication
+	class Application
 	{
 	private:
-		HWND				     hwnd = {};
-		RECT					 rect = {};
-		WNDCLASSEX				 wc = {};
+		HWND				     m_hwnd = {};
+		RECT					 m_rect = {};
+		WNDCLASSEX				 m_wc = {};
 
-		ImGuiIO* io = nullptr;
-		ImGuiStyle* style = nullptr;
+		ImGuiIO* m_io = nullptr;
+		ImGuiStyle* m_style = nullptr;
 
 		FILE* f = nullptr;
 
 		// from imgui's example
-		[[nodiscard]] static bool CreateDeviceD3D(const HWND& hWnd);
+		_NODISCARD static bool CreateDeviceD3D(const HWND& hWnd);
 		static void CleanupDeviceD3D();
 		static void ResetDevice();
 		static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -27,25 +27,24 @@ namespace toad
 		void InitConsole();
 		bool SetupMenu();
 		void MenuLoop();
-		//void UpdateCursorInfo();
 
 	private:
 		// defined in ui.cpp
-		void render_UI();
+		void render_UI() const;
 
 	public:
 		constexpr static int WINDOW_WIDTH = 500, WINDOW_HEIGHT = 400;
 
 	public:
-		[[nodiscard]] bool Init();
+		_NODISCARD bool Init();
 		void MainLoop();
 		void Exit() const;
 
 	public:
-		[[nodiscard]] HWND get_window() const
+		_NODISCARD HWND GetWindow() const
 		{
-			return this->hwnd;
+			return this->m_hwnd;
 		}
 	};
-	inline auto AppInstance = std::make_unique<CApplication>();
+	inline auto AppInstance = std::make_unique<Application>();
 }

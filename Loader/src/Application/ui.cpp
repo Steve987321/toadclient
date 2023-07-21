@@ -4,7 +4,7 @@
 
 std::thread init_thread;
 
-namespace toad
+namespace toad::ui
 {
     // ui when injected
     void ui_main(const ImGuiIO* io)
@@ -65,13 +65,13 @@ namespace toad
                     timer += io->DeltaTime;
                     if (timer > 1)
                     {
-                        if (shownWindowList.size() != winListVec.size())
-                            shownWindowList = winListVec;
+                        if (shownWindowList.size() != g_mc_window_list.size())
+                            shownWindowList = g_mc_window_list;
 
                         count = false;
                     }
                 }
-                if (shownWindowList.size() != winListVec.size() && !count)
+                if (shownWindowList.size() != g_mc_window_list.size() && !count)
                 {
                     timer = 0;
                     count = true;
@@ -140,7 +140,7 @@ namespace toad
                 {
                     if (init_thread.joinable()) init_thread.join();
                     loading = false;
-                    show_message_box("failed", "failed to inject", failed_inject, true, mboxType::ERR);
+                    show_message_box("failed", (std::string("failed to inject ") + inject_status).c_str(), failed_inject, true, mboxType::ERR);
                 }
                 else if (invalid_client_type)
                 {
@@ -148,21 +148,11 @@ namespace toad
                     loading = false;
                     show_message_box("failed", "client is not supported", invalid_client_type, true, mboxType::ERR);
                 }
-                ImGui::Checkbox("Debug", &g_dll_debug_mode);
             }
             ImGui::EndChild(); // mc windows
         }
         ImGui::End(); // main window
 
         ImGui::PopStyleVar();
-    }
-
-    void CApplication::render_UI()
-    {
-#ifdef _DEBUG
-        ui_main(io);
-#else
-        g_is_verified ? ui_main(io) : ui_init(io);
-#endif
     }
 }

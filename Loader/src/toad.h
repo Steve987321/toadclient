@@ -25,15 +25,11 @@
 
 namespace toad
 {
-	inline bool g_dll_debug_mode = false;
-
 	// before init
 	_NODISCARD bool pre_init();
 
+	// Sets up ipc and threads and returns false if failed
 	_NODISCARD bool init();
-
-	void Fupdate_settings();
-	inline std::thread Tupdate_settings;
 
 	// stop all threads that are currently running 
 	void stop_all_threads();
@@ -43,6 +39,11 @@ namespace toad
 	// will be true when the program is in its main loop 
 	inline std::atomic_bool g_is_running = false;
 
+	// only updated when still in init screen
+	// contains the list of all minecraft windows that user can inject to  
+	inline std::vector<window> g_mc_window_list = {};
+
 	// will be true when injection was succesfull
+	// will remain false if we haven't injected 
 	inline bool g_is_verified = false;
 }

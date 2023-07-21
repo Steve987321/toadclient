@@ -2,54 +2,75 @@
 
 #include "../../ToadClient/nlohmann/json.hpp"
 
+using namespace toad;
+
+// for ipc to dll 
 HANDLE hMapFile = nullptr;
 constexpr int bufSize = 1000;
 
-std::shared_mutex mutex;
+// flag used to call init once
+std::once_flag init_once_flag;
+
+// threads for loader 
+inline std::thread updateSettingsThread;
+inline std::thread windowScannerThread;
+
+// updates settings for dll 
+extern void update_settings();
+// scan for minecraft instances 
+extern void window_scanner();
+
+extern bool is_proc_mc(DWORD dwPID);
+extern BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam);
 
 bool toad::pre_init()
 {
-	window_scanner_thread = std::thread(window_scanner);
+	windowScannerThread = std::thread(window_scanner);
 	return true;
 }
 
-bool initialized = false;
 bool toad::init()
 {
-	// setup ipc 
-	if (initialized) return false;
-	hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, bufSize, L"ToadClientMappingObj");
-	if (hMapFile == NULL)
-		return false;
-
-	LPVOID pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE, 0, 0, 0);
-	if (pMem == NULL)
+	bool res = false;
+	std::call_once(init_once_flag, [&]
 	{
-		CloseHandle(hMapFile);
-		return false;
-	}
-	
-	memset(pMem, L'\0', bufSize);
+		// setup ipc
 
-	UnmapViewOfFile(pMem);
+		hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, bufSize, L"ToadClientMappingObj");
+		if (hMapFile == NULL)
+		{
+			return;
+		}
 
-	// update settings for ipc 
-	Tupdate_settings = std::thread([]
+		LPVOID pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE, 0, 0, 0);
+		if (pMem == NULL)
+		{
+			CloseHandle(hMapFile);
+			return;
+		}
+
+		memset(pMem, L'\0', bufSize);
+
+		UnmapViewOfFile(pMem);
+
+		// update settings for ipc 
+		updateSettingsThread = std::thread([]
 		{
 			while (g_is_running)
 			{
-				Fupdate_settings();
+				update_settings();
 				SLEEP(100);
 			}
 		});
 
-	initialized = true;
-	return true;
+		res = true;
+	});
+
+	return res;
 }
 
-void toad::Fupdate_settings()
+void update_settings()
 {
-	std::unique_lock lock(mutex);
 	auto pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0);
 	if (pMem == NULL)
 	{
@@ -76,7 +97,7 @@ void toad::Fupdate_settings()
 		{
 			if (g_is_ui_internal)
 			{
-				ShowWindow(AppInstance->get_window(), SW_SHOW);
+				ShowWindow(AppInstance->GetWindow(), SW_SHOW);
 				data["ui_internal_should_close"] = false;
 				data["ui_internal"] = false;
 				g_is_ui_internal = false;
@@ -169,8 +190,8 @@ void toad::Fupdate_settings()
 
 void toad::stop_all_threads()
 {
-	if (window_scanner_thread.joinable()) window_scanner_thread.join();
-	if (Tupdate_settings.joinable()) Tupdate_settings.join();
+	if (windowScannerThread.joinable()) windowScannerThread.join();
+	if (updateSettingsThread.joinable()) updateSettingsThread.join();
 }
 
 void toad::clean_up()
@@ -178,3 +199,84 @@ void toad::clean_up()
 	CloseHandle(hMapFile);
 }
 
+bool is_proc_mc(DWORD dwPID)
+{
+	auto hModuleSnap = INVALID_HANDLE_VALUE;
+	MODULEENTRY32 me32;
+
+	// Take a snapshot of all modules in the specified process.
+	hModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwPID);
+	if (hModuleSnap == INVALID_HANDLE_VALUE)
+	{
+		return false;
+	}
+
+	// Set the size of the structure before using it.
+	me32.dwSize = sizeof(MODULEENTRY32);
+
+	// Retrieve information about the first module,
+	// and exit if unsuccessful
+	if (!Module32First(hModuleSnap, &me32))
+	{
+		std::cout << "Module32First was unsucessful \n"; 
+		CloseHandle(hModuleSnap);
+		return false;
+	}
+
+	// Check the module list of the process for jvm.dll or javaw.exe 
+	do
+	{
+		if (wcscmp(me32.szModule, L"jvm.dll") == 0 || wcscmp(me32.szModule, L"javaw.exe") == 0)
+			return true;
+	} while (Module32Next(hModuleSnap, &me32));
+
+	// We haven't found jvm.dll or javaw.exe in the process module list 
+	CloseHandle(hModuleSnap);
+	return false;
+}
+
+BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam) {
+	constexpr DWORD TITLE_SIZE = 1024;
+	DWORD PID = 0;
+
+	CHAR windowTitle[TITLE_SIZE];
+
+	GetWindowTextA(hwnd, windowTitle, TITLE_SIZE);
+
+	const int win_name_length = ::GetWindowTextLength(hwnd);
+
+	if (IsWindowVisible(hwnd) && win_name_length != 0) {
+		// convert window title to std::string
+		auto title = std::string(windowTitle);
+
+		// title to lower case 
+		std::ranges::transform(title, title.begin(), tolower);
+
+		// check if window title contains minecraft client names
+		if (title.find("lunar client") != std::string::npos || title.find("minecraft") != std::string::npos)
+		{
+			// check if important modules exist in the process
+			// before we add to the list 
+			GetWindowThreadProcessId(hwnd, &PID);
+			if (is_proc_mc(PID))
+				g_mc_window_list.emplace_back(title, PID, hwnd);
+		}
+
+		return TRUE;
+	}
+
+	return TRUE;
+}
+
+void window_scanner()
+{
+	while (toad::g_is_running)
+	{
+		if (!toad::g_is_verified) // we haven't injected yet
+		{
+			g_mc_window_list.clear();
+			EnumWindows(enumWindowCallback, 0);
+		}
+		SLEEP(1000);
+	}
+}

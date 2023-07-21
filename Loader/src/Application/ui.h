@@ -2,36 +2,11 @@
 
 namespace toad::ui
 {
-    inline void UIStyle()
-    {
-        //ImGuiStyle& s = ImGui::GetStyle();
-
-        //s.Colors[ImGuiCol_WindowBg] = ImColor(60, 65, 80, 60);
-        //s.Colors[ImGuiCol_ChildBg] = ImColor(0, 0, 0, 0);
-        //s.Colors[ImGuiCol_PopupBg] = ImColor(30, 35, 40, 180);
-        //s.Colors[ImGuiCol_Text] = ImColor(120, 120, 120, 255);
-        //s.Colors[ImGuiCol_TextDisabled] = ImColor(100, 100, 100, 255);
-        //s.Colors[ImGuiCol_Border] = ImColor(35, 40, 45, 200);
-        //s.Colors[ImGuiCol_TextSelectedBg] = ImColor(25, 22, 33, 100);
-        //s.WindowBorderSize = 0;
-        //s.WindowPadding = ImVec2(0, 0);
-        //s.WindowRounding = 10.f;
-        //s.PopupBorderSize = 0.f;
-        //s.PopupRounding = 7.f;
-        //s.ChildRounding = 10;
-        //s.ChildBorderSize = 1.f;
-        //s.FrameBorderSize = 0.0f;
-        //s.ScrollbarSize = 10.f;
-        //s.FrameRounding = 8.f;
-        //s.ItemSpacing = ImVec2(0, 5);
-        //s.ItemInnerSpacing = ImVec2(10, 0);
-    }
-
+    void ui_main(const ImGuiIO* io);
+    void ui_init(const ImGuiIO* io);
 
 	inline void UI(const ImGuiIO* io)
 	{
-
-        //UIStyle();
 
         // ui settings
         static bool tooltips = false;
@@ -310,7 +285,7 @@ namespace toad::ui
                     if (ImGui::Button("internal ui"))
                     {
                         g_is_ui_internal = true;
-                        ShowWindow(AppInstance->get_window(), SW_HIDE);
+                        ShowWindow(AppInstance->GetWindow(), SW_HIDE);
                     }
                 }
                 ImGui::EndChild();

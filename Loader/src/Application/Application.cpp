@@ -23,7 +23,7 @@ static D3DPRESENT_PARAMETERS    g_d3dpp;
 
 namespace toad
 {
-    bool CApplication::CreateDeviceD3D(const HWND& hWnd)
+    bool Application::CreateDeviceD3D(const HWND& hWnd)
     {
         if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
             return false;
@@ -43,13 +43,13 @@ namespace toad
         return true;
     }
 
-    void CApplication::CleanupDeviceD3D()
+    void Application::CleanupDeviceD3D()
     {
         if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = NULL; }
         if (g_pD3D) { g_pD3D->Release(); g_pD3D = NULL; }
     }
 
-    void CApplication::ResetDevice()
+    void Application::ResetDevice()
     {
         ImGui_ImplDX9_InvalidateDeviceObjects();
         HRESULT hr = g_pd3dDevice->Reset(&g_d3dpp);
@@ -58,7 +58,7 @@ namespace toad
         ImGui_ImplDX9_CreateDeviceObjects();
     }
 
-    LRESULT WINAPI CApplication::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+    LRESULT WINAPI Application::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
 
         if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
@@ -85,50 +85,50 @@ namespace toad
         return ::DefWindowProcW(hWnd, msg, wParam, lParam);
     }
 
-    void CApplication::InitConsole()
+    void Application::InitConsole()
     {
         AllocConsole();
         freopen_s(&f, "CONOUT$", "w", stdout);
     }
 
-    bool CApplication::SetupMenu()
+    bool Application::SetupMenu()
     {
-        GetWindowRect(GetDesktopWindow(), &rect);
-        auto x = float(rect.right - WINDOW_WIDTH) / 2.f;
-        auto y = float(rect.bottom - WINDOW_HEIGHT) / 2.f;
-        wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Toad Minecraft"), NULL };
-        ::RegisterClassEx(&wc);
+        GetWindowRect(GetDesktopWindow(), &m_rect);
+        auto x = float(m_rect.right - WINDOW_WIDTH) / 2.f;
+        auto y = float(m_rect.bottom - WINDOW_HEIGHT) / 2.f;
+        m_wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Toad Minecraft"), NULL };
+        ::RegisterClassEx(&m_wc);
 
-        hwnd = ::CreateWindow(wc.lpszClassName, _T("Toad"), WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, WINDOW_WIDTH, WINDOW_HEIGHT, NULL, NULL, wc.hInstance, NULL);
+        m_hwnd = ::CreateWindow(m_wc.lpszClassName, _T("Toad"), WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, WINDOW_WIDTH, WINDOW_HEIGHT, NULL, NULL, m_wc.hInstance, NULL);
 
         // Initialize Direct3D
-        if (!CreateDeviceD3D(hwnd))
+        if (!CreateDeviceD3D(m_hwnd))
         {
             CleanupDeviceD3D();
-            ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+            ::UnregisterClass(m_wc.lpszClassName, m_wc.hInstance);
             return false;
         }
 
         // Show the window
-        ::ShowWindow(hwnd, SW_SHOW);
-        ::UpdateWindow(hwnd);
+        ::ShowWindow(m_hwnd, SW_SHOW);
+        ::UpdateWindow(m_hwnd);
 
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
 
-        io = &ImGui::GetIO(); (void)io;
-        io->ConfigWindowsMoveFromTitleBarOnly = true;
-        io->Fonts->AddFontDefault();
+        m_io = &ImGui::GetIO(); (void)m_io;
+        m_io->ConfigWindowsMoveFromTitleBarOnly = true;
+        m_io->Fonts->AddFontDefault();
         static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
         ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
-        io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 24, &icons_config, icons_ranges);
+        m_io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 24, &icons_config, icons_ranges);
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
 
         // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-        style = &ImGui::GetStyle();
+        m_style = &ImGui::GetStyle();
       /*  if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             style->WindowRounding = 0.0f;
@@ -136,13 +136,13 @@ namespace toad
         }*/
 
         // Setup Platform/Renderer backends
-        ImGui_ImplWin32_Init(hwnd);
+        ImGui_ImplWin32_Init(m_hwnd);
         ImGui_ImplDX9_Init(g_pd3dDevice);
 
         return true;
     }
 
-    void CApplication::MenuLoop()
+    void Application::MenuLoop()
     {
         MSG msg;
         while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
@@ -151,7 +151,7 @@ namespace toad
             ::DispatchMessage(&msg);
             if (msg.message == WM_QUIT)
             {
-                toad::g_is_running = false;
+                g_is_running = false;
             }
         }
 
@@ -185,6 +185,15 @@ namespace toad
             ResetDevice();
     }
 
+    void Application::render_UI() const
+    {
+#ifdef _DEBUG
+        ui::ui_main(io);
+#else
+        g_is_verified ? ui::ui_main(m_io) : ui::ui_init(m_io);
+#endif
+    }
+
     //void c_Application::UpdateCursorInfo()
     //{
     //    CURSORINFO ci{ sizeof(CURSORINFO) };
@@ -200,7 +209,7 @@ namespace toad
     //    }
     //}
 
-    bool CApplication::Init()
+    bool Application::Init()
     {
 #ifdef _DEBUG
         InitConsole();
@@ -214,7 +223,7 @@ namespace toad
         return true;
     }
 
-    void CApplication::MainLoop()
+    void Application::MainLoop()
     {
         while (g_is_running)
         {
@@ -224,7 +233,7 @@ namespace toad
     }
 
     std::shared_mutex mutex;
-    void CApplication::Exit() const
+    void Application::Exit() const
     {
         std::unique_lock lock(mutex);
         std::cout << "closing\n";
@@ -238,8 +247,8 @@ namespace toad
         ImGui::DestroyContext();
 
         CleanupDeviceD3D();
-        ::DestroyWindow(hwnd);
-        ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+        ::DestroyWindow(m_hwnd);
+        ::UnregisterClass(m_wc.lpszClassName, m_wc.hInstance);
 
 #ifdef _DEBUG
         fclose(f);
