@@ -372,7 +372,9 @@ inline bool checkbox_button(const char* name, const char* icon, bool* v)
 	return res;
 }
 
-// use on modules
+/// used on modules
+///
+///	@param name the name of the module, also used as an id
 inline void setting_menu(const char* name, bool& opened, const std::function<void()>& components, bool use_extra_options = false, const std::function<void()>& extra_options = {})
 {
 	if (!opened) return;
@@ -418,7 +420,7 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(io->DisplaySize);
 #endif
-
+	
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.1f,0.1f,0.1f, bg_alpha_smooth });
 	ImGui::Begin("overlay", nullptr, window_flags);
 
@@ -428,6 +430,30 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 	ImGui::BeginChild(name, box_size_smooth, true, window_flags);
 	{
 		center_textX({ 1,1,1,1 }, name);
+
+		if (use_extra_options)
+		{
+			ImGui::SameLine(0, 60);
+			//ImGui::SetCursorPos({ eoptions_button_pos.x, eoptions_button_pos.y });
+			ImGui::Text(ICON_FA_ELLIPSIS_H);
+			ImGui::SameLine();
+			ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 1,1,1,0.2f });
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 1,1,1,0.1f });
+			ImGui::SetCursorPos({ ImGui::GetCursorPosX() - 35, ImGui::GetCursorPosY() - 4 });
+			ImGui::PushID(name);
+			if (ImGui::Button("##", { 30, 10 }))
+			{
+				is_eoptions_open = !is_eoptions_open;
+
+				eoptions_bg_alpha_target = is_eoptions_open ? 0.5f : 0.0f;
+				eoptions_box_pos_X = is_eoptions_open ? mid.x + 125 : mid.x + 100;
+				box_pos_X = is_eoptions_open ? 10 : kbox_pos_X;
+
+			}
+			ImGui::PopID();
+			ImGui::PopStyleColor(3);
+		}
 
 		ImGui::Separator();
 
@@ -443,7 +469,7 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 		if (is_eoptions_open)
 		{
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, { 0.1f, 0.1f, 0.1f, eoptions_bg_alpha_smooth });
-			ImGui::SetCursorPos({ eoptions_box_pos_X_smooth, get_middle_point().y - box_size_smooth.y / 2 });
+			ImGui::SetCursorPos({ eoptions_box_pos_X_smooth, mid.y - box_size_smooth.y / 2 });
 			ImGui::BeginChild("extra options", { box_size_smooth.x / 2 + 10, box_size_smooth.y }, true, window_flags);
 			{
 				center_textX({ 1,1,1,1 }, "Extra Options");
@@ -456,28 +482,6 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 
 			ImGui::PopStyleColor();
 		}
-
-		const ImVec2 eoptions_button_pos = {
-			box_pos_X_smooth + box_size_smooth.x,
-			get_middle_point().y - box_size_smooth.y / 2
-		};
-
-		ImGui::SetCursorPos(eoptions_button_pos);
-		ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 1,1,1,0.2f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 1,1,1,0.1f });
-		ImGui::PushID(name);
-		if (ImGui::Button("##", { 22, box_size_smooth.y }))
-		{
-			is_eoptions_open = !is_eoptions_open;
-
-			eoptions_bg_alpha_target = is_eoptions_open ? 0.5f : 0.0f;
-			eoptions_box_pos_X = is_eoptions_open ? get_middle_point().x + box_size_smooth.x / 4 : box_pos_X + box_size_smooth.x - 10;
-			box_pos_X = is_eoptions_open ? 10 : get_middle_point().x - box_size_smooth.x / 2;
-		}
-		ImGui::PopID();
-		ImGui::PopStyleColor(3);
-
 	}
 
 	// close when clicking off the settings menu
