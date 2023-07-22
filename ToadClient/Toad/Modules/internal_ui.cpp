@@ -68,23 +68,26 @@ namespace toadll
                     if (checkbox_button("Velocity", ICON_FA_WIND, &velocity::enabled)) is_Velocity = true;
 
                     if (is_LClicker)
-	                    setting_menu("LeftClicker", is_LClicker, []
-	                    {
-		                    ImGui::SliderInt("cps", &left_clicker::cps, 0, 20, "%dcps");
-		                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
-		                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
-		                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
-		                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
-		                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
-		                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
-	                    });
+                        setting_menu("LeftClicker", is_LClicker, []
+                            {
+                                if (ImGui::SliderInt("cps", &left_clicker::cps, 0, 20, "%dcps"))
+                                CLeftAutoClicker::SetDelays(left_clicker::cps);
+                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
+                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
+                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
+                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
+                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
+                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
+                            });
 
                     else if (is_RClicker)
                         setting_menu("RightClicker", is_RClicker, []
                             {
-                                ImGui::SliderInt("cps", &right_clicker::cps, 0, 20, "%dcps");
-                    ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
-                    ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
+                            if (ImGui::SliderInt("cps", &right_clicker::cps, 0, 20, "%dcps"))
+                                CRightAutoClicker::SetDelays(right_clicker::cps);
+
+		                    ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
+		                    ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
                             });
 
                     else if (is_AA)
