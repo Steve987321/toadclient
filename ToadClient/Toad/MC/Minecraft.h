@@ -3,7 +3,7 @@ namespace toadll
 {
 
 ///
-/// 
+/// Stores important game functions 
 ///
 class Minecraft
 {

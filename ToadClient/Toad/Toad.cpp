@@ -234,6 +234,7 @@ bool UpdateSettings()
 
 	// flag that will make sure the menu will show when switching to internal ui
 	static bool openMenuOnceFlag = true;
+
 	if (data.contains("ui_internal_should_close"))
 	{
 		if (data["ui_internal_should_close"])

@@ -94,7 +94,7 @@ namespace toad::ui
                     else if (is_Velocity)
                         setting_menu("Velocity", is_Velocity, []
                             {
-                                ImGui::Checkbox("Use Jump Reset", &velocity::jump_reset);
+                    ImGui::Checkbox("Use Jump Reset", &velocity::jump_reset);
                     ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
                     ImGui::SliderFloat("Vertical", &velocity::vertical, 0.f, 100.f, "%.1f%%");
                     ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");
@@ -135,7 +135,7 @@ namespace toad::ui
                     {
                         setting_menu("ESP", is_Esp, []
                             {
-                                ImGui::ColorEdit4("Outline Color", esp::lineCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+                        ImGui::ColorEdit4("Outline Color", esp::lineCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
                         ImGui::ColorEdit4("Fill Color", esp::fillCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
                         ImGui::Checkbox("Block Esp", &block_esp::enabled);
 

@@ -384,7 +384,9 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 	constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
 
 	auto cbox_col = ImGui::GetColorU32(ImGuiCol_PopupBg);
+
 	auto mid = get_middle_point();
+	
 	const ImVec2 kbox_size_real = { mid.x + 120, mid.y + 120 };
 	static ImVec2 box_size_smooth = { mid.x + 15, mid.y + 15 };
 	const static float kbox_pos_X = mid.x - box_size_smooth.x / 2;

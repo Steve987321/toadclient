@@ -304,9 +304,9 @@ namespace toadll
 
                     if (ImGui::Button("external ui"))
                     {
+                        LOGDEBUG("Closing Internal UI and switching to Loader's ui");
                         ShouldClose = true;
                     }
-                    // open key 
                 }
                 ImGui::EndChild();
             }

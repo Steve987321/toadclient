@@ -153,8 +153,10 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	auto lyaw = lPlayer->Yaw;
 	auto lpitch = lPlayer->Pitch;
 
+	// the horizontal distance to aim to aim at target
 	float yawDiff = wrap_to_180(-(lyaw - yawtarget));
 	float absYawDiff = abs(yawDiff);
+
 	if (!aa::aim_in_target && absYawDiff < 3.f)
 	{
 		SLEEP(1);
@@ -169,10 +171,10 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			return;
 		}
 
-	yawDiff += toadll::rand_float(-2.f, 2.f);
-	pitchDiff += toadll::rand_float(-2.f, 2.f);
+	yawDiff += rand_float(-2.f, 2.f);
+	pitchDiff += rand_float(-2.f, 2.f);
 
-	const int rand_100 = toadll::rand_int(0, 100);
+	const int rand_100 = rand_int(0, 100);
 
 	static Timer speed_rand_timer;
 	static Timer reaction_time_timer;
@@ -183,7 +185,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	if (speed_rand_timer.Elapsed<>() >= 400)
 	{
 		prev_long_speed_modifier = long_speed_modifier;
-		long_speed_modifier = toadll::rand_float(0.5f, 1.5f);
+		long_speed_modifier = rand_float(0.5f, 1.5f);
 		speed_rand_timer.Start();
 		//std::cout << "reset :" << long_speed_modifier << std::endl;
 	}
@@ -198,6 +200,8 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		reaction_time_timer.Start();
 	}
 
+	// get updated local player properties
+	// This will prevent flickering while moving the mouse and is smoother
 	auto editable_local_player = MC->getLocalPlayer();
 	if (!editable_local_player)
 	{
@@ -205,8 +209,8 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
+	// update yaw for aim assistance 
 	auto updated_yaw = editable_local_player->getRotationYaw();
-	//log_Debug("{} | %f = %f + %f", target->get_name().c_str(), lyaw + yawdiffSpeed, lyaw, yawdiffSpeed);
 	editable_local_player->setRotationYaw(updated_yaw + yawdiff_speed);
 	editable_local_player->setPrevRotationYaw(updated_yaw + yawdiff_speed);
 
