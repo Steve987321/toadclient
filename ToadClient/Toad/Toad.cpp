@@ -375,6 +375,8 @@ void init_modules()
 	CBlink::GetInstance();
 	CInternalUI::GetInstance();
 
+	//COfScreenArrows::GetInstance();
+
 	//CAutoPot::get_instance();
 
 	for (const auto& Module : CModule::moduleInstances)

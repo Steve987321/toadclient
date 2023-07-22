@@ -2,6 +2,11 @@
 namespace toadll
 {
 
+///
+/// ESP on blocks (x-ray)
+///
+///	TODO: It is very slow
+///
 class CBlockEsp SET_MODULE_CLASS(CBlockEsp)
 {
 private:

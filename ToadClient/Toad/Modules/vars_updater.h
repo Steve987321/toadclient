@@ -18,7 +18,7 @@ public:
 
 	/// The player the local player is looking at.
 	///	Only gets updated when IsMouseOverPlayer is true
-	static inline Entity MouseOverPlayer {};
+	static inline std::atomic<Entity> MouseOverPlayer {};
 
 	static inline std::atomic<float> PartialTick = 0;
 	static inline std::atomic<float> RenderPartialTick = 0;
@@ -26,11 +26,9 @@ public:
 	/// True when the player has any menu opened
 	static inline std::atomic_bool IsInGui = false;
 
-	static inline std::vector<float> ModelView = {};
-	static inline std::vector<float> Projection = {};
-	//static inline std::vector<std::shared_ptr<EntityT>> PlayerList = {};
-
-	static inline std::vector<Entity> PlayerList = {};
+	static inline std::array<float, 16> ModelView = {};
+	static inline std::array<float, 16> Projection = {};
+	static inline std::array<int, 4> Viewport = {};
 
 public:
 	CVarsUpdater() = default;
@@ -38,6 +36,7 @@ public:
 public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
+
 };
 
 }

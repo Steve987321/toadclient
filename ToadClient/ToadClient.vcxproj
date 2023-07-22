@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\Modules\visuals\of_screen_arrows.h" />
     <ClInclude Include="Toad\Modules\internal_ui.h" />
     <ClInclude Include="Toad\Modules\blink.h" />
     <ClInclude Include="Toad\Modules\autopot.h" />
@@ -196,6 +197,8 @@
     <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\module.cpp" />
+    <ClCompile Include="Toad\Modules\visuals\of_screen_arrows.cpp" />
     <ClCompile Include="Toad\Logger\logger.cpp" />
     <ClCompile Include="Toad\Modules\clicker\clicker_base.cpp" />
     <ClCompile Include="Toad\Modules\internal_ui.cpp" />

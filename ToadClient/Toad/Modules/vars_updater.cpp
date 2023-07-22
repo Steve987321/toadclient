@@ -8,11 +8,10 @@ void toadll::CVarsUpdater::PreUpdate()
 	auto localPlayer = MC->getLocalPlayer();
 	if (world == nullptr || localPlayer == nullptr)
 	{
-		if (world != nullptr)
-			env->DeleteLocalRef(world);
 		IsVerified = false;
 
-		PlayerList = {};
+		if (world != nullptr)
+			env->DeleteLocalRef(world);
 
 		SLEEP(20);
 		return;
@@ -20,8 +19,8 @@ void toadll::CVarsUpdater::PreUpdate()
 
 	env->DeleteLocalRef(world);
 
-	//static auto lPlayerName = tmpPlayer->getName();
-	//LocalPlayer->Name = lPlayerName;
+	//static auto lPlayerName = localPlayer->getName();
+	//theLocalPlayer->Name = lPlayerName;
 	theLocalPlayer->obj = localPlayer->obj;
 	theLocalPlayer->Health = localPlayer->getHealth();
 	theLocalPlayer->Invis = localPlayer->isInvisible();
@@ -35,8 +34,13 @@ void toadll::CVarsUpdater::PreUpdate()
 
 	if (auto tmpMouseOver = MC->getMouseOverPlayer(); tmpMouseOver != nullptr)
 	{
-		MouseOverPlayer.Pos = tmpMouseOver->getPosition();
-		MouseOverPlayer.HurtTime = tmpMouseOver->getHurtTime();
+		Entity e {};
+		e.Pos = tmpMouseOver->getPosition();
+		e.HurtTime = tmpMouseOver->getHurtTime();
+		MouseOverPlayer = e;
+
+		//MouseOverPlayer.Pos = tmpMouseOver->getPosition();
+		//MouseOverPlayer.HurtTime = tmpMouseOver->getHurtTime();
 		// add other properties when needed ...
 
 		IsMouseOverPlayer = true;
@@ -46,32 +50,8 @@ void toadll::CVarsUpdater::PreUpdate()
 		IsMouseOverPlayer = false;
 	}
 
-	/// Update the global player list
-
-	const auto playerList = MC->getPlayerList();
-
-	std::vector<Entity> tmp = {};
-	for (const auto& e : playerList)
-	{
-		if (!e || !e->obj)
-			continue;
-		if (env->IsSameObject(theLocalPlayer->obj, e->obj))
-			continue;
-
-		Entity entity;
-		entity.obj = e->obj;
-		entity.Pos = e->getPosition();
-		entity.HurtTime = e->getHurtTime();
-		entity.LastTickPos = e->getLastTickPosition();
-		entity.Invis = e->isInvisible();
-		entity.Pitch = e->getRotationPitch();
-		entity.Yaw = e->getRotationYaw();
-		tmp.emplace_back(entity);
-	}
-
-	PlayerList = tmp;
-
 	SLEEP(1);
+
 	IsVerified = true;
 
 }

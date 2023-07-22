@@ -25,6 +25,7 @@
 #include <thread>
 #include <cmath>
 #include <algorithm>
+#include <array>
 #include <vector>
 #include <gl/GL.h>
 #include <random>

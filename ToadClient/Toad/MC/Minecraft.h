@@ -26,7 +26,7 @@ public:
 	_NODISCARD static jclass getMcClass(JNIEnv* env);
 	_NODISCARD jclass getEntityLivingClass();
 
-	_NODISCARD std::unique_ptr<c_ActiveRenderInfo> getActiveRenderInfo();
+	_NODISCARD std::unique_ptr<ActiveRenderInfo> getActiveRenderInfo();
 
 	_NODISCARD jobject getMc();
 	_NODISCARD jobject getRenderManager();

@@ -2,7 +2,7 @@
 #include "Toad/Toad.h"
 #include "ActiveRenderInfo.h"
 
-std::vector<float> toadll::c_ActiveRenderInfo::get_modelview() const
+std::vector<float> toadll::ActiveRenderInfo::get_modelview() const
 {
 	std::vector<float> res = {}; 
 	auto fid = get_static_fid(ariclass, mappingFields::modelviewField, env);
@@ -23,9 +23,8 @@ std::vector<float> toadll::c_ActiveRenderInfo::get_modelview() const
 	return res;
 }
 
-void toadll::c_ActiveRenderInfo::set_modelview(std::vector<float>& vec) const
+void toadll::ActiveRenderInfo::set_modelview(std::array<float, 16>& arr) const
 {
-	vec.reserve(16);
 	auto fid = get_static_fid(ariclass, mappingFields::modelviewField, env);
 	if (!fid)
 		return;
@@ -35,14 +34,14 @@ void toadll::c_ActiveRenderInfo::set_modelview(std::vector<float>& vec) const
 
 	for (int i = 0; i < 16; i++)
 	{
-		vec[i] = env->CallFloatMethod(obj, getIndexBuf, i);
+		arr[i] = env->CallFloatMethod(obj, getIndexBuf, i);
 	}
 
 	env->DeleteLocalRef(obj);
 	env->DeleteLocalRef(bufklass);
 }
 
-std::vector<float>  toadll::c_ActiveRenderInfo::get_projection() const
+std::vector<float>  toadll::ActiveRenderInfo::get_projection() const
 {
 	std::vector<float> res = {};
 	auto fid = get_static_fid(ariclass, mappingFields::projectionField, env);
@@ -63,9 +62,8 @@ std::vector<float>  toadll::c_ActiveRenderInfo::get_projection() const
 	return res;
 }
 
-void toadll::c_ActiveRenderInfo::set_projection(std::vector<float>& vec) const
+void toadll::ActiveRenderInfo::set_projection(std::array<float, 16>& arr) const
 {
-	vec.reserve(16);
 	auto fid = get_static_fid(ariclass, mappingFields::projectionField, env);
 	if (!fid)
 		return;
@@ -75,7 +73,7 @@ void toadll::c_ActiveRenderInfo::set_projection(std::vector<float>& vec) const
 
 	for (int i = 0; i < 16; i++)
 	{
-		vec[i] = env->CallFloatMethod(obj, getIndexBuf, i);
+		arr[i] = env->CallFloatMethod(obj, getIndexBuf, i);
 	}
 
 	env->DeleteLocalRef(obj);
@@ -98,7 +96,7 @@ void toadll::c_ActiveRenderInfo::set_projection(std::vector<float>& vec) const
 //	env->DeleteLocalRef(ibufklass);
 //}
 
-toadll::Vec3 toadll::c_ActiveRenderInfo::get_render_pos() const
+toadll::Vec3 toadll::ActiveRenderInfo::get_render_pos() const
 {
 	return to_vec3(env->CallStaticObjectMethod(ariclass, get_static_mid(ariclass, mapping::getRenderPos, env)), env);
 }

@@ -12,11 +12,6 @@ namespace toadll {
 ///
 class CModule
 {
-protected:
-	JNIEnv* env = nullptr;
-
-	std::shared_ptr<Minecraft> MC = nullptr;
-
 public:
 	bool Initialized = false;
 	inline static std::vector<CModule*> moduleInstances = {};
@@ -28,28 +23,37 @@ public:
 	}
 
 public:
-	void SetEnv(JNIEnv* Env) { env = Env; }
+	void SetEnv(JNIEnv* Env);
 
 	/// Moves a newly made unique instance of Minecraft to this Cheat Module
-	void SetMC(std::unique_ptr<Minecraft>& mc) { MC = std::move(mc); }
+	void SetMC(std::unique_ptr<Minecraft>& mc);
 
 public:
 	/// Executes every tick or 100ms(when not in game) even when player is null
-	virtual void PreUpdate() { SLEEP(1); }
+	virtual void PreUpdate();
 
 	/// Executes every system tick when player is not null
-	virtual void Update(const std::shared_ptr<LocalPlayer>& lPlayer) { SLEEP(1); }
+	virtual void Update(const std::shared_ptr<LocalPlayer>& lPlayer);
 
 	/// Executes inside the wglswapbuffers hook.
 	///
 	///	@see HSwapBuffers
-	virtual void OnRender() {}
+	virtual void OnRender();
 
 	/// Executes inside the wglswapbuffers hook when ImGui is getting rendered.
 	///
 	///	@see HSwapBuffers
-	virtual void OnImGuiRender(ImDrawList* draw) {}
+	virtual void OnImGuiRender(ImDrawList* draw);
 
+protected:
+	JNIEnv* env = nullptr;
+	std::shared_ptr<Minecraft> MC = nullptr;
+
+protected:
+	// useful helper functions for cheat modules
+
+	/// Returns the player list excluding the local player 
+	_NODISCARD std::vector<Entity> GetPlayerList() const;
 };
 
 }

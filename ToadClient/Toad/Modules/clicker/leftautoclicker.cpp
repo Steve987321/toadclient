@@ -47,7 +47,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		m_start = std::chrono::high_resolution_clock::now();
 
 		m_pTick = CVarsUpdater::PartialTick;
-		static auto enemy = CVarsUpdater::MouseOverPlayer;
+		static auto enemy = CVarsUpdater::MouseOverPlayer.load();
 		static bool has_active_enemy = false;
 		if (!CVarsUpdater::IsMouseOverPlayer)
 		{

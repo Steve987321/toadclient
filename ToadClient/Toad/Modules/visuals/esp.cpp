@@ -6,17 +6,78 @@ using namespace toad;
 
 namespace toadll {
 
-std::vector<BBox> CEsp::GetBBoxes(const std::shared_ptr<LocalPlayer>& lPlayer)
+void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
+{
+	if (!esp::enabled || !CVarsUpdater::IsVerified)
+	{
+		SLEEP(250);
+		return;
+	}
+
+	// Update our bounding boxes list
+
+	std::lock_guard lock(m_bboxesMutex);
+
+	m_bboxes = GetBBoxes();
+}
+
+void CEsp::OnRender()
+{
+	if (!esp::enabled || !CVarsUpdater::IsVerified)
+	{
+		std::lock_guard lock(m_bboxesMutex);
+		m_bboxes.clear();
+		return;
+	}
+
+	if (m_bboxes.empty())
+		return;
+
+	glPushMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf(CVarsUpdater::Projection.data());
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(CVarsUpdater::ModelView.data());
+
+	glPushMatrix();
+	glEnable(GL_LINE_SMOOTH);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_TEXTURE_2D);
+	glDepthMask(false);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glLineWidth(1.f);
+
+	m_bboxesMutex.lock();
+	for (const auto& bb : m_bboxes)
+	{
+		draw2dBox(bb);
+	}
+	m_bboxesMutex.unlock();
+
+	glDisable(GL_BLEND);
+	glDepthMask(true);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_LINE_SMOOTH);
+	glPopMatrix();
+
+	glPopMatrix();
+}
+
+std::vector<BBox> CEsp::GetBBoxes() const
 {
 	std::vector<BBox> bboxesRes = {};
 
-	for (const auto& entity : CVarsUpdater::PlayerList)
+	for (const auto& entity : GetPlayerList())
 	{
 		if (entity.Invis)
 			continue;
 
-		auto playerlasttickpos = lPlayer->LastTickPos;
-		auto currPos = lPlayer->Pos;
+		auto player = MC->getLocalPlayer();
+
+		auto playerlasttickpos = player->getLastTickPosition();
+		auto currPos = player->getPosition();
 		auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * CVarsUpdater::RenderPartialTick;
 
 		auto lasttickpos = entity.LastTickPos;
@@ -89,7 +150,8 @@ void CEsp::draw2dBox(const BBox& bbox)
 			center + cameraRight * extents.x + cameraUp * extents.y
 	};
 
-	// fill 
+	// fill
+	//LOGDEBUG("ESP FILL COL ALPHA {}", esp::fillCol[3]);
 	glColor4f(esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3]);
 	glBegin(GL_QUADS);
 	for (const auto& vertice : vertices)
@@ -106,59 +168,6 @@ void CEsp::draw2dBox(const BBox& bbox)
 		glVertex3f(vertice.x, vertice.y, vertice.z);
 	}
 	glEnd();
-}
-
-void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
-{
-	if (!esp::enabled || !CVarsUpdater::IsVerified)
-	{
-		SLEEP(250);
-		return;
-	}
-
-	// Update our bounding boxes list
-	m_bboxes = GetBBoxes(lPlayer);
-}
-
-void CEsp::OnRender()
-{
-	if (!esp::enabled || !CVarsUpdater::IsVerified) 
-	{
-		m_bboxes.clear();
-		return;
-	}
-
-	if (m_bboxes.empty())
-		return;
-
-	glPushMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(CVarsUpdater::Projection.data());
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(CVarsUpdater::ModelView.data());
-
-	glPushMatrix();
-	glEnable(GL_LINE_SMOOTH);
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_TEXTURE_2D);
-	glDepthMask(false);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-	glLineWidth(1.f);
-
-	for (const auto& bb : m_bboxes)
-	{
-		draw2dBox(bb);
-	}
-
-	glDisable(GL_BLEND);
-	glDepthMask(true);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_LINE_SMOOTH);
-	glPopMatrix();
-
-	glPopMatrix();
 }
 
 }

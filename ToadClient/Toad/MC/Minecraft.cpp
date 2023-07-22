@@ -24,14 +24,14 @@ jclass toadll::Minecraft::getEntityLivingClass()
     return m_elbclass;
 }
 
-std::unique_ptr<toadll::c_ActiveRenderInfo> toadll::Minecraft::getActiveRenderInfo()
+std::unique_ptr<toadll::ActiveRenderInfo> toadll::Minecraft::getActiveRenderInfo()
 {
 	if (m_ariclass == nullptr)
 	{
         m_ariclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.client.renderer.ActiveRenderInfo", env));
 	}
     
-    return std::make_unique<c_ActiveRenderInfo>(m_ariclass, env);
+    return std::make_unique<ActiveRenderInfo>(m_ariclass, env);
 }
 
  

@@ -2,6 +2,8 @@
 #include "Toad/Toad.h"
 #include "wglswapbuffers.h"
 
+#include <array>
+
 #include "../Loader/src/Application/Fonts/Icons.h"
 #include "../Loader/src/Application/Fonts/fa-solid-900Font.h"
 
@@ -44,18 +46,18 @@ namespace toadll
 		static int init_stage = 0;
 
 		GLint viewport[4];
-		glGetIntegerv(GL_VIEWPORT, viewport);
+		glGetIntegerv(GL_VIEWPORT, CVarsUpdater::Viewport.data());
 
 		// check for resolution change
-		if (g_screen_width != viewport[2] || g_screen_height != viewport[3])
+		if (g_screen_width != CVarsUpdater::Viewport[2] || g_screen_height != CVarsUpdater::Viewport[3])
 		{
 			// update window handle 
 			// window handle gets lost when switching between fullscreen and windowed
 			g_hWnd = hwnd;
 		}
 
-		g_screen_width = viewport[2];
-		g_screen_height = viewport[3];
+		g_screen_width = CVarsUpdater::Viewport[2];
+		g_screen_height = CVarsUpdater::Viewport[3];
 
 		for (const auto& Module : CModule::moduleInstances)
 			Module->OnRender();
@@ -67,7 +69,7 @@ namespace toadll
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 
-			glOrtho(0, viewport[2], viewport[3], 0, 1, -1);
+			glOrtho(0, CVarsUpdater::Viewport[2], CVarsUpdater::Viewport[3], 0, 1, -1);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glClearColor(0, 0, 0, 1);

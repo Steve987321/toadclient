@@ -4,6 +4,7 @@
 
 #include <gl/GL.h>
 #pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "glu32.lib")
 
 // used when precision isn't required but the CPU should be saved
 #define SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
@@ -33,14 +34,13 @@
 #include "module.h"
 
 #include "Modules/vars_updater.h"
-
 #include "Modules/clicker/rand_types.h"
 #include "Modules/clicker/clicker_base.h"
-
 #include "Modules/clicker/leftautoclicker.h"
 #include "Modules/clicker/rightautoclicker.h"
 #include "Modules/visuals/esp.h"
 #include "Modules/visuals/block_esp.h"
+#include "Modules/visuals/of_screen_arrows.h"
 #include "Modules/autopot.h"
 #include "Modules/aimassist.h"
 #include "Modules/blink.h"
