@@ -21,6 +21,23 @@ namespace toadll
 			if (wParam == CInternalUI::ShowMenuKey)
 			{
 				CInternalUI::MenuIsOpen = !CInternalUI::MenuIsOpen;
+
+				static POINT cursorPos { -1, -1 };
+				if (CInternalUI::MenuIsOpen)
+				{
+					// opened the menu 
+
+					// save cursor pos
+					GetCursorPos(&cursorPos);
+				}
+				else
+				{
+					// closed the menu
+
+					// set cursor pos to original position to prevent the flicking
+					if (cursorPos.x != -1 || cursorPos.y != -1)
+						SetCursorPos(cursorPos.x, cursorPos.y);
+				}
 			}
 		}
 		
