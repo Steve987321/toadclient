@@ -31,7 +31,7 @@ void toadll::COfScreenArrows::Update(const std::shared_ptr<LocalPlayer>& lPlayer
 		//if (screenx < 0 || screenx > g_screen_width || screeny < 0 || screeny > g_screen_height)
 			//res.push_back({ e, Vec3{static_cast<float>(screenx), static_cast<float>(screeny), static_cast<float>(screenz)} });
 
-		Vec2 screen;
+		Vec2 screen{};
 		//WorldToScreen(e.Pos - lPlayer->Pos, screen, CVarsUpdater::ModelView, CVarsUpdater::Projection, g_screen_width, g_screen_height);
 		//WorldToScreen(lPlayer->Pos, e.Pos,  CVarsUpdater::ModelView, CVarsUpdater::Projection, g_screen_width, g_screen_height);
 		res.push_back({ e, Vec3{screen.x, screen.y, 1 } });

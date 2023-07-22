@@ -2,6 +2,8 @@
 #include "Toad/Toad.h"
 #include "block_esp.h"
 
+#include "draw_helpers.h"
+
 using namespace toad;
 
 void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
@@ -86,7 +88,7 @@ void toadll::CBlockEsp::OnRender()
 	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
 	
 	for (const auto& [block, col] : m_blocks)
-		draw3dBox(BBox{ block.min - lPos, block.max - lPos }, col);
+		draw3d_box_fill(BBox{ block.min - lPos, block.max - lPos }, col);
 
 	glDisable(GL_BLEND);
 	glDepthMask(true);

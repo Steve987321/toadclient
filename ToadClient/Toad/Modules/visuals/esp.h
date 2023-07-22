@@ -19,11 +19,6 @@ private:
 	/// 
 	/// the bounding boxes are relative to the player 
 	std::vector<BBox> GetBBoxes() const;
-
-private:
-	static void draw3dBox(const BBox& bbox);
-
-	static void draw2dBox(const BBox& bbox);
 };
 
 }

@@ -2,6 +2,8 @@
 #include "Toad/Toad.h"
 #include "esp.h"
 
+#include "draw_helpers.h"
+
 using namespace toad;
 
 namespace toadll {
@@ -51,7 +53,11 @@ void CEsp::OnRender()
 	m_bboxesMutex.lock();
 	for (const auto& bb : m_bboxes)
 	{
-		draw2dBox(bb);
+		draw2dBox(
+			bb,
+			{esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3]},
+			{esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]}
+		);
 	}
 	m_bboxesMutex.unlock();
 
@@ -99,75 +105,6 @@ std::vector<BBox> CEsp::GetBBoxes() const
 	}
 
 	return bboxesRes;
-}
-
-void CEsp::draw3dBox(const BBox& bbox)
-{
-	glBegin(3);
-	glColor4f(esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]);
-	glVertex3f(bbox.min.x, bbox.min.y, bbox.min.z);
-	glVertex3f(bbox.max.x, bbox.min.y, bbox.min.z);
-	glVertex3f(bbox.max.x, bbox.min.y, bbox.max.z);
-	glVertex3f(bbox.min.x, bbox.min.y, bbox.max.z);
-	glVertex3f(bbox.min.x, bbox.min.y, bbox.min.z);
-	glEnd();
-
-	glBegin(3);
-	glColor4f(esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]);
-	glVertex3f(bbox.min.x, bbox.max.y, bbox.min.z);
-	glVertex3f(bbox.max.x, bbox.max.y, bbox.min.z);
-	glVertex3f(bbox.max.x, bbox.max.y, bbox.max.z);
-	glVertex3f(bbox.min.x, bbox.max.y, bbox.max.z);
-	glVertex3f(bbox.min.x, bbox.max.y, bbox.min.z);
-	glEnd();
-
-	glBegin(1);
-	glColor4f(esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]);
-	glVertex3f(bbox.min.x, bbox.min.y, bbox.min.z);
-	glVertex3f(bbox.min.x, bbox.max.y, bbox.min.z);
-	glVertex3f(bbox.max.x, bbox.min.y, bbox.min.z);
-	glVertex3f(bbox.max.x, bbox.max.y, bbox.min.z);
-	glVertex3f(bbox.max.x, bbox.min.y, bbox.max.z);
-	glVertex3f(bbox.max.x, bbox.max.y, bbox.max.z);
-	glVertex3f(bbox.min.x, bbox.min.y, bbox.max.z);
-	glVertex3f(bbox.min.x, bbox.max.y, bbox.max.z);
-	glEnd();
-}
-
-void CEsp::draw2dBox(const BBox& bbox)
-{
-	Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
-	Vec3 cameraUp = { CVarsUpdater::ModelView[1], CVarsUpdater::ModelView[5], CVarsUpdater::ModelView[9] };
-	Vec3 cameraRight = cameraForward.cross(cameraUp);
-
-	Vec3 center = (bbox.min + bbox.max) * 0.5f;
-	Vec3 extents = (bbox.max - bbox.min) * 0.5f;
-
-	Vec3 vertices[4] = {
-			center + cameraRight * extents.x - cameraUp * extents.y,
-			center - cameraRight * extents.x - cameraUp * extents.y,
-			center - cameraRight * extents.x + cameraUp * extents.y,
-			center + cameraRight * extents.x + cameraUp * extents.y
-	};
-
-	// fill
-	//LOGDEBUG("ESP FILL COL ALPHA {}", esp::fillCol[3]);
-	glColor4f(esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3]);
-	glBegin(GL_QUADS);
-	for (const auto& vertice : vertices)
-	{
-		glVertex3f(vertice.x, vertice.y, vertice.z);
-	}
-	glEnd();
-
-	// outlines
-	glColor4f(esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]);
-	glBegin(GL_LINE_LOOP);
-	for (const auto& vertice : vertices)
-	{
-		glVertex3f(vertice.x, vertice.y, vertice.z);
-	}
-	glEnd();
 }
 
 }
