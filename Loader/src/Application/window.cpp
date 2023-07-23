@@ -12,7 +12,6 @@ namespace toad
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-    
 Window::Window(std::string_view window_title, int win_height, int win_width)
 {
     std::cout << "Creating window with name: " << window_title << std::endl;
@@ -90,12 +89,12 @@ bool Window::CreateImGuiWindow(std::string_view window_title, int win_height, in
     ss << window_title.data() << L" class";
     
     GetWindowRect(GetDesktopWindow(), &desktop_rect);
-    auto x = float(desktop_rect.right - win_width) / 2.f;
-    auto y = float(desktop_rect.bottom - win_height) / 2.f;
+    auto x = (desktop_rect.right - win_width) / 2;
+    auto y = (desktop_rect.bottom - win_height) / 2;
     m_wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, ss.str().c_str(), NULL };
     ::RegisterClassEx(&m_wc);
 
-    m_hwnd = ::CreateWindowA(LPCSTR(m_wc.lpszClassName), window_title.data(), WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, win_width, win_height, NULL, NULL, m_wc.hInstance, NULL);
+    m_hwnd = ::CreateWindowA((LPCSTR)m_wc.lpszClassName, window_title.data(), WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, win_width, win_height, NULL, NULL, m_wc.hInstance, this);
 
     m_windowHwndMap.insert({m_hwnd, this});
 
@@ -119,7 +118,11 @@ bool Window::CreateImGuiWindow(std::string_view window_title, int win_height, in
     m_io->ConfigWindowsMoveFromTitleBarOnly = true;
     m_io->Fonts->AddFontDefault();
     static constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
-    ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+
+    ImFontConfig icons_config;
+	icons_config.MergeMode = true;
+	icons_config.PixelSnapH = true;
+
     m_io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 24, &icons_config, icons_ranges);
 
     // Setup Dear ImGui style
@@ -147,15 +150,15 @@ bool Window::CreateDeviceD3D(const HWND& hWnd)
         return false;
 
     // Create the D3DDevice
-    ZeroMemory(&m_d3dProperties.D3DParams, sizeof(m_d3dProperties.D3DParams));
-    m_d3dProperties.D3DParams.Windowed = TRUE;
-    m_d3dProperties.D3DParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    m_d3dProperties.D3DParams.BackBufferFormat = D3DFMT_UNKNOWN; // Need to use an explicit format with alpha if needing per-pixel alpha composition.
-    m_d3dProperties.D3DParams.EnableAutoDepthStencil = TRUE;
-    m_d3dProperties.D3DParams.AutoDepthStencilFormat = D3DFMT_D16;
-    m_d3dProperties.D3DParams.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
+    ZeroMemory(m_d3dProperties.pD3DParams, sizeof(*m_d3dProperties.pD3DParams));
+    m_d3dProperties.pD3DParams->Windowed = TRUE;
+    m_d3dProperties.pD3DParams->SwapEffect = D3DSWAPEFFECT_DISCARD;
+    m_d3dProperties.pD3DParams->BackBufferFormat = D3DFMT_UNKNOWN; // Need to use an explicit format with alpha if needing per-pixel alpha composition.
+    m_d3dProperties.pD3DParams->EnableAutoDepthStencil = TRUE;
+    m_d3dProperties.pD3DParams->AutoDepthStencilFormat = D3DFMT_D16;
+    m_d3dProperties.pD3DParams->PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
     //m_d3dProperties.D3Dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present without vsync, maximum unthrottled framerate
-    if (m_d3dProperties.pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &m_d3dProperties.D3DParams, &m_d3dProperties.pD3DDevice) < 0)
+    if (m_d3dProperties.pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, m_d3dProperties.pD3DParams, &m_d3dProperties.pD3DDevice) < 0)
         return false;
 
     return true;
@@ -170,7 +173,7 @@ void Window::CleanupDeviceD3D()
 void Window::ResetDevice()
 {
     ImGui_ImplDX9_InvalidateDeviceObjects();
-    HRESULT hr = m_d3dProperties.pD3DDevice->Reset(&m_d3dProperties.D3DParams);
+    HRESULT hr = m_d3dProperties.pD3DDevice->Reset(m_d3dProperties.pD3DParams);
     if (hr == D3DERR_INVALIDCALL)
         IM_ASSERT(0);
     ImGui_ImplDX9_CreateDeviceObjects();
@@ -178,7 +181,7 @@ void Window::ResetDevice()
 
 LRESULT WINAPI Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    // 
+    // There are other ways to get the correct window instance, this is using a map
     auto window = GetWindowInstance(hWnd);
     if (!window)
     {
@@ -186,7 +189,7 @@ LRESULT WINAPI Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
         return ::DefWindowProcW(hWnd, msg, wParam, lParam);
     }
 
-    auto [pD3D, pD3DDevice, D3DParams] = window->GetD3DProperties();
+    auto [pD3D, pD3DDevice, pD3DParams] = window->GetD3DProperties();
 
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
         return true;
@@ -196,8 +199,8 @@ LRESULT WINAPI Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
     case WM_SIZE:
         if (pD3DDevice != NULL && wParam != SIZE_MINIMIZED)
         {
-            D3DParams.BackBufferWidth = LOWORD(lParam);
-            D3DParams.BackBufferHeight = HIWORD(lParam);
+            pD3DParams->BackBufferWidth = LOWORD(lParam);
+            pD3DParams->BackBufferHeight = HIWORD(lParam);
             window->ResetDevice();
         }
         return 0;

@@ -8,7 +8,7 @@ namespace toad {
 ///
 /// Class that manages windows with ImGui
 ///
-class Window
+class Window final
 {
 public:
 	Window(std::string_view window_title, int win_height, int win_width);
@@ -19,7 +19,7 @@ public:
 	{
 		LPDIRECT3D9              pD3D{};
 		LPDIRECT3DDEVICE9        pD3DDevice{};
-		D3DPRESENT_PARAMETERS    D3DParams{};
+		D3DPRESENT_PARAMETERS*   pD3DParams{};
 	};
 
 public:
