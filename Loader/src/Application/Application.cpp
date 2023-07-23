@@ -88,14 +88,16 @@ namespace toad
     void Application::InitConsole()
     {
         AllocConsole();
-        freopen_s(&f, "CONOUT$", "w", stdout);
+        freopen_s(&m_f, "CONOUT$", "w", stdout);
     }
 
     bool Application::SetupMenu()
     {
-        GetWindowRect(GetDesktopWindow(), &m_rect);
-        auto x = float(m_rect.right - WINDOW_WIDTH) / 2.f;
-        auto y = float(m_rect.bottom - WINDOW_HEIGHT) / 2.f;
+        RECT desktop_rect = {};
+
+        GetWindowRect(GetDesktopWindow(), &desktop_rect);
+        auto x = float(desktop_rect.right - WINDOW_WIDTH) / 2.f;
+        auto y = float(desktop_rect.bottom - WINDOW_HEIGHT) / 2.f;
         m_wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Toad Minecraft"), NULL };
         ::RegisterClassEx(&m_wc);
 
@@ -236,7 +238,7 @@ namespace toad
     void Application::Exit() const
     {
         std::unique_lock lock(mutex);
-        std::cout << "closing\n";
+        std::cout << "closing main window\n";
         g_is_running = false;
 
         clean_up();
