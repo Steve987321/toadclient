@@ -95,7 +95,7 @@ void update_settings()
 		{
 			if (g_is_ui_internal)
 			{
-				ShowWindow(AppInstance->GetWindow(), SW_SHOW);
+				ShowWindow(AppInstance->GetWindow()->GetHandle(), SW_SHOW);
 				data["ui_internal_should_close"] = false;
 				data["ui_internal"] = false;
 				g_is_ui_internal = false;

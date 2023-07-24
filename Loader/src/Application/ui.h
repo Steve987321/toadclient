@@ -7,7 +7,6 @@ namespace toad::ui
 
 	inline void UI(const ImGuiIO* io)
 	{
-
         // ui settings
         static bool tooltips = false;
 #ifdef TOAD_LOADER
@@ -29,6 +28,10 @@ namespace toad::ui
                 if (ImGui::Button("Misc", { 85, 30 }))
                 {
                     tab = 1;
+                }
+                if (ImGui::Button("Create Window [test]", { 85, 30 }))
+                {
+                    static Window window("test", 400, 400);
                 }
             } ImGui::EndChild();
 
@@ -285,7 +288,7 @@ namespace toad::ui
                     if (ImGui::Button("internal ui"))
                     {
                         g_is_ui_internal = true;
-                        ShowWindow(AppInstance->GetWindow(), SW_HIDE);
+                        ShowWindow(AppInstance->GetWindow()->GetHandle(), SW_HIDE);
                     }
                 }
                 ImGui::EndChild();
