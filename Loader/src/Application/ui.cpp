@@ -27,6 +27,9 @@ namespace toad::ui
         ui::UI(io);
     }
 
+    // for the flickering of the possible minecraft windows
+    std::vector<window> shownWindowList = {};
+
     // ui when not injected 
     void ui_init(const ImGuiIO* io)
     {
@@ -46,20 +49,17 @@ namespace toad::ui
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 
-        ImGui::Begin("select minecraft", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
+    	ImGui::Begin("select minecraft", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
         {
             center_textX(ImVec4(0.3f, 0.3f, 0.3f, 1), "please select the minecraft window");
             ImGui::BeginChild("mc windows", ImVec2(0, 0), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
             {
-                // for the flickering of the possible minecraft windows 
-                static std::vector<window> shownWindowList = {};
                 static float timer = 0;
                 static bool count = false;
                 static bool failed_shared_mem = false;
                 static bool failed_inject = false;
                 static bool invalid_client_type = false;
                 static bool loading = false;
-
                 if (count)
                 {
                     timer += io->DeltaTime;

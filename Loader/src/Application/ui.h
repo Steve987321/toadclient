@@ -5,8 +5,8 @@ namespace toad::ui
     void ui_main(const ImGuiIO* io);
     void ui_init(const ImGuiIO* io);
 
-	inline void UI(const ImGuiIO* io)
-	{
+    inline void UI(const ImGuiIO* io)
+    {
         // ui settings
         static bool tooltips = false;
 #ifdef TOAD_LOADER
