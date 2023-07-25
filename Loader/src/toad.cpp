@@ -25,6 +25,7 @@ extern BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam);
 
 bool toad::pre_init()
 {
+	std::cout << "Starting window scanner thread\n";
 	windowScannerThread = std::thread(window_scanner);
 	return true;
 }

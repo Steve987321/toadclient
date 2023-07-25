@@ -32,7 +32,7 @@ namespace toad
     void Application::render_UI(ImGuiIO* io)
     {
 #ifdef _DEBUG
-        ui::ui_main(io);
+        ui::ui_init(io);
 #else
         g_is_verified ? ui::ui_main(io) : ui::ui_init(io);
 #endif
@@ -44,16 +44,19 @@ namespace toad
         InitConsole();
 #endif
 
+        g_is_running = true;
+
         m_window = std::make_shared<Window>("Toad", WINDOW_HEIGHT, WINDOW_WIDTH);
         m_window->SetUI(render_UI);
+        m_window->StartWindow();
 
         //if (!SetupMenu()) return false;
-        if (!pre_init()) return false;
+        if (!pre_init())
+            return false;
 
 #ifndef _DEBUG
         //ShowWindow(GetConsoleWindow(), SW_HIDE);
 #endif
-        g_is_running = true;
         return true;
     }
 
@@ -63,7 +66,7 @@ namespace toad
         {
             //m_window->UpdateMenu();
             //MenuLoop();
-			SLEEP(1);
+			SLEEP(100);
         }
     }
 
@@ -71,8 +74,10 @@ namespace toad
     void Application::Exit() const
     {
         std::unique_lock lock(mutex);
-        std::cout << "closing main window\n";
+        std::cout << "closing\n";
         g_is_running = false;
+
+        m_window->DestroyWindow();
 
         clean_up();
         stop_all_threads();

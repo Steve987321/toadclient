@@ -11,7 +11,7 @@ namespace toad {
 class Window final
 {
 public:
-	Window(const std::string& window_title, int win_height, int win_width);
+	Window(std::string window_title, int win_height, int win_width);
 	~Window();
 
 public:
@@ -23,14 +23,6 @@ public:
 	};
 
 public:
-	static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-	/// Returns an active window with given argument as id if found.
-	///
-	///	Returns null if not found
-	static Window* GetWindowInstance(std::string_view window_name);
-	static Window* GetWindowInstance(const HWND& hwnd);
-
 	D3DProperties* GetD3DProperties();
 	HWND GetHandle() const;
 	bool IsActive() const;
@@ -39,12 +31,24 @@ public:
 	void SetUI(const std::function<void(ImGuiIO* io)>& ui_func);
 
 public:
+	void StartWindow();
+	void DestroyWindow();
 	void UpdateMenu();
 
-private:
-	void DestroyWindow();
-	void StartImGuiWindow(const std::string& window_title, int win_height, int win_width);
+public:
+	static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+	/// Returns an active window with given argument as id if found.
+	///
+	///	Returns null if not found
+	static Window* GetWindowInstance(std::string_view window_name);
+	static Window* GetWindowInstance(const HWND& hwnd);
+
+private:
+	void CreateImGuiWindow(const std::string& window_title, int win_height, int win_width);
+
+	/// The ui that displays if no UI has been set using SetUI
+	static void DefaultUIWindow(ImGuiIO* io); 
 private:
 	bool CreateDeviceD3D();
 	void CleanupDeviceD3D();
@@ -54,13 +58,19 @@ private:
 	std::string m_windowName;
 	std::string m_windowClassName;
 
-	std::atomic_bool m_isRunning = false;
-	std::atomic_bool m_isInvalid = false;
+	int m_window_width, m_window_height;
+
+	std::shared_mutex m_destroyWindowMutex;
+
+	std::atomic_bool m_isRunning = true;
+	std::atomic_bool m_shouldClose = false;
+
+	bool m_isUIFuncSet = false;
 
 	inline static std::unordered_map<std::string, Window*> m_windowNameMap = {};
 	inline static std::unordered_map<HWND, Window*> m_windowHwndMap = {};
 
-	std::function<void(ImGuiIO* io)> m_uiFunction = {};
+	std::function<void(ImGuiIO* io)> m_uiFunction = DefaultUIWindow;
 
 	std::thread m_windowThread; 
 

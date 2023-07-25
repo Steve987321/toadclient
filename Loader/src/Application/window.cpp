@@ -12,25 +12,35 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 namespace toad
 {
 
-Window::Window(const std::string& window_title, int win_height, int win_width)
+Window::Window(std::string window_title, int win_height, int win_width)
+	: m_windowName(std::move(window_title)), m_window_width(win_width), m_window_height(win_height) 
 {
-    std::cout << "Creating window with name: " << window_title << std::endl;
-
-    // there should be no duplicate window names 
-    if (m_windowNameMap.contains(window_title))
-    {
-        std::cout << "Window " << window_title << " already exists! "<< std::endl;
-        m_isInvalid = true;
-        return;
-    }
-
-    std::cout << "Starting window thread..\n";
-    m_windowThread = std::thread(&Window::StartImGuiWindow, this, window_title, win_height, win_width);
 }
 
 Window::~Window()
 {
     DestroyWindow();
+}
+
+void Window::StartWindow()
+{
+    std::cout << "Creating window with name: " << m_windowName << std::endl;
+
+    if (!m_isUIFuncSet)
+    {
+        std::cout << "The UI function has not been set for this window " << std::endl;
+    }
+
+    // there should be no duplicate window names 
+    if (m_windowNameMap.contains(m_windowName))
+    {
+        std::cout << "Window " << m_windowName << " already exists! " << std::endl;
+        m_isRunning = false;
+        return;
+    }
+
+    std::cout << "Starting window thread\n";
+    m_windowThread = std::thread(&Window::CreateImGuiWindow, this, m_windowName, m_window_height, m_window_width);
 }
 
 Window* Window::GetWindowInstance(std::string_view window_name)
@@ -61,20 +71,22 @@ HWND Window::GetHandle() const
 
 bool Window::IsActive() const
 {
-    return m_isRunning;
+    return m_isRunning && !m_shouldClose;
 }
 
 void Window::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
 {
+    m_isUIFuncSet = true;
     m_uiFunction = ui_func;
 }
 
 void Window::DestroyWindow()
 {
-    if (m_isInvalid) return;
+    std::shared_lock lock(m_destroyWindowMutex);
 
-    std::cout << "closing window: " << m_windowName << std::endl;
-    m_isRunning = true;
+    if (!m_isRunning) return;
+
+    std::cout << "Closing window: " << m_windowName << std::endl;
 
     m_windowNameMap.erase(m_windowName);
     m_windowHwndMap.erase(m_hwnd);
@@ -89,14 +101,17 @@ void Window::DestroyWindow()
     CleanupDeviceD3D();
     ::DestroyWindow(m_hwnd);
     ::UnregisterClassA(m_windowClassName.c_str(), m_wc.hInstance);
+
+    m_isRunning = false;
+
 }
 
-void Window::StartImGuiWindow(const std::string& window_title, int win_height, int win_width)
+void Window::CreateImGuiWindow(const std::string& window_title, int win_height, int win_width)
 {
     RECT desktop_rect = {};
 
     m_windowClassName = window_title + " class";
-    
+
     GetWindowRect(GetDesktopWindow(), &desktop_rect);
     auto x = (desktop_rect.right - win_width) / 2;
     auto y = (desktop_rect.bottom - win_height) / 2;
@@ -107,8 +122,10 @@ void Window::StartImGuiWindow(const std::string& window_title, int win_height, i
     m_hwnd = ::CreateWindowA(m_wc.lpszClassName, window_title.data(), WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, win_width, win_height, NULL, NULL, m_wc.hInstance, nullptr);
     if (!m_hwnd)
     {
-        std::cout << "Failed to create window "  << GetLastError() << std::endl;
+        std::cout << "Failed to create window " << GetLastError() << std::endl;
+
         ::UnregisterClassA(m_wc.lpszClassName, m_wc.hInstance);
+        m_isRunning = false;
         return;
     }
 
@@ -120,6 +137,8 @@ void Window::StartImGuiWindow(const std::string& window_title, int win_height, i
 
         CleanupDeviceD3D();
         ::UnregisterClassA(m_wc.lpszClassName, m_wc.hInstance);
+        m_isRunning = false;
+
         return;
     }
 
@@ -134,35 +153,46 @@ void Window::StartImGuiWindow(const std::string& window_title, int win_height, i
     m_io = &ImGui::GetIO(); (void)m_io;
     m_io->ConfigWindowsMoveFromTitleBarOnly = true;
     m_io->Fonts->AddFontDefault();
+    m_io->IniFilename = NULL; // disable imgui.ini file
+
     static constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
 
     ImFontConfig icons_config;
-	icons_config.MergeMode = true;
-	icons_config.PixelSnapH = true;
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
 
     m_io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 24, &icons_config, icons_ranges);
 
-    // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
-    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     m_style = &ImGui::GetStyle();
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(m_hwnd);
     ImGui_ImplDX9_Init(m_d3dProperties.pD3DDevice);
 
-    m_isRunning = true;
-
-    m_windowName = window_title;
     m_windowNameMap.insert({ window_title.data(), this });
     m_windowHwndMap.insert({ m_hwnd, this });
     std::cout << "Window " << window_title << " has successfully been created " << std::endl;
 
-    while (m_isRunning)
+    while (m_isRunning && !m_shouldClose)
     {
         UpdateMenu();
     }
+}
+
+void Window::DefaultUIWindow(ImGuiIO* io)
+{
+    // match the window sizes 
+    ImGui::SetNextWindowPos({ 0,0 });
+    ImGui::SetNextWindowSize(io->DisplaySize);
+
+    // transparent static imgui window 
+    constexpr static auto window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
+
+    ImGui::Begin("Default Window UI", nullptr, window_flags);
+    center_text({ 1,0,0,1 }, "NO UI HAS BEEN SET FOR THIS WINDOW");
+    ImGui::End();
 }
 
 
@@ -231,7 +261,7 @@ void Window::UpdateMenu()
         ::DispatchMessageA(&msg);
         if (msg.message == WM_QUIT)
         {
-            m_isRunning = false;
+            m_shouldClose = true;
         }
     }
 
@@ -249,7 +279,7 @@ void Window::UpdateMenu()
     m_d3dProperties.pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     m_d3dProperties.pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 
-    constexpr static auto clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    constexpr static auto clear_color = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     constexpr static D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x * clear_color.w * 255.0f), (int)(clear_color.y * clear_color.w * 255.0f), (int)(clear_color.z * clear_color.w * 255.0f), (int)(clear_color.w * 255.0f));
     m_d3dProperties.pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
     if (m_d3dProperties.pD3DDevice->BeginScene() >= 0)
