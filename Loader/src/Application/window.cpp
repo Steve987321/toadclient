@@ -108,7 +108,7 @@ void Window::CreateImGuiWindow(const std::string& window_title, int win_height, 
     {
         std::cout << "Failed to create window " << GetLastError() << std::endl;
 
-        ::UnregisterClassA(m_wc.lpszClassName, m_wc.hInstance);
+        UnregisterClassA(m_wc.lpszClassName, m_wc.hInstance);
         m_isRunning = false;
         return;
     }
@@ -120,7 +120,7 @@ void Window::CreateImGuiWindow(const std::string& window_title, int win_height, 
         std::cout << "Init of D3D failed\n";
 
         CleanupDeviceD3D();
-        ::UnregisterClassA(m_wc.lpszClassName, m_wc.hInstance);
+    	UnregisterClassA(m_wc.lpszClassName, m_wc.hInstance);
         m_isRunning = false;
 
         return;

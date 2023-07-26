@@ -99,13 +99,13 @@
     <ClInclude Include="Toad\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\clicker\leftautoclicker.h">
+    <ClInclude Include="Toad\Modules\clicker\left_autoclicker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Toad\Modules\clicker\rand_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\clicker\rightautoclicker.h">
+    <ClInclude Include="Toad\Modules\clicker\right_autoclicker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Toad\Modules\clicker\clicker_base.h">
@@ -194,10 +194,10 @@
     <ClCompile Include="Toad\Hooks\ws2_32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\clicker\leftautoclicker.cpp">
+    <ClCompile Include="Toad\Modules\clicker\left_autoclicker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\clicker\rightautoclicker.cpp">
+    <ClCompile Include="Toad\Modules\clicker\right_autoclicker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\Modules\vars_updater.cpp">

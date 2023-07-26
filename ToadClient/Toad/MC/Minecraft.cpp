@@ -35,7 +35,7 @@ std::unique_ptr<toadll::ActiveRenderInfo> toadll::Minecraft::getActiveRenderInfo
 }
 
  
-jobject toadll::Minecraft::getMc()
+jobject toadll::Minecraft::getMc() const
 {
     return env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft, env));
 }

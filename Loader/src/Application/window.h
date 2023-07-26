@@ -8,6 +8,8 @@ namespace toad {
 ///
 /// Class that manages windows with ImGui
 ///
+/// TODO: Fix when creating multiple Windows 
+///
 class Window final
 {
 public:

@@ -28,7 +28,7 @@ public:
 
 	_NODISCARD std::unique_ptr<ActiveRenderInfo> getActiveRenderInfo();
 
-	_NODISCARD jobject getMc();
+	_NODISCARD jobject getMc() const;
 	_NODISCARD jobject getRenderManager();
 	_NODISCARD jobject getLocalPlayerObject();
 	_NODISCARD jobject getWorld();

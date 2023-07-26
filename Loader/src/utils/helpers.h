@@ -263,11 +263,11 @@ inline void show_message_box(const char* title, const char* msg, bool& condition
 
 		ImGui::SameLine();
 		if (type == mboxType::GOOD)
-			ImGui::Text(ICON_FA_CHECK);
+			ImGui::TextColored({0, 1, 0, 1}, ICON_FA_CHECK);
 		else if (type == mboxType::WARNING)
-			ImGui::Text(ICON_FA_EXCLAMATION);
+			ImGui::TextColored({ 1, 1, 0, 1 }, ICON_FA_EXCLAMATION);
 		else if (type == mboxType::ERR)
-			ImGui::Text(ICON_FA_CROSS);
+			ImGui::TextColored({ 1, 0, 0, 1 }, ICON_FA_CROSS);
 		else
 			ImGui::Text("");
 

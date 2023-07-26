@@ -88,7 +88,7 @@ void toadll::CBlockEsp::OnRender()
 	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
 	
 	for (const auto& [block, col] : m_blocks)
-		draw3d_box_fill(BBox{ block.min - lPos, block.max - lPos }, col);
+		draw3d_bbox_fill(BBox{ block.min - lPos, block.max - lPos }, col);
 
 	glDisable(GL_BLEND);
 	glDepthMask(true);

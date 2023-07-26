@@ -4,7 +4,7 @@
 
 namespace toadll
 {
-	void draw3d_box_lines(const BBox& bbox, const Vec4& col)
+	void draw3d_bbox_lines(const BBox& bbox, const Vec4& col)
 	{
 		glBegin(3);
 		glColor4f(col.x, col.y, col.z, col.w);
@@ -37,7 +37,7 @@ namespace toadll
 		glEnd();
 	}
 
-	void draw3d_box_fill(const BBox& bbox, const Vec4& col)
+	void draw3d_bbox_fill(const BBox& bbox, const Vec4& col)
 	{
 		glBegin(GL_QUADS);
 
@@ -75,7 +75,7 @@ namespace toadll
 		glEnd();
 	}
 
-	void draw2dBox(const BBox& bbox, const Vec4& col_fill, const Vec4& col_line)
+	void draw2d_bbox(const BBox& bbox, const Vec4& col_fill, const Vec4& col_line)
 	{
 		Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
 		Vec3 cameraUp = { CVarsUpdater::ModelView[1], CVarsUpdater::ModelView[5], CVarsUpdater::ModelView[9] };

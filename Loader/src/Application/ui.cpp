@@ -12,9 +12,9 @@ namespace toad::ui
         if (static bool once = false; !once)
         {
             if (init_thread.joinable()) init_thread.join();
-            ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
+			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
             ImGui::SetNextWindowSize(io->DisplaySize);
-            once = true;
+			once = true;
         }
 
         UI(io);
@@ -146,13 +146,6 @@ namespace toad::ui
     {
         // ui settings
         static bool tooltips = false;
-        static bool showExtraWindow = false;
-
-        if (showExtraWindow)
-        {
-            ImGui::Begin("Test");
-            ImGui::End();
-        }
 
         ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
         {
@@ -169,10 +162,6 @@ namespace toad::ui
                 if (ImGui::Button("Misc", { 85, 30 }))
                 {
                     tab = 1;
-                }
-                if (ImGui::Button("Create Window [test]", { 85, 30 }))
-                {
-                    showExtraWindow = !showExtraWindow;
                 }
             } ImGui::EndChild();
 

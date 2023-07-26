@@ -16,10 +16,10 @@ void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
-	// Update our bounding boxes list
 
 	std::lock_guard lock(m_bboxesMutex);
 
+	// Update our bounding boxes list
 	m_bboxes = GetBBoxes();
 }
 
@@ -53,7 +53,7 @@ void CEsp::OnRender()
 	m_bboxesMutex.lock();
 	for (const auto& bb : m_bboxes)
 	{
-		draw2dBox(
+		draw2d_bbox(
 			bb,
 			{esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3]},
 			{esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]}

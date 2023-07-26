@@ -164,8 +164,8 @@
     <ClInclude Include="Toad\Modules\autopot.h" />
     <ClInclude Include="Toad\Modules\visuals\block_esp.h" />
     <ClInclude Include="Toad\Modules\clicker\clicker_base.h" />
-    <ClInclude Include="Toad\Modules\clicker\rightautoclicker.h" />
-    <ClInclude Include="Toad\Modules\clicker\leftautoclicker.h" />
+    <ClInclude Include="Toad\Modules\clicker\right_autoclicker.h" />
+    <ClInclude Include="Toad\Modules\clicker\left_autoclicker.h" />
     <ClInclude Include="Toad\Hooks\wglswapbuffers.h" />
     <ClInclude Include="Toad\Modules\aimassist.h" />
     <ClInclude Include="Toad\Modules\clicker\rand_types.h" />
@@ -207,8 +207,8 @@
     <ClCompile Include="Toad\Modules\blink.cpp" />
     <ClCompile Include="Toad\Modules\autopot.cpp" />
     <ClCompile Include="Toad\Modules\visuals\block_esp.cpp" />
-    <ClCompile Include="Toad\Modules\clicker\rightautoclicker.cpp" />
-    <ClCompile Include="Toad\Modules\clicker\leftautoclicker.cpp" />
+    <ClCompile Include="Toad\Modules\clicker\right_autoclicker.cpp" />
+    <ClCompile Include="Toad\Modules\clicker\left_autoclicker.cpp" />
     <ClCompile Include="Toad\Hooks\wglswapbuffers.cpp" />
     <ClCompile Include="Toad\Modules\aimassist.cpp" />
     <ClCompile Include="Toad\Modules\visuals\esp.cpp" />

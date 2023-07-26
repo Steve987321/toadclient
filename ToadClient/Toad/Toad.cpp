@@ -109,7 +109,7 @@ DWORD WINAPI toadll::init()
 	HWSASend::GetInstance();
 	HWSARecv::GetInstance();
 
-	LOGDEBUG("Initialize hooks");
+	LOGDEBUG("Initializing hooks");
 	Hook::InitializeAllHooks();
 
 	LOGDEBUG("Enabling hooks");
