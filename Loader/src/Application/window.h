@@ -23,17 +23,16 @@ public:
 	};
 
 public:
+	void StartWindow();
+	void DestroyWindow();
+
+public:
 	D3DProperties* GetD3DProperties();
 	HWND GetHandle() const;
 	bool IsActive() const;
 
 public:
 	void SetUI(const std::function<void(ImGuiIO* io)>& ui_func);
-
-public:
-	void StartWindow();
-	void DestroyWindow();
-	void UpdateMenu();
 
 public:
 	static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -54,13 +53,15 @@ private:
 	void CleanupDeviceD3D();
 	void ResetDevice();
 
+	void UpdateMenu();
+
 private:
 	std::string m_windowName;
 	std::string m_windowClassName;
 
 	int m_window_width, m_window_height;
 
-	std::shared_mutex m_destroyWindowMutex;
+	std::mutex m_destroyWindowMutex;
 
 	std::atomic_bool m_isRunning = true;
 	std::atomic_bool m_shouldClose = false;

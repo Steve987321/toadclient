@@ -29,7 +29,7 @@ namespace toadll
 
 	void Logger::DisposeLogger()
 	{
-		std::unique_lock lock(m_closeMutex);
+		std::lock_guard lock(m_closeMutex);
 
 		if (m_logFile.is_open())
 			m_logFile.close();

@@ -43,46 +43,9 @@ void Window::StartWindow()
     m_windowThread = std::thread(&Window::CreateImGuiWindow, this, m_windowName, m_window_height, m_window_width);
 }
 
-Window* Window::GetWindowInstance(std::string_view window_name)
-{
-    auto it = m_windowNameMap.find(window_name.data());
-    if (it != m_windowNameMap.end())
-        return it->second;
-    return nullptr;
-}
-
-Window* Window::GetWindowInstance(const HWND& hwnd)
-{
-    auto it = m_windowHwndMap.find(hwnd);
-    if (it != m_windowHwndMap.end())
-        return it->second;
-    return nullptr;
-}
-
-Window::D3DProperties* Window::GetD3DProperties()
-{
-    return &m_d3dProperties;
-}
-
-HWND Window::GetHandle() const
-{
-    return m_hwnd;
-}
-
-bool Window::IsActive() const
-{
-    return m_isRunning && !m_shouldClose;
-}
-
-void Window::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
-{
-    m_isUIFuncSet = true;
-    m_uiFunction = ui_func;
-}
-
 void Window::DestroyWindow()
 {
-    std::shared_lock lock(m_destroyWindowMutex);
+    std::lock_guard lock(m_destroyWindowMutex);
 
     if (!m_isRunning) return;
 
@@ -104,6 +67,27 @@ void Window::DestroyWindow()
 
     m_isRunning = false;
 
+}
+
+Window::D3DProperties* Window::GetD3DProperties()
+{
+    return &m_d3dProperties;
+}
+
+HWND Window::GetHandle() const
+{
+    return m_hwnd;
+}
+
+bool Window::IsActive() const
+{
+    return m_isRunning && !m_shouldClose;
+}
+
+void Window::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
+{
+    m_isUIFuncSet = true;
+    m_uiFunction = ui_func;
 }
 
 void Window::CreateImGuiWindow(const std::string& window_title, int win_height, int win_width)
@@ -180,21 +164,6 @@ void Window::CreateImGuiWindow(const std::string& window_title, int win_height, 
         UpdateMenu();
     }
 }
-
-void Window::DefaultUIWindow(ImGuiIO* io)
-{
-    // match the window sizes 
-    ImGui::SetNextWindowPos({ 0,0 });
-    ImGui::SetNextWindowSize(io->DisplaySize);
-
-    // transparent static imgui window 
-    constexpr static auto window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
-
-    ImGui::Begin("Default Window UI", nullptr, window_flags);
-    center_text({ 1,0,0,1 }, "NO UI HAS BEEN SET FOR THIS WINDOW");
-    ImGui::End();
-}
-
 
 bool Window::CreateDeviceD3D()
 {
@@ -293,6 +262,36 @@ void Window::UpdateMenu()
     // Handle loss of D3D9 device
     if (result == D3DERR_DEVICELOST && m_d3dProperties.pD3DDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
         ResetDevice();
+}
+
+void Window::DefaultUIWindow(ImGuiIO* io)
+{
+    // match the window sizes 
+    ImGui::SetNextWindowPos({ 0,0 });
+    ImGui::SetNextWindowSize(io->DisplaySize);
+
+    // transparent static imgui window 
+    constexpr static auto window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground;
+
+    ImGui::Begin("Default Window UI", nullptr, window_flags);
+    center_text({ 1,0,0,1 }, "NO UI HAS BEEN SET FOR THIS WINDOW");
+    ImGui::End();
+}
+
+Window* Window::GetWindowInstance(std::string_view window_name)
+{
+    auto it = m_windowNameMap.find(window_name.data());
+    if (it != m_windowNameMap.end())
+        return it->second;
+    return nullptr;
+}
+
+Window* Window::GetWindowInstance(const HWND& hwnd)
+{
+    auto it = m_windowHwndMap.find(hwnd);
+    if (it != m_windowHwndMap.end())
+        return it->second;
+    return nullptr;
 }
 
 LRESULT WINAPI Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

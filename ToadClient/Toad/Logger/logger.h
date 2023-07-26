@@ -124,7 +124,7 @@ private:
 	template<typename ... Args>
 	void Log(const std::string_view frmt, LOG_TYPE log_type, Args&& ... args)
 	{
-		std::shared_lock lock(m_mutex);
+		std::lock_guard lock(m_mutex);
 
 		auto formattedStr = formatStr(frmt, args...);
 
@@ -135,8 +135,8 @@ private:
 private:
 	HANDLE m_hstdout{};
 
-	std::shared_mutex m_mutex{};
-	std::shared_mutex m_closeMutex{};
+	std::mutex m_mutex{};
+	std::mutex m_closeMutex{};
 
 	std::atomic_bool m_isConsoleClosed = false;
 
