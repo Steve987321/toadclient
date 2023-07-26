@@ -218,15 +218,9 @@ inline void show_message_box(const char* title, const char* msg, bool& condition
 {
 	auto io = &ImGui::GetIO();
 
-#ifdef IMGUI_HAS_VIEWPORT
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->GetWorkPos());
-	ImGui::SetNextWindowSize(viewport->GetWorkSize());
-	ImGui::SetNextWindowViewport(viewport->ID);
-#else
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(io->DisplaySize);
-#endif
+
 	static float wBgAlpha = 0;
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.1f,0.1f,0.1f, wBgAlpha });
 	ImGui::Begin("overlay", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings);
@@ -413,15 +407,8 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 
 	// darker bg
 
-#ifdef IMGUI_HAS_VIEWPORT
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->GetWorkPos());
-	ImGui::SetNextWindowSize(viewport->GetWorkSize());
-	ImGui::SetNextWindowViewport(viewport->ID);
-#else
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(io->DisplaySize);
-#endif
 	
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.1f,0.1f,0.1f, bg_alpha_smooth });
 	ImGui::Begin("overlay", nullptr, window_flags);

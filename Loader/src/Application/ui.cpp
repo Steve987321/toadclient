@@ -12,19 +12,12 @@ namespace toad::ui
         if (static bool once = false; !once)
         {
             if (init_thread.joinable()) init_thread.join();
-#ifdef IMGUI_HAS_VIEWPORT
-            ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->GetWorkPos());
-            ImGui::SetNextWindowSize(viewport->GetWorkSize());
-            ImGui::SetNextWindowViewport(viewport->ID);
-#else
-            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
             ImGui::SetNextWindowSize(io->DisplaySize);
-#endif
             once = true;
         }
 
-        ui::UI(io);
+        UI(io);
     }
 
     // for the flickering of the possible minecraft windows
@@ -35,15 +28,8 @@ namespace toad::ui
     {
 	    if (static bool once = false; !once)
         {
-#ifdef IMGUI_HAS_VIEWPORT
-            ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->GetWorkPos());
-            ImGui::SetNextWindowSize(viewport->GetWorkSize());
-            ImGui::SetNextWindowViewport(viewport->ID);
-#else
-            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
             ImGui::SetNextWindowSize(io->DisplaySize);
-#endif
             once = true;
         }
 
@@ -160,6 +146,14 @@ namespace toad::ui
     {
         // ui settings
         static bool tooltips = false;
+        static bool showExtraWindow = false;
+
+        if (showExtraWindow)
+        {
+            ImGui::Begin("Test");
+            ImGui::End();
+        }
+
         ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
         {
             // Tab Bar
@@ -178,7 +172,7 @@ namespace toad::ui
                 }
                 if (ImGui::Button("Create Window [test]", { 85, 30 }))
                 {
-                    static Window window("test", 400, 400);
+                    showExtraWindow = !showExtraWindow;
                 }
             } ImGui::EndChild();
 

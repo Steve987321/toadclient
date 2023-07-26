@@ -32,7 +32,7 @@ namespace toad
     void Application::render_UI(ImGuiIO* io)
     {
 #ifdef _DEBUG
-        ui::ui_init(io);
+        ui::ui_main(io);
 #else
         g_is_verified ? ui::ui_main(io) : ui::ui_init(io);
 #endif

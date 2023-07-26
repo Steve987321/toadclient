@@ -127,7 +127,7 @@ void Window::CreateImGuiWindow(const std::string& window_title, int win_height, 
     }
 
     // Show the window
-    ::ShowWindow(m_hwnd, SW_SHOW);
+    ::ShowWindow(m_hwnd, SW_SHOWDEFAULT);
     ::UpdateWindow(m_hwnd);
 
     // Setup Dear ImGui context
@@ -135,9 +135,10 @@ void Window::CreateImGuiWindow(const std::string& window_title, int win_height, 
     ImGui::CreateContext();
 
     m_io = &ImGui::GetIO(); (void)m_io;
-    m_io->ConfigWindowsMoveFromTitleBarOnly = true;
+    //m_io->ConfigWindowsMoveFromTitleBarOnly = true;
     m_io->Fonts->AddFontDefault();
     m_io->IniFilename = NULL; // disable imgui.ini file
+    m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     static constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
 
@@ -234,6 +235,9 @@ void Window::UpdateMenu()
         }
     }
 
+    if (m_shouldClose)
+        return;
+
     // Start the Dear ImGui frame
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -244,20 +248,29 @@ void Window::UpdateMenu()
 
     // Rendering
     ImGui::EndFrame();
+
     m_d3dProperties.pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
     m_d3dProperties.pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     m_d3dProperties.pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 
     constexpr static auto clear_color = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     constexpr static D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x * clear_color.w * 255.0f), (int)(clear_color.y * clear_color.w * 255.0f), (int)(clear_color.z * clear_color.w * 255.0f), (int)(clear_color.w * 255.0f));
-    m_d3dProperties.pD3DDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
+    m_d3dProperties.pD3DDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
+
     if (m_d3dProperties.pD3DDevice->BeginScene() >= 0)
     {
         ImGui::Render();
         ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
         m_d3dProperties.pD3DDevice->EndScene();
     }
-    HRESULT result = m_d3dProperties.pD3DDevice->Present(NULL, NULL, NULL, NULL);
+
+    if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+    }
+
+    HRESULT result = m_d3dProperties.pD3DDevice->Present(nullptr, nullptr, nullptr, nullptr);
 
     // Handle loss of D3D9 device
     if (result == D3DERR_DEVICELOST && m_d3dProperties.pD3DDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
