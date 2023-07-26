@@ -218,7 +218,7 @@ inline void show_message_box(const char* title, const char* msg, bool& condition
 {
 	auto io = &ImGui::GetIO();
 
-	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
 	ImGui::SetNextWindowSize(io->DisplaySize);
 
 	static float wBgAlpha = 0;
@@ -407,7 +407,12 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 
 	// darker bg
 
-	ImGui::SetNextWindowPos(ImVec2(0, 0));
+#ifdef TOAD_LOADER
+	ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
+#else
+	ImGui::SetNextWindowPos({0,0});
+#endif
+
 	ImGui::SetNextWindowSize(io->DisplaySize);
 	
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.1f,0.1f,0.1f, bg_alpha_smooth });
