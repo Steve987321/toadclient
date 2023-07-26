@@ -9,11 +9,7 @@ namespace toad::ui
     {
         // ui settings
         static bool tooltips = false;
-#ifdef TOAD_LOADER
         ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
-#else
-        ImGui::Begin("main", nullptr, ImGuiWindowFlags_None | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse);
-#endif
         {
             // Tab Bar
             static int tab = 0;
