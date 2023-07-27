@@ -9,27 +9,22 @@ toadll::c_Entity::~c_Entity()
 
 toadll::Vec3 toadll::c_Entity::getPosition() const
 {
-	//static bool once = false;
-	//if (!once)
-	//{
-	//	loop_through_class(elclass, env);
-	//	once = true;
-	//}
-	auto mId = toad::g_curr_client == toad::MC_CLIENT::Lunar_189
-		? get_mid(obj, mapping::getPos, env)
-		: get_mid(elclass, mapping::getPos, env);
+	auto objklass = env->GetObjectClass(obj);
+	auto posXId = get_fid(objklass, mappingFields::EntityPosX, env);
+	if (!posXId)
+		return {-1, -1, -1};
 
-	if (!mId)
-		return { 0,0,0 };
+	auto posYId = get_fid(objklass, mappingFields::EntityPosY, env);
+	auto posZId = get_fid(objklass, mappingFields::EntityPosZ, env);
 
-	auto vecobj = env->CallObjectMethod(obj, mId);
-	if (!vecobj)
+	env->DeleteLocalRef(objklass);
+
+	return Vec3
 	{
-		return { 0,0,0 };
-	}
-	auto ret = to_vec3(vecobj, env);
-	env->DeleteLocalRef(vecobj);
-	return ret;
+		static_cast<float>(env->GetDoubleField(obj, posXId)),
+		static_cast<float>(env->GetDoubleField(obj, posYId)),
+		static_cast<float>(env->GetDoubleField(obj, posZId))
+	};
 }
 
 toadll::Vec3 toadll::c_Entity::getLastTickPosition() const
@@ -142,10 +137,16 @@ std::string toadll::c_Entity::getSlotStr(int slot) const
 
 int toadll::c_Entity::getHurtTime() const
 {
-	auto mId = get_mid(elclass, mapping::getHurtTime, env);
-	if (!mId)
+	//auto mId = get_mid(elclass, mapping::getHurtTime, env);
+	//if (!mId)
+	//	return 0;
+	//auto res = env->CallIntMethod(obj, mId);
+
+	auto fId = get_fid(elclass, mappingFields::hurtTimeI, env);
+	if (!fId)
 		return 0;
-	auto res = env->CallIntMethod(obj, mId);
+	auto res = env->GetIntField(obj, fId);
+
 	return res;
 }
 

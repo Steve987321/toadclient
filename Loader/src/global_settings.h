@@ -98,6 +98,9 @@ namespace toad
 		inline bool enabled = false;
 		inline float lineCol[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 		inline float fillCol[4] = {1.0f, 1.0f, 1.0f, 0.3f};
+
+		inline bool show_distance = false;
+		inline bool show_name = false;
 	}
 
 	namespace block_esp

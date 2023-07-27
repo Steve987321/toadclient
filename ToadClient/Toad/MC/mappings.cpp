@@ -43,6 +43,9 @@ namespace toadll::mappings
 			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
 				LOGERROR("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
+			fieldnames.insert({ mappingFields::theWorldField , "theWorld" });
+			fieldsigs.insert({ mappingFields::theWorldField , "Lnet/minecraft/client/multiplayer/WorldClient;" });
+			
 			// get world class (temp)
 			auto worldclass = findclass("net.minecraft.world.World", env);
 			
@@ -147,6 +150,16 @@ namespace toadll::mappings
 			fieldsigs.insert({ mappingFields::motionXField, "D" });
 			fieldsigs.insert({ mappingFields::motionYField, "D" });
 			fieldsigs.insert({ mappingFields::motionZField, "D" });
+
+			fieldnames.insert({ mappingFields::EntityPosX, "posX" });
+			fieldnames.insert({ mappingFields::EntityPosY, "posY" });
+			fieldnames.insert({ mappingFields::EntityPosZ, "posZ" });
+			fieldsigs.insert({ mappingFields::EntityPosX, "D" });
+			fieldsigs.insert({ mappingFields::EntityPosY, "D" });
+			fieldsigs.insert({ mappingFields::EntityPosZ, "D" });
+
+			fieldnames.insert({ mappingFields::hurtTimeI, "hurtTime" });
+			fieldsigs.insert({ mappingFields::hurtTimeI, "I" });
 
 			fieldnames.insert({ mappingFields::lastTickPosXField, "lastTickPosX" });
 			fieldsigs.insert({ mappingFields::lastTickPosXField, "D" });
@@ -276,6 +289,9 @@ namespace toadll::mappings
 			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
 				LOGERROR("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
+			fieldnames.insert({ mappingFields::theWorldField , "theWorld" });
+			fieldsigs.insert({ mappingFields::theWorldField , "Lnet/minecraft/client/multiplayer/WorldClient;" });
+
 			// get world class (temp)
 			auto worldclass = findclass("net.minecraft.world.World", env);
 
@@ -377,6 +393,16 @@ namespace toadll::mappings
 			fieldsigs.insert({ mappingFields::motionXField, "D" });
 			fieldsigs.insert({ mappingFields::motionYField, "D" });
 			fieldsigs.insert({ mappingFields::motionZField, "D" });
+
+			fieldnames.insert({ mappingFields::EntityPosX, "posX" });
+			fieldnames.insert({ mappingFields::EntityPosY, "posY" });
+			fieldnames.insert({ mappingFields::EntityPosZ, "posZ" });
+			fieldsigs.insert({ mappingFields::EntityPosX, "D" });
+			fieldsigs.insert({ mappingFields::EntityPosY, "D" });
+			fieldsigs.insert({ mappingFields::EntityPosZ, "D" });
+
+			fieldnames.insert({ mappingFields::hurtTimeI, "hurtTime" });
+			fieldsigs.insert({ mappingFields::hurtTimeI, "I" });
 
 			fieldnames.insert({ mappingFields::lastTickPosXField, "lastTickPosX" });
 			fieldsigs.insert({ mappingFields::lastTickPosXField, "D" });

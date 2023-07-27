@@ -160,9 +160,9 @@ namespace toadll
     Vec3 to_vec3(jobject vecObj, JNIEnv* env)
     {
         auto posclass = env->GetObjectClass(vecObj);
-
+      
         auto xposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3X), "()D");
-        if (!xposid) return {-1, 0, 0};
+        if (!xposid) return {-1, -1, -1};
 
         auto yposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3Y), "()D");
         auto zposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3Z), "()D");

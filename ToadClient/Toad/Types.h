@@ -178,6 +178,7 @@ enum class mappingFields
     theMcField,
     currentScreenField,
     thePlayerField,
+    theWorldField,
 
     // .World
     playerEntitiesField,
@@ -194,11 +195,16 @@ enum class mappingFields
     lastTickPosYField,
     lastTickPosZField,
     inventoryField,
+    hurtTimeI,
 
     // jdouble
     motionXField,
     motionYField,
     motionZField,
+
+    EntityPosX,
+    EntityPosY,
+    EntityPosZ,
 
     // .ActiveRenderInfo
     viewportField,

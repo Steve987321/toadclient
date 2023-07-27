@@ -5,6 +5,8 @@ namespace toad::ui
     void ui_main(const ImGuiIO* io);
     void ui_init(const ImGuiIO* io);
 
+    // UI for toad when injected
+    // function is defined here because it will also get called inside toadll for the internal ui
     inline void UI(const ImGuiIO* io)
     {
         // ui settings
