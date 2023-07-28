@@ -120,6 +120,12 @@ DWORD WINAPI toadll::init()
 		clean_up(44);
 		return 0;
 	}
+	if (toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED)
+	{
+		clean_up(45, "Client is not supported");
+		return 0;
+	}
+
 	LOGDEBUG("client type {}", static_cast<int>(toad::g_curr_client));
 
 	auto mcclass = Minecraft::getMcClass(g_env);
@@ -211,6 +217,7 @@ bool UpdateSettings()
 	HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, L"ToadClientMappingObj");
 	if (hMapFile == NULL)
 	{
+		LOGWARN("Opening mapping file returned null");
 		g_is_running = false;
 		return false;
 	}
@@ -218,6 +225,7 @@ bool UpdateSettings()
 	const auto pMem = MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, bufsize);
 	if (pMem == NULL)
 	{
+		LOGWARN("Failed to map view of mapping file");
 		CloseHandle(hMapFile);
 		return false;
 	}
@@ -375,6 +383,8 @@ void init_modules()
 	CVelocity::GetInstance();
 	CBlink::GetInstance();
 	CInternalUI::GetInstance();
+
+	CAutoBridge::GetInstance();
 
 	//COfScreenArrows::GetInstance();
 

@@ -64,6 +64,12 @@ namespace toadll
     jmethodID get_mid(jclass cls, mapping name, JNIEnv* env)
     {
 #ifdef ENABLE_LOGGING
+        if (!mappings::methodnames.contains(name))
+        {
+            LOGERROR("mapping name was not found with mapping name: {}, and index {}", mappings::findName(name), static_cast<int>(name));
+            SLEEP(300);
+            return nullptr;
+        }
         auto mid = env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
         if (!mid)
         {
@@ -95,6 +101,11 @@ namespace toadll
     jmethodID get_static_mid(jclass cls, mapping name, JNIEnv* env)
     {
 #ifdef ENABLE_LOGGING
+        if (!mappings::methodnames.contains(name))
+        {
+            LOGERROR("mapping name was not found with mapping name: {}, and index {}", mappings::findName(name), static_cast<int>(name));
+            SLEEP(300);
+        }
         auto smId = env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
         if (!smId)
         {
@@ -111,6 +122,11 @@ namespace toadll
     jfieldID get_static_fid(jclass cls, mappingFields name, JNIEnv* env)
 	{
 #ifdef ENABLE_LOGGING
+        if (!mappings::fieldnames.contains(name))
+        {
+            LOGERROR("static field mapping name was not found with mapping name: {}, and index {}", mappings::findNameField(name), static_cast<int>(name));
+            SLEEP(300);
+        }
         auto sfId = env->GetStaticFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
         if (!sfId)
         {
@@ -127,6 +143,11 @@ namespace toadll
     jfieldID get_fid(jclass cls, mappingFields name, JNIEnv* env)
 	{
 #ifdef ENABLE_LOGGING
+        if (!mappings::fieldnames.contains(name))
+        {
+            LOGERROR("field mapping name was not found with mapping name: {}, and index {}", mappings::findNameField(name), static_cast<int>(name));
+            SLEEP(300);
+        }
         auto fId = env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
         if (!fId)
         {
@@ -160,7 +181,7 @@ namespace toadll
     Vec3 to_vec3(jobject vecObj, JNIEnv* env)
     {
         auto posclass = env->GetObjectClass(vecObj);
-      
+
         auto xposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3X), "()D");
         if (!xposid) return {-1, -1, -1};
 

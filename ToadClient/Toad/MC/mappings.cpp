@@ -101,6 +101,9 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
 			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
 
+			methodnames.insert({ mapping::rayTraceBlocks, "rayTraceBlocks" });
+			methodsigs.insert({ mapping::rayTraceBlocks, "(Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;Z)Lnet/minecraft/util/MovingObjectPosition;" });
+
 			// .Block
 			methodnames.insert({ mapping::getBlockFromBlockState, "getBlock" });
 			methodsigs.insert({ mapping::getBlockFromBlockState, "()Lnet/minecraft/block/Block;" });
@@ -177,6 +180,14 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getBlockPosition, "getPosition" });
 			methodsigs.insert({ mapping::getBlockPosition, "()Lnet/minecraft/util/BlockPos;" });
 
+			methodnames.insert({ mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition" });
+			auto movingblockklass = findclass("net.minecraft.util.MovingObjectPosition", env);
+			if (!getsig(mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition", movingblockklass, env))
+				LOGERROR("can't find bridge$getBlockPosition from moving block class");
+			env->DeleteLocalRef(movingblockklass);
+
+			std::cout << methodsigs[mapping::getBlockPositionFromMovingBlock] << std::endl;
+
 			fieldnames.insert({ mappingFields::inventoryField, "inventory" });
 			fieldsigs.insert({ mappingFields::inventoryField, "Lnet/minecraft/entity/player/InventoryPlayer;" });
 
@@ -185,9 +196,11 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getStackInSlot, "getStackInSlot" });
 			methodsigs.insert({ mapping::getStackInSlot, "(I)Lnet/minecraft/item/ItemStack;" });
 
-
 			methodnames.insert({ mapping::getBlockPos, "getBlockPos" });
 			methodsigs.insert({ mapping::getBlockPos, "()Lnet/minecraft/util/BlockPos;" });
+
+			fieldnames.insert({ mappingFields::blockPos, "blockPos" });
+			fieldnames.insert({ mappingFields::blockPos, "Lnet/minecraft/util/BlockPos;" });
 
 			methodnames.insert({ mapping::getRotationYaw, "bridge$getRotationYaw" });
 			methodnames.insert({ mapping::getRotationPitch, "bridge$getRotationPitch" });
@@ -246,6 +259,8 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::disableLightmap, "()V" });
 
 			// Vec3 class
+			methodnames.insert({ mapping::Vec3Init, "<init>" });
+			methodsigs.insert({ mapping::Vec3Init, "(DDD)V" });
 			methodnames.insert({ mapping::Vec3X, "bridge$xCoord" });
 			methodsigs.insert({ mapping::Vec3X, "()D" });
 			methodnames.insert({ mapping::Vec3Y, "bridge$yCoord" });

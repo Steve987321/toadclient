@@ -14,7 +14,7 @@ void toadll::CVarsUpdater::PreUpdate()
 		if (world != nullptr)
 			env->DeleteLocalRef(world);
 
-		SLEEP(20);
+		SLEEP(100);
 		return;
 	}
 
@@ -50,8 +50,6 @@ void toadll::CVarsUpdater::PreUpdate()
 	{
 		IsMouseOverPlayer = false;
 	}
-
-	SLEEP(1);
 
 	IsVerified = true;
 

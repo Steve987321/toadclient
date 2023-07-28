@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\Modules\auto_bridge.h" />
     <ClInclude Include="Toad\Modules\visuals\draw_helpers.h" />
     <ClInclude Include="Toad\Modules\visuals\of_screen_arrows.h" />
     <ClInclude Include="Toad\Modules\internal_ui.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\Modules\auto_bridge.cpp" />
     <ClCompile Include="Toad\module.cpp" />
     <ClCompile Include="Toad\Modules\visuals\draw_helpers.cpp" />
     <ClCompile Include="Toad\Modules\visuals\of_screen_arrows.cpp" />

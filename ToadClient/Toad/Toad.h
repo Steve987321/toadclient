@@ -43,6 +43,7 @@
 #include "Modules/visuals/of_screen_arrows.h"
 #include "Modules/autopot.h"
 #include "Modules/aimassist.h"
+#include "Modules/auto_bridge.h"
 #include "Modules/blink.h"
 #include "Modules/velocity.h"
 #include "Modules/internal_ui.h"

@@ -64,6 +64,10 @@ struct Vec3 {
         return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
     }
 
+    _NODISCARD float dot(const Vec3& v) const {
+        return x * v.x + y * v.y + z * v.z;
+    }
+
     _NODISCARD Vec3 cross(const Vec3& v) const{
         return
         {
@@ -213,6 +217,8 @@ enum class mappingFields
 
     // Timer
     renderPartialTickField,
+
+    blockPos
 };
 
 enum class static_mapping
@@ -242,6 +248,7 @@ enum class mapping
     getRenderManager,
     getBlockAt,
     isAirBlock,
+    rayTraceBlocks, // args: (jobject Vec3 from, jobject Vec3 direction, bool stopOnLiquid) returns: jobject MovingObjectPosition if block hit else null
 
     // .Block
     getBlockFromBlockState,
@@ -260,6 +267,7 @@ enum class mapping
 
     getBlockPosition,
     getBlockPos,
+    getBlockPositionFromMovingBlock,
 
     setRotationYaw,
     setRotationPitch,
@@ -291,11 +299,12 @@ enum class mapping
     getRenderPos,
 
     // .Vec3
+    Vec3Init, // args: double x, double y, double z 
     Vec3X,
     Vec3Y,
     Vec3Z,
 
-    //. Vec3I
+    // .Vec3I
     Vec3IX,
     Vec3IY,
     Vec3IZ,

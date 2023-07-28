@@ -8,6 +8,7 @@ toadll::Minecraft::~Minecraft()
     env->DeleteLocalRef(mcclass);
     if (m_elbclass != nullptr) env->DeleteGlobalRef(m_elbclass);
     if (m_ariclass != nullptr) env->DeleteGlobalRef(m_ariclass);
+    if (m_vec3class != nullptr) env->DeleteGlobalRef(m_vec3class);
 }
 
 jclass toadll::Minecraft::getMcClass(JNIEnv* env)
@@ -22,6 +23,15 @@ jclass toadll::Minecraft::getEntityLivingClass()
         m_elbclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.entity.EntityLivingBase", env));
 	}
     return m_elbclass;
+}
+
+jclass toadll::Minecraft::getVec3Class()
+{
+    if (m_vec3class == nullptr)
+    {
+        m_vec3class = (jclass)env->NewGlobalRef(findclass("net.minecraft.util.Vec3", env));
+    }
+    return m_vec3class;
 }
 
 std::unique_ptr<toadll::ActiveRenderInfo> toadll::Minecraft::getActiveRenderInfo()
@@ -76,6 +86,59 @@ std::shared_ptr<toadll::c_Entity> toadll::Minecraft::getLocalPlayer()
     return std::make_shared<c_Entity>(obj, env, getEntityLivingClass());
 }
 
+toadll::Vec3 toadll::Minecraft::rayTraceBlocks(Vec3 from, Vec3 direction, bool stopOnLiquid)
+{
+    auto world = getWorld();
+
+    auto mId = get_mid(world, mapping::rayTraceBlocks, env);
+    if (!mId)
+    {
+        env->DeleteLocalRef(world);
+        return { -1.5f, -1.5f, -1.5f };
+    }
+
+    auto vec3InitMId = get_mid(getVec3Class(), mapping::Vec3Init, env);
+    if (!vec3InitMId)
+    {
+        env->DeleteLocalRef(world);
+        return { -1.5f, -1.5f, -1.5f };
+    }
+
+    // create our Vec3 objects
+    auto fromObj = env->NewObject(getVec3Class(), vec3InitMId, from.x, from.y, from.z);
+    auto directionObj = env->NewObject(getVec3Class(), vec3InitMId, direction.x, direction.y, direction.z);
+
+    // call the rayTraceBlocks function 
+    auto movingObjPosObj = env->CallObjectMethod(world, mId, fromObj, directionObj, stopOnLiquid);
+
+    // we don't need these anymore 
+    env->DeleteLocalRef(world);
+    env->DeleteLocalRef(fromObj);
+    env->DeleteLocalRef(directionObj);
+
+    // check if we didn't hit any thing
+    if (movingObjPosObj == nullptr)
+    {
+        return { -0.5f, -0.5f, -0.5f };
+    }
+
+    auto blockPosMId = get_mid(movingObjPosObj, mapping::getBlockPositionFromMovingBlock, env);
+
+    if (!blockPosMId)
+    {
+        return { -1.5f,-1.5f,-1.5f };
+    }
+
+    auto blockPosObj = env->CallObjectMethod(movingObjPosObj, blockPosMId); 
+    env->DeleteLocalRef(movingObjPosObj);
+
+    auto res = to_vec3i(blockPosObj, env);
+
+    env->DeleteLocalRef(blockPosObj);
+    return res;
+
+}
+
 void toadll::Minecraft::set_gamma(float val)
 {
     auto obj = getGameSettings();
@@ -92,7 +155,7 @@ void toadll::Minecraft::set_gamma(float val)
 //void toadll::c_Minecraft::disableLightMap() const
 //{
 //    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
-//    env->CallObjectMethod(EntityRenderer, get_mid(EntityRenderer, mapping::disableLightmap));
+//    env->CallVoidMethod(EntityRenderer, get_mid(EntityRenderer, mapping::disableLightmap));
 //    env->DeleteLocalRef(EntityRenderer);
 //}
 //
@@ -100,7 +163,7 @@ void toadll::Minecraft::set_gamma(float val)
 //{
 //    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
 //    // void 
-//    env->CallObjectMethod(EntityRenderer, get_mid(EntityRenderer, mapping::enableLightmap));
+//    env->CallVoidMethod(EntityRenderer, get_mid(EntityRenderer, mapping::enableLightmap));
 //    env->DeleteLocalRef(EntityRenderer);
 //}
 
@@ -120,10 +183,10 @@ jobject toadll::Minecraft::getWorld()
     auto mc = this->getMc();
     if (!mc)
         return nullptr;
-    //auto worldFid = get_fid(mcclass, mappingFields::theWorldField, env);
-    //auto obj = !worldFid ? nullptr : env->GetObjectField(mc, worldFid);
-	auto worldmid = get_mid(mcclass, mapping::getWorld, env);
-	auto obj = !worldmid ? nullptr : env->CallObjectMethod(mc, worldmid);
+    auto worldFid = get_fid(mcclass, mappingFields::theWorldField, env);
+    auto obj = !worldFid ? nullptr : env->GetObjectField(mc, worldFid);
+	//auto worldmid = get_mid(mcclass, mapping::getWorld, env);
+	//auto obj = !worldmid ? nullptr : env->CallObjectMethod(mc, worldmid);
 
     env->DeleteLocalRef(mc);
 
