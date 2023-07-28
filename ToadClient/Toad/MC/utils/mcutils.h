@@ -91,9 +91,6 @@ namespace toadll
     std::pair<float, float> get_angles(const Vec3& pos1, const Vec3& pos2);
     float wrap_to_180(float value);
 
-    bool WorldToScreen(const Vec3& source, const Vec3& target, const Vec2& viewAngles, float fov, Vec2& screenpos);
-    bool WorldToScreen(const Vec3& worldPoint, Vec2& screen, const std::vector<float>& modelView, const std::vector<float>& projection, int width, int height);
-
     void loop_through_class(const jclass klass, JNIEnv* env);
 
 }
