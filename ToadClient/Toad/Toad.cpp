@@ -147,10 +147,10 @@ DWORD WINAPI toadll::init()
 	g_env->DeleteLocalRef(eclasstemp);
 	g_env->DeleteLocalRef(mcclass);
 
+	g_is_running = true;
+
 	LOGDEBUG("starting modules");
 	init_modules();
-
-	g_is_running = true;
 
 	LOGDEBUG("entering main loop");
 	while (g_is_running)
@@ -424,6 +424,7 @@ void init_modules()
 				Module->Update(lPlayer);
 			}
 		}
+
 
 		g_jvm->DetachCurrentThread();
 			});
