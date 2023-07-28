@@ -37,6 +37,43 @@ namespace toadll
 		glEnd();
 	}
 
+	Vec2 world_to_screen(const Vec3& worldPos)
+	{
+		GLint viewport[4];
+
+		GLdouble modelview[16];
+		GLdouble projection[16];
+
+		// convert to double types 
+		for (int i = 0; i < 16; i++)
+		{
+			modelview[i] = static_cast<GLdouble>(CVarsUpdater::ModelView[i]);
+			projection[i] = static_cast<GLdouble>(CVarsUpdater::Projection[i]);
+		}
+
+		glGetIntegerv(GL_VIEWPORT, viewport);
+
+		double screenX, screenY, screenZ;
+		gluProject(worldPos.x, worldPos.y, worldPos.z,
+			modelview, projection, viewport,
+			&screenX, &screenY, &screenZ);
+
+		Vec3 cameraPos = { CVarsUpdater::ModelView[12], CVarsUpdater::ModelView[13], CVarsUpdater::ModelView[14] };
+		Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
+		Vec3 cameraToProjected = { worldPos.x - cameraPos.x, worldPos.y - cameraPos.y, worldPos.z - cameraPos.z };
+		float dotProduct = cameraToProjected.dot(cameraForward);
+
+		// check if worldPos is in front of the camera
+		if (dotProduct < 0) {
+			return { static_cast<float>(screenX), static_cast<float>(viewport[3] - screenY) };
+		}
+
+		// is behind the camera 
+		return { -1.0f, -1.0f };
+
+		//return { static_cast<float>(screenX), static_cast<float>(viewport[3] - screenY) };
+	}
+
 	void draw3d_bbox_fill(const BBox& bbox, const Vec4& col)
 	{
 		glBegin(GL_QUADS);
