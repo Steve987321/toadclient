@@ -52,6 +52,7 @@ void toadll::CVarsUpdater::PreUpdate()
 	}
 
 	IsVerified = true;
+	SLEEP(1);
 
 }
 
