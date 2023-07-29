@@ -16,6 +16,9 @@ public:
 	bool Initialized = false;
 	inline static std::vector<CModule*> moduleInstances = {};
 
+	// debugging purposes
+	std::string name; 
+
 public:
 	CModule()
 	{

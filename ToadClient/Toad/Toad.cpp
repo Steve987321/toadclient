@@ -374,17 +374,17 @@ bool UpdateSettings()
 void init_modules()
 {
 	// Instantiate all cheat modules
-	CVarsUpdater::GetInstance();
-	CLeftAutoClicker::GetInstance();
-	CRightAutoClicker::GetInstance();
-	CAimAssist::GetInstance();
-	CEsp::GetInstance();
-	CBlockEsp::GetInstance();
-	CVelocity::GetInstance();
-	CBlink::GetInstance();
-	CInternalUI::GetInstance();
+	CVarsUpdater::GetInstance()->name = "Vars updater";
+	CLeftAutoClicker::GetInstance()->name = "Left autoclicker";
+	CRightAutoClicker::GetInstance()->name = "Left autoclicker";
+	CAimAssist::GetInstance()->name = "Aim assist";
+	CEsp::GetInstance()->name = "Esp";
+	CBlockEsp::GetInstance()->name = "Block esp";
+	CVelocity::GetInstance()->name = "Velocity";
+	CBlink::GetInstance()->name = "Blink";
+	CInternalUI::GetInstance()->name = "Internal ui";
 
-	CAutoBridge::GetInstance();
+	CAutoBridge::GetInstance()->name = "Auto bridge";
 
 	//COfScreenArrows::GetInstance();
 
@@ -425,7 +425,7 @@ void init_modules()
 			}
 		}
 
-
+		LOGDEBUG("Closing cheat module: {}", Module->name);
 		g_jvm->DetachCurrentThread();
 			});
 	}
