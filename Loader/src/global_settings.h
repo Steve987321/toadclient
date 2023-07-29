@@ -21,6 +21,14 @@ namespace toad
 		Forge
 	};
 
+	enum class ESP_MODE
+	{
+		BOX3D,
+		HITBOX3D,
+		BOX2D_STATIC,
+		BOX2D_DYNAMIC
+	};
+
 	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;
 	inline bool g_is_ui_internal = false;
 
@@ -109,10 +117,11 @@ namespace toad
 		inline std::unordered_map<int, ImVec4> block_list;
 	}
 
-	namespace auto_bridge
+	namespace bridge_assist
 	{
 		inline bool enabled = false;
 		inline float pitch_check = 61.f;
+		inline int block_check = 0;
 	}
 
 	namespace blink

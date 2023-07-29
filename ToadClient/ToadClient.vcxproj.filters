@@ -132,7 +132,7 @@
     <ClInclude Include="Toad\Modules\visuals\draw_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\auto_bridge.h">
+    <ClInclude Include="Toad\Modules\bridge_assist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -233,7 +233,7 @@
     <ClCompile Include="Toad\Modules\visuals\draw_helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\auto_bridge.cpp">
+    <ClCompile Include="Toad\Modules\bridge_assist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

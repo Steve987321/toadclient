@@ -135,8 +135,8 @@ void update_settings()
 	data["aa_lockaim"] = aa::lock_aim;
 
 	// auto bridge
-	data["ab_enabled"] = auto_bridge::enabled;
-	data["ab_pitch_check"] = auto_bridge::pitch_check;
+	data["ab_enabled"] = bridge_assist::enabled;
+	data["ab_pitch_check"] = bridge_assist::pitch_check;
 
 	// blink
 	data["bl_enabled"] = blink::enabled;

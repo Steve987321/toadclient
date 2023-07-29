@@ -317,8 +317,8 @@ bool UpdateSettings()
 	aa::lock_aim = data["aa_lockaim"];
 
 	// auto bridge
-	auto_bridge::enabled = data["ab_enabled"];
-	auto_bridge::pitch_check = data["ab_pitch_check"];
+	bridge_assist::enabled = data["ab_enabled"];
+	bridge_assist::pitch_check = data["ab_pitch_check"];
 
 	// blink
 	blink::enabled = data["bl_enabled"];
@@ -384,7 +384,7 @@ void init_modules()
 	CBlink::GetInstance()->name = "Blink";
 	CInternalUI::GetInstance()->name = "Internal ui";
 
-	CAutoBridge::GetInstance()->name = "Auto bridge";
+	CBridgeAssist::GetInstance()->name = "Auto bridge";
 
 	//COfScreenArrows::GetInstance();
 

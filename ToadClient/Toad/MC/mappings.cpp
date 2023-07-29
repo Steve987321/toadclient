@@ -269,6 +269,8 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::Vec3Z, "()D" });
 
 			// Vec3I class
+			methodnames.insert({ mapping::Vec3IInit, "<init>" });
+			methodsigs.insert({ mapping::Vec3IInit, "(III)V" });
 			methodnames.insert({ mapping::Vec3IX, "getX" });
 			methodsigs.insert({ mapping::Vec3IX, "()I" });
 			methodnames.insert({ mapping::Vec3IY, "getY" });

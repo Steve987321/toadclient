@@ -110,7 +110,7 @@ namespace toad::ui
                     static bool is_Bridge = false;
                     static bool is_Esp = false;
                     static bool is_Blink = false;
-                    if (checkbox_button("Auto Bridge", ICON_FA_CUBE, &auto_bridge::enabled)) is_Bridge = true;
+                    if (checkbox_button("Auto Bridge", ICON_FA_CUBE, &bridge_assist::enabled)) is_Bridge = true;
                     if (checkbox_button("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
                     if (checkbox_button("Blink", ICON_FA_GHOST, &blink::enabled)) is_Blink = true;
 
@@ -119,7 +119,7 @@ namespace toad::ui
                         setting_menu("Auto Bridge", is_Bridge, []
                             {
 
-                                ImGui::SliderFloat("pitch check", &auto_bridge::pitch_check, 1, 70);
+                                ImGui::SliderFloat("pitch check", &bridge_assist::pitch_check, 1, 70);
 
                         // animation of how the bridging might look with settings
                       /*  ImDrawList* draw = ImGui::GetForegroundDrawList();

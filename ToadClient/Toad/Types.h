@@ -305,6 +305,7 @@ enum class mapping
     Vec3Z,
 
     // .Vec3I
+    Vec3IInit, // args: int x, int y, int z
     Vec3IX,
     Vec3IY,
     Vec3IZ,

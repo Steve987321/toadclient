@@ -60,6 +60,9 @@ inline void precise_sleep(double seconds) {
 }
 
 /// Sends a keyboard key press
+///
+/// @param vk_key keycode to send
+/// @param send_down whether we want to send the key down or up
 inline void send_key(WORD vk_key, bool send_down = true)
 {
     static INPUT ip{INPUT_KEYBOARD};
