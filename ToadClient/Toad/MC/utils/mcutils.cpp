@@ -61,6 +61,9 @@ namespace toadll
         return std::string(name);
     }
 
+    std::unordered_map<mapping, jmethodID> cached_mids;
+    std::unordered_map<mappingFields, jfieldID> cached_fids;
+
     jmethodID get_mid(jclass cls, mapping name, JNIEnv* env)
     {
 #ifdef ENABLE_LOGGING
@@ -70,16 +73,25 @@ namespace toadll
             SLEEP(300);
             return nullptr;
         }
+#endif
+        if (auto it = cached_mids.find(name); it != cached_mids.end())
+        {
+            //std::cout << "found\n";
+            return it->second;
+        }
+
         auto mid = env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
+#ifdef ENABLE_LOGGING
         if (!mid)
         {
             LOGERROR("methodId is null with mapping name: {}, and index {}", mappings::findName(name), static_cast<int>(name));
             SLEEP(300);
         }
-        return mid; 
-#else
-        return env->GetMethodID(cls, mappings::findName(name), mappings::findSig(name));
 #endif
+
+        cached_mids.insert({name, mid});
+
+        return mid; 
     }
 
     jmethodID get_mid(jobject obj, mapping name, JNIEnv* env)
@@ -106,17 +118,26 @@ namespace toadll
             LOGERROR("mapping name was not found with mapping name: {}, and index {}", mappings::findName(name), static_cast<int>(name));
             SLEEP(300);
         }
+#endif
+
+        if (auto it = cached_mids.find(name); it != cached_mids.end())
+        {
+            return it->second;
+        }
+       
         auto smId = env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
+
+#ifdef ENABLE_LOGGING
         if (!smId)
         {
             LOGERROR("static methodId is null with mapping name: {} and index: {}", mappings::findName(name), static_cast<int>(name));
             SLEEP(300);
             return nullptr;
         }
-        return smId;
-#else
-        return env->GetStaticMethodID(cls, mappings::findName(name), mappings::findSig(name));
 #endif
+        cached_mids.insert({ name, smId });
+
+        return smId;
     }
 
     jfieldID get_static_fid(jclass cls, mappingFields name, JNIEnv* env)
@@ -127,17 +148,24 @@ namespace toadll
             LOGERROR("static field mapping name was not found with mapping name: {}, and index {}", mappings::findNameField(name), static_cast<int>(name));
             SLEEP(300);
         }
+#endif
+
+        if (auto it = cached_fids.find(name); it != cached_fids.end())
+        {
+            return it->second;
+        }
+
         auto sfId = env->GetStaticFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
+#ifdef ENABLE_LOGGING
         if (!sfId)
         {
             LOGERROR("static fieldId is null with mapping name: {}, and index: {}", mappings::findNameField(name), static_cast<int>(name));
             SLEEP(300);
             return nullptr;
         }
-        return sfId;
-#else
-        return env->GetStaticFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
 #endif
+        cached_fids.insert({name, sfId});
+        return sfId;
 	}
     
     jfieldID get_fid(jclass cls, mappingFields name, JNIEnv* env)
@@ -148,17 +176,24 @@ namespace toadll
             LOGERROR("field mapping name was not found with mapping name: {}, and index {}", mappings::findNameField(name), static_cast<int>(name));
             SLEEP(300);
         }
+#endif
+        if (auto it = cached_fids.find(name); it != cached_fids.end())
+        {
+            return it->second;
+        }
+
         auto fId = env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
+#ifdef ENABLE_LOGGING
         if (!fId)
         {
             LOGERROR("fieldId is null with mapping name: {}, and index: {}", mappings::findNameField(name), static_cast<int>(name));
             SLEEP(300);
             return nullptr;
         }
-        return fId;
-#else
-        return env->GetFieldID(cls, mappings::findNameField(name), mappings::findSigField(name));
 #endif
+        cached_fids.insert({ name, fId });
+
+        return fId;
 	}
 
 	jfieldID get_fid(jobject obj, mappingFields name, JNIEnv* env)
@@ -182,11 +217,11 @@ namespace toadll
     {
         auto posclass = env->GetObjectClass(vecObj);
 
-        auto xposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3X), "()D");
+        static auto xposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3X), "()D");
         if (!xposid) return {-1, -1, -1};
 
-        auto yposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3Y), "()D");
-        auto zposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3Z), "()D");
+        static auto yposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3Y), "()D");
+        static auto zposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3Z), "()D");
 
         env->DeleteLocalRef(posclass);
 
@@ -201,11 +236,11 @@ namespace toadll
     {
         auto posclass = env->GetObjectClass(vecObj);
 
-        auto xposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IX), "()I");
+        static auto xposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IX), "()I");
         if (!xposid) return {-1, 0, 0};
 
-        auto yposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IY), "()I");
-        auto zposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IZ), "()I");
+        static auto yposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IY), "()I");
+        static auto zposid = env->GetMethodID(posclass, mappings::findName(mapping::Vec3IZ), "()I");
 
         env->DeleteLocalRef(posclass);
 
