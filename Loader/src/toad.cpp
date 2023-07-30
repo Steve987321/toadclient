@@ -134,9 +134,10 @@ void update_settings()
 	data["aa_multipoint"] = aa::aim_at_closest_point;
 	data["aa_lockaim"] = aa::lock_aim;
 
-	// auto bridge
-	data["ab_enabled"] = bridge_assist::enabled;
-	data["ab_pitch_check"] = bridge_assist::pitch_check;
+	// bridge assist
+	data["ba_enabled"] = bridge_assist::enabled;
+	data["ba_pitch_check"] = bridge_assist::pitch_check;
+	data["ba_block_check"] = bridge_assist::block_check;
 
 	// blink
 	data["bl_enabled"] = blink::enabled;

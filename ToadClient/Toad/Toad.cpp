@@ -316,9 +316,10 @@ bool UpdateSettings()
 	aa::aim_at_closest_point = data["aa_multipoint"];
 	aa::lock_aim = data["aa_lockaim"];
 
-	// auto bridge
-	bridge_assist::enabled = data["ab_enabled"];
-	bridge_assist::pitch_check = data["ab_pitch_check"];
+	// bridge assist
+	bridge_assist::enabled = data["ba_enabled"];
+	bridge_assist::pitch_check = data["ba_pitch_check"];
+	bridge_assist::block_check = data["ba_block_check"];
 
 	// blink
 	blink::enabled = data["bl_enabled"];

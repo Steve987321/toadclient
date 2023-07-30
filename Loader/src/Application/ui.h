@@ -2,6 +2,9 @@
 
 namespace toad::ui
 {
+
+    // loader ui's
+
     void ui_main(const ImGuiIO* io);
     void ui_init(const ImGuiIO* io);
 
@@ -116,20 +119,12 @@ namespace toad::ui
 
                     if (is_Bridge)
                     {
-                        setting_menu("Auto Bridge", is_Bridge, []
+                        setting_menu("Bridge Assist", is_Bridge, []
                             {
+                                ImGui::SliderFloat("pitch check", &bridge_assist::pitch_check, 1, 90);
 
-                                ImGui::SliderFloat("pitch check", &bridge_assist::pitch_check, 1, 70);
-
-                        // animation of how the bridging might look with settings
-                      /*  ImDrawList* draw = ImGui::GetForegroundDrawList();
-                        ImGuiContext& g = *GImGui;
-                        auto pos = ImVec2{300,200};
-                        draw->AddRect(pos, { pos.x + 20, pos.y + 20 }, IM_COL32(100, 100, 100, 255));
-                        draw->AddRect({ pos.x, pos.y + 20 }, { pos.x + 20, pos.y + 60 }, IM_COL32(100, 100, 100, 255));
-                        draw->AddRect({ pos.x, pos.y + 60 }, { pos.x + 20, pos.y + 120 }, IM_COL32(100, 100, 100, 255));
-                        draw->AddRect({ pos.x, pos.y + 60 }, { pos.x + 20, pos.y + 120 }, IM_COL32(100, 100, 100, 255));*/
-
+                            // zero and 1 means sneak at any edge
+                                ImGui::SliderInt("block height check", &bridge_assist::block_check, 0, 10);
                             });
                     }
 

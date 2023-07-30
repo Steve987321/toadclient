@@ -155,10 +155,10 @@ struct Entity
 
     float Health = 0;
 
-    float Pitch;
-    float Yaw;
+    float Pitch = 0;
+    float Yaw = 0;
 
-    jobject obj;
+    jobject obj = nullptr;
 
 };
 

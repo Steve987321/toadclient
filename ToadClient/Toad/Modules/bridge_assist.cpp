@@ -2,22 +2,54 @@
 #include "Toad/Toad.h"
 #include "bridge_assist.h"
 
+using namespace toad;
+
 namespace toadll
 {
 
 void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
+	if (!bridge_assist::enabled)
+	{
+		if (m_isSneaking)
+		{
+			UnSneak();
+		}
+		SLEEP(100);
+		return;
+	}
+
 	m_from = lPlayer->Pos;
 	m_from.y += 1;
 	Vec3 hitBlockPos = {};
+
+	// trace down exactly under the player 
 	auto res = MC->rayTraceBlocks(m_from, m_direction, hitBlockPos, false);
 
-	// the diff between the player and block under the player
-	auto diff = lPlayer->Pos - hitBlockPos;
-	diff.y -= 1;
+	// the vertical diff between the player and block under the player
+	auto diffY = lPlayer->Pos.y - hitBlockPos.y;
+	diffY -= 1;
 
-	bool prev = m_isEdge;
+	if (lPlayer->Pitch < bridge_assist::pitch_check)
+	{
+		if (m_isSneaking && diffY == 0)
+			UnSneak();
+
+		SLEEP(1);
+		return;
+	}
+
+	if (diffY != 0 && diffY <= bridge_assist::block_check)
+	{
+		SLEEP(1);
+		return;
+	}
+
+	std::cout << diffY << std::endl;
+
 	static bool jumped = false;
+
+	m_prev = m_isEdge;
 	m_isEdge = false;
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
@@ -27,17 +59,11 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (jumped)
 	{
-		m_isEdge = false;
-		if (prev)
-		{
-			send_key(VK_SHIFT, false);
-			prev = false;
-		}
+		UnSneak();
 
 		// check if we are back on ground or going down
-		if (lPlayer->Motion.y < -0.4 || diff.y == 0)
+		if (lPlayer->Motion.y < -0.4f || diffY == 0.0f)
 			jumped = false;
-		std::cout << diff.y << " " << lPlayer->Motion.y << std::endl;
 		return;
 	}
 
@@ -46,34 +72,22 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (!isFalling)
 	{
-		if (static_cast<int>(diff.y) != 0 || res == Minecraft::RAYTRACE_BLOCKS_RESULT::NO_HIT)
+		if (static_cast<int>(diffY) != 0 || res == Minecraft::RAYTRACE_BLOCKS_RESULT::NO_HIT)
 		{
-			m_isEdge = true;
-			if (!prev)
-			{
-				send_key(VK_SHIFT, true);
-				prev = true;
-			}
+			std::cout << "sneaking\n";
+			Sneak();
 		}
 		else
 		{
-			m_isEdge = false;
-			if (prev)
-			{
-				send_key(VK_SHIFT, false);
-				prev = false;
-			}
+			std::cout << "unsneaking\n";
+			UnSneak();
 		}
 	}
 	else
 	{
-		m_isEdge = false;
-		if (prev)
-		{
-			send_key(VK_SHIFT, false);
-			prev = false;
-		}
+		UnSneak();
 	}
+
 	SLEEP(1);
 }
 

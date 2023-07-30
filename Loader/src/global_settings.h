@@ -120,8 +120,8 @@ namespace toad
 	namespace bridge_assist
 	{
 		inline bool enabled = false;
-		inline float pitch_check = 61.f;
-		inline int block_check = 0;
+		inline float pitch_check = 61.f; // only sneak when pitch is less
+		inline int block_check = 5; // only sneak when edge height is bigger then this value in blocks
 	}
 
 	namespace blink

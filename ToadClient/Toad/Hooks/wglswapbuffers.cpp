@@ -62,7 +62,7 @@ namespace toadll
 		static HGLRC ctx = nullptr;
 		static int init_stage = 0;
 
-		GLint viewport[4];
+		GLint viewport[4] {};
 		glGetIntegerv(GL_VIEWPORT, CVarsUpdater::Viewport.data());
 
 		// check for resolution change
