@@ -121,7 +121,7 @@ namespace toad
 	{
 		inline bool enabled = false;
 		inline float pitch_check = 61.f; // only sneak when pitch is less
-		inline int block_check = 5; // only sneak when edge height is bigger then this value in blocks
+		inline int block_check = 1; // only sneak when edge height is bigger then this value in blocks
 	}
 
 	namespace blink

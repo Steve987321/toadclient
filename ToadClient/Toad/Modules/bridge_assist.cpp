@@ -9,8 +9,13 @@ namespace toadll
 
 void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
+	// keep track of player sneaking
+	// will help against being stuck on sneaking
+	bool m_isSneaking = (bool)GetAsyncKeyState(VK_SHIFT);
+
 	if (!bridge_assist::enabled)
 	{
+		// when disabling this cheat module, make sure we aren't sneaking anymore
 		if (m_isSneaking)
 		{
 			UnSneak();
@@ -45,8 +50,6 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
-	std::cout << diffY << std::endl;
-
 	static bool jumped = false;
 
 	m_prev = m_isEdge;
@@ -74,12 +77,10 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		if (static_cast<int>(diffY) != 0 || res == Minecraft::RAYTRACE_BLOCKS_RESULT::NO_HIT)
 		{
-			std::cout << "sneaking\n";
 			Sneak();
 		}
 		else
 		{
-			std::cout << "unsneaking\n";
 			UnSneak();
 		}
 	}

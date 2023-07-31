@@ -36,10 +36,6 @@ private:
 	// true if player is on the egde of a block
 	// m_prev will store the previous value of m_isEdge, this will help when player has entered or left an edge
 	bool m_isEdge = false, m_prev = false; 
-
-	// keep track of player sneaking
-	// will help against being stuck on sneaking
-	bool& m_isSneaking = m_prev;
 };
 
 }
