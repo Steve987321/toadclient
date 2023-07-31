@@ -39,8 +39,6 @@ namespace toadll
 
 	Vec2 world_to_screen(const Vec3& worldPos)
 	{
-		GLint viewport[4];
-
 		GLdouble modelview[16];
 		GLdouble projection[16];
 
@@ -51,11 +49,9 @@ namespace toadll
 			projection[i] = static_cast<GLdouble>(CVarsUpdater::Projection[i]);
 		}
 
-		glGetIntegerv(GL_VIEWPORT, viewport);
-
 		double screenX, screenY, screenZ;
 		gluProject(worldPos.x, worldPos.y, worldPos.z,
-			modelview, projection, viewport,
+			modelview, projection, CVarsUpdater::Viewport.data(),
 			&screenX, &screenY, &screenZ);
 
 		Vec3 cameraPos = { CVarsUpdater::ModelView[12], CVarsUpdater::ModelView[13], CVarsUpdater::ModelView[14] };
@@ -65,7 +61,7 @@ namespace toadll
 
 		// check if worldPos is in front of the camera
 		if (dotProduct < 0) {
-			return { static_cast<float>(screenX), static_cast<float>(viewport[3] - screenY) };
+			return { static_cast<float>(screenX), static_cast<float>(CVarsUpdater::Viewport[3] - screenY) };
 		}
 
 		// is behind the camera 
