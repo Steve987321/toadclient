@@ -90,6 +90,14 @@ struct Vec3 {
             return Vec3(0.0f, 0.0f, 0.0f);
         }
     }
+
+    float length() const {
+        return std::sqrt(x * x + y * y + z * z);
+    }
+
+    float lengthSquared() const {
+        return x * x + y * y + z * z;
+    }
 };
 
 struct Vec4 {
