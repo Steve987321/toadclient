@@ -4,6 +4,9 @@
 
 void toadll::CVarsUpdater::PreUpdate()
 {
+
+	static bool joiningWorld = false;
+
 	auto world = MC->getWorld();
 	auto localPlayer = MC->getLocalPlayer();
 	if (world == nullptr || localPlayer == nullptr)
@@ -14,11 +17,26 @@ void toadll::CVarsUpdater::PreUpdate()
 		if (world != nullptr)
 			env->DeleteLocalRef(world);
 
+		joiningWorld = true;
 		SLEEP(100);
 		return;
 	}
 
 	env->DeleteLocalRef(world);
+
+	// while joining world, do extra checks to prevent crashing 
+	if (joiningWorld)
+	{
+		// wait a bit 
+		SLEEP(500);
+
+		// check again
+		localPlayer = MC->getLocalPlayer();
+		if (!localPlayer)
+		{
+			return;
+		}
+	}
 
 	//static auto lPlayerName = localPlayer->getName();
 	//theLocalPlayer->Name = lPlayerName;
@@ -51,6 +69,7 @@ void toadll::CVarsUpdater::PreUpdate()
 		IsMouseOverPlayer = false;
 	}
 
+	joiningWorld = false;
 	IsVerified = true;
 	SLEEP(1);
 
