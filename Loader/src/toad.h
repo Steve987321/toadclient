@@ -12,6 +12,7 @@
 #include <TlHelp32.h>
 #include <sstream>
 #include <shared_mutex>
+#include <queue>
 
 // TOAD
 #include "global_settings.h"

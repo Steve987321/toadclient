@@ -15,11 +15,15 @@ namespace toad::ui
         // ui settings
         static bool tooltips = false;
 
+        // clicker extra option rand edit
+        static bool clicker_rand_edit = false;
+
 #ifdef TOAD_LOADER
-        ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
+        constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
 #else
-        ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+        constexpr auto window_flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize;
 #endif
+        ImGui::Begin("main", nullptr, window_flags);
         {
             // Tab Bar
             static int tab = 0;
@@ -69,7 +73,7 @@ namespace toad::ui
                             }, true,
                             []
                             {
-                                ImGui::Text("this is jesus");
+                                ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit);
                             });
 
                     else if (is_RClicker)
@@ -112,9 +116,11 @@ namespace toad::ui
                 {
                     static bool is_Bridge = false;
                     static bool is_Esp = false;
+                    static bool is_BlockEsp = false;
                     static bool is_Blink = false;
                     if (checkbox_button("Auto Bridge", ICON_FA_CUBE, &bridge_assist::enabled)) is_Bridge = true;
                     if (checkbox_button("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
+                    if (checkbox_button("Block ESP", ICON_FA_CUBES, &block_esp::enabled)) is_BlockEsp = true;
                     if (checkbox_button("Blink", ICON_FA_GHOST, &blink::enabled)) is_Blink = true;
 
                     if (is_Bridge)
@@ -132,79 +138,88 @@ namespace toad::ui
                     {
                         setting_menu("ESP", is_Esp, []
                             {
-                                ImGui::ColorEdit4("Outline Color", esp::lineCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
-                        ImGui::ColorEdit4("Fill Color", esp::fillCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
-                        ImGui::Checkbox("Block Esp", &block_esp::enabled);
+                        ImGui::ColorEdit4("Outline Color", esp::lineCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+						ImGui::ColorEdit4("Fill Color", esp::fillCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+                            });
+                    }
+
+                    else if (is_BlockEsp)
+                    {
+                        setting_menu("Block ESP", is_BlockEsp, []
+                            {
 
                         static std::set<std::string> ignoreSuggestions = {};
 
-                        if (block_esp::enabled)
+                        static int blockIdInput = 54;
+                        static char buf[20] = "";
+                        ImGui::InputText("search", buf, 20);
+                        ImGui::InputInt("block ID", &blockIdInput, 0, 0, ImGuiInputTextFlags_NoMarkEdited);
+                        if (ImGui::Button("Add"))
                         {
-                            static int blockIdInput = 54;
-                            static char buf[20] = "";
-                            ImGui::SetNextItemWidth(50);
-                            ImGui::InputText("search", buf, 20);
-                            ImGui::SameLine();
-                            ImGui::SetNextItemWidth(50);
-                            ImGui::InputInt("block ID", &blockIdInput, 0, 0, ImGuiInputTextFlags_NoMarkEdited);
-                            ImGui::SameLine();
-                            if (ImGui::Button("Add"))
+                            if (!block_esp::block_list.contains(blockIdInput))
                             {
-                                if (!block_esp::block_list.contains(blockIdInput))
-                                {
-                                    block_esp::block_list.insert({ blockIdInput, ImVec4{ 1, 1, 1, 0.3f } });
-                                    ignoreSuggestions.insert(ignoreSuggestions.end(), nameOfBlockId[blockIdInput]);
-                                    ZeroMemory(buf, 20);
-                                }
+                                block_esp::block_list.insert({ blockIdInput, ImVec4{ 1, 1, 1, 0.3f } });
+                                ignoreSuggestions.insert(ignoreSuggestions.end(), nameOfBlockId[blockIdInput]);
+                                ZeroMemory(buf, 20);
                             }
-                            auto listPos = ImGui::GetCursorPos();
+                        }
 
-                            ImGui::SetCursorPos(listPos);
-                            ImGui::BeginChild("esp block list", {}, true);
-                            for (auto& [id, col] : block_esp::block_list)
+                        auto listPos = ImGui::GetCursorPos();
+                        static std::queue<int> removeQueue = {};
+
+                        ImGui::SetCursorPos(listPos);
+                        ImGui::BeginChild("esp block list", {}, true);
+
+                        for (auto& [id, col] : block_esp::block_list)
+                        {
+                            ImGui::PushID(id);
+
+                            // Info
+                            ImGui::Text("%s | %d", nameOfBlockId[id].c_str(), id);
+
+                            // block color settings
+                            auto& blockEspCol = col;
+                            float coltmp[4] = { blockEspCol.x, blockEspCol.y, blockEspCol.z, blockEspCol.w };
+
+                            ImGui::SameLine();
+                            ImGui::ColorEdit4("##col", coltmp, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+
+                            blockEspCol = { coltmp[0],coltmp[1],coltmp[2],coltmp[3] };
+
+                            ImGui::SameLine();
+                            if (ImGui::Button("Remove"))
                             {
-                                ImGui::PushID(id);
+                                removeQueue.push(id);
+                            }
 
-                                // Info
-                                ImGui::Text("%s | %d", nameOfBlockId[id].c_str(), id);
+                            ImGui::PopID();
+                        }
 
-                                // block color settings
-                                auto& blockEspCol = col;
-                                float coltmp[4] = { blockEspCol.x, blockEspCol.y, blockEspCol.z, blockEspCol.w };
+                        while (!removeQueue.empty())
+                        {
+                            const auto id = removeQueue.front();
+                            block_esp::block_list.erase(id);
+                            ignoreSuggestions.erase(nameOfBlockId[id]);
+                            removeQueue.pop();
+                        }
 
-                                ImGui::SameLine();
-                                ImGui::ColorEdit4("##col", coltmp, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+                        ImGui::EndChild();
 
-                                blockEspCol = { coltmp[0],coltmp[1],coltmp[2],coltmp[3] };
-
-                                ImGui::SameLine();
-                                if (ImGui::Button("Remove"))
+                        ImGui::SetCursorPos(listPos);
+                        auto suggestions = get_filtered_suggestions(buf, nameOfBlockId, ignoreSuggestions);
+                        if (!suggestions.empty())
+                        {
+                            ImGui::BeginChild("suggestionlist", { 150, static_cast<float>(suggestions.size() * 20) + 10 }, true);
+                            for (auto& [id, suggested] : suggestions)
+                            {
+                                if (ImGui::Selectable(suggested.c_str(), false))
                                 {
-                                    block_esp::block_list.erase(id);
-                                    ignoreSuggestions.erase(nameOfBlockId[id]);
+                                    blockIdInput = id;
+                                    strncpy_s(buf, suggested.c_str(), 20);
                                 }
-
-                                ImGui::PopID();
 
                             }
                             ImGui::EndChild();
-
-                            ImGui::SetCursorPos(listPos);
-                            auto suggestions = get_filtered_suggestions(buf, nameOfBlockId, ignoreSuggestions);
-                            if (!suggestions.empty())
-                            {
-                                ImGui::BeginChild("suggestionlist", { 150, static_cast<float>(suggestions.size() * 20) + 10 }, true);
-                                for (auto& [id, suggested] : suggestions)
-                                {
-                                    if (ImGui::Selectable(suggested.c_str(), false))
-                                    {
-                                        blockIdInput = id;
-                                        strncpy_s(buf, suggested.c_str(), 20);
-                                    }
-
-                                }
-                                ImGui::EndChild();
-                            }
                         }
                             });
                     }
@@ -317,6 +332,12 @@ namespace toad::ui
                     setting_bar_t = 1;
                 }
             }
+        }
+        if (clicker_rand_edit)
+        {
+            ImGui::Begin("clicker rand edit", &clicker_rand_edit, ImGuiWindowFlags_NoSavedSettings);
+
+            ImGui::End();
         }
         ImGui::End();
     }
