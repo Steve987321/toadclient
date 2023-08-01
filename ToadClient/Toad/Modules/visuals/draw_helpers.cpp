@@ -37,7 +37,7 @@ namespace toadll
 		glEnd();
 	}
 
-	Vec2 world_to_screen(const Vec3& worldPos)
+	Vec2 world_to_screen(const Vec3& worldPos, const Vec3& cameraPos)
 	{
 		GLdouble modelview[16];
 		GLdouble projection[16];
@@ -54,10 +54,9 @@ namespace toadll
 			modelview, projection, CVarsUpdater::Viewport.data(),
 			&screenX, &screenY, &screenZ);
 
-		Vec3 cameraPos = { CVarsUpdater::ModelView[12], CVarsUpdater::ModelView[13], CVarsUpdater::ModelView[14] };
 		Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
 		Vec3 cameraToProjected = { worldPos.x - cameraPos.x, worldPos.y - cameraPos.y, worldPos.z - cameraPos.z };
-		float dotProduct = cameraToProjected.dot(cameraForward);
+		float dotProduct = cameraToProjected.dot(Vec3::normalize(cameraForward));
 
 		// check if worldPos is in front of the camera
 		if (dotProduct < 0) {
