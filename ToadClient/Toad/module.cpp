@@ -49,7 +49,7 @@ std::vector<Entity> CModule::GetPlayerList() const
 
 		Entity entity;
 		entity.obj = e->obj;
-		//entity.Name = e->getName();
+		entity.Name = e->getName();
 		entity.Pos = e->getPosition();
 		entity.HurtTime = e->getHurtTime();
 		entity.LastTickPos = e->getLastTickPosition();

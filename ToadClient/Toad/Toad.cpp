@@ -346,6 +346,9 @@ bool UpdateSettings()
 	esp::fillCol[1] = data["esp_fillcolg"];
 	esp::fillCol[2] = data["esp_fillcolb"];
 	esp::fillCol[3] = data["esp_fillcola"];
+	esp::show_name = data["esp_show_name"];
+	esp::show_distance = data["esp_show_distance"];
+	esp::esp_mode = data["esp_mode"];
 
 	// block esp
 	block_esp::enabled = data["blockesp_enabled"];

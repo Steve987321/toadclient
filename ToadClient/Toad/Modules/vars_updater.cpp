@@ -13,7 +13,6 @@ void toadll::CVarsUpdater::PreUpdate()
 	{
 		IsVerified = false;
 
-		std::cout << "not in game: " << world << ' ' << localPlayer << std::endl;
 		if (world != nullptr)
 			env->DeleteLocalRef(world);
 

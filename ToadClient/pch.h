@@ -35,6 +35,7 @@
 #include <sstream>
 #include <format>
 #include <fstream>
+#include <queue>
 
 #include "jni.h"
 #include <jvmti.h>

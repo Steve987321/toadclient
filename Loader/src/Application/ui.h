@@ -140,6 +140,20 @@ namespace toad::ui
                             {
                         ImGui::ColorEdit4("Outline Color", esp::lineCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
 						ImGui::ColorEdit4("Fill Color", esp::fillCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+
+                        if (ImGui::BeginCombo("ESP Type", espModeToCStrMap[esp::esp_mode], ImGuiComboFlags_NoArrowButton))
+                        {
+                            for (const auto& [espMode, name] : espModeToCStrMap)
+                            {
+                                if (ImGui::Selectable(name, espMode == esp::esp_mode))
+                                    esp::esp_mode = espMode;
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        ImGui::Checkbox("show name", &esp::show_name);
+                        ImGui::Checkbox("show distance", &esp::show_distance);
+
                             });
                     }
 

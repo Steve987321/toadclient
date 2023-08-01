@@ -152,7 +152,7 @@ inline std::ostream& operator<<(std::ostream& o, const BBox& v){
 
 struct Entity
 {
-    //std::string Name;
+    std::string Name;
 
     bool Invis = false;
 

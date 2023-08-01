@@ -16,9 +16,8 @@ void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
-	debuggingvector3 = {(float)lPlayer->HurtTime, 0, 0};
-
-	//std::lock_guard lock(m_bboxesMutex);
+	renderPos = MC->getActiveRenderInfo()->get_render_pos();
+	playerPos = lPlayer->Pos;
 
 	// Update our bounding boxes list
 	m_bboxes = GetBBoxes();
@@ -52,13 +51,35 @@ void CEsp::OnRender()
 	glLineWidth(1.f);
 
 	//m_bboxesMutex.lock();
-	for (const auto& bb : m_bboxes)
+	for (const auto& e : m_bboxes)
 	{
-		draw2d_bbox(
-			bb,
-			{esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3]},
-			{esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]}
-		);
+		switch (esp::esp_mode)
+		{
+		case ESP_MODE::BOX3D:
+			draw3d_bbox_fill(
+				e.bb,
+				{ esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3] }
+			);
+			draw3d_bbox_lines(
+				e.bb,
+				{ esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3] }
+			);
+			break;
+
+		case ESP_MODE::BOX2D_DYNAMIC:
+			break;
+
+		case ESP_MODE::BOX2D_STATIC:
+			draw2d_bbox(
+				e.bb,
+				{ esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3] },
+				{ esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3] }
+			);
+			break;
+
+		default: 
+			break ;
+		}
 	}
 	//m_bboxesMutex.unlock();
 
@@ -72,33 +93,87 @@ void CEsp::OnRender()
 	glPopMatrix();
 }
 
-std::vector<BBox> CEsp::GetBBoxes()
+void CEsp::OnImGuiRender(ImDrawList* draw)
 {
-	std::vector<BBox> bboxesRes = {};
+	if (!esp::enabled || !CVarsUpdater::IsVerified)
+	{
+		return;
+	}
 
-	//for (const auto& entity : MC->getPlayerList())
-	//{
-	//	if (entity->isInvisible())
-	//		continue;
+	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
+	{
+		/*Vec3 worldPos = { 25, 58, 0 };
 
-	//	auto playerlasttickpos = lPlayer->LastTickPos;
-	//	auto currPos = lPlayer->Pos;
-	//	auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * CVarsUpdater::RenderPartialTick;
-	//	auto lasttickpos = entity->getLastTickPosition();
-	//	auto pos = entity->getPosition();
+		auto screen = world_to_screen(worldPos - playerPos, renderPos);
+		std::cout << screen.x << " " << screen.y << std::endl;
+		draw->AddCircle({ screen.x, screen.y }, 10, IM_COL32_WHITE);*/
+		for (const auto& [bb, pos, name, hurttime] : m_bboxes)
+		{
+			if (esp::show_name || esp::show_distance)
+			{
+				auto posAddedY = (bb.min + bb.max) * 0.5f;
+				posAddedY.y += 2.f; // get the top of player 
 
-	//	BBox b_box = { {}, {} };
-	//	b_box.min.x = pos.x - 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
-	//	b_box.min.y = pos.y - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
-	//	b_box.min.z = pos.z - 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
-	//	b_box.max.x = pos.x + 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
-	//	b_box.max.y = pos.y + 1.8f - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
-	//	b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
+				auto screenpos = world_to_screen(posAddedY, renderPos);
 
-	//	//entityList.emplace_back(entity->Name, bbox{{-b_box.min.x, -b_box.min.y, -b_box.min.z}, {-b_box.max.x, -b_box.max.y, -b_box.max.z}});
-	//	bboxesRes.emplace_back(b_box);
-	//	
-	//}
+				if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
+				{
+					if (esp::show_name)
+					{
+						auto textSize = ImGui::CalcTextSize(name.c_str());
+						draw->AddText({ screenpos.x - textSize.x / 2, screenpos.y }, IM_COL32_WHITE, name.c_str());
+					}
+					if (esp::show_distance)
+					{
+						auto distStr = std::to_string(playerPos.dist(pos)).substr(0, 3);
+						auto textSize = ImGui::CalcTextSize(distStr.c_str());
+						draw->AddText({ screenpos.x - textSize.x / 2, screenpos.y + 10 }, IM_COL32_WHITE, distStr.c_str());
+					}
+				}				
+			}
+
+			// get vertices from bounding box 
+			auto vertices = GetBBoxVertices(bb.min, bb.max);
+
+			std::vector<Vec2> verticesScreenPos = {};
+
+			// world vertices pos to screen pos
+			for (const auto& v : vertices)
+			{
+				auto screen = world_to_screen(v, renderPos);
+				verticesScreenPos.emplace_back(screen);
+			}
+
+			auto minX = std::ranges::min_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
+			auto minY = std::ranges::min_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
+			auto maxX = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
+			auto maxY = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
+
+			auto line_col = ImGui::ColorConvertFloat4ToU32({ esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]});
+			auto fill_col = ImGui::ColorConvertFloat4ToU32({ esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3]});
+
+			//std::cout << minX << " " << minY << " " << maxX << " " << maxY << std::endl;
+			if ((int)minX * 10 == -10 && maxX > g_screen_width) continue;
+			if ((int)minY * 10 == -10 && maxY > g_screen_height) continue;
+
+			draw->AddRectFilled({ minX, minY }, { maxX, maxY }, fill_col);
+			draw->AddRect({ minX - esp::line_width, minY - esp::line_width }, { maxX + esp::line_width, maxY + esp::line_width }, line_col);
+		}
+	}
+	else
+	{	
+		
+	}
+
+	/*Vec2 screen{};
+	Vec3 WorldPos = Vec3(-561, 5, -38);
+	screen = world_to_screen(WorldPos - debuggingvector3);
+	draw->AddCircle({ screen.x, screen.y }, 10, IM_COL32_WHITE);*/
+}
+
+std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
+{
+	std::vector<VisualEntity> res = {};
 
 	for (const auto& entity : GetPlayerList())
 	{
@@ -122,13 +197,31 @@ std::vector<BBox> CEsp::GetBBoxes()
 		b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
 
 		//entityList.emplace_back(entity->Name, bbox{{-b_box.min.x, -b_box.min.y, -b_box.min.z}, {-b_box.max.x, -b_box.max.y, -b_box.max.z}});
-		bboxesRes.emplace_back(b_box);
+		res.emplace_back(b_box, pos, entity.Name, entity.HurtTime);
 
 		/*visual_entity.name = entity->Name;
 		entity_list.push_back(visual_entity);*/
 	}
 
-	return bboxesRes;
+	return res;
 }
 
+std::vector<Vec3> CEsp::GetBBoxVertices(const Vec3& min, const Vec3& max)
+{
+	std::vector<Vec3> res;
+
+	// front face
+	res.emplace_back(min.x, min.y, min.z);
+	res.emplace_back(max.x, min.y, min.z);
+	res.emplace_back(max.x, max.y, min.z);
+	res.emplace_back(min.x, max.y, min.z);
+
+	// back face
+	res.emplace_back(min.x, min.y, max.z);
+	res.emplace_back(max.x, min.y, max.z);
+	res.emplace_back(max.x, max.y, max.z);
+	res.emplace_back(min.x, max.y, max.z);
+
+	return res;
+}
 }

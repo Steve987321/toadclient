@@ -18,7 +18,7 @@ public:
 
 	/// The player the local player is looking at.
 	///	Only gets updated when IsMouseOverPlayer is true
-	static inline std::atomic<Entity> MouseOverPlayer {};
+	static inline Entity MouseOverPlayer {};
 
 	static inline std::atomic<float> PartialTick = 0;
 	static inline std::atomic<float> RenderPartialTick = 0;

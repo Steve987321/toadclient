@@ -369,7 +369,11 @@ inline bool checkbox_button(const char* name, const char* icon, bool* v)
 /// used on modules
 ///
 ///	@param name the name of the module, also used as an id
-inline void setting_menu(const char* name, bool& opened, const std::function<void()>& components, bool use_extra_options = false, const std::function<void()>& extra_options = {})
+///	@param opened will show the menu once this is true
+///	@param components main settings components
+///	@param use_extra_options if true will show extra options window and option
+///	@param extra_options_components what will show in the extra_options window
+inline void setting_menu(const char* name, bool& opened, const std::function<void()>& components, bool use_extra_options = false, const std::function<void()>& extra_options_components = {})
 {
 	if (!opened) return;
 
@@ -380,7 +384,7 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 	auto cbox_col = ImGui::GetColorU32(ImGuiCol_PopupBg);
 
 	auto mid = get_middle_point();
-	
+
 	const ImVec2 kbox_size_real = { mid.x + 120, mid.y + 120 };
 	static ImVec2 box_size_smooth = { mid.x + 15, mid.y + 15 };
 	const static float kbox_pos_X = mid.x - box_size_smooth.x / 2;
@@ -462,6 +466,7 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 	{
 		if (is_eoptions_open)
 		{
+			
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, { 0.1f, 0.1f, 0.1f, eoptions_bg_alpha_smooth });
 			ImGui::SetCursorPos({ eoptions_box_pos_X_smooth, mid.y - box_size_smooth.y / 2 });
 			ImGui::BeginChild("extra options", { box_size_smooth.x / 2 + 10, box_size_smooth.y }, true, window_flags);
@@ -470,11 +475,12 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 
 				ImGui::Separator();
 
-				extra_options();
+				extra_options_components();
 			}
 			ImGui::EndChild();
 
 			ImGui::PopStyleColor();
+		
 		}
 	}
 

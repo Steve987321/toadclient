@@ -24,9 +24,15 @@ namespace toad
 	enum class ESP_MODE
 	{
 		BOX3D,
-		HITBOX3D,
 		BOX2D_STATIC,
 		BOX2D_DYNAMIC
+	};
+
+	inline std::unordered_map<ESP_MODE, const char*> espModeToCStrMap =
+	{
+		{ESP_MODE::BOX3D, "Box 3D"},
+		{ESP_MODE::BOX2D_STATIC, "Static Box 2D"},
+		{ESP_MODE::BOX2D_DYNAMIC, "Dynamic Box 3D"},
 	};
 
 	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;
@@ -109,6 +115,10 @@ namespace toad
 
 		inline bool show_distance = false;
 		inline bool show_name = false;
+
+		inline ESP_MODE esp_mode;
+
+		inline int line_width = 1; // pixels 
 	}
 
 	namespace block_esp

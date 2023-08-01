@@ -164,6 +164,9 @@ void update_settings()
 	data["esp_fillcolg"] = esp::fillCol[1];
 	data["esp_fillcolb"] = esp::fillCol[2];
 	data["esp_fillcola"] = esp::fillCol[3];
+	data["esp_show_name"] = esp::show_name;
+	data["esp_show_distance"] = esp::show_distance;
+	data["esp_mode"] = esp::esp_mode;
 
 	// block esp
 	data["blockesp_enabled"] = block_esp::enabled;
