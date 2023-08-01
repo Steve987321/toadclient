@@ -111,8 +111,9 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 		{
 			if (esp::show_name || esp::show_distance)
 			{
+				// get the center and top of player 
 				auto posAddedY = (bb.min + bb.max) * 0.5f;
-				posAddedY.y += 2.f; // get the top of player 
+				posAddedY.y += 2.f; 
 
 				auto screenpos = world_to_screen(posAddedY, renderPos);
 
@@ -161,8 +162,33 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 		}
 	}
 	else
-	{	
-		
+	{
+		if (esp::show_name || esp::show_distance)
+		{
+			for (const auto& [bb, pos, name, hurttime] : m_bboxes)
+			{
+				// get the center and top of player 
+				auto posAddedY = (bb.min + bb.max) * 0.5f;
+				posAddedY.y += 2.f;
+
+				auto screenpos = world_to_screen(posAddedY, renderPos);
+
+				if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
+				{
+					if (esp::show_name)
+					{
+						auto textSize = ImGui::CalcTextSize(name.c_str());
+						draw->AddText({ screenpos.x - textSize.x / 2, screenpos.y }, IM_COL32_WHITE, name.c_str());
+					}
+					if (esp::show_distance)
+					{
+						auto distStr = std::to_string(playerPos.dist(pos)).substr(0, 3);
+						auto textSize = ImGui::CalcTextSize(distStr.c_str());
+						draw->AddText({ screenpos.x - textSize.x / 2, screenpos.y + 10 }, IM_COL32_WHITE, distStr.c_str());
+					}
+				}
+			}
+		}
 	}
 
 	/*Vec2 screen{};
