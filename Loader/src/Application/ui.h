@@ -136,25 +136,44 @@ namespace toad::ui
 
                     else if (is_Esp)
                     {
+                        constexpr auto color_edit_flags = ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar;
+
                         setting_menu("ESP", is_Esp, []
                             {
-                        ImGui::ColorEdit4("Outline Color", esp::lineCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
-						ImGui::ColorEdit4("Fill Color", esp::fillCol, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+	                            ImGui::ColorEdit4("Outline Color", esp::line_col, color_edit_flags);
+	                            ImGui::ColorEdit4("Fill Color", esp::fill_col, color_edit_flags);
 
-                        if (ImGui::BeginCombo("ESP Type", espModeToCStrMap[esp::esp_mode], ImGuiComboFlags_NoArrowButton))
-                        {
-                            for (const auto& [espMode, name] : espModeToCStrMap)
+	                            if (ImGui::BeginCombo("ESP Type", espModeToCStrMap[esp::esp_mode], ImGuiComboFlags_NoArrowButton))
+	                            {
+		                            for (const auto& [espMode, name] : espModeToCStrMap)
+		                            {
+			                            if (ImGui::Selectable(name, espMode == esp::esp_mode))
+				                            esp::esp_mode = espMode;
+		                            }
+		                            ImGui::EndCombo();
+	                            }
+
+	                            ImGui::Checkbox("show name", &esp::show_name);
+                                ImGui::Checkbox("show distance", &esp::show_distance);
+                            }, 
+                            true,
+                            [&color_edit_flags]
                             {
-                                if (ImGui::Selectable(name, espMode == esp::esp_mode))
-                                    esp::esp_mode = espMode;
+	                            ImGui::ColorEdit4("text color", esp::text_col, color_edit_flags);
+	                            ImGui::Checkbox("text shadow", &esp::text_shadow);
+                              /*  if (ImGui::Button("select font"))
+                                {
+                                    WCHAR res[100];
+                                    if (openFileDialog(res))
+                                        std::cout << "opened file dialog\n";
+                                    else
+                                        std::cout << " no shot\n";
+                                    std::wcout << res << std::endl;
+                                }*/
+                                
+                                ImGui::SliderFloat("static 2d box width", &esp::static_esp_width, -10, 10);
                             }
-                            ImGui::EndCombo();
-                        }
-
-                        ImGui::Checkbox("show name", &esp::show_name);
-                        ImGui::Checkbox("show distance", &esp::show_distance);
-
-                            });
+                        );
                     }
 
                     else if (is_BlockEsp)
@@ -347,12 +366,14 @@ namespace toad::ui
                 }
             }
         }
+
         if (clicker_rand_edit)
         {
             ImGui::Begin("clicker rand edit", &clicker_rand_edit, ImGuiWindowFlags_NoSavedSettings);
 
             ImGui::End();
         }
+
         ImGui::End();
     }
 }

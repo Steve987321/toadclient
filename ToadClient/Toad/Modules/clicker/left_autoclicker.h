@@ -8,10 +8,15 @@ class CLeftAutoClicker SET_MODULE_CLASS(CLeftAutoClicker), public CClickerBase
 public:
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 
+public:
+	// returns a reference to current randomization values
+	static Randomization& GetRand();
+
+	// update clicker rand delays by cps 
 	static void SetDelays(int cps);
 
 private:
-	inline static Randomization rand = Randomization(
+	inline static Randomization m_rand = Randomization(
 		0,
 		0,
 		20,
@@ -48,7 +53,7 @@ private:
 
 	inline Randomization& get_rand() override
 	{
-		return rand;
+		return m_rand;
 	}
 
 private:

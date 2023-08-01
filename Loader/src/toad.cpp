@@ -156,18 +156,25 @@ void update_settings()
 
 	// esp
 	data["esp_enabled"] = esp::enabled;
-	data["esp_linecolr"] = esp::lineCol[0];
-	data["esp_linecolg"] = esp::lineCol[1];
-	data["esp_linecolb"] = esp::lineCol[2];
-	data["esp_linecola"] = esp::lineCol[3];
-	data["esp_fillcolr"] = esp::fillCol[0];
-	data["esp_fillcolg"] = esp::fillCol[1];
-	data["esp_fillcolb"] = esp::fillCol[2];
-	data["esp_fillcola"] = esp::fillCol[3];
+	data["esp_linecolr"] = esp::line_col[0];
+	data["esp_linecolg"] = esp::line_col[1];
+	data["esp_linecolb"] = esp::line_col[2];
+	data["esp_linecola"] = esp::line_col[3];
+	data["esp_fillcolr"] = esp::fill_col[0];
+	data["esp_fillcolg"] = esp::fill_col[1];
+	data["esp_fillcolb"] = esp::fill_col[2];
+	data["esp_fillcola"] = esp::fill_col[3];
 	data["esp_show_name"] = esp::show_name;
 	data["esp_show_distance"] = esp::show_distance;
 	data["esp_mode"] = esp::esp_mode;
-
+	// esp extra
+	data["esp_line_width"] = esp::line_width;
+	data["esp_static_width"] = esp::static_esp_width;
+	data["esp_text_shadow"] = esp::text_shadow;
+	data["esp_text_colr"] = esp::text_col[0];
+	data["esp_text_colg"] = esp::text_col[1];
+	data["esp_text_colb"] = esp::text_col[2];
+	data["esp_text_cola"] = esp::text_col[3];
 	// block esp
 	data["blockesp_enabled"] = block_esp::enabled;
 	json blockArray = json::object();

@@ -8,11 +8,16 @@ class CRightAutoClicker SET_MODULE_CLASS(CRightAutoClicker), public CClickerBase
 public:
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 
+public:
+	// returns a reference to current randomization values
+	static Randomization& GetRand();
+
+	// update clicker rand delays by cps 
 	static void SetDelays(int cps);
 
 private:
 	// TODO: is the same as left clicker 
-	inline static Randomization rand = Randomization(
+	inline static Randomization m_rand = Randomization(
 		0,
 		0,
 		20,
@@ -51,7 +56,7 @@ private:
 private:
 	inline Randomization& get_rand() override
 	{
-		return rand;
+		return m_rand;
 	}
 
 	bool mouse_down() override;

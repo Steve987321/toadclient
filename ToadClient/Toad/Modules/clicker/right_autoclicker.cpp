@@ -24,8 +24,8 @@ namespace toadll
 
 			if (!is_starting_click)
 			{
-				rand.edited_min = rand.min_delay;
-				rand.edited_max = rand.max_delay;
+				m_rand.edited_min = m_rand.min_delay;
+				m_rand.edited_max = m_rand.max_delay;
 
 				Timer start_delay_timer;
 				while (start_delay_timer.Elapsed<>() < right_clicker::start_delayms)
@@ -50,7 +50,7 @@ namespace toadll
 		{
 			if (is_starting_click)
 			{
-				for (auto& b : rand.boosts)
+				for (auto& b : m_rand.boosts)
 				{
 					b.Reset();
 				}
@@ -61,22 +61,27 @@ namespace toadll
 		}
 	}
 
+	Randomization& CRightAutoClicker::GetRand()
+	{
+		return m_rand;
+	}
+
 	void CRightAutoClicker::SetDelays(int cps)
 	{
-		rand.min_delay = (1000.f / cps - 2) / 2;
-		rand.max_delay = (1000.f / cps + 2) / 2;
+		m_rand.min_delay = (1000.f / cps - 2) / 2;
+		m_rand.max_delay = (1000.f / cps + 2) / 2;
 	}
 
 	bool CRightAutoClicker::mouse_down()
 	{
-		rand.delay = rand_float(rand.edited_min, rand.edited_max);
+		m_rand.delay = rand_float(m_rand.edited_min, m_rand.edited_max);
 
-		apply_rand(rand.inconsistencies);
+		apply_rand(m_rand.inconsistencies);
 
 		m_end = std::chrono::high_resolution_clock::now();
 		m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-		precise_sleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+		precise_sleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 		if (!GetAsyncKeyState(VK_RBUTTON))
 			return false;
@@ -92,14 +97,14 @@ namespace toadll
 
 	void CRightAutoClicker::mouse_up()
 	{
-		rand.delay = rand_float(rand.edited_min, rand.edited_max);
+		m_rand.delay = rand_float(m_rand.edited_min, m_rand.edited_max);
 
-		apply_rand(rand.inconsistencies2);
+		apply_rand(m_rand.inconsistencies2);
 
 		m_end = std::chrono::high_resolution_clock::now();
 		m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-		precise_sleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+		precise_sleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 		POINT pt{};
 		GetCursorPos(&pt);

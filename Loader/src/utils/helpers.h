@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <set>
+#include <commdlg.h>
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
@@ -11,6 +12,7 @@
 #else
 #include "Application/Fonts/Icons.h"
 #endif
+
 
 // make enum work as flags
 #define ENUM_FLAG(e) inline constexpr e operator | (e a, e b) { return static_cast<e>(static_cast<int>(a) | static_cast<int>(b)); }

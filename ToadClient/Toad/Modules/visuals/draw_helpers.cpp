@@ -117,6 +117,7 @@ namespace toadll
 
 		Vec3 center = (bbox.min + bbox.max) * 0.5f;
 		Vec3 extents = (bbox.max - bbox.min) * 0.5f;
+		extents.x += toad::esp::static_esp_width;
 
 		Vec3 vertices[4] = {
 				center + cameraRight * extents.x - cameraUp * extents.y,

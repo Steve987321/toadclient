@@ -110,15 +110,23 @@ namespace toad
 	namespace esp
 	{
 		inline bool enabled = false;
-		inline float lineCol[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-		inline float fillCol[4] = {1.0f, 1.0f, 1.0f, 0.3f};
+		inline float line_col[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+		inline float fill_col[4] = {1.0f, 1.0f, 1.0f, 0.3f};
 
 		inline bool show_distance = false;
 		inline bool show_name = false;
 
 		inline ESP_MODE esp_mode;
 
-		inline int line_width = 1; // pixels 
+		inline int line_width = 1; // pixels
+		inline bool text_shadow = false; // use a text outline
+		inline float text_col[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		inline float static_esp_width = 0;
+
+		/*inline const char* font_path = "";
+		inline int font_size = 15;*/
+
 	}
 
 	namespace block_esp

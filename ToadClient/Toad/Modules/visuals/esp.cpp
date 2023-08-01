@@ -58,22 +58,22 @@ void CEsp::OnRender()
 		case ESP_MODE::BOX3D:
 			draw3d_bbox_fill(
 				e.bb,
-				{ esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3] }
+				{ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] }
 			);
 			draw3d_bbox_lines(
 				e.bb,
-				{ esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3] }
+				{ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] }
 			);
 			break;
 
-		case ESP_MODE::BOX2D_DYNAMIC:
+		case ESP_MODE::BOX2D_DYNAMIC: // uses imgui 
 			break;
 
 		case ESP_MODE::BOX2D_STATIC:
 			draw2d_bbox(
 				e.bb,
-				{ esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3] },
-				{ esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3] }
+				{ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] },
+				{ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] }
 			);
 			break;
 
@@ -145,15 +145,16 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 				verticesScreenPos.emplace_back(screen);
 			}
 
+			// 'dynamic'
 			auto minX = std::ranges::min_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
 			auto minY = std::ranges::min_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
 			auto maxX = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
 			auto maxY = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
 
-			auto line_col = ImGui::ColorConvertFloat4ToU32({ esp::lineCol[0], esp::lineCol[1], esp::lineCol[2], esp::lineCol[3]});
-			auto fill_col = ImGui::ColorConvertFloat4ToU32({ esp::fillCol[0], esp::fillCol[1], esp::fillCol[2], esp::fillCol[3]});
+			// convert color config
+			auto line_col = ImGui::ColorConvertFloat4ToU32({ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3]});
+			auto fill_col = ImGui::ColorConvertFloat4ToU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3]});
 
-			//std::cout << minX << " " << minY << " " << maxX << " " << maxY << std::endl;
 			if ((int)minX * 10 == -10 && maxX > g_screen_width) continue;
 			if ((int)minY * 10 == -10 && maxY > g_screen_height) continue;
 
@@ -172,19 +173,34 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 				posAddedY.y += 2.f;
 
 				auto screenpos = world_to_screen(posAddedY, renderPos);
+				auto text_col = ImGui::ColorConvertFloat4ToU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
 
 				if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
 				{
 					if (esp::show_name)
 					{
 						auto textSize = ImGui::CalcTextSize(name.c_str());
-						draw->AddText({ screenpos.x - textSize.x / 2, screenpos.y }, IM_COL32_WHITE, name.c_str());
+						auto posX = screenpos.x - textSize.x / 2;
+
+						if (esp::text_shadow)
+						{
+							draw->AddText({ posX - 1, screenpos.y - 1 }, IM_COL32_BLACK, name.c_str());
+							draw->AddText({ posX + 1, screenpos.y + 1 }, IM_COL32_BLACK, name.c_str());
+						}
+						draw->AddText({ posX, screenpos.y }, text_col, name.c_str());
 					}
 					if (esp::show_distance)
 					{
 						auto distStr = std::to_string(playerPos.dist(pos)).substr(0, 3);
 						auto textSize = ImGui::CalcTextSize(distStr.c_str());
-						draw->AddText({ screenpos.x - textSize.x / 2, screenpos.y + 10 }, IM_COL32_WHITE, distStr.c_str());
+						auto posX = screenpos.x - textSize.x / 2;
+
+						if (esp::text_shadow)
+						{
+							draw->AddText({ posX - 1, screenpos.y + 10 - 1}, IM_COL32_BLACK, distStr.c_str());
+							draw->AddText({ posX + 1, screenpos.y + 10 + 1}, IM_COL32_BLACK, distStr.c_str());
+						}
+						draw->AddText({ posX, screenpos.y + 10 }, text_col, distStr.c_str());
 					}
 				}
 			}

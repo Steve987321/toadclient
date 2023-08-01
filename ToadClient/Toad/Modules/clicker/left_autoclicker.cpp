@@ -47,7 +47,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		m_start = std::chrono::high_resolution_clock::now();
 
 		m_pTick = CVarsUpdater::PartialTick;
-		static auto enemy = CVarsUpdater::MouseOverPlayer.load();
+		static auto enemy = CVarsUpdater::MouseOverPlayer;
 		static bool has_active_enemy = false;
 		if (!CVarsUpdater::IsMouseOverPlayer)
 		{
@@ -67,8 +67,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (!is_starting_click)
 		{
-			rand.edited_min = rand.min_delay;
-			rand.edited_max = rand.max_delay;
+			m_rand.edited_min = m_rand.min_delay;
+			m_rand.edited_max = m_rand.max_delay;
 
 			is_starting_click = true;
 		}
@@ -94,14 +94,14 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			if (mouse_over_type == "ENTITY")
 			{
 				// lower delay
-				rand.edited_min = std::lerp(rand.edited_min, rand.min_delay - 2.5f, m_pTick / 2);
-				rand.edited_max = std::lerp(rand.edited_max, rand.max_delay - 2.5f, m_pTick / 3);
+				m_rand.edited_min = std::lerp(m_rand.edited_min, m_rand.min_delay - 2.5f, m_pTick / 2);
+				m_rand.edited_max = std::lerp(m_rand.edited_max, m_rand.max_delay - 2.5f, m_pTick / 3);
 			}
 			else
 			{
 				// higher delay
-				rand.edited_min = std::lerp(rand.edited_min, rand.min_delay + 2.5f, m_pTick / 3);
-				rand.edited_max = std::lerp(rand.edited_max, rand.max_delay + 2.5f, m_pTick / 2);
+				m_rand.edited_min = std::lerp(m_rand.edited_min, m_rand.min_delay + 2.5f, m_pTick / 3);
+				m_rand.edited_max = std::lerp(m_rand.edited_max, m_rand.max_delay + 2.5f, m_pTick / 2);
 			}
 		}
 
@@ -150,8 +150,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 				if (is_trading)
 				{
-					rand.edited_min = std::lerp(rand.edited_min, rand.min_delay - 10.0f, m_pTick / 2);
-					rand.edited_max = std::lerp(rand.edited_max, rand.max_delay - 10.0f, m_pTick / 3);
+					m_rand.edited_min = std::lerp(m_rand.edited_min, m_rand.min_delay - 10.0f, m_pTick / 2);
+					m_rand.edited_max = std::lerp(m_rand.edited_max, m_rand.max_delay - 10.0f, m_pTick / 3);
 				}
 				else
 				{
@@ -173,8 +173,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 					else
 						is_player_hit = false;
 
-					rand.edited_min = std::lerp(rand.edited_min, left_clicker::targeting_affects_cps ? rand.min_delay + 2.5f : rand.min_delay, m_pTick / 2);
-					rand.edited_max = std::lerp(rand.edited_max, left_clicker::targeting_affects_cps ? rand.max_delay + 2.5f : rand.max_delay, m_pTick / 3);
+					m_rand.edited_min = std::lerp(m_rand.edited_min, left_clicker::targeting_affects_cps ? m_rand.min_delay + 2.5f : m_rand.min_delay, m_pTick / 2);
+					m_rand.edited_max = std::lerp(m_rand.edited_max, left_clicker::targeting_affects_cps ? m_rand.max_delay + 2.5f : m_rand.max_delay, m_pTick / 3);
 				}
 			}
 			else
@@ -183,8 +183,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				start_timer_flag = false;
 				enemy_hit_count = 0;
 				lplayer_hit_count = 0;
-				rand.edited_min = std::lerp(rand.edited_min, left_clicker::targeting_affects_cps ? rand.min_delay + 2.5f : rand.min_delay, m_pTick / 2);
-				rand.edited_max = std::lerp(rand.edited_max, left_clicker::targeting_affects_cps ? rand.max_delay + 2.5f : rand.max_delay, m_pTick / 3);
+				m_rand.edited_min = std::lerp(m_rand.edited_min, left_clicker::targeting_affects_cps ? m_rand.min_delay + 2.5f : m_rand.min_delay, m_pTick / 2);
+				m_rand.edited_max = std::lerp(m_rand.edited_max, left_clicker::targeting_affects_cps ? m_rand.max_delay + 2.5f : m_rand.max_delay, m_pTick / 3);
 			}
 		}
 
@@ -267,7 +267,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (is_starting_click)
 		{
-			for (auto& b : rand.boosts)
+			for (auto& b : m_rand.boosts)
 			{
 				b.Reset();
 			}
@@ -279,16 +279,21 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 }
 
+Randomization& CLeftAutoClicker::GetRand()
+{
+	return m_rand;
+}
+
 bool CLeftAutoClicker::mouse_down()
 {
-	rand.delay = rand_float(rand.edited_min, rand.edited_max);
+	m_rand.delay = rand_float(m_rand.edited_min, m_rand.edited_max);
 
-	apply_rand(rand.inconsistencies);
+	apply_rand(m_rand.inconsistencies);
 
 	m_end = std::chrono::high_resolution_clock::now();
 	m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-	precise_sleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+	precise_sleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 	if (!GetAsyncKeyState(VK_LBUTTON))
 		return false;
@@ -304,14 +309,14 @@ bool CLeftAutoClicker::mouse_down()
 
 void CLeftAutoClicker::mouse_up()
 {
-	rand.delay = rand_float(rand.edited_min, rand.edited_max);
+	m_rand.delay = rand_float(m_rand.edited_min, m_rand.edited_max);
 
-	apply_rand(rand.inconsistencies2);
+	apply_rand(m_rand.inconsistencies2);
 
 	m_end = std::chrono::high_resolution_clock::now();
 	m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-	precise_sleep((rand.delay + rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+	precise_sleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 	POINT pt{};
 	GetCursorPos(&pt);
@@ -346,8 +351,8 @@ std::string CLeftAutoClicker::get_mouse_over_type() const
 
 void CLeftAutoClicker::SetDelays(int cps)
 {
-	rand.min_delay = (1000.f / cps - 2) / 2;
-	rand.max_delay = (1000.f / cps + 2) / 2;
+	m_rand.min_delay = (1000.f / cps - 2) / 2;
+	m_rand.max_delay = (1000.f / cps + 2) / 2;
 }
 
 }
