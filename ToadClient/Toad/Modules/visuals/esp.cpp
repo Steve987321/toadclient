@@ -102,16 +102,11 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 
 	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
 	{
-		/*Vec3 worldPos = { 25, 58, 0 };
-
-		auto screen = world_to_screen(worldPos - playerPos, renderPos);
-		std::cout << screen.x << " " << screen.y << std::endl;
-		draw->AddCircle({ screen.x, screen.y }, 10, IM_COL32_WHITE);*/
 		for (const auto& [bb, pos, name, hurttime] : m_bboxes)
 		{
 			if (esp::show_name || esp::show_distance)
 			{
-				// get the center and top of player 
+				// get the center top of player 
 				auto posAddedY = (bb.min + bb.max) * 0.5f;
 				posAddedY.y += 2.f; 
 
@@ -155,6 +150,7 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 			auto line_col = ImGui::ColorConvertFloat4ToU32({ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3]});
 			auto fill_col = ImGui::ColorConvertFloat4ToU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3]});
 
+			// skip invalid worldtoscreen's 
 			if ((int)minX * 10 == -10 && maxX > g_screen_width) continue;
 			if ((int)minY * 10 == -10 && maxY > g_screen_height) continue;
 

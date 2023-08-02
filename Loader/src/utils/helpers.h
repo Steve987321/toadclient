@@ -146,6 +146,25 @@ std::vector<std::pair<T, std::string>> get_filtered_suggestions(const std::strin
 	return res;
 }
 
+inline bool icon_button(const char* icon)
+{
+	auto pos = ImGui::GetCursorPos();
+	auto size = ImGui::CalcTextSize(icon);
+
+	ImGui::SameLine();
+
+	ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 1,1,1,0.2f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 1,1,1,0.1f });
+
+	ImGui::SetCursorPos(pos);
+	auto res = ImGui::Button("", size);
+
+	ImGui::PopStyleColor(3);
+
+	return res;
+}
+
 // simple wrapper for centering a single line of text inside a box on the X axis
 template<typename ...Args>
 void center_textX(const ImVec4& col = {1,1,1,1}, const char* txt = "sample text", Args&& ...args)
@@ -272,7 +291,7 @@ inline void show_message_box(const char* title, const char* msg, bool& condition
 			ImGui::TextColored({ 1, 0, 0, 1 }, ICON_FA_CROSS);
 		else
 			ImGui::Text("");
-
+		
 		if (can_close)
 		{
 			ImGui::SameLine();
@@ -400,16 +419,21 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 	static float eoptions_bg_alpha_target = 0;
 	static float eoptions_box_pos_X = box_pos_X + box_size_smooth.x - 10;
 	static float eoptions_box_pos_X_smooth = box_pos_X + box_size_smooth.x - 10;
+	static float eoptions_box_size_X = box_size_smooth.x / 2 + 70;
+	static float eoptions_box_size_X_smooth = box_size_smooth.x / 2 + 10;
 
 	// update box sizes and positions using anim_speed
 	const auto anim_speed = std::clamp(20.f * io->DeltaTime, 0.f, 1.f);
 
-	box_size_smooth = ImLerp(box_size_smooth, is_eoptions_open ? ImVec2{ mid.x + 100, mid.y + 120 } : kbox_size_real, anim_speed);
+	static float box_size_drag_offset = 0;
+	auto box_size_target = is_eoptions_open ? ImVec2{ mid.x + 100 + box_size_drag_offset, mid.y + 120} : kbox_size_real;
+	box_size_smooth = ImLerp(box_size_smooth, box_size_target, anim_speed);
 	bg_alpha_smooth = ImLerp(bg_alpha_smooth, 0.5f, anim_speed);
 	box_pos_X_smooth = ImLerp(box_pos_X_smooth, box_pos_X, anim_speed);
 
 	eoptions_bg_alpha_smooth = ImLerp(eoptions_bg_alpha_smooth, eoptions_bg_alpha_target, anim_speed);
-	eoptions_box_pos_X_smooth = ImLerp(eoptions_box_pos_X_smooth, eoptions_box_pos_X, anim_speed);
+	eoptions_box_pos_X_smooth = ImLerp(eoptions_box_pos_X_smooth, eoptions_box_pos_X + box_size_drag_offset, anim_speed);
+	eoptions_box_size_X_smooth = ImLerp(eoptions_box_size_X_smooth, eoptions_box_size_X - box_size_drag_offset, anim_speed);
 
 	// darker bg
 
@@ -426,15 +450,15 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.f);
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, cbox_col);
-	ImGui::SetCursorPos({ box_pos_X_smooth , mid.y - box_size_smooth.y / 2 });
+	ImGui::SetCursorPos({ box_pos_X_smooth, mid.y - box_size_smooth.y / 2 });
 	ImGui::BeginChild(name, box_size_smooth, true, window_flags);
 	{
 		center_textX({ 1,1,1,1 }, name);
 
 		if (use_extra_options)
 		{
-			ImGui::SameLine(0, 60);
-			//ImGui::SetCursorPos({ eoptions_button_pos.x, eoptions_button_pos.y });
+			ImGui::SameLine(0, box_size_smooth.x - (box_size_smooth.x / 2 + ImGui::CalcTextSize(name).x / 2) - 40);
+			//ImGui::SetCursorPos({ box_size_smooth.x - (box_size_smooth.x / 2 + ImGui::CalcTextSize(name).x / 2), mid.y - box_size_smooth.y / 2 });
 			ImGui::Text(ICON_FA_ELLIPSIS_H);
 			ImGui::SameLine();
 			ImGui::PushStyleColor(ImGuiCol_Button, { 0,0,0,0 });
@@ -468,10 +492,9 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 	{
 		if (is_eoptions_open)
 		{
-			
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, { 0.1f, 0.1f, 0.1f, eoptions_bg_alpha_smooth });
 			ImGui::SetCursorPos({ eoptions_box_pos_X_smooth, mid.y - box_size_smooth.y / 2 });
-			ImGui::BeginChild("extra options", { box_size_smooth.x / 2 + 10, box_size_smooth.y }, true, window_flags);
+			ImGui::BeginChild("extra options", { eoptions_box_size_X_smooth, box_size_smooth.y }, true, window_flags);
 			{
 				center_textX({ 1,1,1,1 }, "Extra Options");
 
@@ -482,14 +505,41 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 			ImGui::EndChild();
 
 			ImGui::PopStyleColor();
-		
 		}
+	}
+
+	static bool is_resizing = false;
+	if (is_eoptions_open)
+	{
+		//ImGui::GetWindowDrawList()->AddRectFilled({ ImGui::GetMainViewport()->Pos.x + box_pos_X_smooth + box_size_smooth.x, ImGui::GetMainViewport()->Pos.y + mid.y - box_size_smooth.y / 2 }, { ImGui::GetMainViewport()->Pos.x + eoptions_box_pos_X_smooth, ImGui::GetMainViewport()->Pos.y + box_size_smooth.y }, IM_COL32_WHITE);
+		if (ImGui::IsMouseHoveringRect({ ImGui::GetMainViewport()->Pos.x + box_pos_X_smooth + box_size_smooth.x, ImGui::GetMainViewport()->Pos.y + mid.y - box_size_smooth.y / 2 }, { ImGui::GetMainViewport()->Pos.x + eoptions_box_pos_X_smooth, ImGui::GetMainViewport()->Pos.y + box_size_smooth.y }))
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+			{
+				is_resizing = true;
+			}
+		}
+		
+		if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+			is_resizing = false;
+	}
+
+	if (is_resizing)
+	{
+		auto mdelta = io->MouseDelta;
+
+		box_size_drag_offset = std::clamp( box_size_drag_offset + mdelta.x, -225.f, 155.f);
+
+		box_size_smooth = ImVec2{ mid.x + 100 + box_size_drag_offset, mid.y + 120 };
+		eoptions_box_pos_X_smooth = eoptions_box_pos_X + box_size_drag_offset;
 	}
 
 	// close when clicking off the settings menu
 	const bool mbdown = ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right);
-	if (mbdown && ImGui::IsWindowHovered())
+	if (!is_resizing && mbdown && ImGui::IsWindowHovered())
 	{
+		box_size_drag_offset = 0;
 		box_size_smooth = { mid.x + 15, mid.y + 15 };
 		is_eoptions_open = false;
 		eoptions_bg_alpha_target = 0.0f;
