@@ -91,30 +91,26 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	auto lplayer_pos = lPlayer->Pos;
 	Vec3 aimPoint;
 
-	// hitbox vertices
-	const std::vector<Vec3> bbox_corners
-	{
-		{ targetPos.x - 0.3f, targetPos.y, targetPos.z + 0.3f },
-		{ targetPos.x - 0.3f, targetPos.y, targetPos.z - 0.3f },
-		{ targetPos.x + 0.3f, targetPos.y, targetPos.z - 0.3f },
-		{ targetPos.x + 0.3f, targetPos.y, targetPos.z + 0.3f },
-	};
-
 	if (aa::aim_at_closest_point) // aims at the closest corner of target
 	{
-		const std::vector<float> corner_distances = {
-			bbox_corners[0].dist(lplayer_pos),
-			bbox_corners[1].dist(lplayer_pos),
-			bbox_corners[2].dist(lplayer_pos),
-			bbox_corners[3].dist(lplayer_pos),
-		};
+		auto playerbb = BBox({ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z - 0.3f }, { targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z + 0.3f });
 
-		auto closest_corner = bbox_corners[std::distance(corner_distances.begin(), std::ranges::min_element(corner_distances))];
-
+		auto closest_corner = getClosesetPoint(playerbb, lplayer_pos);
+		//debugging_vector = closest_corner - lplayer_pos;
+		//std::cout << "player posY: " << lplayer_pos.y << " target bb y: (" << playerbb.min.y << ", " << playerbb.max.y << ") res:" << closest_corner.y << std::endl;
 		aimPoint = closest_corner;
 	}
 	else // aims to target if players aim is not inside hitbox 
 	{
+		// hitbox vertices
+		const std::vector<Vec3> bbox_corners
+		{
+			{ targetPos.x - 0.3f, targetPos.y, targetPos.z + 0.3f },
+			{ targetPos.x - 0.3f, targetPos.y, targetPos.z - 0.3f },
+			{ targetPos.x + 0.3f, targetPos.y, targetPos.z - 0.3f },
+			{ targetPos.x + 0.3f, targetPos.y, targetPos.z + 0.3f },
+		};
+
 		auto lplayer_yaw = lPlayer->Yaw;
 		auto yawdiff_to_pos = wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, targetPos).first));
 
