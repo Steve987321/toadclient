@@ -80,7 +80,7 @@
     <LibraryPath>$(ProjectDir)vendor\MinHook\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-Inter\$(Configuration)\</IntDir>
-    <IncludePath>D:\JDK\include\win32;D:\JDK\include;$(ProjectDir);$(ProjectDir)vendor;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(ProjectDir)vendor;$(ProjectDir)vendor\JDK\include;$(ProjectDir)vendor\JDK\include\win32;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
