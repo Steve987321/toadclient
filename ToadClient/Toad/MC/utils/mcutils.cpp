@@ -90,6 +90,7 @@ namespace toadll
 #endif
 
         cached_mids.insert({name, mid});
+        std::cout << cached_mids.size() << std::endl;
 
         return mid; 
     }
