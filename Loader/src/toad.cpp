@@ -132,6 +132,7 @@ void update_settings()
 	data["aa_targetFOV"] = aa::targetFOV;
 	data["aa_always_aim"] = aa::always_aim;
 	data["aa_multipoint"] = aa::aim_at_closest_point;
+	data["aa_aim_in_hitbox"] = aa::aim_in_target;
 	data["aa_lockaim"] = aa::lock_aim;
 
 	// bridge assist

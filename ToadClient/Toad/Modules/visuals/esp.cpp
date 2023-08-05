@@ -40,15 +40,14 @@ void CEsp::OnRender()
 	glLoadMatrixf(CVarsUpdater::Projection.data());
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(CVarsUpdater::ModelView.data());
-
+	
 	glPushMatrix();
 	glEnable(GL_LINE_SMOOTH);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_TEXTURE_2D);
-	glDepthMask(false);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	glLineWidth(1.f);
+	glLineWidth(esp::line_width);
 
 	//m_bboxesMutex.lock();
 	for (const auto& e : m_bboxes)
@@ -84,7 +83,6 @@ void CEsp::OnRender()
 	//m_bboxesMutex.unlock();
 
 	glDisable(GL_BLEND);
-	glDepthMask(true);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_LINE_SMOOTH);

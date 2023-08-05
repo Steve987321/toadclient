@@ -315,6 +315,7 @@ bool UpdateSettings()
 	aa::always_aim = data["aa_always_aim"];
 	aa::aim_at_closest_point = data["aa_multipoint"];
 	aa::lock_aim = data["aa_lockaim"];
+	aa::aim_in_target = data["aa_aim_in_hitbox"];
 
 	// bridge assist
 	bridge_assist::enabled = data["ba_enabled"];
@@ -426,7 +427,7 @@ void init_modules()
 		while (g_is_running)
 		{
 			Module->PreUpdate();
-
+			
 			if (!CVarsUpdater::IsVerified)
 			{
 				SLEEP(100);

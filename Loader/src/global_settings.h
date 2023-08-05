@@ -32,7 +32,7 @@ namespace toad
 	{
 		{ESP_MODE::BOX3D, "Box 3D"},
 		{ESP_MODE::BOX2D_STATIC, "Static Box 2D"},
-		{ESP_MODE::BOX2D_DYNAMIC, "Dynamic Box 3D"},
+		{ESP_MODE::BOX2D_DYNAMIC, "Dynamic Box 2D"},
 	};
 
 	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;

@@ -95,6 +95,7 @@ namespace toad::ui
                     ImGui::Checkbox("Always Aim", &aa::always_aim);
                     ImGui::Checkbox("Target Lock", &aa::lock_aim);
                     ImGui::Checkbox("Multi Point", &aa::aim_at_closest_point);
+                    ImGui::Checkbox("Aim in hitbox", &aa::aim_in_target);
                     ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
                     if (ImGui::IsItemClicked())
                         aa::targetFOV = !aa::targetFOV;
@@ -172,6 +173,7 @@ namespace toad::ui
                                 }*/
                                 
                                 ImGui::SliderFloat("static 2d box width", &esp::static_esp_width, -10, 10);
+                                ImGui::SliderInt("line width", &esp::line_width, 1, 10);
                             }
                         );
                     }
