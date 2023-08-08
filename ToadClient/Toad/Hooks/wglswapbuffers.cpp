@@ -119,7 +119,7 @@ namespace toadll
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		const auto draw = ImGui::GetBackgroundDrawList();
+		const auto draw = ImGui::GetForegroundDrawList();
 
 		for (const auto& Module : CModule::moduleInstances)
 			Module->OnImGuiRender(draw);
