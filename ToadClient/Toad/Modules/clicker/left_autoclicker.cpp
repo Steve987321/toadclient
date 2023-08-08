@@ -62,7 +62,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			has_active_enemy = enemy.Pos.dist(lPlayer->Pos) > 4.0f || yawDiff > 120;
 		}
 
-		auto mouse_over_type = get_mouse_over_type();
+		auto mouse_over_type = MC->getMouseOverTypeStr();
 		const auto& held_item = lPlayer->HeldItem;
 
 		if (!is_starting_click)
@@ -78,7 +78,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			while (mouse_over_type == "BLOCK" && GetAsyncKeyState(VK_LBUTTON))
 			{
 				SLEEP(1);
-				mouse_over_type = get_mouse_over_type();
+				mouse_over_type = MC->getMouseOverTypeStr();
 				m_start = std::chrono::high_resolution_clock::now();
 			}
 		}
@@ -217,9 +217,11 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				while (mouse_over_type == "BLOCK" && break_blocks_flag)
 				{
 					SLEEP(1);
-					mouse_over_type = get_mouse_over_type();
+					mouse_over_type = MC->getMouseOverTypeStr();
 					m_start = std::chrono::high_resolution_clock::now();
 				}
+
+				// TODO: add extra delay for when leaving block before clicking
 			}
 			else
 			{
@@ -338,15 +340,6 @@ void CLeftAutoClicker::right_mouse_up()
 	POINT pt{};
 	GetCursorPos(&pt);
 	PostMessage(g_hWnd, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
-}
-
-std::string CLeftAutoClicker::get_mouse_over_type() const
-{
-	auto str = MC->getMouseOverBlockStr();
-	auto start = str.find("type=") + 5;
-	if (start == std::string::npos) return "";
-	auto end = str.find(',', start);
-	return str.substr(start, end - start);
 }
 
 void CLeftAutoClicker::SetDelays(int cps)

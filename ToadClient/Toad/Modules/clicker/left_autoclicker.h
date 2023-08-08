@@ -64,10 +64,6 @@ private:
 	// No randomization on these, because they are used for block hitting and not for clicking
 	static inline void right_mouse_down();
 	static inline void right_mouse_up();
-
-private:
-	// TODO: instead of returning a string return an enum of object types
-	_NODISCARD inline std::string get_mouse_over_type() const;
 };
 
 }

@@ -15,7 +15,6 @@ using namespace toad;
 
 namespace toadll
 {
-
     void CInternalUI::OnImGuiRender(ImDrawList* draw)
     {
         //UIStyle();

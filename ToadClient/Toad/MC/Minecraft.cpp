@@ -98,6 +98,15 @@ std::shared_ptr<c_Entity> Minecraft::getLocalPlayer()
     return std::make_shared<c_Entity>(obj, env, getEntityLivingClass());
 }
 
+std::string Minecraft::getMouseOverTypeStr()
+{
+    auto str = getMouseOverBlockStr();
+    auto start = str.find("type=") + 5;
+    if (start == std::string::npos) return "";
+    auto end = str.find(',', start);
+    return str.substr(start, end - start);
+}
+
 Minecraft::RAYTRACE_BLOCKS_RESULT Minecraft::rayTraceBlocks(Vec3 from, Vec3 direction, Vec3& result, bool stopOnLiquid, bool stopOnAirBlock, int subtractY)
 {
     auto world = getWorld();

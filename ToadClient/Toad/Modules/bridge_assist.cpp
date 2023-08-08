@@ -11,12 +11,12 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	// keep track of player sneaking
 	// will help against being stuck on sneaking
-	bool m_isSneaking = (bool)GetAsyncKeyState(VK_SHIFT);
+	bool isSneaking = (bool)GetAsyncKeyState(VK_SHIFT);
 
 	if (!bridge_assist::enabled)
 	{
 		// when disabling this cheat module, make sure we aren't sneaking anymore
-		if (m_isSneaking)
+		if (isSneaking)
 		{
 			UnSneak();
 		}
@@ -37,7 +37,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (lPlayer->Pitch < bridge_assist::pitch_check)
 	{
-		if (m_isSneaking && diffY == 0)
+		if (isSneaking && diffY == 0)
 			UnSneak();
 
 		SLEEP(1);

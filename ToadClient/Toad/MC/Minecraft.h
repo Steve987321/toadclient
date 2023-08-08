@@ -65,6 +65,9 @@ public:
 	_NODISCARD std::shared_ptr<c_Entity> getMouseOverPlayer();
 	_NODISCARD std::shared_ptr<c_Entity> getLocalPlayer();
 
+	// TODO: instead of returning a string return an enum of object types
+	_NODISCARD std::string getMouseOverTypeStr();
+
 	/// @return a result of the ray trace
 	///
 	///	@param from beginning of ray
