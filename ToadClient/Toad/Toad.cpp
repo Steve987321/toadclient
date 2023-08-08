@@ -348,6 +348,7 @@ bool UpdateSettings()
 	esp::fill_col[3] = data["esp_fillcola"];
 	esp::show_name = data["esp_show_name"];
 	esp::show_distance = data["esp_show_distance"];
+	esp::show_health = data["esp_show_health"];
 	esp::esp_mode = data["esp_mode"];
 	// esp extra
 	esp::line_width = data["esp_line_width"];

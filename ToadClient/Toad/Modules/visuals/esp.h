@@ -23,6 +23,7 @@ private:
 		BBox bb;
 		Vec3 Pos;
 		std::string name;
+		int health;
 		int hurttime; 
 	};
 

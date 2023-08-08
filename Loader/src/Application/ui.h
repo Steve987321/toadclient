@@ -155,6 +155,7 @@ namespace toad::ui
 
 	                            ImGui::Checkbox("show name", &esp::show_name);
                                 ImGui::Checkbox("show distance", &esp::show_distance);
+                                ImGui::Checkbox("show health bar", &esp::show_health);
                             }, 
                             true,
                             [&color_edit_flags]
