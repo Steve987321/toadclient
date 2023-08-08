@@ -6,7 +6,7 @@
 using namespace toadll;
 
 // for getting settings from loader
-constexpr static size_t bufsize = 1000;
+constexpr static size_t bufsize = 2000;
 std::thread Tupdate_settings;
 
 inline std::vector<std::thread> cmodule_threads;
@@ -315,7 +315,6 @@ bool UpdateSettings()
 	aa::always_aim = data["aa_always_aim"];
 	aa::aim_at_closest_point = data["aa_multipoint"];
 	aa::lock_aim = data["aa_lockaim"];
-	aa::aim_in_target = data["aa_aim_in_hitbox"];
 
 	// bridge assist
 	bridge_assist::enabled = data["ba_enabled"];

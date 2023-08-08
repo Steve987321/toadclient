@@ -64,7 +64,6 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			while (!m_canSavePos)
 			{
-				LOGWARN("yooo look out man it is saving a position in blink!");
 				SLEEP(1);
 			}
 

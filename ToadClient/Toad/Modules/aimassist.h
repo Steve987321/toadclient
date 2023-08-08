@@ -14,7 +14,7 @@ private:
 	{
 		Vec3 closestPoint;
 
-		// Calculate the closest point on each axis
+		// calculate the closest point on each axis
 		closestPoint.x = std::clamp(from.x, bb.min.x, bb.max.x);
 		closestPoint.y = std::clamp(from.y, bb.min.y, bb.max.y);
 		closestPoint.z = std::clamp(from.z, bb.min.z, bb.max.z);

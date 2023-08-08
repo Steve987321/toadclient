@@ -20,6 +20,15 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
+	if (aa::break_blocks && GetAsyncKeyState(VK_LBUTTON))
+	{
+		if (MC->getMouseOverTypeStr() == "BLOCK")
+		{
+			SLEEP(50);
+			return;
+		}
+	}
+
 	std::vector <std::pair<float, Entity>> distances = {};
 
 	static std::shared_ptr<Entity> target = nullptr;
@@ -91,7 +100,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	auto lplayer_pos = lPlayer->Pos;
 	Vec3 aimPoint;
 
-	if (aa::aim_at_closest_point) // aims at the closest corner of target
+	if (aa::aim_at_closest_point) // aims at the closest point of target
 	{
 		auto playerbb = BBox({ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z - 0.3f }, { targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z + 0.3f });
 
@@ -121,25 +130,24 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, bbox_corners.at(3)).first)),
 		};
 
-		if (!aa::aim_in_target)
+		
+		if (yawdiff_to_pos < 0)
 		{
-			if (yawdiff_to_pos < 0)
+			if (*std::ranges::max_element(yawdiffs) > 0)
 			{
-				if (*std::ranges::max_element(yawdiffs) > 0)
-				{
-					SLEEP(1);
-					return;
-				}
-			}
-			else
-			{
-				if (*std::ranges::min_element(yawdiffs) < 0)
-				{
-					SLEEP(1);
-					return;
-				}
+				SLEEP(1);
+				return;
 			}
 		}
+		else
+		{
+			if (*std::ranges::min_element(yawdiffs) < 0)
+			{
+				SLEEP(1);
+				return;
+			}
+		}
+		
 
 		aimPoint = target->Pos;
 	}
@@ -153,11 +161,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	float yawDiff = wrap_to_180(-(lyaw - yawtarget));
 	float absYawDiff = abs(yawDiff);
 
-	if (!aa::aim_in_target && absYawDiff < 3.f)
-	{
-		SLEEP(1);
-		return;
-	}
 	float pitchDiff = wrap_to_180(-(lpitch - pitchtarget));
 
 	if (!aa::targetFOV) // don't have to check if this is enabled because already checked

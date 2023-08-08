@@ -1,12 +1,12 @@
 #include "toad.h"
 
-#include "../../ToadClient/nlohmann/json.hpp"
+#include "../../ToadClient/vendor/nlohmann/json.hpp"
 
 using namespace toad;
 
 // for ipc to dll 
 HANDLE hMapFile = nullptr;
-constexpr int bufSize = 1000;
+constexpr int bufSize = 2000;
 
 // flag used to call init once
 std::once_flag init_once_flag;
@@ -132,7 +132,6 @@ void update_settings()
 	data["aa_targetFOV"] = aa::targetFOV;
 	data["aa_always_aim"] = aa::always_aim;
 	data["aa_multipoint"] = aa::aim_at_closest_point;
-	data["aa_aim_in_hitbox"] = aa::aim_in_target;
 	data["aa_lockaim"] = aa::lock_aim;
 
 	// bridge assist
@@ -193,6 +192,18 @@ void update_settings()
 
 	std::stringstream ss;
 	ss << data << "END";
+
+	if (static bool once = false; !once)
+	{
+		auto n = ss.view().size();
+		std::cout << "setting size: " << n << std::endl;
+		if (n > bufSize)
+		{
+			std::cout << "not enough space for settings, increase buf size of mapped memory!\n";
+			return;
+		}
+		once = true;
+	}
 	//OutputDebugStringA(ss.str().c_str());
 	memcpy(pMem, ss.str().c_str(), ss.str().length());
 
