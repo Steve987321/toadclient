@@ -273,14 +273,14 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 						if (t > 0.5f)
 						{
 							// to yellow
-							col.y = std::lerp(0.f, 1.f, t / 0.5f - 1);
 							col.x = std::lerp(1.f, 0.f, t / 0.5f - 1);
+							col.y = 1;
 						}
 						else
 						{
 							// to red
-							col.x = std::lerp(1.f, 0.f, t / 0.5f - 1);
-							col.y = std::lerp(0.f, 1.f, t / 0.5f - 1);
+							col.x = 1;
+							col.y = std::lerp(0.f, 1.f, t / 0.5f);
 						}
 
 						// top: green -> middle: yellow -> bottom: red
