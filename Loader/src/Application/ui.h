@@ -18,6 +18,9 @@ namespace toad::ui
         // clicker extra option rand edit
         static bool clicker_rand_edit = false;
 
+        // esp visuals visualization
+        static bool esp_visuals_menu = false;
+
 #ifdef TOAD_LOADER
         constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
 #else
@@ -153,27 +156,8 @@ namespace toad::ui
 		                            ImGui::EndCombo();
 	                            }
 
-	                            ImGui::Checkbox("show name", &esp::show_name);
-                                ImGui::Checkbox("show distance", &esp::show_distance);
-                                ImGui::Checkbox("show health bar", &esp::show_health);
-                            }, 
-                            true,
-                            [&color_edit_flags]
-                            {
-	                            ImGui::ColorEdit4("text color", esp::text_col, color_edit_flags);
-	                            ImGui::Checkbox("text shadow", &esp::text_shadow);
-                              /*  if (ImGui::Button("select font"))
-                                {
-                                    WCHAR res[100];
-                                    if (openFileDialog(res))
-                                        std::cout << "opened file dialog\n";
-                                    else
-                                        std::cout << " no shot\n";
-                                    std::wcout << res << std::endl;
-                                }*/
-                                
-                                ImGui::SliderFloat("static 2d box width", &esp::static_esp_width, -10, 10);
-                                ImGui::SliderInt("line width", &esp::line_width, 1, 10);
+                                ImGui::Checkbox("open esp settings", &esp_visuals_menu);
+
                             }
                         );
                     }
@@ -376,6 +360,96 @@ namespace toad::ui
             ImGui::End();
         }
 
+        if (esp_visuals_menu)
+        {
+            ImGui::Begin("ESP box settings", &esp_visuals_menu, ImGuiWindowFlags_NoSavedSettings);
+
+            const auto window_size = ImGui::GetWindowSize();
+            const float window_spacing = 20;
+
+            // for visualization
+            static int visualize_health = 20;
+
+        	ImGui::BeginChild("esp box visual", { window_size.x / 2 - window_spacing, window_size.y - window_spacing - 20}, true);
+            {
+                const auto window_pos = ImGui::GetWindowPos();
+
+                const auto childsize = ImGui::GetWindowSize();
+                // box
+                ImVec2 min = { window_pos.x + window_spacing + 20 , window_pos.y + window_spacing + 20 };
+                ImVec2 max = { window_pos.x + childsize.x - window_spacing - 20,  window_pos.y + childsize.y - window_spacing - 20 };
+                ImGui::GetWindowDrawList()->AddRectFilled(min, max, ImGui::GetColorU32({esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3]}));
+
+                if (esp::show_name)
+                {
+                    const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
+                    const auto halfsizex = ImGui::CalcTextSize("Player").x / 2;
+                	ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex, min.y } , text_col_imu32, "Player");
+                }
+                if (esp::show_distance)
+                {
+                    const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
+
+                    const auto halfsizex = ImGui::CalcTextSize("5.0").x / 2;
+                    ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex, min.y - 10 }, text_col_imu32, "5.0");
+                }
+                if (esp::show_health)
+                {
+                    float t = (float)visualize_health / 20.f;
+                    ImVec4 col = {0, 0, 0, 1};
+                    if (t > 0.5f)
+                    {
+                        // to yellow
+                        col.x = std::lerp(1.f, 0.f, t / 0.5f - 1);
+                        col.y = 1;
+                    }
+                    else
+                    {
+                        // to red
+                        col.x = 1;
+                        col.y = std::lerp(0.f, 1.f, t / 0.5f);
+                    }
+
+                    // top: green -> middle: yellow -> bottom: red
+                    ImGui::GetWindowDrawList()->AddRectFilled({ max.x + 2, std::lerp(max.y, min.y, t) }, { max.x + 4, max.y }, ImGui::GetColorU32(col));
+                }
+                ImGui::EndChild();
+            }
+
+            ImGui::SameLine();
+
+            ImGui::BeginChild("esp box properties", { window_size.x / 2 - window_spacing, window_size.y - window_spacing - 20}, true);
+            {
+                constexpr auto color_edit_flags = ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar;
+
+                if (ImGui::TreeNode("Player Properties"))
+                {
+                    ImGui::Checkbox("show name", &esp::show_name);
+                    ImGui::Checkbox("show distance", &esp::show_distance);
+                    ImGui::Checkbox("show health", &esp::show_health);
+                    
+                    ImGui::SliderInt("Health", &visualize_health, 0, 20, "%d HP");
+
+                    ImGui::TreePop();
+                }
+
+                if (ImGui::TreeNode("Box Properties"))
+                {
+                    ImGui::ColorEdit4("text color", esp::text_col, color_edit_flags);
+                    ImGui::ColorEdit4("text bg color", esp::text_bg_col, color_edit_flags);
+                    ImGui::Checkbox("text shadow", &esp::text_shadow);
+                    ImGui::Checkbox("text bg", &esp::text_bg);
+                    
+                    ImGui::SliderFloat("static 2d box width", &esp::static_esp_width, -10, 10);
+                    ImGui::SliderInt("line box width", &esp::line_width, 1, 10);
+
+                    ImGui::TreePop();
+                }
+            }
+            ImGui::EndChild();
+
+            ImGui::End();
+        }
         ImGui::End();
     }
 }

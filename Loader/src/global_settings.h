@@ -28,6 +28,13 @@ namespace toad
 		BOX2D_DYNAMIC
 	};
 
+	enum class ESP_HEALTH_MODE
+	{
+		BAR_DEFAULT,
+		BAR_STATIC_GRADIENT,
+		TEXT,
+	};
+
 	inline std::unordered_map<ESP_MODE, const char*> espModeToCStrMap =
 	{
 		{ESP_MODE::BOX3D, "Box 3D"},
@@ -121,8 +128,9 @@ namespace toad
 
 		inline int line_width = 1; // pixels
 		inline bool text_shadow = false; // use a text outline
+		inline bool text_bg = false; // background for text
 		inline float text_col[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
+		inline float text_bg_col[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
 		inline float static_esp_width = 0;
 
 		/*inline const char* font_path = "";
