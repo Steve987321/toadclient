@@ -46,7 +46,7 @@ namespace toad
 
         g_is_running = true;
 
-        m_window = std::make_shared<Window>("Toad", WINDOW_HEIGHT, WINDOW_WIDTH);
+        m_window = std::make_shared<ImGuiWindow>("Toad", WINDOW_HEIGHT, WINDOW_WIDTH);
         m_window->SetUI(render_UI);
         m_window->StartWindow();
 

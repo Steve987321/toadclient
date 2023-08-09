@@ -158,7 +158,7 @@
     <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Application\window.h" />
+    <ClInclude Include="src\Application\imgui_window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\global_settings.h" />
@@ -174,7 +174,7 @@
     <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\Application\window.cpp" />
+    <ClCompile Include="src\Application\imgui_window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

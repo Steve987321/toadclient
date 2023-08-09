@@ -63,7 +63,7 @@
     <ClInclude Include="src\Application\ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Application\window.h">
+    <ClInclude Include="src\Application\imgui_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -107,7 +107,7 @@
     <ClCompile Include="src\global_settings.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Application\window.cpp">
+    <ClCompile Include="src\Application\imgui_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

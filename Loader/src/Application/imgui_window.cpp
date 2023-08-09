@@ -1,5 +1,5 @@
 #include "toad.h"
-#include "window.h"
+#include "imgui_window.h"
 #include <string>
 
 #include "Fonts/fa-solid-900Font.h"
@@ -12,17 +12,17 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 namespace toad
 {
 
-Window::Window(std::string window_title, int win_height, int win_width)
+ImGuiWindow::ImGuiWindow(std::string window_title, int win_height, int win_width)
 	: m_windowName(std::move(window_title)), m_window_width(win_width), m_window_height(win_height) 
 {
 }
 
-Window::~Window()
+ImGuiWindow::~ImGuiWindow()
 {
     DestroyWindow();
 }
 
-void Window::StartWindow()
+void ImGuiWindow::StartWindow()
 {
     std::cout << "Creating window with name: " << m_windowName << std::endl;
 
@@ -40,10 +40,10 @@ void Window::StartWindow()
     }
 
     std::cout << "Starting window thread\n";
-    m_windowThread = std::thread(&Window::CreateImGuiWindow, this, m_windowName, m_window_height, m_window_width);
+    m_windowThread = std::thread(&ImGuiWindow::CreateImGuiWindow, this, m_windowName, m_window_height, m_window_width);
 }
 
-void Window::DestroyWindow()
+void ImGuiWindow::DestroyWindow()
 {
     std::lock_guard lock(m_destroyWindowMutex);
 
@@ -69,28 +69,28 @@ void Window::DestroyWindow()
 
 }
 
-Window::D3DProperties* Window::GetD3DProperties()
+ImGuiWindow::D3DProperties* ImGuiWindow::GetD3DProperties()
 {
     return &m_d3dProperties;
 }
 
-HWND Window::GetHandle() const
+HWND ImGuiWindow::GetHandle() const
 {
     return m_hwnd;
 }
 
-bool Window::IsActive() const
+bool ImGuiWindow::IsActive() const
 {
     return m_isRunning && !m_shouldClose;
 }
 
-void Window::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
+void ImGuiWindow::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
 {
     m_isUIFuncSet = true;
     m_uiFunction = ui_func;
 }
 
-void Window::CreateImGuiWindow(const std::string& window_title, int win_height, int win_width)
+void ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_height, int win_width)
 {
     RECT desktop_rect = {};
 
@@ -166,7 +166,7 @@ void Window::CreateImGuiWindow(const std::string& window_title, int win_height, 
     }
 }
 
-bool Window::CreateDeviceD3D()
+bool ImGuiWindow::CreateDeviceD3D()
 {
     if ((m_d3dProperties.pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
         return false;
@@ -207,13 +207,13 @@ bool Window::CreateDeviceD3D()
     return true;
 }
 
-void Window::CleanupDeviceD3D()
+void ImGuiWindow::CleanupDeviceD3D()
 {
     if (m_d3dProperties.pD3DDevice) { m_d3dProperties.pD3DDevice->Release(); m_d3dProperties.pD3DDevice = NULL; }
     if (m_d3dProperties.pD3D) { m_d3dProperties.pD3D->Release(); m_d3dProperties.pD3D = NULL; }
 }
 
-void Window::ResetDevice()
+void ImGuiWindow::ResetDevice()
 {
     ImGui_ImplDX9_InvalidateDeviceObjects();
     HRESULT hr = m_d3dProperties.pD3DDevice->Reset(&m_d3dProperties.pD3DParams);
@@ -222,7 +222,7 @@ void Window::ResetDevice()
     ImGui_ImplDX9_CreateDeviceObjects();
 }
 
-void Window::UpdateMenu()
+void ImGuiWindow::UpdateMenu()
 {
     MSG msg;
     while (::PeekMessageA(&msg, NULL, 0U, 0U, PM_REMOVE))
@@ -277,7 +277,7 @@ void Window::UpdateMenu()
         ResetDevice();
 }
 
-void Window::DefaultUIWindow(ImGuiIO* io)
+void ImGuiWindow::DefaultUIWindow(ImGuiIO* io)
 {
     // match the window sizes 
     ImGui::SetNextWindowPos({ 0,0 });
@@ -291,7 +291,7 @@ void Window::DefaultUIWindow(ImGuiIO* io)
     ImGui::End();
 }
 
-Window* Window::GetWindowInstance(std::string_view window_name)
+ImGuiWindow* ImGuiWindow::GetWindowInstance(std::string_view window_name)
 {
     auto it = m_windowNameMap.find(window_name.data());
     if (it != m_windowNameMap.end())
@@ -299,7 +299,7 @@ Window* Window::GetWindowInstance(std::string_view window_name)
     return nullptr;
 }
 
-Window* Window::GetWindowInstance(const HWND& hwnd)
+ImGuiWindow* ImGuiWindow::GetWindowInstance(const HWND& hwnd)
 {
     auto it = m_windowHwndMap.find(hwnd);
     if (it != m_windowHwndMap.end())
@@ -307,7 +307,7 @@ Window* Window::GetWindowInstance(const HWND& hwnd)
     return nullptr;
 }
 
-LRESULT WINAPI Window::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT WINAPI ImGuiWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
         return true;

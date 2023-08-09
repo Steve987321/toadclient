@@ -10,11 +10,11 @@ namespace toad {
 ///
 /// TODO: Fix when creating multiple Windows 
 ///
-class Window final
+class ImGuiWindow final
 {
 public:
-	Window(std::string window_title, int win_height, int win_width);
-	~Window();
+	ImGuiWindow(std::string window_title, int win_height, int win_width);
+	~ImGuiWindow();
 
 public:
 	struct D3DProperties
@@ -42,8 +42,8 @@ public:
 	/// Returns an active window with given argument as id if found.
 	///
 	///	Returns null if not found
-	static Window* GetWindowInstance(std::string_view window_name);
-	static Window* GetWindowInstance(const HWND& hwnd);
+	static ImGuiWindow* GetWindowInstance(std::string_view window_name);
+	static ImGuiWindow* GetWindowInstance(const HWND& hwnd);
 
 private:
 	void CreateImGuiWindow(const std::string& window_title, int win_height, int win_width);
@@ -70,8 +70,8 @@ private:
 
 	bool m_isUIFuncSet = false;
 
-	inline static std::unordered_map<std::string, Window*> m_windowNameMap = {};
-	inline static std::unordered_map<HWND, Window*> m_windowHwndMap = {};
+	inline static std::unordered_map<std::string, ImGuiWindow*> m_windowNameMap = {};
+	inline static std::unordered_map<HWND, ImGuiWindow*> m_windowHwndMap = {};
 
 	std::function<void(ImGuiIO* io)> m_uiFunction = DefaultUIWindow;
 
