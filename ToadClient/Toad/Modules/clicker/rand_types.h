@@ -2,6 +2,17 @@
 
 namespace toadll
 {
+
+#ifdef TOAD_LOADER
+	inline int rand_int(int min, int max)
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<int> dis(min, max);
+		return dis(gen);
+	}
+#endif
+
 	struct Inconsistency
 	{
 		Inconsistency(float min, float max, int chance, int frequency) :
@@ -20,18 +31,18 @@ namespace toadll
 		bool start = false;
 
 		/// picks a random number between..
-		const float min_amount_ms = 0.0f, max_amount_ms = 1.0f;
+		float min_amount_ms = 0.0f, max_amount_ms = 1.0f;
 
 		/// How frequently this inconsistency should occur
 		/// this frequency is based of clicks.
 		///
 		/// A higher value will occur less and a lower value will occur more
-		const int frequency = 10;
+		int frequency = 10;
 
 		/// chance in %.
 		///
 		/// Depends on the frequency: chance is used when counter > frequency 
-		const int chance = 50;
+		int chance = 50;
 
 		/// increments every click
 		int frequency_counter = 0;
@@ -39,8 +50,8 @@ namespace toadll
 
 	struct Boost
 	{
-		Boost(float amount, float dur, float transition_dur, Vec2 freq, int id) :
-			amount_ms(amount), duration(dur), transition_duration(transition_dur), frequency(rand_int(freq.x, freq.y)), frequency_range(freq), id(id) {}
+		Boost(float amount, float dur, float transition_dur, float freqmin, float freqmax, int id) :
+			amount_ms(amount), duration(dur), transition_duration(transition_dur), frequency(rand_int(freqmin, freqmax)), freq_min(freqmin), freq_max(freqmax), id(id) {}
 
 		void Reset()
 		{
@@ -48,7 +59,7 @@ namespace toadll
 			paused = false;
 			counter = 0;
 			frequency_counter = frequency_counter -= static_cast<float>(frequency_counter) * (static_cast<float>(frequency_counter) / static_cast<float>(frequency) * 0.75f);
-			frequency = rand_int(frequency_range.x, frequency_range.y);
+			frequency = rand_int(freq_min, freq_max);
 		}
 
 		bool start = false;
@@ -71,7 +82,7 @@ namespace toadll
 		int frequency = 0;
 
 		// frequency random range
-		const Vec2 frequency_range = { 10, 20 };
+		const int freq_min = 10, freq_max = 20;
 
 		// how many clicks it takes to boost up / down
 		// amount must be so that transition_duration < duration / 2
@@ -90,7 +101,6 @@ namespace toadll
 			float min_delay, float max_delay, 
 			float edited_min, float edited_max, 
 			float delay,
-			bool start_rand_flag,
 			float inconsistency_delay,
 			std::vector<Inconsistency> inconsistencies,
 			std::vector<Inconsistency> inconsistencies2,
@@ -104,8 +114,6 @@ namespace toadll
 
 			this->delay = delay;
 
-			this->start_rand_flag = start_rand_flag;
-			 
 			this->inconsistency_delay = inconsistency_delay;
 
 			this->inconsistencies = std::move(inconsistencies);
@@ -121,8 +129,6 @@ namespace toadll
 		float edited_max = 50;
 
 		float delay = 0;
-
-		bool start_rand_flag = false;
 
 		float inconsistency_delay = 0;
 

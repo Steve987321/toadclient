@@ -7,7 +7,13 @@
 
 #include <unordered_map>
 
+#include <random>
+
 #include "imgui/imgui.h"
+
+#ifdef TOAD_LOADER
+#include "../../ToadClient/Toad/Modules/clicker/rand_types.h"
+#endif
 
 namespace toad
 {
@@ -57,7 +63,41 @@ namespace toad
 		inline bool trade_assist = false; // when trading hits cps spikes
 		inline bool targeting_affects_cps = false; // when aiming at target cps is higher, else it lowers
 		inline bool block_hit = false; // when hitting player it blocks for ms, see @block_hit_ms
-		inline int block_hit_ms = 10; 
+		inline int block_hit_ms = 10;
+
+		inline toadll::Randomization rand = toadll::Randomization(
+			0,
+			0,
+			20,
+			50,
+			0,
+			0,
+			{
+				toadll::Inconsistency(10.f, 40.f , 70, 35),
+				toadll::Inconsistency(20.f, 40.f , 60, 50),
+				toadll::Inconsistency(40.f, 60.f, 50, 150),
+
+				toadll::Inconsistency(-10.f, 0    , 50, 40),
+			},
+			{
+				toadll::Inconsistency(30.f, 50.f , 70, 50),
+				toadll::Inconsistency(60.f, 80.f , 50, 100),
+
+				toadll::Inconsistency(-10.f, 0, 60, 50),
+				toadll::Inconsistency(-15.f, 0, 40, 60)
+			},
+			{
+				toadll::Boost(1.2f, 50 , 3, 100, 150, 0),
+				toadll::Boost(0.5f, 80 , 5, 100, 150, 1),
+				toadll::Boost(0.4f, 100, 5, 150, 200, 2),
+				toadll::Boost(1.0f, 120, 5, 150, 200, 3),
+
+					// DROPS
+				toadll::Boost(-1.0f, 190, 5, 150, 200, 4),
+				toadll::Boost(-1.5f, 50, 3, 100, 200, 5),
+
+			}
+		);
 
 	}
 

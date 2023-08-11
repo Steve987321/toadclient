@@ -20,6 +20,9 @@ namespace toadll
 
 		if (velocity::jump_reset)
 		{
+			if (std::fabs(lPlayer->Motion.y) > FLT_EPSILON)
+				return;
+
 			if (lPlayer->HurtTime > 0 && !StopFlag)
 			{
 				StopFlag = true;

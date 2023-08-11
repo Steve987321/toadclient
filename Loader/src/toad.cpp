@@ -115,7 +115,53 @@ void update_settings()
 	data["lc_smartcps"] = left_clicker::targeting_affects_cps;
 	data["lc_weaponsonly"] = left_clicker::weapons_only;
 	data["lc_tradeassist"] = left_clicker::trade_assist;
+	// rand
+	json lcRand = json::object();
+	for (int i = 0; i < left_clicker::rand.boosts.size(); i++)
+	{
+		const auto& b = left_clicker::rand.boosts[i];
 
+		lcRand["b" + std::to_string(i)] =
+		{
+			//float amount, float dur, float transition_dur, Vec2 freq, int id
+			{"n", b.amount_ms},
+			{"dur", b.duration},
+			{"tdur", b.transition_duration},
+			{"fqmin", b.freq_min},
+			{"fqmax", b.freq_max},
+			{"id", b.id}
+		};
+	}
+
+	for (int i = 0; i < left_clicker::rand.inconsistencies.size(); i++)
+	{
+		//float min, float max, int chance, int frequency)
+
+		const auto& in = left_clicker::rand.inconsistencies[i];
+		lcRand["i1" + std::to_string(i)] =
+		{
+			{"nmin", in.min_amount_ms},
+			{"nmax", in.max_amount_ms},
+			{"c", in.chance},
+			{"f", in.frequency}
+		};
+	}
+
+	for (int i = 0; i < left_clicker::rand.inconsistencies2.size(); i++)
+	{
+		const auto& in = left_clicker::rand.inconsistencies2[i];
+
+		lcRand["i2" + std::to_string(i)] =
+		{
+			{"nmin", in.min_amount_ms},
+			{"nmax", in.max_amount_ms},
+			{"c", in.chance},
+			{"f", in.frequency}
+		};
+	}
+
+	data["lc_rand"] = lcRand;
+	
 	// right auto clicker
 	data["rc_enabled"] = right_clicker::enabled;
 	data["rc_cps"] = right_clicker::cps;

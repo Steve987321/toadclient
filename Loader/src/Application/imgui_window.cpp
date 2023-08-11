@@ -139,6 +139,7 @@ void ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_hei
     m_io->Fonts->AddFontDefault();
     m_io->IniFilename = NULL; // disable imgui.ini file
     m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     static constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
 

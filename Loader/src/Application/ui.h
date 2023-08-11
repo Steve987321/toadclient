@@ -22,7 +22,7 @@ namespace toad::ui
         static bool esp_visuals_menu = false;
 
 #ifdef TOAD_LOADER
-        constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
+        constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
 #else
         constexpr auto window_flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize;
 #endif
@@ -66,7 +66,16 @@ namespace toad::ui
                     if (is_LClicker)
                         setting_menu("LeftClicker", is_LClicker, []
                             {
-                                ImGui::SliderInt("cps", &left_clicker::cps, 0, 20, "%dcps");
+                                if (ImGui::SliderInt("cps", &left_clicker::cps, 1, 20, "%dcps"))
+                                {
+                                    if (left_clicker::cps < 1)
+                                        left_clicker::cps = 1;
+
+                                    // update rand delays
+                                    left_clicker::rand.min_delay = (1000.f / left_clicker::cps - 2) / 2;
+                                    left_clicker::rand.max_delay = (1000.f / left_clicker::cps + 2) / 2;
+                                }
+
                     ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
                     ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
                     ImGui::Checkbox("block hit", &left_clicker::block_hit);
@@ -82,7 +91,7 @@ namespace toad::ui
                     else if (is_RClicker)
                         setting_menu("RightClicker", is_RClicker, []
                             {
-                                ImGui::SliderInt("cps", &right_clicker::cps, 0, 20, "%dcps");
+                                ImGui::SliderInt("cps", &right_clicker::cps, 1, 20, "%dcps");
                     ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
                     ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
                             });
@@ -355,9 +364,94 @@ namespace toad::ui
 
         if (clicker_rand_edit)
         {
-            ImGui::Begin("clicker rand edit", &clicker_rand_edit, ImGuiWindowFlags_NoSavedSettings);
+            if (static bool first = false; !first)
+            {
+                ImGui::SetNextWindowSize({ 300,300 });
 
-            ImGui::End();
+                first = true;
+            }
+            ImGui::Begin("clicker rand edit", &clicker_rand_edit, ImGuiWindowFlags_NoSavedSettings);
+            {
+                const int incN = left_clicker::rand.inconsistencies.size();
+                const int inc2N = left_clicker::rand.inconsistencies2.size();
+                const int boostsN = left_clicker::rand.boosts.size();
+
+                static std::queue<int> removeInconsistencyQueue = {};
+                static std::queue<int> removeInconsistency2Queue = {};
+                static std::queue<int> removeBoostQueue = {};
+
+                if (ImGui::TreeNode(("Inconsistencies (mouse down) " + std::to_string(incN)).c_str()))
+                {
+                    for (int i = 0; i < incN; i++)
+                    {
+                        ImGui::PushID(i);
+                        if (ImGui::Button("X"))
+                        {
+                            removeInconsistencyQueue.push(i);
+                        }
+                        ImGui::PopID();
+
+                        ImGui::SameLine();
+
+                        auto& in = left_clicker::rand.inconsistencies[i];
+
+                        if (left_clicker::rand.min_delay < FLT_EPSILON)
+                        {
+                            left_clicker::rand.min_delay = (1000.f / left_clicker::cps - 2) / 2;
+                            left_clicker::rand.max_delay = (1000.f / left_clicker::cps + 2) / 2;
+
+                        }
+                        in.min_amount_ms = std::clamp(in.min_amount_ms, -left_clicker::rand.min_delay + 1.0f, in.max_amount_ms);
+                        in.max_amount_ms = std::clamp(in.max_amount_ms, in.min_amount_ms, 500.f);
+
+                        if (ImGui::TreeNode(("inconsistency" + std::to_string(i)).c_str(), "inconsistency (%.1f, %.1f)", in.min_amount_ms, in.max_amount_ms))
+                        {
+                            ImGui::PushID(i);
+
+                            ImGui::SliderFloat("min delay", &in.min_amount_ms, -left_clicker::rand.min_delay + 1.0f, 500.f, "%.3fms");
+                            ImGui::SliderFloat("max delay", &in.max_amount_ms, -left_clicker::rand.min_delay + 1.0f, 500.f, "%.3fms");
+
+                            ImGui::SliderInt("chance", &in.chance, 0, 100, "%d%%");
+                            ImGui::SliderInt("frequency", &in.frequency, 1, 150, "every %d clicks");
+
+                            ImGui::PopID();
+
+                            ImGui::TreePop();
+                        }
+                    }
+
+                    while (!removeInconsistencyQueue.empty())
+                    {
+                        const auto index = removeInconsistencyQueue.front();
+                        left_clicker::rand.inconsistencies.erase(left_clicker::rand.inconsistencies.begin() + index);
+                        removeInconsistencyQueue.pop();
+                    }
+
+                    if (ImGui::Button("+"))
+                    {
+                        left_clicker::rand.inconsistencies.emplace_back(0, 0, 50, 20);
+                    }
+                    ImGui::TreePop();
+                }
+
+
+
+                if (ImGui::Button("Update Rand"))
+                {
+	                
+                }
+
+                ImGui::End();
+            }
+
+            //ImGui::Begin("clicker rand visualize", &clicker_rand_edit, ImGuiWindowFlags_NoSavedSettings);
+            //{
+            //    /*for (int i = 0; i < left_clicker::rand.inconsistencies.size(); i++)
+            //  {
+            //      auto& in = left_clicker::rand.inconsistencies[i];
+            //  }*/
+            //    ImGui::End();
+            //}
         }
 
         if (esp_visuals_menu)
@@ -384,6 +478,11 @@ namespace toad::ui
                 {
                     const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
                     const auto halfsizex = ImGui::CalcTextSize("Player").x / 2;
+
+                    if (esp::text_shadow)
+                    {
+	                    
+                    }
                 	ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex, min.y } , text_col_imu32, "Player");
                 }
                 if (esp::show_distance)

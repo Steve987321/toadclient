@@ -298,6 +298,8 @@ bool UpdateSettings()
 	left_clicker::weapons_only = data["lc_weaponsonly"];
 	left_clicker::trade_assist = data["lc_tradeassist"];
 
+	// rand
+
 	// right auto clicker
 	right_clicker::enabled = data["rc_enabled"];
 	right_clicker::cps = data["rc_cps"];
@@ -400,12 +402,16 @@ void init_modules()
 
 	CBridgeAssist::GetInstance()->name = "Auto bridge";
 
-	//COfScreenArrows::GetInstance();
-
-	//CAutoPot::get_instance();
+	// don't create threads for these modules
+	CInternalUI::GetInstance()->IsOnlyRendering = true;
 
 	for (const auto& Module : CModule::moduleInstances)
 	{
+		if (Module->IsOnlyRendering)
+		{
+			continue;
+		}
+
 		cmodule_threads.emplace_back([&]()
 			{
 				JNIEnv* env = nullptr;
