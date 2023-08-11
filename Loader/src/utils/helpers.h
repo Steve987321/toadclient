@@ -400,7 +400,7 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 
 	auto io = &ImGui::GetIO();
 
-	constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+	constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking;
 
 	auto cbox_col = ImGui::GetColorU32(ImGuiCol_PopupBg);
 
@@ -515,7 +515,7 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 		if (ImGui::IsMouseHoveringRect({ ImGui::GetMainViewport()->Pos.x + box_pos_X_smooth + box_size_smooth.x, ImGui::GetMainViewport()->Pos.y + mid.y - box_size_smooth.y / 2 }, { ImGui::GetMainViewport()->Pos.x + eoptions_box_pos_X_smooth, ImGui::GetMainViewport()->Pos.y + box_size_smooth.y }))
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
-			if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 			{
 				is_resizing = true;
 			}
