@@ -57,8 +57,9 @@ namespace toadll
         if (!jStr)
             return "";
         auto name = env->GetStringUTFChars(jStr, nullptr);
+        std::string res = name;
         env->ReleaseStringUTFChars(jStr, name);
-        return std::string(name);
+        return res;
     }
 
     std::unordered_map<mapping, jmethodID> cached_mids;

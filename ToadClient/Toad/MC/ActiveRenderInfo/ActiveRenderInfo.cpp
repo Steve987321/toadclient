@@ -30,8 +30,7 @@ void toadll::ActiveRenderInfo::set_modelview(std::array<float, 16>& arr) const
 		return;
 	auto obj = env->GetStaticObjectField(ariclass, fid);
 	auto bufklass = env->GetObjectClass(obj);
-	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
-
+	static auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
 	for (int i = 0; i < 16; i++)
 	{
 		arr[i] = env->CallFloatMethod(obj, getIndexBuf, i);
@@ -49,7 +48,7 @@ std::vector<float>  toadll::ActiveRenderInfo::get_projection() const
 		return {};
 	auto obj = env->GetStaticObjectField(ariclass, fid);
 	auto bufklass = env->GetObjectClass(obj);
-	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
+	static auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
 
 	res.reserve(16);
 	for (int i = 0; i < 16; i++)

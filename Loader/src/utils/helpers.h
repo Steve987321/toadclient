@@ -400,8 +400,11 @@ inline void setting_menu(const char* name, bool& opened, const std::function<voi
 
 	auto io = &ImGui::GetIO();
 
+#ifdef TOAD_LOADER
 	constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking;
-
+#else
+	constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+#endif
 	auto cbox_col = ImGui::GetColorU32(ImGuiCol_PopupBg);
 
 	auto mid = get_middle_point();

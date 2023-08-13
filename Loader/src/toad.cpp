@@ -17,6 +17,7 @@ inline std::thread windowScannerThread;
 
 // updates settings for dll 
 extern void update_settings();
+
 // scan for minecraft instances 
 extern void window_scanner();
 

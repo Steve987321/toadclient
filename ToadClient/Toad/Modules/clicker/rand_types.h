@@ -1,5 +1,10 @@
 #pragma once
 
+#ifndef TOAD_LOADER
+#include "Toad/helpers.h"
+#include "Toad/Modules/clicker/rand_types.h"
+#endif
+
 namespace toadll
 {
 
@@ -9,6 +14,13 @@ namespace toadll
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_int_distribution<int> dis(min, max);
+		return dis(gen);
+	}
+	inline float rand_float(float min, float max)
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> dis(min, max);
 		return dis(gen);
 	}
 #endif
@@ -72,21 +84,21 @@ namespace toadll
 
 		// gets subtracted from Randomization.min_delay when in transition
 		// The full boost amount will be amount * transition_duration
-		const float amount_ms = 0.2f;
+		float amount_ms = 0.2f;
 
 		// full duration of the boost in clicks
-		const int duration = 30;
+		int duration = 30;
 
 		// there is no chance variable which makes boosts more consistent
 		// this frequency is randomized with frequency_range
 		int frequency = 0;
 
 		// frequency random range
-		const int freq_min = 10, freq_max = 20;
+		int freq_min = 10, freq_max = 20;
 
 		// how many clicks it takes to boost up / down
 		// amount must be so that transition_duration < duration / 2
-		const int transition_duration = 5;
+		int transition_duration = 5;
 
 		// increments every click, used when in boost
 		int counter = 0;

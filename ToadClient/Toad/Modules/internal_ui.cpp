@@ -8,6 +8,7 @@
 #include "../Loader/src/Application/Fonts/Icons.h"
 
 #include "../Loader/src/Application/ui.h"
+#include "../Loader/src/Application/ui.cpp"
 
 #include "imgui/imgui_internal.h"
 

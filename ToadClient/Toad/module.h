@@ -13,12 +13,16 @@ namespace toadll {
 class CModule
 {
 public:
-	bool Initialized = false;
 	inline static std::vector<CModule*> moduleInstances = {};
+
+public:
+	bool Initialized = false;
 
 	// debugging purposes
 	std::string name; 
 
+	// will skip creating a thread for this module on initialization
+	bool IsOnlyRendering = false;
 public:
 	CModule()
 	{
@@ -32,10 +36,10 @@ public:
 	void SetMC(std::unique_ptr<Minecraft>& mc);
 
 public:
-	/// Executes every tick or 100ms(when not in game) even when player is null
+	/// Executes in a loop or 100ms(when not in game) even when player is null
 	virtual void PreUpdate();
 
-	/// Executes every system tick when player is not null
+	/// Executes in a loop when player is not null
 	virtual void Update(const std::shared_ptr<LocalPlayer>& lPlayer);
 
 	/// Executes inside the wglswapbuffers hook.

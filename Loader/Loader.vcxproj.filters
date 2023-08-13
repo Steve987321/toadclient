@@ -66,6 +66,9 @@
     <ClInclude Include="src\Application\imgui_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Application\VisualizeClicker\VisualizeClicker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application\Application.cpp">
@@ -108,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Application\imgui_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\VisualizeClicker\VisualizeClicker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

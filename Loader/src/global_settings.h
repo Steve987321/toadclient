@@ -12,7 +12,11 @@
 #include "imgui/imgui.h"
 
 #ifdef TOAD_LOADER
+#include <chrono>
 #include "../../ToadClient/Toad/Modules/clicker/rand_types.h"
+#include "../../ToadClient/Toad/timer.h"
+#else
+#include "Toad/Modules/clicker/rand_types.h"
 #endif
 
 namespace toad
