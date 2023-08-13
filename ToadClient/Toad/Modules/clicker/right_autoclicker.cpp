@@ -68,8 +68,8 @@ namespace toadll
 
 	void CRightAutoClicker::SetDelays(int cps)
 	{
-		m_rand.min_delay = (1000.f / cps - 2) / 2;
-		m_rand.max_delay = (1000.f / cps + 2) / 2;
+		m_rand.min_delay = (1000.f / (cps + 2)) / 2;
+		m_rand.max_delay = (1000.f / (cps - 2)) / 2;
 	}
 
 	bool CRightAutoClicker::mouse_down()

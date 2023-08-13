@@ -290,7 +290,8 @@ bool UpdateSettings()
 
 	// left auto clicker
 	left_clicker::enabled = data["lc_enabled"];
-	left_clicker::cps = data["lc_cps"];
+	left_clicker::min_cps = data["lc_mincps"];
+	left_clicker::max_cps = data["lc_maxcps"];
 	left_clicker::break_blocks = data["lc_breakblocks"];
 	left_clicker::block_hit = data["lc_blockhit"];
 	left_clicker::block_hit_ms = data["lc_blockhitms"];
@@ -378,7 +379,7 @@ bool UpdateSettings()
 
 	block_esp::block_list = tmpList;
 
-	CLeftAutoClicker::SetDelays(left_clicker::cps);
+	CLeftAutoClicker::SetDelays(left_clicker::min_cps, left_clicker::max_cps);
 	CRightAutoClicker::SetDelays(right_clicker::cps);
 
 	UnmapViewOfFile(pMem);

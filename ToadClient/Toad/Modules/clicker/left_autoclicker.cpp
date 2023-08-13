@@ -342,10 +342,10 @@ void CLeftAutoClicker::right_mouse_up()
 	PostMessage(g_hWnd, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 }
 
-void CLeftAutoClicker::SetDelays(int cps)
+void CLeftAutoClicker::SetDelays(int min_cps, int max_cps)
 {
-	m_rand.min_delay = (1000.f / cps - 2) / 2;
-	m_rand.max_delay = (1000.f / cps + 2) / 2;
+	m_rand.min_delay = (1000.f / (max_cps - 2)) / 2;
+	m_rand.max_delay = (1000.f / (min_cps + 2)) / 2;
 }
 
 }

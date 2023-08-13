@@ -59,7 +59,8 @@ namespace toad
 	{
 		inline bool enabled = false;
 
-		inline int cps = 15;
+		inline int min_cps = 12;
+		inline int max_cps = 16;
 
 		//inline bool item_whitelist = false;
 		inline bool weapons_only = false; // only click when holding weapon

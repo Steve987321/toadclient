@@ -13,7 +13,7 @@ public:
 	static Randomization& GetRand();
 
 	// update clicker rand delays by cps 
-	static void SetDelays(int cps);
+	static void SetDelays(int min_cps, int max_cps);
 
 private:
 	inline static Randomization m_rand = Randomization(

@@ -84,14 +84,11 @@ namespace toad::ui
                     if (is_LClicker)
                         setting_menu("LeftClicker", is_LClicker, []
                             {
-                                if (ImGui::SliderInt("cps", &left_clicker::cps, 1, 20, "%dcps"))
+                                if (ImGui::SliderInt("min cps", &left_clicker::min_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
                                 {
-                                    if (left_clicker::cps < 1)
-                                        left_clicker::cps = 1;
-
                                     // update rand delays
-                                    auto mindelay = (1000.f / left_clicker::cps - 2) / 2;
-                                    auto maxdelay = (1000.f / left_clicker::cps + 2) / 2;
+                                    auto mindelay = (1000.f / (left_clicker::max_cps)) / 2;
+                                    auto maxdelay = (1000.f / (left_clicker::min_cps)) / 2;
                                     left_clicker::rand.min_delay = mindelay;
                                     left_clicker::rand.max_delay = maxdelay;
                                     left_clicker::rand.edited_min = mindelay;
@@ -99,6 +96,19 @@ namespace toad::ui
 
                                     vClick.SetRand(left_clicker::rand);
                                 }
+
+                        		if (ImGui::SliderInt("max cps", &left_clicker::max_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
+	                                {
+	                                    // update rand delays
+	                                    auto mindelay = (1000.f / (left_clicker::max_cps)) / 2;
+	                                    auto maxdelay = (1000.f / (left_clicker::min_cps)) / 2;
+	                                    left_clicker::rand.min_delay = mindelay;
+	                                    left_clicker::rand.max_delay = maxdelay;
+	                                    left_clicker::rand.edited_min = mindelay;
+	                                    left_clicker::rand.edited_max = maxdelay;
+
+	                                    vClick.SetRand(left_clicker::rand);
+	                                }
 
                     ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
                     ImGui::Checkbox("break blocks", &left_clicker::break_blocks);

@@ -184,9 +184,8 @@ namespace toad::ui
 
                     if (left_clicker::rand.min_delay < FLT_EPSILON)
                     {
-                        left_clicker::rand.min_delay = (1000.f / left_clicker::cps - 2) / 2;
-                        left_clicker::rand.max_delay = (1000.f / left_clicker::cps + 2) / 2;
-
+                        left_clicker::rand.min_delay = (1000.f / (left_clicker::max_cps)) / 2;
+                        left_clicker::rand.max_delay = (1000.f / (left_clicker::min_cps)) / 2;
                     }
                     in.min_amount_ms = std::clamp(in.min_amount_ms, -left_clicker::rand.min_delay + 1.0f, in.max_amount_ms);
                     in.max_amount_ms = std::clamp(in.max_amount_ms, in.min_amount_ms, 500.f);
@@ -237,8 +236,8 @@ namespace toad::ui
 
                     if (left_clicker::rand.min_delay < FLT_EPSILON)
                     {
-                        left_clicker::rand.min_delay = (1000.f / left_clicker::cps - 2) / 2;
-                        left_clicker::rand.max_delay = (1000.f / left_clicker::cps + 2) / 2;
+                        left_clicker::rand.min_delay = (1000.f / (left_clicker::max_cps)) / 2;
+                        left_clicker::rand.max_delay = (1000.f / (left_clicker::min_cps)) / 2;
                     }
 
                     in.min_amount_ms = std::clamp(in.min_amount_ms, -left_clicker::rand.min_delay + 1.0f, in.max_amount_ms);
