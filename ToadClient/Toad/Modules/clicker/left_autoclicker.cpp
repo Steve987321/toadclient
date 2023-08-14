@@ -281,6 +281,10 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 }
 
+void CLeftAutoClicker::PreUpdate()
+{
+}
+
 Randomization& CLeftAutoClicker::GetRand()
 {
 	return m_rand;

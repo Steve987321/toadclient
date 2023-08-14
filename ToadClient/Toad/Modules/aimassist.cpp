@@ -279,4 +279,8 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	}
 }
 
+void CAimAssist::PreUpdate()
+{
+	SLEEP(3);
+}
 }

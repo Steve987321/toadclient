@@ -400,7 +400,6 @@ void init_modules()
 	CVelocity::GetInstance()->name = "Velocity";
 	CBlink::GetInstance()->name = "Blink";
 	CInternalUI::GetInstance()->name = "Internal ui";
-
 	CBridgeAssist::GetInstance()->name = "Auto bridge";
 
 	// don't create threads for these modules

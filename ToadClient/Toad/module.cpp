@@ -17,12 +17,12 @@ void CModule::SetMC(std::unique_ptr<Minecraft>& mc)
 
 void CModule::PreUpdate()
 {
-	SLEEP(1);
+	SLEEP(5);
 }
 
 void CModule::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	SLEEP(1);
+	SLEEP(100);
 }
 
 void CModule::OnRender()

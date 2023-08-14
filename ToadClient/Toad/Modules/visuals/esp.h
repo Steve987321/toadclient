@@ -9,6 +9,7 @@ class CEsp SET_MODULE_CLASS(CEsp)
 public:
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 	void OnRender() override;
+	void PreUpdate() override;
 
 	void OnImGuiRender(ImDrawList * draw) override;
 

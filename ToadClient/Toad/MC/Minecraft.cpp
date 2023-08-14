@@ -457,7 +457,7 @@ std::vector<std::shared_ptr<c_Entity>> Minecraft::getPlayerList()
         return {};
     }
 
-    auto to_arraymid = env->GetMethodID(entitesklass, "toArray", "()[Ljava/lang/Object;");
+    static auto to_arraymid = env->GetMethodID(entitesklass, "toArray", "()[Ljava/lang/Object;");
     env->DeleteLocalRef(entitesklass);
 
     auto entityarray = (jobjectArray)env->CallObjectMethod(entities, to_arraymid);

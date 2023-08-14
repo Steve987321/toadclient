@@ -7,6 +7,7 @@ class CRightAutoClicker SET_MODULE_CLASS(CRightAutoClicker), public CClickerBase
 {
 public:
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
+	void PreUpdate() override;
 
 public:
 	// returns a reference to current randomization values

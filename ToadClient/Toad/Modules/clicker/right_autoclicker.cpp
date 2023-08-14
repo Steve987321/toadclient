@@ -61,6 +61,10 @@ namespace toadll
 		}
 	}
 
+	void CRightAutoClicker::PreUpdate()
+	{
+	}
+
 	Randomization& CRightAutoClicker::GetRand()
 	{
 		return m_rand;

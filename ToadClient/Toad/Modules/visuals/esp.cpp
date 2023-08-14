@@ -32,6 +32,9 @@ void CEsp::OnRender()
 		return;
 	}
 
+	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
+		return;
+
 	if (m_bboxes.empty())
 		return;
 
@@ -49,18 +52,22 @@ void CEsp::OnRender()
 	glEnable(GL_BLEND);
 	glLineWidth(esp::line_width);
 
+	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
+
 	//m_bboxesMutex.lock();
 	for (const auto& e : m_bboxes)
 	{
+		auto bb = BBox{e.bb.min - lPos, e.bb.max - lPos};
+
 		switch (esp::esp_mode)
 		{
 		case ESP_MODE::BOX3D:
 			draw3d_bbox_fill(
-				e.bb,
+				bb,
 				{ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] }
 			);
 			draw3d_bbox_lines(
-				e.bb,
+				bb,
 				{ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] }
 			);
 			break;
@@ -70,7 +77,7 @@ void CEsp::OnRender()
 
 		case ESP_MODE::BOX2D_STATIC:
 			draw2d_bbox(
-				e.bb,
+				bb,
 				{ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] },
 				{ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] }
 			);
@@ -91,6 +98,12 @@ void CEsp::OnRender()
 	glPopMatrix();
 }
 
+void CEsp::PreUpdate()
+{
+	SLEEP(5);
+	//precise_sleep(0.005);
+}
+
 void CEsp::OnImGuiRender(ImDrawList* draw)
 {
 	if (!esp::enabled || !CVarsUpdater::IsVerified)
@@ -98,12 +111,14 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 		return;
 	}
 
+	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
+
 	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
 	{
 		for (const auto& [bb, pos, name, health, hurttime] : m_bboxes)
 		{
 			// get vertices from bounding box 
-			auto vertices = GetBBoxVertices(bb.min, bb.max);
+			auto vertices = GetBBoxVertices(bb.min - lPos, bb.max - lPos);
 
 			std::vector<Vec2> verticesScreenPos = {};
 
@@ -137,7 +152,7 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 				auto posAddedY = (bb.min + bb.max) * 0.5f;
 				posAddedY.y += 2.f;
 
-				auto screenpos = world_to_screen(posAddedY, renderPos);
+				auto screenpos = world_to_screen(posAddedY - lPos, renderPos);
 				auto text_col = ImGui::ColorConvertFloat4ToU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
 
 				if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
@@ -209,7 +224,7 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 				auto posAddedY = (bb.min + bb.max) * 0.5f;
 				posAddedY.y += 2.f;
 
-				auto screenpos = world_to_screen(posAddedY, renderPos);
+				auto screenpos = world_to_screen(posAddedY - lPos, renderPos);
 				auto text_col = ImGui::ColorConvertFloat4ToU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
 
 				if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
@@ -244,7 +259,7 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 						// pasted from the dynamic 2d bbox
 
 						// get vertices from bounding box 
-						auto vertices = GetBBoxVertices(bb.min, bb.max);
+						auto vertices = GetBBoxVertices(bb.min - lPos, bb.max - lPos);
 
 						std::vector<Vec2> verticesScreenPos = {};
 
@@ -307,20 +322,28 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 			continue;
 
 		// local player 
-		auto lPlayer = MC->getLocalPlayer();
-		auto playerlasttickpos = lPlayer->getLastTickPosition();
-		auto currPos = lPlayer->getPosition();
+		//auto lPlayer = MC->getLocalPlayer();
+		//auto playerlasttickpos = lPlayer->getLastTickPosition();
+		//auto currPos = lPlayer->getPosition();
 
-		auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * CVarsUpdater::RenderPartialTick;
+		//auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * CVarsUpdater::RenderPartialTick;
 		auto lasttickpos = entity.LastTickPos;
 		auto pos = entity.Pos;
 		BBox b_box = { {}, {} };
+		b_box.min.x = lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick - 0.3f;
+		b_box.min.y = lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
+		b_box.min.z = lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick - 0.3f;
+		b_box.max.x = lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick + 0.3f;
+		b_box.max.y = lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick + 1.8f;
+		b_box.max.z = lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick + 0.3f;
+
+		/*
 		b_box.min.x = pos.x - 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
 		b_box.min.y = pos.y - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
 		b_box.min.z = pos.z - 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
 		b_box.max.x = pos.x + 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
 		b_box.max.y = pos.y + 1.8f - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
-		b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
+		b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;*/
 
 		//entityList.emplace_back(entity->Name, bbox{{-b_box.min.x, -b_box.min.y, -b_box.min.z}, {-b_box.max.x, -b_box.max.y, -b_box.max.z}});
 		res.emplace_back(b_box, pos, entity.Name, entity.Health, entity.HurtTime);
