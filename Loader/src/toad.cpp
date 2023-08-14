@@ -177,7 +177,7 @@ void update_settings()
 	data["aa_horizontal_only"] = aa::horizontal_only;
 	data["aa_fov"] = aa::fov;
 	data["aa_invisibles"] = aa::invisibles;
-	data["aa_targetFOV"] = aa::targetFOV;
+	data["aa_mode"] = aa::target_mode;
 	data["aa_always_aim"] = aa::always_aim;
 	data["aa_multipoint"] = aa::aim_at_closest_point;
 	data["aa_lockaim"] = aa::lock_aim;

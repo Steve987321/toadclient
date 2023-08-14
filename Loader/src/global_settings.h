@@ -45,11 +45,25 @@ namespace toad
 		TEXT,
 	};
 
+	enum class AA_TARGET
+	{
+		HEALTH,
+		DISTANCE,
+		FOV
+	};
+
 	inline std::unordered_map<ESP_MODE, const char*> espModeToCStrMap =
 	{
 		{ESP_MODE::BOX3D, "Box 3D"},
 		{ESP_MODE::BOX2D_STATIC, "Static Box 2D"},
 		{ESP_MODE::BOX2D_DYNAMIC, "Dynamic Box 2D"},
+	};
+
+	inline std::unordered_map<AA_TARGET, const char*> AATargetToCStrMap =
+	{
+		{AA_TARGET::DISTANCE, "Closest to Player"},
+		{AA_TARGET::HEALTH, "Lowest Health"},
+		{AA_TARGET::FOV, "Closest to Crosshair"},
 	};
 
 	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;
@@ -121,12 +135,12 @@ namespace toad
 		inline bool use_item_whitelist = false;
 		inline bool horizontal_only = false;
 		inline bool invisibles = false;
-		inline bool targetFOV = false;
 		inline bool always_aim = false;
 		inline bool break_blocks = false; // when breaking a block it will stop aa
 		inline bool aim_at_closest_point = false;
 		inline bool lock_aim = false; // locks the aim to a target until mouse is released for a short time
 
+		inline AA_TARGET target_mode = AA_TARGET::DISTANCE;
 		inline int fov = 180.f;
 
 		inline float distance = 5.f;

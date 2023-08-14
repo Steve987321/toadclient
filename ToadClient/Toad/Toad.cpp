@@ -314,7 +314,7 @@ bool UpdateSettings()
 	aa::horizontal_only = data["aa_horizontal_only"];
 	aa::fov = data["aa_fov"];
 	aa::invisibles = data["aa_invisibles"];
-	aa::targetFOV = data["aa_targetFOV"];
+	aa::target_mode = data["aa_mode"];
 	aa::always_aim = data["aa_always_aim"];
 	aa::aim_at_closest_point = data["aa_multipoint"];
 	aa::lock_aim = data["aa_lockaim"];

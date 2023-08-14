@@ -31,8 +31,13 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	std::vector <std::pair<float, Entity>> distances = {};
 
+	// our (locked) target
 	static std::shared_ptr<Entity> target = nullptr;
+
+	// horizontal and vertical speed
 	float speed = aa::speed;
+
+	// for fov check
 	float minimal_angle_diff = aa::fov / 2.f;
 
 	bool skip_get_target = false;
@@ -51,6 +56,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	
 	if (!skip_get_target)
 	{
+		float lowestHealth = FLT_MAX;
 		target = nullptr;
 
 		// get a target
@@ -60,12 +66,20 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			if (player.Invis && !aa::invisibles) continue;
 
 			distances.emplace_back(lPlayer->Pos.dist(player.Pos), player);
-			if (aa::targetFOV)
+			if (aa::target_mode == AA_TARGET::FOV)
 			{
 				float yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, player.Pos).first)));
 				if (yaw_diff < minimal_angle_diff)
 				{
 					minimal_angle_diff = yaw_diff;
+					target = std::make_shared<Entity>(player);
+				}
+			}
+			else if (aa::target_mode == AA_TARGET::HEALTH)
+			{
+				if (player.Health < lowestHealth)
+				{
+					lowestHealth = player.Health;
 					target = std::make_shared<Entity>(player);
 				}
 			}
@@ -78,7 +92,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		} 
 
 		// getting target by distance
-		if (!aa::targetFOV)
+		if (aa::target_mode == AA_TARGET::DISTANCE)
 		{
 			auto t = std::ranges::min_element(distances, [&](const auto& l, const auto& r)
 			{
@@ -87,6 +101,15 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			});
 
 			target = std::make_shared<Entity>(t->second);
+		}
+		else if (aa::target_mode == AA_TARGET::HEALTH)
+		{
+			const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target->Pos).first)));
+			if (l_yaw_diff > minimal_angle_diff) // target out of fov range
+			{
+				SLEEP(1);
+				return;
+			}
 		}
 	}
 
@@ -105,8 +128,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		auto playerbb = BBox({ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z - 0.3f }, { targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z + 0.3f });
 
 		auto closest_corner = getClosesetPoint(playerbb, lplayer_pos);
-		//debugging_vector = closest_corner - lplayer_pos;
-		//std::cout << "player posY: " << lplayer_pos.y << " target bb y: (" << playerbb.min.y << ", " << playerbb.max.y << ") res:" << closest_corner.y << std::endl;
 		aimPoint = closest_corner;
 	}
 	else // aims to target if players aim is not inside hitbox 
@@ -163,7 +184,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	float pitchDiff = wrap_to_180(-(lpitch - pitchtarget));
 
-	if (!aa::targetFOV) // don't have to check if this is enabled because already checked
+	if (aa::target_mode == AA_TARGET::FOV) // don't have to check if this is enabled because already checked
 		if (absYawDiff > minimal_angle_diff)
 		{
 			SLEEP(1);

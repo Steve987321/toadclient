@@ -143,9 +143,15 @@ namespace toad::ui
                     ImGui::Checkbox("Always Aim", &aa::always_aim);
                     ImGui::Checkbox("Target Lock", &aa::lock_aim);
                     ImGui::Checkbox("Aim in target", &aa::aim_at_closest_point);
-                    ImGui::Text("Target by: %s", aa::targetFOV ? "fov" : "distance");
-                    if (ImGui::IsItemClicked())
-                        aa::targetFOV = !aa::targetFOV;
+                    if (ImGui::BeginCombo("target by", AATargetToCStrMap[aa::target_mode]))
+                    {
+                        for (const auto& [aaMode, name] : AATargetToCStrMap)
+                        {
+                            if (ImGui::Selectable(name, aaMode == aa::target_mode))
+                                aa::target_mode = aaMode;
+                        }
+                        ImGui::EndCombo();
+                    }
                             });
 
                     else if (is_Velocity)
