@@ -158,6 +158,17 @@ namespace toadll
 		{
 		};
 
+		void UpdateDelays(int mincps, int maxcps)
+		{
+			auto mindelay = (1000.f / (maxcps)) / 2;
+			auto maxdelay = (1000.f / (mincps)) / 2;
+
+			min_delay = mindelay;
+			max_delay = maxdelay;
+			edited_min = mindelay;
+			edited_max = maxdelay;
+		}
+
 	};
 
 }

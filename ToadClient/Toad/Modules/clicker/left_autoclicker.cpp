@@ -348,8 +348,7 @@ void CLeftAutoClicker::right_mouse_up()
 
 void CLeftAutoClicker::SetDelays(int min_cps, int max_cps)
 {
-	m_rand.min_delay = (1000.f / (max_cps - 2)) / 2;
-	m_rand.max_delay = (1000.f / (min_cps + 2)) / 2;
+	m_rand.UpdateDelays(min_cps, max_cps);
 }
 
 }

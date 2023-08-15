@@ -6,7 +6,7 @@
 using namespace toadll;
 
 // for getting settings from loader
-constexpr static size_t bufsize = 2000;
+constexpr static size_t bufsize = 3000;
 std::thread Tupdate_settings;
 
 inline std::vector<std::thread> cmodule_threads;
@@ -243,6 +243,8 @@ bool UpdateSettings()
 	// flag that will make sure the menu will show when switching to internal ui
 	static bool openMenuOnceFlag = true;
 
+	// things that are written to data till memcpy gets called will be read by the loader 
+
 	if (data.contains("ui_internal_should_close"))
 	{
 		if (data["ui_internal_should_close"])
@@ -257,9 +259,60 @@ bool UpdateSettings()
 
 	data["ui_internal_should_close"] = CInternalUI::ShouldClose;
 
+	// rand
+	if (data.contains("updatelcrand"))
+	{
+		std::vector<Boost> updated_boosts = {};
+		std::vector<Inconsistency> updated_incs = {};
+		std::vector<Inconsistency> updated_incs2 = {};
+
+		json boosts = data["lc_randb"];
+		json inc = data["lc_randi"];
+		json inc2 = data["lc_randi2"];
+
+		for (const auto& element : boosts.items())
+		{
+			auto boostId = std::stoi(element.key());
+
+			auto n = element.value().at("n");
+			auto dur = element.value().at("dur");
+			auto tdur = element.value().at("tdur");
+			auto fqmin = element.value().at("fqmin");
+			auto fqmax = element.value().at("fqmax");
+
+			updated_boosts.emplace_back(n, dur, tdur, fqmin, fqmax, boostId);
+		}
+		for (const auto& element : inc.items())
+		{
+			auto nmin = element.value().at("nmin");
+			auto nmax = element.value().at("nmax");
+			auto c = element.value().at("c");
+			auto f = element.value().at("f");
+
+			updated_incs.emplace_back(nmin, nmax, c, f);
+		}
+		for (const auto& element : inc2.items())
+		{
+			auto nmin = element.value().at("nmin");
+			auto nmax = element.value().at("nmax");
+			auto c = element.value().at("c");
+			auto f = element.value().at("f");
+
+			updated_incs2.emplace_back(nmin, nmax, c, f);
+		}
+
+		auto& rand = CLeftAutoClicker::GetRand();
+
+		rand.boosts = updated_boosts;
+		rand.inconsistencies = updated_incs;
+		rand.inconsistencies2 = updated_incs2;
+
+		data["done"] = 0;
+	}
+
 	std::stringstream ss;
 	ss << data << "END";
-	memcpy(pMem, ss.str().c_str(), ss.str().length());
+	memcpy(pMem, ss.str().c_str(), ss.str().length()); 
 
 	if (CInternalUI::ShouldClose)
 	{
@@ -298,8 +351,6 @@ bool UpdateSettings()
 	left_clicker::targeting_affects_cps = data["lc_smartcps"];
 	left_clicker::weapons_only = data["lc_weaponsonly"];
 	left_clicker::trade_assist = data["lc_tradeassist"];
-
-	// rand
 
 	// right auto clicker
 	right_clicker::enabled = data["rc_enabled"];

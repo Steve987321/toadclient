@@ -71,6 +71,9 @@ namespace toad
 
 	namespace left_clicker
 	{
+		// if we want to update the rand to the internal clicker 
+		inline bool update_rand_flag = false; 
+
 		inline bool enabled = false;
 
 		inline int min_cps = 12;

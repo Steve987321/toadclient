@@ -15,7 +15,7 @@ public:
 
 public:
 	int GetCPS() const;
-	toadll::Randomization GetRand() const;
+	toadll::Randomization GetRand();
 
 public:
 	void SetRand(const toadll::Randomization& rand);

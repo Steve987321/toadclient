@@ -6,7 +6,7 @@ using namespace toad;
 
 // for ipc to dll 
 HANDLE hMapFile = nullptr;
-constexpr int bufSize = 2000;
+constexpr int bufSize = 3000;
 
 // flag used to call init once
 std::once_flag init_once_flag;
@@ -81,151 +81,164 @@ void update_settings()
 	using json = nlohmann::json;
 
 	auto s = std::string(static_cast<LPCSTR>(pMem));
-	json data2;
+	json datain;
 	if (!s.empty())
 	{
 		auto endof = s.find("END");
 		std::string settings = s.substr(0, endof);
-		data2 = json::parse(settings);
+		datain = json::parse(settings);
 	}
 
-	json data;
+	json dataout;
 
-	if (data2.contains("ui_internal_should_close"))
+	if (datain.contains("ui_internal_should_close"))
 	{
-		if (data2["ui_internal_should_close"])
+		if (datain["ui_internal_should_close"])
 		{
 			if (g_is_ui_internal)
 			{
 				ShowWindow(AppInstance->GetWindow()->GetHandle(), SW_SHOW);
-				data["ui_internal_should_close"] = false;
-				data["ui_internal"] = false;
+				dataout["ui_internal_should_close"] = false;
+				dataout["ui_internal"] = false;
 				g_is_ui_internal = false;
 			}
 		}
 	}
-	data["ui_internal"] = g_is_ui_internal;
-	data["client_type"] = g_curr_client;
+
+	if (left_clicker::update_rand_flag)
+	{
+		// rand
+		json lcRandInconsistenties = json::object();
+		json lcRandInconsistenties2 = json::object();
+		json lcRandBoosts = json::object();
+
+		for (int i = 0; i < left_clicker::rand.boosts.size(); i++)
+		{
+			const auto& b = left_clicker::rand.boosts[i];
+
+			lcRandBoosts[std::to_string(b.id)] =
+			{
+				//float amount, float dur, float transition_dur, Vec2 freq, int id
+				{"n", b.amount_ms},
+				{"dur", b.duration},
+				{"tdur", b.transition_duration},
+				{"fqmin", b.freq_min},
+				{"fqmax", b.freq_max},
+			};
+		}
+
+		for (int i = 0; i < left_clicker::rand.inconsistencies.size(); i++)
+		{
+			//float min, float max, int chance, int frequency)
+
+			const auto& in = left_clicker::rand.inconsistencies[i];
+			lcRandInconsistenties[std::to_string(i)] =
+			{
+				{"nmin", in.min_amount_ms},
+				{"nmax", in.max_amount_ms},
+				{"c", in.chance},
+				{"f", in.frequency}
+			};
+		}
+
+		for (int i = 0; i < left_clicker::rand.inconsistencies2.size(); i++)
+		{
+			const auto& in = left_clicker::rand.inconsistencies2[i];
+
+			lcRandInconsistenties2[std::to_string(i)] =
+			{
+				{"nmin", in.min_amount_ms},
+				{"nmax", in.max_amount_ms},
+				{"c", in.chance},
+				{"f", in.frequency}
+			};
+		}
+
+		dataout["lc_randb"] = lcRandBoosts;
+		dataout["lc_randi"] = lcRandInconsistenties;
+		dataout["lc_randi2"] = lcRandInconsistenties2;
+		dataout["updatelcrand"] = true;
+	
+		if (datain.contains("done"))
+			left_clicker::update_rand_flag = false;
+	}
+
+	dataout["ui_internal"] = g_is_ui_internal;
+	dataout["client_type"] = g_curr_client;
 
 	// left auto clicker
-	data["lc_enabled"] = left_clicker::enabled;
-	data["lc_mincps"] = left_clicker::min_cps;
-	data["lc_maxcps"] = left_clicker::max_cps;
-	data["lc_breakblocks"] = left_clicker::break_blocks;
-	data["lc_blockhit"] = left_clicker::block_hit;
-	data["lc_blockhitms"] = left_clicker::block_hit_ms;
-	data["lc_smartcps"] = left_clicker::targeting_affects_cps;
-	data["lc_weaponsonly"] = left_clicker::weapons_only;
-	data["lc_tradeassist"] = left_clicker::trade_assist;
-	// rand
-	//json lcRand = json::object();
-	//for (int i = 0; i < left_clicker::rand.boosts.size(); i++)
-	//{
-	//	const auto& b = left_clicker::rand.boosts[i];
-
-	//	lcRand["b" + std::to_string(i)] =
-	//	{
-	//		//float amount, float dur, float transition_dur, Vec2 freq, int id
-	//		{"n", b.amount_ms},
-	//		{"dur", b.duration},
-	//		{"tdur", b.transition_duration},
-	//		{"fqmin", b.freq_min},
-	//		{"fqmax", b.freq_max},
-	//		{"id", b.id}
-	//	};
-	//}
-
-	//for (int i = 0; i < left_clicker::rand.inconsistencies.size(); i++)
-	//{
-	//	//float min, float max, int chance, int frequency)
-
-	//	const auto& in = left_clicker::rand.inconsistencies[i];
-	//	lcRand["i1" + std::to_string(i)] =
-	//	{
-	//		{"nmin", in.min_amount_ms},
-	//		{"nmax", in.max_amount_ms},
-	//		{"c", in.chance},
-	//		{"f", in.frequency}
-	//	};
-	//}
-
-	//for (int i = 0; i < left_clicker::rand.inconsistencies2.size(); i++)
-	//{
-	//	const auto& in = left_clicker::rand.inconsistencies2[i];
-
-	//	lcRand["i2" + std::to_string(i)] =
-	//	{
-	//		{"nmin", in.min_amount_ms},
-	//		{"nmax", in.max_amount_ms},
-	//		{"c", in.chance},
-	//		{"f", in.frequency}
-	//	};
-	//}
-
-	//data["lc_rand"] = lcRand;
+	dataout["lc_enabled"] = left_clicker::enabled;
+	dataout["lc_mincps"] = left_clicker::min_cps;
+	dataout["lc_maxcps"] = left_clicker::max_cps;
+	dataout["lc_breakblocks"] = left_clicker::break_blocks;
+	dataout["lc_blockhit"] = left_clicker::block_hit;
+	dataout["lc_blockhitms"] = left_clicker::block_hit_ms;
+	dataout["lc_smartcps"] = left_clicker::targeting_affects_cps;
+	dataout["lc_weaponsonly"] = left_clicker::weapons_only;
+	dataout["lc_tradeassist"] = left_clicker::trade_assist;
 	
 	// right auto clicker
-	data["rc_enabled"] = right_clicker::enabled;
-	data["rc_cps"] = right_clicker::cps;
-	data["rc_blocks_only"] = right_clicker::blocks_only;
-	data["rc_start_delay"] = right_clicker::start_delayms;
+	dataout["rc_enabled"] = right_clicker::enabled;
+	dataout["rc_cps"] = right_clicker::cps;
+	dataout["rc_blocks_only"] = right_clicker::blocks_only;
+	dataout["rc_start_delay"] = right_clicker::start_delayms;
 
 	// aim assist
-	data["aa_enabled"] = aa::enabled;
-	data["aa_distance"] = aa::distance;
-	data["aa_speed"] = aa::speed;
-	data["aa_horizontal_only"] = aa::horizontal_only;
-	data["aa_fov"] = aa::fov;
-	data["aa_invisibles"] = aa::invisibles;
-	data["aa_mode"] = aa::target_mode;
-	data["aa_always_aim"] = aa::always_aim;
-	data["aa_multipoint"] = aa::aim_at_closest_point;
-	data["aa_lockaim"] = aa::lock_aim;
+	dataout["aa_enabled"] = aa::enabled;
+	dataout["aa_distance"] = aa::distance;
+	dataout["aa_speed"] = aa::speed;
+	dataout["aa_horizontal_only"] = aa::horizontal_only;
+	dataout["aa_fov"] = aa::fov;
+	dataout["aa_invisibles"] = aa::invisibles;
+	dataout["aa_mode"] = aa::target_mode;
+	dataout["aa_always_aim"] = aa::always_aim;
+	dataout["aa_multipoint"] = aa::aim_at_closest_point;
+	dataout["aa_lockaim"] = aa::lock_aim;
 
 	// bridge assist
-	data["ba_enabled"] = bridge_assist::enabled;
-	data["ba_pitch_check"] = bridge_assist::pitch_check;
-	data["ba_block_check"] = bridge_assist::block_check;
+	dataout["ba_enabled"] = bridge_assist::enabled;
+	dataout["ba_pitch_check"] = bridge_assist::pitch_check;
+	dataout["ba_block_check"] = bridge_assist::block_check;
 
 	// blink
-	data["bl_enabled"] = blink::enabled;
-	data["bl_key"] = blink::key;
-	data["bl_stop_incoming_packets"] = blink::stop_rec_packets;
-	data["bl_show_trail"] = blink::show_trail;
-	data["bl_limit_seconds"] = blink::limit_seconds;
+	dataout["bl_enabled"] = blink::enabled;
+	dataout["bl_key"] = blink::key;
+	dataout["bl_stop_incoming_packets"] = blink::stop_rec_packets;
+	dataout["bl_show_trail"] = blink::show_trail;
+	dataout["bl_limit_seconds"] = blink::limit_seconds;
 
 	// velocity
-	data["vel_enabled"] = velocity::enabled;
-	data["vel_jumpreset"] = velocity::jump_reset;
-	data["vel_horizontal"] = velocity::horizontal;
-	data["vel_vertical"] = velocity::vertical;
-	data["vel_chance"] = velocity::chance;
-	data["vel_delay"] = velocity::delay;
+	dataout["vel_enabled"] = velocity::enabled;
+	dataout["vel_jumpreset"] = velocity::jump_reset;
+	dataout["vel_horizontal"] = velocity::horizontal;
+	dataout["vel_vertical"] = velocity::vertical;
+	dataout["vel_chance"] = velocity::chance;
+	dataout["vel_delay"] = velocity::delay;
 
 	// esp
-	data["esp_enabled"] = esp::enabled;
-	data["esp_linecolr"] = esp::line_col[0];
-	data["esp_linecolg"] = esp::line_col[1];
-	data["esp_linecolb"] = esp::line_col[2];
-	data["esp_linecola"] = esp::line_col[3];
-	data["esp_fillcolr"] = esp::fill_col[0];
-	data["esp_fillcolg"] = esp::fill_col[1];
-	data["esp_fillcolb"] = esp::fill_col[2];
-	data["esp_fillcola"] = esp::fill_col[3];
-	data["esp_show_name"] = esp::show_name;
-	data["esp_show_distance"] = esp::show_distance;
-	data["esp_show_health"] = esp::show_health;
-	data["esp_mode"] = esp::esp_mode;
+	dataout["esp_enabled"] = esp::enabled;
+	dataout["esp_linecolr"] = esp::line_col[0];
+	dataout["esp_linecolg"] = esp::line_col[1];
+	dataout["esp_linecolb"] = esp::line_col[2];
+	dataout["esp_linecola"] = esp::line_col[3];
+	dataout["esp_fillcolr"] = esp::fill_col[0];
+	dataout["esp_fillcolg"] = esp::fill_col[1];
+	dataout["esp_fillcolb"] = esp::fill_col[2];
+	dataout["esp_fillcola"] = esp::fill_col[3];
+	dataout["esp_show_name"] = esp::show_name;
+	dataout["esp_show_distance"] = esp::show_distance;
+	dataout["esp_show_health"] = esp::show_health;
+	dataout["esp_mode"] = esp::esp_mode;
 	// esp extra
-	data["esp_line_width"] = esp::line_width;
-	data["esp_static_width"] = esp::static_esp_width;
-	data["esp_text_shadow"] = esp::text_shadow;
-	data["esp_text_colr"] = esp::text_col[0];
-	data["esp_text_colg"] = esp::text_col[1];
-	data["esp_text_colb"] = esp::text_col[2];
-	data["esp_text_cola"] = esp::text_col[3];
+	dataout["esp_line_width"] = esp::line_width;
+	dataout["esp_static_width"] = esp::static_esp_width;
+	dataout["esp_text_shadow"] = esp::text_shadow;
+	dataout["esp_text_colr"] = esp::text_col[0];
+	dataout["esp_text_colg"] = esp::text_col[1];
+	dataout["esp_text_colb"] = esp::text_col[2];
+	dataout["esp_text_cola"] = esp::text_col[3];
 	// block esp
-	data["blockesp_enabled"] = block_esp::enabled;
+	dataout["blockesp_enabled"] = block_esp::enabled;
 	json blockArray = json::object();
 	for (const auto& [id, col] : block_esp::block_list)
 	{
@@ -237,10 +250,10 @@ void update_settings()
 			{"w", col.w}
 		};
 	}
-	data["block_esp_array"] = blockArray;
+	dataout["block_esp_array"] = blockArray;
 
 	std::stringstream ss;
-	ss << data << "END";
+	ss << dataout << "END";
 
 	if (static bool once = false; !once)
 	{

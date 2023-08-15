@@ -87,26 +87,14 @@ namespace toad::ui
                                 if (ImGui::SliderInt("min cps", &left_clicker::min_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
                                 {
                                     // update rand delays
-                                    auto mindelay = (1000.f / (left_clicker::max_cps)) / 2;
-                                    auto maxdelay = (1000.f / (left_clicker::min_cps)) / 2;
-                                    left_clicker::rand.min_delay = mindelay;
-                                    left_clicker::rand.max_delay = maxdelay;
-                                    left_clicker::rand.edited_min = mindelay;
-                                    left_clicker::rand.edited_max = maxdelay;
-
+                                    left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
                                     vClick.SetRand(left_clicker::rand);
                                 }
 
                         		if (ImGui::SliderInt("max cps", &left_clicker::max_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
 	                                {
 	                                    // update rand delays
-	                                    auto mindelay = (1000.f / (left_clicker::max_cps)) / 2;
-	                                    auto maxdelay = (1000.f / (left_clicker::min_cps)) / 2;
-	                                    left_clicker::rand.min_delay = mindelay;
-	                                    left_clicker::rand.max_delay = maxdelay;
-	                                    left_clicker::rand.edited_min = mindelay;
-	                                    left_clicker::rand.edited_max = maxdelay;
-
+										left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
 	                                    vClick.SetRand(left_clicker::rand);
 	                                }
 
@@ -119,8 +107,19 @@ namespace toad::ui
                             }, true,
                             []
                             {
-                                ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit);
-                                ImGui::Checkbox("Visualize Randomization", &clicker_rand_visualize);
+                                if (ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit))
+                                {
+                                    auto rand = vClick.GetRand();
+                                    rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
+                                    vClick.SetRand(rand);
+                                }
+                                else if (ImGui::Checkbox("Visualize Randomization", &clicker_rand_visualize))
+                                {
+                                    auto rand = vClick.GetRand();
+                                    rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
+                                    vClick.SetRand(rand);
+                                }
+
 								ImGui::Checkbox("Show cps rand hit bounds", &clicker_rand_bounds_cps);
                             });
 

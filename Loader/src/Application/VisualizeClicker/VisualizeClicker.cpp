@@ -35,7 +35,7 @@ int VisualizeClicker::GetCPS() const
 	return m_trackCpsQueue.size();
 }
 
-toadll::Randomization VisualizeClicker::GetRand() const
+toadll::Randomization VisualizeClicker::GetRand()
 {
 	return m_rand;
 }
