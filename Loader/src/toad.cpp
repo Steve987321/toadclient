@@ -209,7 +209,11 @@ void update_settings()
 
 	// velocity
 	dataout["vel_enabled"] = velocity::enabled;
+	dataout["vel_onlyclicking"] = velocity::only_when_clicking;
+	dataout["vel_onlymoving"] = velocity::only_when_moving;
+	dataout["vel_kite"] = velocity::kite;
 	dataout["vel_jumpreset"] = velocity::jump_reset;
+	dataout["vel_jumpchance"] = velocity::jump_press_chance;
 	dataout["vel_horizontal"] = velocity::horizontal;
 	dataout["vel_vertical"] = velocity::vertical;
 	dataout["vel_chance"] = velocity::chance;

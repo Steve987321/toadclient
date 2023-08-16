@@ -163,10 +163,13 @@ namespace toad
 	{
 		inline bool enabled = false;
 
-		inline bool jump_reset; // uses jump reset instead, will ignore everything else and justs jumps on hit
+		inline bool jump_reset = false; // uses jump reset instead, will ignore everything else and justs jumps on hit
+		inline int jump_press_chance = 70;
 
 		inline bool only_when_moving = false;
-		inline bool only_when_attacking = false;
+		inline bool only_when_clicking = false;
+
+		inline bool kite = false; // don't decrease velocity when hit from behind
 
 		inline int chance = 100;
 		inline float delay = 0;

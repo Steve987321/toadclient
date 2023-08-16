@@ -157,10 +157,22 @@ namespace toad::ui
                         setting_menu("Velocity", is_Velocity, []
                             {
                                 ImGui::Checkbox("Use Jump Reset", &velocity::jump_reset);
-                    ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
-                    ImGui::SliderFloat("Vertical", &velocity::vertical, 0.f, 100.f, "%.1f%%");
-                    ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");
-                    ImGui::SliderFloat("Delay", &velocity::delay, 0, 100, "%.0f%");
+
+                            if (velocity::jump_reset)
+                            {
+                                ImGui::SliderInt("Press Chance", &velocity::jump_press_chance, 0, 100, "%d%%");
+                            }
+
+                    ImGui::Checkbox("Only when moving", &velocity::only_when_moving);
+                    ImGui::Checkbox("Only when clicking", &velocity::only_when_clicking);
+                    ImGui::Checkbox("Kite", &velocity::kite);
+                    if (!velocity::jump_reset)
+                    {
+                        ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
+                        ImGui::SliderFloat("Vertical", &velocity::vertical, 0.f, 100.f, "%.1f%%");
+                        ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");
+                        ImGui::SliderFloat("Delay", &velocity::delay, 0, 100, "%.0f%");
+                    }
                             });
 
                     // ImGui::EndChild();

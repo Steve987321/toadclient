@@ -6,6 +6,11 @@ using namespace toad;
 
 namespace toadll
 {
+	void CVelocity::PreUpdate()
+	{
+		CModule::PreUpdate();
+	}
+
 	void CVelocity::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		if (!velocity::enabled)
@@ -20,11 +25,35 @@ namespace toadll
 
 		if (velocity::jump_reset)
 		{
+			// jumping won't have any effect
 			if (std::fabs(lPlayer->Motion.y) > FLT_EPSILON)
+				return;
+
+			if (velocity::only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
+				return;
+
+			if (velocity::only_when_clicking && !GetAsyncKeyState(VK_LBUTTON))
 				return;
 
 			if (lPlayer->HurtTime > 0 && !StopFlag)
 			{
+				if (velocity::jump_press_chance < rand_int(0, 100))
+				{
+					StopFlag = true;
+					return;
+				}
+
+				if (velocity::kite)
+				{
+					auto yaw = wrap_to_180(lPlayer->Yaw - 90);
+					if (isDirectionAligned(yaw, lPlayer->Motion.x, lPlayer->Motion.z))
+					{
+						// stop
+						StopFlag = true;
+						return;
+					}
+				}
+
 				StopFlag = true;
 				send_key(VK_SPACE);
 				SLEEP(rand_int(40, 70));
@@ -37,7 +66,15 @@ namespace toadll
 			return;
 		}
 
+		// normal velocity
+
 		static int beginHurtTime = 0;
+
+		if (velocity::only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
+			return;
+
+		if (velocity::only_when_clicking && !GetAsyncKeyState(VK_LBUTTON))
+			return;
 
 		if (int hurttime = lPlayer->HurtTime; hurttime > 0 && !StopFlag)
 		{
@@ -56,32 +93,36 @@ namespace toadll
 			}
 
 			//if (velocity::delay > 0) toad::preciseSleep(velocity::delay * 0.05f);
-
-			auto motionX = lPlayer->Motion.x;
-			auto newMotionX = motionX * (velocity::horizontal / 100); /* std::lerp(motionX, motionX * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
-			auto motionZ = lPlayer->Motion.z;
-			auto newMotionZ = motionZ * (velocity::horizontal / 100); /*std::lerp(motionZ, motionZ * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
+			// get updated
 
 			auto EditableLocalPlayer = MC->getLocalPlayer();
-			if (!EditableLocalPlayer)
+
+			auto motionX = EditableLocalPlayer->getMotionX();
+			auto motionZ = EditableLocalPlayer->getMotionZ();
+
+			if (velocity::kite)
 			{
-				SLEEP(1);
-				return;
+				auto yaw = wrap_to_180(lPlayer->Yaw - 90);
+				if (isDirectionAligned(yaw, motionX, motionZ))
+				{
+					// stop
+					StopFlag = true;
+					return;
+				}
 			}
+
+			auto newMotionX = motionX * (velocity::horizontal / 100); /* std::lerp(motionX, motionX * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
+			auto newMotionZ = motionZ * (velocity::horizontal / 100); /*std::lerp(motionZ, motionZ * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
 
 			if (abs(motionX) > 0)
 				EditableLocalPlayer->setMotionX(newMotionX);
 			if (abs(motionZ) > 0)
 				EditableLocalPlayer->setMotionZ(newMotionZ);
 
-			// TODO: separate horizontal and vertical velocity module in separate threads? 
 			if (lPlayer->Motion.y > 0) // normal velocity when going down 
 				EditableLocalPlayer->setMotionY(lPlayer->Motion.y * (velocity::vertical / 100.f));
 
 			StopFlag = true;
-
-			/*if (velocity::vertical > 0 && velocity::horizontal > 0)
-				timer -= partialTick;*/
 		}
 		else if (hurttime <= 0)
 		{
@@ -91,4 +132,18 @@ namespace toadll
 
 		SLEEP(1);
 	}
+
+	bool CVelocity::isDirectionAligned(float yaw, float hdirx, float hdirz)
+	{
+		constexpr float threshold = -0.1f;
+
+		float yawRad = yaw * g_PI / 180.f;
+
+		float forwardX = std::cos(yawRad);
+		float forwardZ = std::sin(yawRad);
+
+		std::cout << forwardX * hdirx + forwardZ * hdirz << std::endl;
+		return forwardX * hdirx + forwardZ * hdirz < threshold;
+	}
+
 }

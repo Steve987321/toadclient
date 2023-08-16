@@ -390,6 +390,17 @@ bool UpdateSettings()
 	velocity::chance = data["vel_chance"];
 	velocity::delay = data["vel_delay"];
 
+	velocity::enabled = data["vel_enabled"];
+	velocity::only_when_clicking = data["vel_onlyclicking"];
+	velocity::only_when_moving = data["vel_onlymoving"];
+	velocity::kite = data["vel_kite"];
+	velocity::jump_reset = data["vel_jumpreset"];
+	velocity::jump_press_chance = data["vel_jumpchance"];
+	velocity::horizontal = data["vel_horizontal"];
+	velocity::vertical = data["vel_vertical"];
+	velocity::chance = data["vel_chance"];
+	velocity::delay = data["vel_delay"];
+
 	// esp
 	esp::enabled = data["esp_enabled"];
 	esp::line_col[0] = data["esp_linecolr"];
