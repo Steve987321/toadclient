@@ -194,14 +194,6 @@ Minecraft::RAYTRACE_BLOCKS_RESULT Minecraft::rayTraceBlocks(Vec3 from, Vec3 dire
 
 }
 
-jobject Minecraft::createMovingObjPosition(jobject entityObj)
-{
-    auto mid = get_mid(getMovingObjPosClass(), mapping::movingObjPosInitEntity, env);
-    if (mid != nullptr)
-		return env->NewObject(getMovingObjPosClass(), mid, entityObj);
-    return nullptr;
-}
-
 std::string Minecraft::movingObjPosToStr(jobject mopObj)
 {
     auto mId = get_mid(mopObj, mapping::toString, env);

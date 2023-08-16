@@ -82,8 +82,6 @@ public:
 	RAYTRACE_BLOCKS_RESULT rayTraceBlocks(Vec3 from, Vec3 direction, Vec3& result, bool stopOnLiquid = false, bool stopOnAirBlocks = false, int subtractY = 2);
 
 public:
-	jobject createMovingObjPosition(jobject entityObj);
-
 	std::string movingObjPosToStr(jobject mopObj);
 
 public:
