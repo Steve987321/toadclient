@@ -50,7 +50,7 @@ std::vector<Entity> CModule::GetPlayerList() const
 		Entity entity;
 		entity.Health = e->getHealth();
 		entity.obj = e->obj;
-		//entity.Name = e->getName();
+		entity.Name = e->getName();
 		entity.Pos = e->getPosition();
 		entity.HurtTime = e->getHurtTime();
 		entity.LastTickPos = e->getLastTickPosition();

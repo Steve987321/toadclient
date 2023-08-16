@@ -278,7 +278,7 @@ namespace toadll
     {
         for (auto i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
         {
-            LOGDEBUG("name: {}, sig: {} args size: %d", jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxArgsSize(env, klass, i));
+            LOGDEBUG("name: {}, sig: {} args size: {}", jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxArgsSize(env, klass, i));
 		}
 
     }

@@ -17,10 +17,11 @@ private:
 	static inline std::unordered_map<int, Vec4> m_blockIdCol = {};
 
 	// esp scanning range from player in blocks
-	// TODO: make this so it is based of render distance
 	constexpr static int m_range = 20;
 
 public:
+	void PreUpdate() override;
+
 	// update the positions of the blocks
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 

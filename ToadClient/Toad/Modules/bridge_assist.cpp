@@ -6,6 +6,10 @@ using namespace toad;
 
 namespace toadll
 {
+	void CBridgeAssist::PreUpdate()
+	{
+		SLEEP(10);
+	}
 
 void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
@@ -31,19 +35,22 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// trace down exactly under the player 
 	auto res = MC->rayTraceBlocks(m_from, m_direction, hitBlockPos, false);
 
+	//auto dist = hitBlockPos.dist(lPlayer->Pos);
+	//std::cout << dist << std::endl;
+
 	// the vertical diff between the player and block under the player
 	auto diffY = lPlayer->Pos.y - hitBlockPos.y;
 	diffY -= 1;
+	const bool standingOnBlock = diffY <= FLT_EPSILON;
 
 	if (lPlayer->Pitch < bridge_assist::pitch_check)
 	{
-		if (isSneaking && diffY == 0)
+		if (isSneaking && standingOnBlock)
 			UnSneak();
 
 		SLEEP(1);
 		return;
 	}
-
 	if (diffY != 0 && diffY <= bridge_assist::block_check)
 	{
 		SLEEP(1);

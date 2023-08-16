@@ -45,7 +45,9 @@ namespace toadll::mappings
 
 			fieldnames.insert({ mappingFields::theWorldField , "theWorld" });
 			fieldsigs.insert({ mappingFields::theWorldField , "Lnet/minecraft/client/multiplayer/WorldClient;" });
-			
+
+			fieldnames.insert({ mappingFields::objMouseOver, "objectMouseOver" });
+			fieldsigs.insert({ mappingFields::objMouseOver, "Lnet/minecraft/util/MovingObjectPosition;" });
 			// get world class (temp)
 			auto worldclass = findclass("net.minecraft.world.World", env);
 			
@@ -137,7 +139,7 @@ namespace toadll::mappings
 			// ENTITY
 			fieldnames.insert({ mappingFields::rotationYawField, "rotationYaw" });
 			fieldsigs.insert({ mappingFields::rotationYawField, "F" });
-
+			
 			fieldnames.insert({ mappingFields::rotationPitchField, "rotationPitch" });
 			fieldsigs.insert({ mappingFields::rotationPitchField, "F" });
 
@@ -180,10 +182,11 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getBlockPosition, "getPosition" });
 			methodsigs.insert({ mapping::getBlockPosition, "()Lnet/minecraft/util/BlockPos;" });
 
-			methodnames.insert({ mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition" });
 			auto movingblockklass = findclass("net.minecraft.util.MovingObjectPosition", env);
+			methodnames.insert({ mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition" });
 			if (!getsig(mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition", movingblockklass, env))
 				LOGERROR("can't find bridge$getBlockPosition from moving block class");
+
 			env->DeleteLocalRef(movingblockklass);
 
 			std::cout << methodsigs[mapping::getBlockPositionFromMovingBlock] << std::endl;

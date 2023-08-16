@@ -8,15 +8,25 @@ namespace toadll
 
 Minecraft::~Minecraft()
 {
-    env->DeleteLocalRef(mcclass);
+    if (m_mcclass != nullptr) env->DeleteGlobalRef(m_mcclass);
     if (m_elbclass != nullptr) env->DeleteGlobalRef(m_elbclass);
     if (m_ariclass != nullptr) env->DeleteGlobalRef(m_ariclass);
     if (m_vec3class != nullptr) env->DeleteGlobalRef(m_vec3class);
+    if (m_mopclass != nullptr) env->DeleteGlobalRef(m_mopclass);
 }
 
-jclass Minecraft::getMcClass(JNIEnv* env)
+jclass Minecraft::findMcClass(JNIEnv* env)
 {
     return findclass(toad::g_curr_client == toad::MC_CLIENT::Vanilla ? "ave" : "net.minecraft.client.Minecraft", env);
+}
+
+jclass Minecraft::getMcClass()
+{
+    if (m_mcclass == nullptr)
+    {
+        m_mcclass = findclass(toad::g_curr_client == toad::MC_CLIENT::Vanilla ? "ave" : "net.minecraft.client.Minecraft", env);
+    }
+    return m_mcclass;
 }
 
 jclass Minecraft::getEntityLivingClass()
@@ -46,6 +56,15 @@ jclass Minecraft::getVec3iClass()
     return m_vec3iclass;
 }
 
+jclass Minecraft::getMovingObjPosClass()
+{
+    if (m_mopclass == nullptr)
+    {
+        m_mopclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.util.MovingObjectPosition", env));
+    }
+    return m_mopclass;
+}
+
 std::unique_ptr<ActiveRenderInfo> Minecraft::getActiveRenderInfo()
 {
     if (m_ariclass == nullptr)
@@ -57,9 +76,9 @@ std::unique_ptr<ActiveRenderInfo> Minecraft::getActiveRenderInfo()
 }
 
 
-jobject Minecraft::getMc() const
+jobject Minecraft::getMc()
 {
-    return env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft, env));
+    return env->CallStaticObjectMethod(getMcClass(), get_static_mid(getMcClass(), mapping::getMinecraft, env));
 }
 
 jobject Minecraft::getRenderManager()
@@ -100,7 +119,7 @@ std::shared_ptr<c_Entity> Minecraft::getLocalPlayer()
 
 std::string Minecraft::getMouseOverTypeStr()
 {
-    auto str = getMouseOverBlockStr();
+    auto str = getMouseOverStr();
     auto start = str.find("type=") + 5;
     if (start == std::string::npos) return "";
     auto end = str.find(',', start);
@@ -175,6 +194,32 @@ Minecraft::RAYTRACE_BLOCKS_RESULT Minecraft::rayTraceBlocks(Vec3 from, Vec3 dire
 
 }
 
+jobject Minecraft::createMovingObjPosition(jobject entityObj)
+{
+    auto mid = get_mid(getMovingObjPosClass(), mapping::movingObjPosInitEntity, env);
+    if (mid != nullptr)
+		return env->NewObject(getMovingObjPosClass(), mid, entityObj);
+    return nullptr;
+}
+
+std::string Minecraft::movingObjPosToStr(jobject mopObj)
+{
+    auto mId = get_mid(mopObj, mapping::toString, env);
+	if (!mId)
+	{
+        return "";
+	}
+
+    auto jstr = static_cast<jstring>(env->CallObjectMethod(mopObj, mId));
+    if (!jstr)
+        return "";
+
+    auto res = jstring2string(jstr, env);
+
+    env->DeleteLocalRef(jstr);
+    return res;
+}
+
 void Minecraft::set_gamma(float val)
 {
     auto obj = getGameSettings();
@@ -186,6 +231,15 @@ void Minecraft::set_gamma(float val)
     env->CallVoidMethod(obj, mId, val);
 
     env->DeleteLocalRef(obj);
+}
+
+void Minecraft::setObjMouseOver(jobject newMopObj)
+{
+    auto mc = getMc();
+    auto fid = get_fid(getMcClass(), mappingFields::objMouseOver, env);
+    if (fid != nullptr)
+    	env->SetObjectField(mc, fid, newMopObj);
+    env->DeleteLocalRef(mc);
 }
 
 //void c_Minecraft::disableLightMap() const
@@ -205,7 +259,7 @@ void Minecraft::set_gamma(float val)
 
 jobject Minecraft::getLocalPlayerObject()
 {
-    auto playermid = get_mid(mcclass, mapping::getPlayer, env);
+    auto playermid = get_mid(getMcClass(), mapping::getPlayer, env);
     if (!playermid)
         return nullptr;
     auto mc = this->getMc();
@@ -219,7 +273,7 @@ jobject Minecraft::getWorld()
     auto mc = this->getMc();
     if (!mc)
         return nullptr;
-    auto worldFid = get_fid(mcclass, mappingFields::theWorldField, env);
+    auto worldFid = get_fid(getMcClass(), mappingFields::theWorldField, env);
     auto obj = !worldFid ? nullptr : env->GetObjectField(mc, worldFid);
     //auto worldmid = get_mid(mcclass, mapping::getWorld, env);
     //auto obj = !worldmid ? nullptr : env->CallObjectMethod(mc, worldmid);
@@ -318,18 +372,22 @@ float Minecraft::getFov()
     return res;
 }
 
-jobject Minecraft::getMouseOverBlock()
+jobject Minecraft::getMouseOverObject()
 {
     auto mc = getMc();
-    auto mId = get_mid(mc, mapping::getObjectMouseOver, env);
+    /*auto mId = get_mid(mc, mapping::getObjectMouseOver, env);
     if (!mId)
     {
         env->DeleteLocalRef(mc);
         return nullptr;
-    }
-    auto obj = env->CallObjectMethod(mc, mId);
+    }*/
+    auto fid = get_fid(getMcClass(), mappingFields::objMouseOver, env);
+    jobject res = nullptr;
+    if (fid != nullptr)
+        res = env->GetObjectField(mc, fid);
+    //auto obj = env->CallObjectMethod(mc, mId);
     env->DeleteLocalRef(mc);
-    return obj;
+    return res;
 }
 
 int Minecraft::getBlockIdAt(const Vec3& pos)
@@ -355,9 +413,9 @@ int Minecraft::getBlockIdAt(const Vec3& pos)
     return id;
 }
 
-std::string Minecraft::getMouseOverBlockStr()
+std::string Minecraft::getMouseOverStr()
 {
-    auto obj = getMouseOverBlock();
+    auto obj = getMouseOverObject();
     if (obj == nullptr)
         return "TYPE=null,";
     auto mId = get_mid(obj, mapping::toString, env);
@@ -377,13 +435,10 @@ std::string Minecraft::getMouseOverBlockStr()
 
 std::shared_ptr<c_Entity> Minecraft::getMouseOverPlayer()
 {
-    auto str = getMouseOverBlockStr();
-    if (str.find("MISS") != std::string::npos || str.find("null") != std::string::npos) return nullptr;
+    auto str = getMouseOverStr();
+    if (str.find("ENTITY") == std::string::npos) return nullptr;
 
-    auto obj = getMouseOverBlock();
-    if (obj == nullptr)
-        return nullptr;
-
+    auto obj = getMouseOverObject();
     // TODO: ...
     if (static bool init_map = false; !init_map)
     {
@@ -433,17 +488,17 @@ std::vector<std::shared_ptr<c_Entity>> Minecraft::getPlayerList()
         return {};
 
 
-    /* auto fId = get_fid(world, mappingFields::playerEntitiesField, env);
+     auto fId = get_fid(world, mappingFields::playerEntitiesField, env);
      if (!fId)
      {
          env->DeleteLocalRef(world);
          return {};
-     }*/
+     }
 
-     //auto entities = env->GetObjectField(world, fId);
-    auto mId = get_mid(world, mapping::getPlayerEntities, env);
+    auto entities = env->GetObjectField(world, fId);
 
-    auto entities = env->CallObjectMethod(world, mId);
+    //auto mId = get_mid(world, mapping::getPlayerEntities, env);
+    //auto entities = env->CallObjectMethod(world, mId);
 
     env->DeleteLocalRef(world);
 

@@ -9,16 +9,17 @@ class Minecraft
 {
 public:
 	JNIEnv* env = nullptr;
-	jclass mcclass = nullptr;
 
 private:
 	//jclass mcclass = nullptr;
 	jclass m_gsclass = nullptr; // game settings
 
+	jclass m_mcclass = nullptr; // minecraft 
 	jclass m_elbclass = nullptr; // entity living base
 	jclass m_ariclass = nullptr; // active render info
 	jclass m_vec3class = nullptr; // Vec3
 	jclass m_vec3iclass = nullptr; // Vec3i
+	jclass m_mopclass = nullptr; // moving object position 
 
 public:
 	explicit Minecraft() = default;
@@ -27,27 +28,30 @@ public:
 public:
 	enum class RAYTRACE_BLOCKS_RESULT
 	{
-		HIT,		// hit a block
-		HIT_FROM_AIRBLOCK,	// hit a block but ray origin was airblock
-		NO_HIT,		// the void
-		NO_HIT_FROM_AIRBLOCK,		// the void but ray origin was airblock
-		ERROR		// debugging purposes
+		HIT,					// hit a block
+		HIT_FROM_AIRBLOCK,		// hit a block but ray origin was airblock
+		NO_HIT,					// the void
+		NO_HIT_FROM_AIRBLOCK,	// the void but ray origin was airblock
+		ERROR					// debugging purposes
 	};
 
 public:
-	_NODISCARD static jclass getMcClass(JNIEnv* env);
+	_NODISCARD static jclass findMcClass(JNIEnv* env);
+
+	_NODISCARD jclass getMcClass();
 	_NODISCARD jclass getEntityLivingClass();
 	_NODISCARD jclass getVec3Class();
 	_NODISCARD jclass getVec3iClass();
+	_NODISCARD jclass getMovingObjPosClass();
 
 	_NODISCARD std::unique_ptr<ActiveRenderInfo> getActiveRenderInfo();
 
-	_NODISCARD jobject getMc() const;
+	_NODISCARD jobject getMc();
 	_NODISCARD jobject getRenderManager();
 	_NODISCARD jobject getLocalPlayerObject();
 	_NODISCARD jobject getWorld();
 	_NODISCARD jobject getGameSettings();
-	_NODISCARD jobject getMouseOverBlock();
+	_NODISCARD jobject getMouseOverObject();
 	_NODISCARD int getBlockIdAt(const Vec3& pos);
 
 	_NODISCARD bool isInGui();
@@ -56,7 +60,7 @@ public:
 	_NODISCARD float getRenderPartialTick();
 	_NODISCARD float getFov();
 
-	_NODISCARD std::string getMouseOverBlockStr();
+	_NODISCARD std::string getMouseOverStr();
 
 	_NODISCARD bool isAirBlock(jobject blockobj);
 
@@ -78,8 +82,13 @@ public:
 	RAYTRACE_BLOCKS_RESULT rayTraceBlocks(Vec3 from, Vec3 direction, Vec3& result, bool stopOnLiquid = false, bool stopOnAirBlocks = false, int subtractY = 2);
 
 public:
-	void set_gamma(float val);
+	jobject createMovingObjPosition(jobject entityObj);
 
+	std::string movingObjPosToStr(jobject mopObj);
+
+public:
+	void set_gamma(float val);
+	void setObjMouseOver(jobject newMopObj);
 	//void disableLightMap() const;
 	//void enableLightMap() const;
 };

@@ -4,7 +4,6 @@
 
 void toadll::CVarsUpdater::PreUpdate()
 {
-
 	static bool joiningWorld = false;
 
 	auto world = MC->getWorld();

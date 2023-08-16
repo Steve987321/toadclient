@@ -6,6 +6,11 @@
 
 using namespace toad;
 
+void toadll::CBlockEsp::PreUpdate()
+{
+	SLEEP(3);
+}
+
 void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	if (!block_esp::enabled)

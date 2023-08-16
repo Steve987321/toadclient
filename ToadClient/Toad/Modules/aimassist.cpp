@@ -60,27 +60,27 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		target = nullptr;
 
 		// get a target
-		for (const auto& player : GetPlayerList())
+		for (const auto& e : GetPlayerList())
 		{
-			if (lPlayer->Pos.dist(player.Pos) > aa::distance) continue;
-			if (player.Invis && !aa::invisibles) continue;
+			if (lPlayer->Pos.dist(e.Pos) > aa::distance) continue;
+			if (e.Invis && !aa::invisibles) continue;
 
-			distances.emplace_back(lPlayer->Pos.dist(player.Pos), player);
+			distances.emplace_back(lPlayer->Pos.dist(e.Pos), e);
 			if (aa::target_mode == AA_TARGET::FOV)
 			{
-				float yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, player.Pos).first)));
+				float yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, e.Pos).first)));
 				if (yaw_diff < minimal_angle_diff)
 				{
 					minimal_angle_diff = yaw_diff;
-					target = std::make_shared<Entity>(player);
+					target = std::make_shared<Entity>(e);
 				}
 			}
 			else if (aa::target_mode == AA_TARGET::HEALTH)
 			{
-				if (player.Health < lowestHealth)
+				if (e.Health < lowestHealth)
 				{
-					lowestHealth = player.Health;
-					target = std::make_shared<Entity>(player);
+					lowestHealth = e.Health;
+					target = std::make_shared<Entity>(e);
 				}
 			}
 		}

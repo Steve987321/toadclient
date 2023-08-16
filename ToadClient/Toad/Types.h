@@ -191,6 +191,7 @@ enum class mappingFields
     currentScreenField,
     thePlayerField,
     theWorldField,
+    objMouseOver, // Lnet/minecraft/util/MovingObjectPosition;
 
     // .World
     playerEntitiesField,

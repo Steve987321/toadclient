@@ -128,7 +128,7 @@ DWORD WINAPI toadll::init()
 
 	LOGDEBUG("client type {}", static_cast<int>(toad::g_curr_client));
 
-	auto mcclass = Minecraft::getMcClass(g_env);
+	auto mcclass = Minecraft::findMcClass(g_env);
 	if (mcclass == nullptr)
 	{
 		clean_up(4);
@@ -452,6 +452,7 @@ void init_modules()
 	CBlink::GetInstance()->name = "Blink";
 	CInternalUI::GetInstance()->name = "Internal ui";
 	CBridgeAssist::GetInstance()->name = "Auto bridge";
+	CReach::GetInstance()->name = "Reach";
 
 	// don't create threads for these modules
 	CInternalUI::GetInstance()->IsOnlyRendering = true;
@@ -463,6 +464,8 @@ void init_modules()
 			continue;
 		}
 
+		LOGDEBUG("Starting cheat module: {}", Module->name);
+
 		cmodule_threads.emplace_back([&]()
 			{
 				JNIEnv* env = nullptr;
@@ -470,11 +473,9 @@ void init_modules()
 		g_jvm->GetEnv(reinterpret_cast<void**>(&env), g_env->GetVersion());
 		g_jvm->AttachCurrentThreadAsDaemon(reinterpret_cast<void**>(&env), nullptr);
 
-		auto mcclass = Minecraft::getMcClass(env);
 		auto mc = std::make_unique<Minecraft>();
 
 		mc->env = env;
-		mc->mcclass = mcclass;
 
 		Module->SetEnv(env);
 		Module->SetMC(mc);
