@@ -137,8 +137,10 @@ namespace toadll
 				}
 			
 			}
+
 			ImGui_ImplOpenGL2_CreateFontsTexture();
-			LOGDEBUG("m_esp_font_path: {}, font: {}", toad::esp::font_path, (void*)m_esp_font);
+
+			LOGDEBUG("changing to font: {}", toad::esp::font_path, (void*)m_esp_font);
 
 			m_esp_font_update = false;
 		}
