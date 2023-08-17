@@ -35,6 +35,7 @@ void ImGuiWindow::StartWindow()
     if (m_windowNameMap.contains(m_windowName))
     {
         std::cout << "Window " << m_windowName << " already exists! " << std::endl;
+        assert(0);
         m_isRunning = false;
         return;
     }

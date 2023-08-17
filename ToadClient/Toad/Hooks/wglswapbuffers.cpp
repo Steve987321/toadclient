@@ -12,6 +12,8 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+
 namespace toadll
 {
 	LONG_PTR WINAPI HSwapBuffers::WndProcHook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -41,7 +43,7 @@ namespace toadll
 			}
 		}
 		
-		if (toad::g_is_ui_internal && CInternalUI::MenuIsOpen && is_imgui_initialized)
+		if (toad::g_is_ui_internal && CInternalUI::MenuIsOpen && m_is_imgui_initialized)
 		{
 			ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam);
 			return true;
@@ -51,10 +53,10 @@ namespace toadll
 
 	BOOL HSwapBuffers::Hook(HDC hDc)
 	{
-		hwnd = WindowFromDC(hDc);
+		m_hwnd = WindowFromDC(hDc);
 		if (!oWndProc)
 		{
-			oWndProc = reinterpret_cast<tWndProc>(SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WndProcHook)));
+			oWndProc = reinterpret_cast<tWndProc>(SetWindowLongPtr(m_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WndProcHook)));
 		}
 
 		HGLRC oCtx = wglGetCurrentContext();
@@ -65,12 +67,12 @@ namespace toadll
 		GLint viewport[4] {};
 		glGetIntegerv(GL_VIEWPORT, CVarsUpdater::Viewport.data());
 
-		// check for resolution change
+		// check for viewport dimensions change
 		if (g_screen_width != CVarsUpdater::Viewport[2] || g_screen_height != CVarsUpdater::Viewport[3])
 		{
 			// update window handle 
 			// window handle gets lost when switching between fullscreen and windowed
-			g_hWnd = hwnd;
+			g_hWnd = m_hwnd;
 		}
 
 		g_screen_width = CVarsUpdater::Viewport[2];
@@ -99,16 +101,16 @@ namespace toadll
 		if (init_stage == 1)
 		{
 			ImGui::CreateContext();
-			ImGui_ImplWin32_Init(hwnd);
+			ImGui_ImplWin32_Init(m_hwnd);
 			ImGui_ImplOpenGL2_Init();
 			auto io = &ImGui::GetIO(); (void)io;
 			io->ConfigWindowsMoveFromTitleBarOnly = true;
-			io->Fonts->AddFontDefault();
-			static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
-			ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
-			io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 24, &icons_config, icons_ranges);
+			m_esp_font = io->Fonts->AddFontDefault();
+			ImFontConfig icons_config;
+			icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+			io->Fonts->AddFontFromMemoryCompressedBase85TTF(base85_compressed_data_fa_solid_900, 24.f , &icons_config, icons_ranges);
 			ImGui::SetNextWindowSize({500, 500});
-			is_imgui_initialized = true;
+			m_is_imgui_initialized = true;
 			init_stage = 3;
 		}
 
@@ -119,8 +121,29 @@ namespace toadll
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		const auto draw = ImGui::GetForegroundDrawList();
+		if (m_esp_font_update)
+		{
+			if (toad::esp::font_path == "Default")
+			{
+				m_esp_font = io.Fonts->Fonts[0];
+			}
+			else
+			{
+				m_esp_font = io.Fonts->AddFontFromFileTTF(toad::esp::font_path.c_str(), toad::esp::text_size);
+				if (!m_esp_font)
+				{
+					LOGERROR("font was 0");
+					m_esp_font = io.Fonts->Fonts[0];
+				}
+			
+			}
+			ImGui_ImplOpenGL2_CreateFontsTexture();
+			LOGDEBUG("m_esp_font_path: {}, font: {}", toad::esp::font_path, (void*)m_esp_font);
 
+			m_esp_font_update = false;
+		}
+
+		const auto draw = ImGui::GetForegroundDrawList();
 		for (const auto& Module : CModule::moduleInstances)
 			Module->OnImGuiRender(draw);
 
@@ -139,8 +162,18 @@ namespace toadll
 
 	void HSwapBuffers::Dispose()
 	{
-		SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(oWndProc));
+		SetWindowLongPtr(m_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(oWndProc));
 
 		Hook::Dispose();
+	}
+
+	void HSwapBuffers::UpdateFont()
+	{
+		m_esp_font_update = true;
+	}
+
+	ImFont* HSwapBuffers::GetFont()
+	{
+		return m_esp_font;
 	}
 }

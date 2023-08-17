@@ -2,9 +2,11 @@
 
 #ifdef TOAD_LOADER
 #include "VisualizeClicker/VisualizeClicker.h"
+#include "utils/imfilebrowser.h"
 #else
 #include "../../Loader/src/Application/VisualizeClicker/VisualizeClicker.h"
 #include "../../Loader/src/Application/VisualizeClicker/VisualizeClicker.cpp"
+#include "../../Loader/src/utils/imfilebrowser.h"
 #endif
 
 namespace toad::ui

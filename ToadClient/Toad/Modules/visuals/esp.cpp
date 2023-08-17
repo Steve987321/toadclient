@@ -112,6 +112,7 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 	}
 
 	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
+	const auto font = HSwapBuffers::GetFont();
 
 	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
 	{
@@ -143,6 +144,7 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 			if ((int)minX * 10 == -10 && maxX > g_screen_width) continue;
 			if ((int)minY * 10 == -10 && maxY > g_screen_height) continue;
 
+			// draw box 
 			draw->AddRectFilled({ minX, minY }, { maxX, maxY }, fill_col);
 			draw->AddRect({ minX - esp::line_width, minY - esp::line_width }, { maxX + esp::line_width, maxY + esp::line_width }, line_col);
 
@@ -159,15 +161,16 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 				{
 					if (esp::show_name)
 					{
-						auto textSize = ImGui::CalcTextSize(name.c_str());
+						auto textSize = font->CalcTextSizeA(esp::text_size, 5000.f, 0, name.c_str());
 						auto posX = screenpos.x - textSize.x / 2;
 
 						if (esp::text_shadow)
 						{
-							draw->AddText({ posX - 1, screenpos.y - 1 }, IM_COL32_BLACK, name.c_str());
-							draw->AddText({ posX + 1, screenpos.y + 1 }, IM_COL32_BLACK, name.c_str());
+							draw->AddText(font, esp::text_size, { posX - 1, screenpos.y - 1 }, IM_COL32_BLACK, name.c_str());
+							draw->AddText(font, esp::text_size, { posX + 1, screenpos.y + 1 }, IM_COL32_BLACK, name.c_str());
 						}
-						draw->AddText({ posX, screenpos.y }, text_col, name.c_str());
+						
+						draw->AddText(font, esp::text_size, { posX, screenpos.y }, text_col, name.c_str());
 					}
 					if (esp::show_distance)
 					{
@@ -305,11 +308,6 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 			}
 		}
 	}
-
-	/*Vec2 screen{};
-	Vec3 WorldPos = Vec3(-561, 5, -38);
-	screen = world_to_screen(WorldPos - debuggingvector3);
-	draw->AddCircle({ screen.x, screen.y }, 10, IM_COL32_WHITE);*/
 }
 
 std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()

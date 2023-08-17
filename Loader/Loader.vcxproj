@@ -95,6 +95,7 @@
     <ClInclude Include="src\toad.h" />
     <ClInclude Include="src\utils\block_map.h" />
     <ClInclude Include="src\utils\helpers.h" />
+    <ClInclude Include="src\utils\imfilebrowser.h" />
     <ClInclude Include="vendor\imgui\backends\imgui_impl_dx9.h" />
     <ClInclude Include="vendor\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />

@@ -310,6 +310,13 @@ bool UpdateSettings()
 		data["done"] = 0;
 	}
 
+	if (data.contains("esp_font"))
+	{
+		esp::font_path = data["esp_font"];
+		HSwapBuffers::UpdateFont();
+		data["done"] = 0;
+	}
+
 	std::stringstream ss;
 	ss << data << "END";
 	memcpy(pMem, ss.str().c_str(), ss.str().length()); 
@@ -423,6 +430,7 @@ bool UpdateSettings()
 	esp::text_col[1] = data["esp_text_colg"];
 	esp::text_col[2] = data["esp_text_colb"];
 	esp::text_col[3] = data["esp_text_cola"];
+	esp::text_size = data["esp_fontsize"];
 	//esp::custom_font = data["esp_text_font"];
 
 	// block esp

@@ -142,7 +142,6 @@ namespace toadll
 		float forwardX = std::cos(yawRad);
 		float forwardZ = std::sin(yawRad);
 
-		std::cout << forwardX * hdirx + forwardZ * hdirz << std::endl;
 		return forwardX * hdirx + forwardZ * hdirz < threshold;
 	}
 

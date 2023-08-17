@@ -196,11 +196,12 @@ namespace toad
 		inline bool text_bg = false; // background for text
 		inline float text_col[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		inline float text_bg_col[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+		inline float text_size = 24.f;
 		inline float static_esp_width = 0;
 
-		/*inline const char* font_path = "";
-		inline int font_size = 15;*/
+		inline std::string font_path = "Default";
 
+		inline bool update_font_flag = false;
 	}
 
 	namespace block_esp

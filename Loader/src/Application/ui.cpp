@@ -369,8 +369,18 @@ namespace toad::ui
         }
     }
 
+    ImGui::FileBrowser espFontDialog;
+
     void esp_visualizer(bool* enabled)
     {
+        static bool once = false;
+        if (!once)
+        {
+            espFontDialog.SetTitle("select a TrueType Font");
+            espFontDialog.SetTypeFilters({ ".ttf" });
+            once = true;
+        }
+
         ImGui::Begin("ESP box settings", enabled, ImGuiWindowFlags_NoSavedSettings);
 
         const auto window_size = ImGui::GetWindowSize();
@@ -396,7 +406,8 @@ namespace toad::ui
 
                 if (esp::text_shadow)
                 {
-
+                    ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex - 1, min.y -1 }, text_col_imu32, "Player");
+                    ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex + 1, min.y +1 }, text_col_imu32, "Player");
                 }
                 ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex, min.y }, text_col_imu32, "Player");
             }
@@ -447,21 +458,47 @@ namespace toad::ui
                 ImGui::TreePop();
             }
 
-            if (ImGui::TreeNode("Box Properties"))
+            if (ImGui::TreeNode("Box & Text Properties"))
             {
                 ImGui::ColorEdit4("text color", esp::text_col, color_edit_flags);
                 ImGui::ColorEdit4("text bg color", esp::text_bg_col, color_edit_flags);
                 ImGui::Checkbox("text shadow", &esp::text_shadow);
                 ImGui::Checkbox("text bg", &esp::text_bg);
+                ImGui::SliderFloat("text size", &esp::text_size, 10, 30, "%.1f");
 
                 ImGui::SliderFloat("static 2d box width", &esp::static_esp_width, -10, 10);
                 ImGui::SliderInt("line box width", &esp::line_width, 1, 10);
 
                 ImGui::TreePop();
             }
+
+            if (ImGui::TreeNode("font"))
+            {
+                if (ImGui::Button("..."))
+                {
+                    espFontDialog.Open();
+                }
+
+                if (espFontDialog.HasSelected())
+                {
+					esp::font_path = espFontDialog.GetSelected().string();
+                    espFontDialog.ClearSelected();
+                    esp::update_font_flag = true;
+                }
+
+                if (esp::update_font_flag)
+                {
+                    load_spinner("update font spinner", 10, 2, IM_COL32_WHITE);
+                }
+
+                ImGui::TreePop();
+            }
+
         }
         ImGui::EndChild();
 
         ImGui::End();
+
+        espFontDialog.Display();
     }
 }

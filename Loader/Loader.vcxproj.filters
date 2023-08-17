@@ -69,6 +69,9 @@
     <ClInclude Include="src\Application\VisualizeClicker\VisualizeClicker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\imfilebrowser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application\Application.cpp">
