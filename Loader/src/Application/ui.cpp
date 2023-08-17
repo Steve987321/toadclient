@@ -4,6 +4,8 @@
 #include "inject/injector.h"
 #endif
 
+#include <string>
+
 std::thread init_thread;
 
 namespace toad::ui
@@ -474,14 +476,31 @@ namespace toad::ui
 
             if (ImGui::TreeNode("font"))
             {
+                static std::string name = "Default";
+                static std::string path = esp::font_path == "Default" ? ".." : esp::font_path.substr(0, esp::font_path.find_last_of("/\\") + 1);
+
+                ImGui::Text("Font: %s", name.c_str());
+                ImGui::Text("Path: %s", path.c_str());
+
                 if (ImGui::Button("..."))
                 {
                     espFontDialog.Open();
                 }
 
+                if (ImGui::Button("Set Default Font"))
+                {
+                    name = "Default";
+                    path = "..";
+                }
+
                 if (espFontDialog.HasSelected())
                 {
-					esp::font_path = espFontDialog.GetSelected().string();
+                    const auto selected = espFontDialog.GetSelected();
+                    esp::font_path = selected.string();
+
+                    path = esp::font_path.substr(0, esp::font_path.find_last_of("/\\") + 1);
+                    name = selected.filename().string();
+
                     espFontDialog.ClearSelected();
                     esp::update_font_flag = true;
                 }
