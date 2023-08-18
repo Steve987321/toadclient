@@ -129,7 +129,7 @@ namespace toadll
 			}
 			else
 			{
-				m_esp_font = io.Fonts->AddFontFromFileTTF(toad::esp::font_path.c_str(), toad::esp::text_size);
+				m_esp_font = io.Fonts->AddFontFromFileTTF(toad::esp::font_path.c_str(), 30.f);
 				if (!m_esp_font)
 				{
 					LOGERROR("font was 0");

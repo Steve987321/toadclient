@@ -386,10 +386,13 @@ namespace toad::ui
         ImGui::Begin("ESP box settings", enabled, ImGuiWindowFlags_NoSavedSettings);
 
         const auto window_size = ImGui::GetWindowSize();
-        const float window_spacing = 20;
+        const float window_spacing = 15;
 
         // for visualization
         static int visualize_health = 20;
+
+        const static auto io = &ImGui::GetIO();
+        static ImFont* preview_font = io->Fonts->Fonts[0];
 
         ImGui::BeginChild("esp box visual", { window_size.x / 2 - window_spacing, window_size.y - window_spacing - 20 }, true);
         {
@@ -404,21 +407,21 @@ namespace toad::ui
             if (esp::show_name)
             {
                 const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
-                const auto halfsizex = ImGui::CalcTextSize("Player").x / 2;
+                const auto halfsizex = preview_font->CalcTextSizeA(esp::text_size, 500, 0, "Player").x / 2;
 
                 if (esp::text_shadow)
                 {
-                    ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex - 1, min.y -1 }, text_col_imu32, "Player");
-                    ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex + 1, min.y +1 }, text_col_imu32, "Player");
+                    ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { (min.x + max.x) / 2 - halfsizex - 1, min.y -1 }, IM_COL32_BLACK, "Player");
+                    ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { (min.x + max.x) / 2 - halfsizex + 1, min.y +1 }, IM_COL32_BLACK, "Player");
                 }
-                ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex, min.y }, text_col_imu32, "Player");
+                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { (min.x + max.x) / 2 - halfsizex, min.y }, text_col_imu32, "Player");
             }
             if (esp::show_distance)
             {
                 const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
 
-                const auto halfsizex = ImGui::CalcTextSize("5.0").x / 2;
-                ImGui::GetWindowDrawList()->AddText({ (min.x + max.x) / 2 - halfsizex, min.y - 10 }, text_col_imu32, "5.0");
+                const auto halfsizex = preview_font->CalcTextSizeA(esp::text_size, 500, 0, "5.0").x / 2;
+                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { (min.x + max.x) / 2 - halfsizex, min.y - 10 }, text_col_imu32, "5.0");
             }
             if (esp::show_health)
             {
@@ -460,7 +463,15 @@ namespace toad::ui
                 ImGui::TreePop();
             }
 
-            if (ImGui::TreeNode("Box & Text Properties"))
+            if (ImGui::TreeNode("Box Properties"))
+            {
+                ImGui::SliderFloat("static 2d box width", &esp::static_esp_width, -10, 10);
+                ImGui::SliderInt("line box width", &esp::line_width, 1, 10);
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("text/font"))
             {
                 ImGui::ColorEdit4("text color", esp::text_col, color_edit_flags);
                 ImGui::ColorEdit4("text bg color", esp::text_bg_col, color_edit_flags);
@@ -468,14 +479,6 @@ namespace toad::ui
                 ImGui::Checkbox("text bg", &esp::text_bg);
                 ImGui::SliderFloat("text size", &esp::text_size, 10, 30, "%.1f");
 
-                ImGui::SliderFloat("static 2d box width", &esp::static_esp_width, -10, 10);
-                ImGui::SliderInt("line box width", &esp::line_width, 1, 10);
-
-                ImGui::TreePop();
-            }
-
-            if (ImGui::TreeNode("font"))
-            {
                 static std::string name = "Default";
                 static std::string path = esp::font_path == "Default" ? ".." : esp::font_path.substr(0, esp::font_path.find_last_of("/\\") + 1);
 
@@ -491,6 +494,9 @@ namespace toad::ui
                 {
                     name = "Default";
                     path = "..";
+                    esp::font_path = "Default";
+                    esp::update_font_flag = true;
+                    AppInstance->GetWindow()->AddFontTTF(esp::font_path);
                 }
 
                 if (espFontDialog.HasSelected())
@@ -503,9 +509,20 @@ namespace toad::ui
 
                     espFontDialog.ClearSelected();
                     esp::update_font_flag = true;
+                    AppInstance->GetWindow()->AddFontTTF(esp::font_path);
                 }
 
+                // update preview font
                 if (esp::update_font_flag)
+                {
+	                if (AppInstance->GetWindow()->IsFontUpdated())
+	                {
+		                // get newly added font
+                        preview_font = io->Fonts->Fonts.back();
+	                }
+                }
+
+                if (esp::update_font_flag && !AppInstance->GetWindow()->IsFontUpdated())
                 {
                     load_spinner("update font spinner", 10, 2, IM_COL32_WHITE);
                 }

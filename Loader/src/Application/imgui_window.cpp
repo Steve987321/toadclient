@@ -85,10 +85,21 @@ bool ImGuiWindow::IsActive() const
     return m_isRunning && !m_shouldClose;
 }
 
+bool ImGuiWindow::IsFontUpdated() const
+{
+    return !m_update_font;
+}
+
 void ImGuiWindow::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
 {
     m_isUIFuncSet = true;
     m_uiFunction = ui_func;
+}
+
+void ImGuiWindow::AddFontTTF(std::string_view pathTTF)
+{
+    m_update_font_path = pathTTF;
+    m_update_font = true;
 }
 
 void ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_height, int win_width)
@@ -239,6 +250,23 @@ void ImGuiWindow::UpdateMenu()
 
     if (m_shouldClose)
         return;
+
+    if (m_update_font)
+    {
+        ImFont* res = nullptr;
+        if (m_update_font_path == "Default")
+        {
+            res = m_io->Fonts->AddFontDefault();
+        }
+        else
+        {
+            res = m_io->Fonts->AddFontFromFileTTF(m_update_font_path.c_str(), 30.f);
+        }
+        assert(res != nullptr && "Adding font from path returned null");
+
+        ImGui_ImplDX9_InvalidateDeviceObjects();
+        m_update_font = false;
+    }
 
     // Start the Dear ImGui frame
     ImGui_ImplDX9_NewFrame();

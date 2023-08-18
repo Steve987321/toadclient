@@ -32,9 +32,11 @@ public:
 	D3DProperties* GetD3DProperties();
 	HWND GetHandle() const;
 	bool IsActive() const;
+	bool IsFontUpdated() const;
 
 public:
 	void SetUI(const std::function<void(ImGuiIO* io)>& ui_func);
+	void AddFontTTF(std::string_view pathTTF);
 
 public:
 	static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -69,6 +71,9 @@ private:
 	std::atomic_bool m_shouldClose = false;
 
 	bool m_isUIFuncSet = false;
+
+	bool m_update_font = false;
+	std::string m_update_font_path;
 
 	inline static std::unordered_map<std::string, ImGuiWindow*> m_windowNameMap = {};
 	inline static std::unordered_map<HWND, ImGuiWindow*> m_windowHwndMap = {};
