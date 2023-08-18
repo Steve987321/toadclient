@@ -8,7 +8,7 @@ namespace toadll {
 
 void CAimAssist::PreUpdate()
 {
-	SLEEP(2);
+	SLEEP(5);
 }
 
 void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
@@ -40,7 +40,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static std::shared_ptr<Entity> target = nullptr;
 
 	// horizontal and vertical speed
-	float speed = aa::speed;
+	float speed = aa::speed * 3;
 
 	// for fov check
 	float minimal_angle_diff = aa::fov / 2.f;
@@ -92,7 +92,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		// atleast one other player
 		if (distances.empty())
 		{
-			SLEEP(1);
+			SLEEP(10);
 			return;
 		} 
 
@@ -112,7 +112,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target->Pos).first)));
 			if (l_yaw_diff > minimal_angle_diff) // target out of fov range
 			{
-				SLEEP(1);
+				SLEEP(10);
 				return;
 			}
 		}
@@ -120,7 +120,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (target == nullptr)
 	{
-		SLEEP(1);
+		SLEEP(10);
 		return;
 	}
 
@@ -161,7 +161,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			if (*std::ranges::max_element(yawdiffs) > 0)
 			{
-				SLEEP(1);
+				SLEEP(10);
 				return;
 			}
 		}
@@ -169,7 +169,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			if (*std::ranges::min_element(yawdiffs) < 0)
 			{
-				SLEEP(1);
+				SLEEP(10);
 				return;
 			}
 		}
@@ -192,7 +192,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	if (aa::target_mode == AA_TARGET::FOV) // don't have to check if this is enabled because already checked
 		if (absYawDiff > minimal_angle_diff)
 		{
-			SLEEP(1);
+			SLEEP(10);
 			return;
 		}
 
@@ -230,7 +230,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	auto editable_local_player = MC->getLocalPlayer();
 	if (!editable_local_player)
 	{
-		SLEEP(1);
+		SLEEP(10);
 		return;
 	}
 
