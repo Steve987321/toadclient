@@ -376,6 +376,7 @@ bool UpdateSettings()
 	aa::always_aim = data["aa_always_aim"];
 	aa::aim_at_closest_point = data["aa_multipoint"];
 	aa::lock_aim = data["aa_lockaim"];
+	aa::break_blocks = data["aa_bb"];
 
 	// bridge assist
 	bridge_assist::enabled = data["ba_enabled"];

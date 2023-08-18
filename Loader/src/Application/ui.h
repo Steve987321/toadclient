@@ -136,23 +136,24 @@ namespace toad::ui
                     else if (is_AA)
                         setting_menu("Aim Assist", is_AA, []
                             {
-                                ImGui::SliderFloat("Speed", &aa::speed, 0, 100);
-                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
-                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
-                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
-                    ImGui::Checkbox("Invisibles", &aa::invisibles);
-                    ImGui::Checkbox("Always Aim", &aa::always_aim);
-                    ImGui::Checkbox("Target Lock", &aa::lock_aim);
-                    ImGui::Checkbox("Aim in target", &aa::aim_at_closest_point);
-                    if (ImGui::BeginCombo("target by", AATargetToCStrMap[aa::target_mode]))
-                    {
-                        for (const auto& [aaMode, name] : AATargetToCStrMap)
-                        {
-                            if (ImGui::Selectable(name, aaMode == aa::target_mode))
-                                aa::target_mode = aaMode;
-                        }
-                        ImGui::EndCombo();
-                    }
+                            ImGui::SliderFloat("Speed", &aa::speed, 0, 100);
+		                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
+		                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
+		                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
+		                    ImGui::Checkbox("Invisibles", &aa::invisibles);
+		                    ImGui::Checkbox("Always Aim", &aa::always_aim);
+		                    ImGui::Checkbox("Target Lock", &aa::lock_aim);
+		                    ImGui::Checkbox("Aim in target", &aa::aim_at_closest_point);
+                            ImGui::Checkbox("Break Blocks", &aa::break_blocks);
+			                if (ImGui::BeginCombo("target by", AATargetToCStrMap[aa::target_mode]))
+			                {
+			                    for (const auto& [aaMode, name] : AATargetToCStrMap)
+			                    {
+			                        if (ImGui::Selectable(name, aaMode == aa::target_mode))
+			                            aa::target_mode = aaMode;
+			                    }
+			                    ImGui::EndCombo();
+			                }
                             });
 
                     else if (is_Velocity)

@@ -204,6 +204,7 @@ void update_settings()
 	dataOut["aa_always_aim"] = aa::always_aim;
 	dataOut["aa_multipoint"] = aa::aim_at_closest_point;
 	dataOut["aa_lockaim"] = aa::lock_aim;
+	dataOut["aa_bb"] = aa::break_blocks;
 
 	// bridge assist
 	dataOut["ba_enabled"] = bridge_assist::enabled;
