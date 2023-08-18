@@ -496,7 +496,9 @@ namespace toad::ui
                     path = "..";
                     esp::font_path = "Default";
                     esp::update_font_flag = true;
+#ifdef TOAD_LOADER
                     AppInstance->GetWindow()->AddFontTTF(esp::font_path);
+#endif
                 }
 
                 if (espFontDialog.HasSelected())
@@ -509,9 +511,12 @@ namespace toad::ui
 
                     espFontDialog.ClearSelected();
                     esp::update_font_flag = true;
+#ifdef TOAD_LOADER
                     AppInstance->GetWindow()->AddFontTTF(esp::font_path);
+#endif
                 }
 
+#ifdef TOAD_LOADER
                 // update preview font
                 if (esp::update_font_flag)
                 {
@@ -526,6 +531,13 @@ namespace toad::ui
                 {
                     load_spinner("update font spinner", 10, 2, IM_COL32_WHITE);
                 }
+#else
+                if (esp::update_font_flag)
+                {
+                    load_spinner("update font spinner", 10, 2, IM_COL32_WHITE);
+                }
+#endif
+               
 
                 ImGui::TreePop();
             }
