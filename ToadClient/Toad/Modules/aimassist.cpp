@@ -6,6 +6,11 @@ using namespace toad;
 
 namespace toadll {
 
+void CAimAssist::PreUpdate()
+{
+	SLEEP(2);
+}
+
 void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
@@ -279,8 +284,4 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	}
 }
 
-void CAimAssist::PreUpdate()
-{
-	SLEEP(3);
-}
 }

@@ -7,8 +7,8 @@ namespace toadll
 class CAimAssist SET_MODULE_CLASS(CAimAssist)
 {
 public:
-	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 	void PreUpdate() override;
+	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 
 private:
 	Vec3 getClosesetPoint(const BBox& bb, const Vec3& from) const
