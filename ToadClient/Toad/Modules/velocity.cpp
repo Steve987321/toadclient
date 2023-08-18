@@ -26,7 +26,7 @@ namespace toadll
 		if (velocity::jump_reset)
 		{
 			// jumping won't have any effect
-			if (std::fabs(lPlayer->Motion.y) > FLT_EPSILON)
+			if (lPlayer->Motion.y < -0.1)
 				return;
 
 			if (velocity::only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
