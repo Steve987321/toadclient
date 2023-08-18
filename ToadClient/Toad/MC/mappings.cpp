@@ -199,6 +199,9 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getStackInSlot, "getStackInSlot" });
 			methodsigs.insert({ mapping::getStackInSlot, "(I)Lnet/minecraft/item/ItemStack;" });
 
+			methodnames.insert({ mapping::getInventory, "getInventory" });
+			methodsigs.insert({ mapping::getInventory, "()[Lnet/minecraft/item/ItemStack;" });
+
 			methodnames.insert({ mapping::getBlockPos, "getBlockPos" });
 			methodsigs.insert({ mapping::getBlockPos, "()Lnet/minecraft/util/BlockPos;" });
 
@@ -443,6 +446,8 @@ namespace toadll::mappings
 			fieldnames.insert({ mappingFields::inventoryField, "inventory" });
 			fieldsigs.insert({ mappingFields::inventoryField, "Lnet/minecraft/entity/player/InventoryPlayer;" });
 
+			methodnames.insert({ mapping::getInventory, "getInventory" });
+			methodsigs.insert({ mapping::getInventory, "()[Lnet/minecraft/item/ItemStack;" });
 			/*fieldnames.insert({ mappingFields::mainInventoryField, "mainInventory" });
 			fieldsigs.insert({ mappingFields::mainInventoryField, "Ljava/util/List;" });*/
 			methodnames.insert({ mapping::getStackInSlot, "getStackInSlot" });

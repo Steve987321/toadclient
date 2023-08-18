@@ -41,6 +41,8 @@ namespace toadll
 		//[[nodiscard]] jobject get_open_container() const;
 		_NODISCARD BBox get_BBox() const;
 
+		std::array<std::string, 4> getArmor();
+
 	public:
 		void setRotationYaw(float newYaw) const;
 		void setPrevRotationYaw(float newYaw) const;

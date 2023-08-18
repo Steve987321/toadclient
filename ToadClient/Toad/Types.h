@@ -293,6 +293,7 @@ enum class mapping
     isInvisible,
 
     // inv
+    getInventory, // ()[Lnet/minecraft/item/ItemStack;
     getStackInSlot,
 
     // .EntityRenderer

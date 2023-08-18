@@ -209,6 +209,48 @@ toadll::BBox toadll::c_Entity::get_BBox() const
 	return { { minX, minY, minZ }, { maxX, maxY, maxZ } };
 }
 
+std::array<std::string, 4> toadll::c_Entity::getArmor()
+{
+	auto mid = get_mid(obj, mapping::getInventory, env);
+
+	auto invarray = (jobjectArray)env->CallObjectMethod(obj, mid);
+
+	if (!invarray)
+		return {};
+
+	std::array<std::string, 4> res;
+
+	// always 4 
+	for (int i = 0; i < 4; i++)
+	{
+		static jmethodID toStrMid = nullptr;
+
+		jobject element = env->GetObjectArrayElement(invarray, i);
+
+		if (!element)
+			continue;
+
+		static bool once = false;
+		if (!once)
+		{
+			auto klass = env->GetObjectClass(element);
+			toStrMid = get_mid(klass, mapping::toString, env);
+			env->DeleteLocalRef(klass);
+			once = true;
+		}
+
+		auto data = (jstring)env->CallObjectMethod(element, toStrMid);
+		auto dataStr = jstring2string(data, env);
+		// helmet = 3 boots = 0
+		res[i] = dataStr;
+		env->DeleteLocalRef(data);
+		env->DeleteLocalRef(element);
+	}
+
+	env->DeleteLocalRef(invarray);
+	return res;
+}
+
 //jobject toadll::c_Entity::get_open_container() const
 //{
 //	return env->CallObjectMethod(obj, get_mid(obj, mapping::getOpenContainer));
