@@ -20,6 +20,7 @@ private:
 	static void DisableBlink();
 
 public:
+	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 	void OnRender() override;
 };

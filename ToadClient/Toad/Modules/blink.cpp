@@ -11,6 +11,11 @@ void toadll::CBlink::DisableBlink()
 		HWSARecv::StopRecvs = false;
 }
 
+void toadll::CBlink::PreUpdate()
+{
+	SLEEP(10);
+}
+
 void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	if (!blink::enabled)
