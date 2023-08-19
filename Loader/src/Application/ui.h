@@ -35,9 +35,6 @@ namespace toad::ui
         static bool clicker_rand_edit = false;
         static bool clicker_rand_visualize = false;
 
-        // show clicker rand cps bounds on the cps slider with colors 
-        static bool clicker_rand_bounds_cps = false;
-
         // esp visuals visualization
         static bool esp_visuals_menu = false;
 
@@ -85,57 +82,54 @@ namespace toad::ui
 
                     if (is_LClicker)
                         setting_menu("LeftClicker", is_LClicker, []
+                        {
+                            if (ImGui::SliderInt("min cps", &left_clicker::min_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
                             {
-                                if (ImGui::SliderInt("min cps", &left_clicker::min_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
+                                // update rand delays
+                                left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
+                                vClick.SetRand(left_clicker::rand);
+                            }
+
+                        	if (ImGui::SliderInt("max cps", &left_clicker::max_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
                                 {
                                     // update rand delays
-                                    left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
+									left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
                                     vClick.SetRand(left_clicker::rand);
                                 }
 
-                        		if (ImGui::SliderInt("max cps", &left_clicker::max_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
-	                                {
-	                                    // update rand delays
-										left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-	                                    vClick.SetRand(left_clicker::rand);
-	                                }
-
-                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
-                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
-                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
-                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
-                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
-                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
-                            }, true,
-                            []
+		                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
+		                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
+		                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
+		                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
+		                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
+		                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
+                        }, true, 
+                        []{
+                            if (ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit))
                             {
-                                if (ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit))
-                                {
-                                    auto rand = vClick.GetRand();
-                                    rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                    vClick.SetRand(rand);
-                                }
-                                else if (ImGui::Checkbox("Visualize Randomization", &clicker_rand_visualize))
-                                {
-                                    auto rand = vClick.GetRand();
-                                    rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                    vClick.SetRand(rand);
-                                }
-
-								ImGui::Checkbox("Show cps rand hit bounds", &clicker_rand_bounds_cps);
-                            });
+                                auto rand = vClick.GetRand();
+                                rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
+                                vClick.SetRand(rand);
+                            }
+                            else if (ImGui::Checkbox("Visualize Randomization", &clicker_rand_visualize))
+                            {
+                                auto rand = vClick.GetRand();
+                                rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
+                                vClick.SetRand(rand);
+                            }
+                        });
 
                     else if (is_RClicker)
                         setting_menu("RightClicker", is_RClicker, []
-                            {
-                                ImGui::SliderInt("cps", &right_clicker::cps, 1, 20, "%dcps");
-                    ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
-                    ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
-                            });
+                        {
+                            ImGui::SliderInt("cps", &right_clicker::cps, 1, 20, "%dcps");
+		                    ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
+		                    ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
+		                });
 
                     else if (is_AA)
                         setting_menu("Aim Assist", is_AA, []
-                            {
+                        {
                             ImGui::SliderFloat("Speed", &aa::speed, 0, 100);
 		                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
 		                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
@@ -154,29 +148,29 @@ namespace toad::ui
 			                    }
 			                    ImGui::EndCombo();
 			                }
-                            });
+                        });
 
                     else if (is_Velocity)
                         setting_menu("Velocity", is_Velocity, []
-                            {
-                                ImGui::Checkbox("Use Jump Reset", &velocity::jump_reset);
+                        {
+                            ImGui::Checkbox("Use Jump Reset", &velocity::jump_reset);
 
                             if (velocity::jump_reset)
                             {
                                 ImGui::SliderInt("Press Chance", &velocity::jump_press_chance, 0, 100, "%d%%");
                             }
 
-                    ImGui::Checkbox("Only when moving", &velocity::only_when_moving);
-                    ImGui::Checkbox("Only when clicking", &velocity::only_when_clicking);
-                    ImGui::Checkbox("Kite", &velocity::kite);
-                    if (!velocity::jump_reset)
-                    {
-                        ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
-                        ImGui::SliderFloat("Vertical", &velocity::vertical, 0.f, 100.f, "%.1f%%");
-                        ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");
-                        ImGui::SliderFloat("Delay", &velocity::delay, 0, 100, "%.0f%");
-                    }
-                            });
+		                    ImGui::Checkbox("Only when moving", &velocity::only_when_moving);
+		                    ImGui::Checkbox("Only when clicking", &velocity::only_when_clicking);
+		                    ImGui::Checkbox("Kite", &velocity::kite);
+		                    if (!velocity::jump_reset)
+		                    {
+		                        ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
+		                        ImGui::SliderFloat("Vertical", &velocity::vertical, 0.f, 100.f, "%.1f%%");
+		                        ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");
+		                        ImGui::SliderFloat("Delay", &velocity::delay, 0, 100, "%.0f%");
+		                    }
+                        });
 
                     // ImGui::EndChild();
                 }
@@ -194,12 +188,12 @@ namespace toad::ui
                     if (is_Bridge)
                     {
                         setting_menu("Bridge Assist", is_Bridge, []
-                            {
-                                ImGui::SliderFloat("pitch check", &bridge_assist::pitch_check, 1, 90);
+                        {
+                            ImGui::SliderFloat("pitch check", &bridge_assist::pitch_check, 1, 90);
 
-                            // zero and 1 means sneak at any edge
-                                ImGui::SliderInt("block height check", &bridge_assist::block_check, 0, 10);
-                            });
+							// zero and 1 means sneak at any edge
+                            ImGui::SliderInt("block height check", &bridge_assist::block_check, 0, 10);
+                        });
                     }
 
                     else if (is_Esp)
@@ -207,117 +201,114 @@ namespace toad::ui
                         constexpr auto color_edit_flags = ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar;
 
                         setting_menu("ESP", is_Esp, []
+                        {
+                            ImGui::ColorEdit4("Outline Color", esp::line_col, color_edit_flags);
+                            ImGui::ColorEdit4("Fill Color", esp::fill_col, color_edit_flags);
+
+                            if (ImGui::BeginCombo("ESP Type", espModeToCStrMap[esp::esp_mode], ImGuiComboFlags_NoArrowButton))
                             {
-	                            ImGui::ColorEdit4("Outline Color", esp::line_col, color_edit_flags);
-	                            ImGui::ColorEdit4("Fill Color", esp::fill_col, color_edit_flags);
-
-	                            if (ImGui::BeginCombo("ESP Type", espModeToCStrMap[esp::esp_mode], ImGuiComboFlags_NoArrowButton))
+	                            for (const auto& [espMode, name] : espModeToCStrMap)
 	                            {
-		                            for (const auto& [espMode, name] : espModeToCStrMap)
-		                            {
-			                            if (ImGui::Selectable(name, espMode == esp::esp_mode))
-				                            esp::esp_mode = espMode;
-		                            }
-		                            ImGui::EndCombo();
+		                            if (ImGui::Selectable(name, espMode == esp::esp_mode))
+			                            esp::esp_mode = espMode;
 	                            }
-
-                                ImGui::Checkbox("open esp settings", &esp_visuals_menu);
-
+	                            ImGui::EndCombo();
                             }
-                        );
+
+                            ImGui::Checkbox("open esp settings", &esp_visuals_menu);
+                        });
                     }
 
                     else if (is_BlockEsp)
                     {
                         setting_menu("Block ESP", is_BlockEsp, []
-                            {
-
-                        static std::set<std::string> ignoreSuggestions = {};
-
-                        static int blockIdInput = 54;
-                        static char buf[20] = "";
-                        ImGui::InputText("search", buf, 20);
-                        ImGui::InputInt("block ID", &blockIdInput, 0, 0, ImGuiInputTextFlags_NoMarkEdited);
-                        if (ImGui::Button("Add"))
                         {
-                            if (!block_esp::block_list.contains(blockIdInput))
-                            {
-                                block_esp::block_list.insert({ blockIdInput, ImVec4{ 1, 1, 1, 0.3f } });
-                                ignoreSuggestions.insert(ignoreSuggestions.end(), nameOfBlockId[blockIdInput]);
-                                ZeroMemory(buf, 20);
-                            }
-                        }
 
-                        auto listPos = ImGui::GetCursorPos();
-                        static std::queue<int> removeQueue = {};
+	                        static std::set<std::string> ignoreSuggestions = {};
 
-                        ImGui::SetCursorPos(listPos);
-                        ImGui::BeginChild("esp block list", {}, true);
+	                        static int blockIdInput = 54;
+	                        static char buf[20] = "";
+	                        ImGui::InputText("search", buf, 20);
+	                        ImGui::InputInt("block ID", &blockIdInput, 0, 0, ImGuiInputTextFlags_NoMarkEdited);
+	                        if (ImGui::Button("Add"))
+	                        {
+	                            if (!block_esp::block_list.contains(blockIdInput))
+	                            {
+	                                block_esp::block_list.insert({ blockIdInput, ImVec4{ 1, 1, 1, 0.3f } });
+	                                ignoreSuggestions.insert(ignoreSuggestions.end(), nameOfBlockId[blockIdInput]);
+	                                ZeroMemory(buf, 20);
+	                            }
+	                        }
 
-                        for (auto& [id, col] : block_esp::block_list)
-                        {
-                            ImGui::PushID(id);
+	                        auto listPos = ImGui::GetCursorPos();
+	                        static std::queue<int> removeQueue = {};
 
-                            // Info
-                            ImGui::Text("%s | %d", nameOfBlockId[id].c_str(), id);
+	                        ImGui::SetCursorPos(listPos);
+	                        ImGui::BeginChild("esp block list", {}, true);
 
-                            // block color settings
-                            auto& blockEspCol = col;
-                            float coltmp[4] = { blockEspCol.x, blockEspCol.y, blockEspCol.z, blockEspCol.w };
+	                        for (auto& [id, col] : block_esp::block_list)
+	                        {
+	                            ImGui::PushID(id);
 
-                            ImGui::SameLine();
-                            ImGui::ColorEdit4("##col", coltmp, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
+	                            // Info
+	                            ImGui::Text("%s | %d", nameOfBlockId[id].c_str(), id);
 
-                            blockEspCol = { coltmp[0],coltmp[1],coltmp[2],coltmp[3] };
+	                            // block color settings
+	                            auto& blockEspCol = col;
+	                            float coltmp[4] = { blockEspCol.x, blockEspCol.y, blockEspCol.z, blockEspCol.w };
 
-                            ImGui::SameLine();
-                            if (ImGui::Button("Remove"))
-                            {
-                                removeQueue.push(id);
-                            }
+	                            ImGui::SameLine();
+	                            ImGui::ColorEdit4("##col", coltmp, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar);
 
-                            ImGui::PopID();
-                        }
+	                            blockEspCol = { coltmp[0],coltmp[1],coltmp[2],coltmp[3] };
 
-                        while (!removeQueue.empty())
-                        {
-                            const auto id = removeQueue.front();
-                            block_esp::block_list.erase(id);
-                            ignoreSuggestions.erase(nameOfBlockId[id]);
-                            removeQueue.pop();
-                        }
+	                            ImGui::SameLine();
+	                            if (ImGui::Button("Remove"))
+	                            {
+	                                removeQueue.push(id);
+	                            }
 
-                        ImGui::EndChild();
+	                            ImGui::PopID();
+	                        }
 
-                        ImGui::SetCursorPos(listPos);
-                        auto suggestions = get_filtered_suggestions(buf, nameOfBlockId, ignoreSuggestions);
-                        if (!suggestions.empty())
-                        {
-                            ImGui::BeginChild("suggestionlist", { 150, static_cast<float>(suggestions.size() * 20) + 10 }, true);
-                            for (auto& [id, suggested] : suggestions)
-                            {
-                                if (ImGui::Selectable(suggested.c_str(), false))
-                                {
-                                    blockIdInput = id;
-                                    strncpy_s(buf, suggested.c_str(), 20);
-                                }
+	                        while (!removeQueue.empty())
+	                        {
+	                            const auto id = removeQueue.front();
+	                            block_esp::block_list.erase(id);
+	                            ignoreSuggestions.erase(nameOfBlockId[id]);
+	                            removeQueue.pop();
+	                        }
 
-                            }
-                            ImGui::EndChild();
-                        }
-                            });
+	                        ImGui::EndChild();
+
+	                        ImGui::SetCursorPos(listPos);
+	                        auto suggestions = get_filtered_suggestions(buf, nameOfBlockId, ignoreSuggestions);
+	                        if (!suggestions.empty())
+	                        {
+	                            ImGui::BeginChild("suggestionlist", { 150, static_cast<float>(suggestions.size() * 20) + 10 }, true);
+	                            for (auto& [id, suggested] : suggestions)
+	                            {
+	                                if (ImGui::Selectable(suggested.c_str(), false))
+	                                {
+	                                    blockIdInput = id;
+	                                    strncpy_s(buf, suggested.c_str(), 20);
+	                                }
+
+	                            }
+	                            ImGui::EndChild();
+	                        }
+                        });
                     }
 
                     else if (is_Blink)
                     {
                         setting_menu("Blink", is_Blink, []
-                            {
-                                ImGui::InputInt("keycode", &blink::key);
-                        ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");
-                        ImGui::Checkbox("render trail", &blink::show_trail);
-                        ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
-                            }
-                        );
+                        {
+                            ImGui::InputInt("keycode", &blink::key);
+	                        ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");
+	                        ImGui::Checkbox("render trail", &blink::show_trail);
+	                        ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
+                        });
                     }
                 }
             } ImGui::EndChild();
