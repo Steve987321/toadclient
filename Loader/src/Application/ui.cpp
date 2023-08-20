@@ -86,7 +86,7 @@ namespace toad::ui
                             // get client type
                             inject_status = "getting client type";
 
-                            g_curr_client = GetClientType(window.title);
+                            g_curr_client = get_client_type(window.title);
                             std::cout << "currclient type: " << (int)g_curr_client << std::endl;
                             if (g_curr_client != MC_CLIENT::NOT_SUPPORTED)
                             {
@@ -366,6 +366,18 @@ namespace toad::ui
             const auto& rand = vClick.GetRand();
             ImGui::Text("range(%f - %f) | delay: %f", rand.edited_min, rand.edited_max, rand.delay);
             ImGui::Text("inconsistency delay: %f", rand.inconsistency_delay);
+
+           /* static bool show_cps_bounds = false;
+            ImGui::Checkbox("show cps bounds", &show_cps_bounds);
+
+            if (show_cps_bounds) 
+            {
+                const auto draw = ImGui::GetWindowDrawList();
+                for (const auto& b : rand.boosts)
+                {
+                    b.amount_ms* b.transition_duration;
+                }
+            }*/
 
             ImGui::End();
         }

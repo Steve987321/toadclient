@@ -19,6 +19,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		SLEEP(250);
 		return;
 	}
+
 	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON))
 	{
 		SLEEP(100);
@@ -34,26 +35,29 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		}
 	}
 
-	std::vector <std::pair<float, Entity>> distances = {};
+	// left: dist, right: enitity, position
+	std::vector < std::pair<float, std::pair<std::shared_ptr<c_Entity>, Vec3>>> distances = {};
 
 	// our (locked) target
-	static std::shared_ptr<Entity> target = nullptr;
+	static std::shared_ptr<c_Entity> target = nullptr;
+	static Vec3 targetPos = {0, 0, 0};
 
 	// horizontal and vertical speed
 	float speed = aa::speed * 3;
 
-	// for fov check
+	// for getting closest to crosshair
 	float minimal_angle_diff = aa::fov / 2.f;
 
 	bool skip_get_target = false;
 
 	if (aa::lock_aim && target != nullptr)
 	{
+		targetPos = target->getPosition();
 		// check if the target is still inside bounds and valid 
 		if (
-			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target->Pos).first))) <= aa::fov
+			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, targetPos).first))) <= aa::fov
 			&&
-			target->Pos.dist(lPlayer->Pos) <= aa::distance
+			targetPos.dist(lPlayer->Pos) <= aa::distance
 			)
 
 			skip_get_target = true;
@@ -65,27 +69,36 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		target = nullptr;
 
 		// get a target
-		for (const auto& e : GetPlayerList())
+		for (const auto& e : MC->getPlayerList())
 		{
-			if (lPlayer->Pos.dist(e.Pos) > aa::distance) continue;
-			if (e.Invis && !aa::invisibles) continue;
+			auto entityPos = e->getPosition();
+			auto entityHealth = e->getHealth();
 
-			distances.emplace_back(lPlayer->Pos.dist(e.Pos), e);
+			auto distance = MC->getLocalPlayer()->getPosition().dist(entityPos);
+			if (distance > aa::distance || distance < 0.2f) continue;
+			if (e->isInvisible() && !aa::invisibles) continue;
+
+			float yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, entityPos).first)));
+			if (yaw_diff > aa::fov / 2)
+				continue;
+
+			distances.emplace_back(distance, std::make_pair(e, entityPos));
 			if (aa::target_mode == AA_TARGET::FOV)
 			{
-				float yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, e.Pos).first)));
 				if (yaw_diff < minimal_angle_diff)
 				{
 					minimal_angle_diff = yaw_diff;
-					target = std::make_shared<Entity>(e);
+					targetPos = entityPos;
+					target = e;
 				}
 			}
 			else if (aa::target_mode == AA_TARGET::HEALTH)
 			{
-				if (e.Health < lowestHealth)
+				if (entityHealth < lowestHealth)
 				{
-					lowestHealth = e.Health;
-					target = std::make_shared<Entity>(e);
+					lowestHealth = entityHealth;
+					targetPos = entityPos;
+					target = e;
 				}
 			}
 		}
@@ -101,15 +114,16 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			auto t = std::ranges::min_element(distances, [&](const auto& l, const auto& r)
 			{
-				const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, l.second.Pos).first)));
+				const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, l.second.second).first)));
 				return l.first < r.first && l_yaw_diff < minimal_angle_diff;
 			});
 
-			target = std::make_shared<Entity>(t->second);
+			target = t->second.first;
+			targetPos = t->second.first->getPosition();
 		}
 		else if (aa::target_mode == AA_TARGET::HEALTH)
 		{
-			const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target->Pos).first)));
+			const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, targetPos).first)));
 			if (l_yaw_diff > minimal_angle_diff) // target out of fov range
 			{
 				SLEEP(10);
@@ -124,7 +138,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
-	auto targetPos = target->Pos;
 	auto lplayer_pos = lPlayer->Pos;
 	Vec3 aimPoint;
 
@@ -172,10 +185,9 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				SLEEP(10);
 				return;
 			}
-		}
-		
+		}		
 
-		aimPoint = target->Pos;
+		aimPoint = targetPos;
 	}
 
 	auto [yawtarget, pitchtarget] = get_angles(lPlayer->Pos, aimPoint/*target->get_position()*/);
@@ -185,16 +197,8 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	// the horizontal distance to aim to aim at target
 	float yawDiff = wrap_to_180(-(lyaw - yawtarget));
-	float absYawDiff = abs(yawDiff);
 
 	float pitchDiff = wrap_to_180(-(lpitch - pitchtarget));
-
-	if (aa::target_mode == AA_TARGET::FOV) // don't have to check if this is enabled because already checked
-		if (absYawDiff > minimal_angle_diff)
-		{
-			SLEEP(10);
-			return;
-		}
 
 	yawDiff += rand_float(-2.f, 2.f);
 	pitchDiff += rand_float(-2.f, 2.f);

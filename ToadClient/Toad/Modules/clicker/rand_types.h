@@ -63,7 +63,7 @@ namespace toadll
 	struct Boost
 	{
 		Boost(float amount, float dur, float transition_dur, float freqmin, float freqmax, int id) :
-			amount_ms(amount), duration(dur), transition_duration(transition_dur), frequency(rand_int(freqmin, freqmax)), freq_min(freqmin), freq_max(freqmax), id(id) {}
+			id(id), amount_ms(amount), duration(dur), frequency(rand_int(freqmin, freqmax)), freq_min(freqmin), freq_max(freqmax), transition_duration(transition_dur) {}
 
 		void Reset()
 		{

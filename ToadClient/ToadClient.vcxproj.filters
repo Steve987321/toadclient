@@ -135,6 +135,9 @@
     <ClInclude Include="Toad\Modules\bridge_assist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Toad\Modules\reach.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -234,6 +237,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Toad\Modules\bridge_assist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad\Modules\reach.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
