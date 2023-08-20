@@ -206,6 +206,10 @@ void update_settings()
 	dataOut["aa_lockaim"] = aa::lock_aim;
 	dataOut["aa_bb"] = aa::break_blocks;
 
+
+	// no click delay
+	dataOut["ncd_enabled"] = no_click_delay::enabled;
+
 	// bridge assist
 	dataOut["ba_enabled"] = bridge_assist::enabled;
 	dataOut["ba_pitch_check"] = bridge_assist::pitch_check;

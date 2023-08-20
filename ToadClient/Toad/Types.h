@@ -192,6 +192,7 @@ enum class mappingFields
     thePlayerField,
     theWorldField,
     objMouseOver, // Lnet/minecraft/util/MovingObjectPosition;
+    leftClickCounterField,
 
     // .World
     playerEntitiesField,

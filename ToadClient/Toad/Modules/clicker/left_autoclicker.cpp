@@ -309,6 +309,12 @@ bool CLeftAutoClicker::mouse_down()
 	PostMessage(g_hWnd, WM_LBUTTONDOWN, MKF_LEFTBUTTONDOWN, LPARAM((pt.x, pt.y)));
 
 	m_start = std::chrono::high_resolution_clock::now();
+
+	if (no_click_delay::enabled)
+	{
+		CNoClickDelay::Invoke(MC);
+	}
+
 	update_rand_vars();
 	return true;
 }

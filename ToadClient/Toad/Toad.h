@@ -43,6 +43,7 @@
 #include "Modules/visuals/of_screen_arrows.h"
 #include "Modules/autopot.h"
 #include "Modules/aimassist.h"
+#include "Modules/no_click_delay.h"
 #include "Modules/bridge_assist.h"
 #include "Modules/blink.h"
 #include "Modules/reach.h"

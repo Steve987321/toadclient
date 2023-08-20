@@ -204,6 +204,11 @@ namespace toad
 		inline bool update_font_flag = false;
 	}
 
+	namespace no_click_delay
+	{
+		inline bool enabled = false;
+	}
+
 	namespace block_esp
 	{
 		inline bool enabled = false;

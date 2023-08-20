@@ -83,6 +83,9 @@ namespace toadll::mappings
 			fieldnames.insert({mappingFields::currentScreenField, "currentScreen"});
 			fieldsigs.insert({mappingFields::currentScreenField, "Lnet/minecraft/client/gui/GuiScreen;"});
 
+			fieldnames.insert({ mappingFields::leftClickCounterField, "leftClickCounter" });
+			fieldsigs.insert({ mappingFields::leftClickCounterField, "I" });
+
 			methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
 			// methodsig is in minecraft.cpp
 
@@ -349,6 +352,9 @@ namespace toadll::mappings
 
 			fieldnames.insert({ mappingFields::currentScreenField, "currentScreen" });
 			fieldsigs.insert({ mappingFields::currentScreenField, "Lnet/minecraft/client/gui/GuiScreen;" });
+
+			fieldnames.insert({ mappingFields::leftClickCounterField, "leftClickCounter" });
+			fieldsigs.insert({ mappingFields::leftClickCounterField, "I" });
 
 			methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
 			// methodsig is in minecraft.cpp

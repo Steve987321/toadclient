@@ -72,6 +72,8 @@ public:
 	// TODO: instead of returning a string return an enum of object types
 	_NODISCARD std::string getMouseOverTypeStr();
 
+	int getLeftClickCounter();
+
 	/// @return a result of the ray trace
 	///
 	///	@param from beginning of ray
@@ -87,6 +89,8 @@ public:
 public:
 	void set_gamma(float val);
 	void setObjMouseOver(jobject newMopObj);
+	void setLeftClickCounter(int val);
+
 	//void disableLightMap() const;
 	//void enableLightMap() const;
 };

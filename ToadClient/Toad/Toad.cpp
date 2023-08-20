@@ -378,6 +378,9 @@ bool UpdateSettings()
 	aa::lock_aim = data["aa_lockaim"];
 	aa::break_blocks = data["aa_bb"];
 
+	// no click delay
+	no_click_delay::enabled = data["ncd_enabled"];
+
 	// bridge assist
 	bridge_assist::enabled = data["ba_enabled"];
 	bridge_assist::pitch_check = data["ba_pitch_check"];
@@ -472,6 +475,7 @@ void init_modules()
 	CBlink::GetInstance()->name = "Blink";
 	CInternalUI::GetInstance()->name = "Internal ui";
 	CBridgeAssist::GetInstance()->name = "Auto bridge";
+	CNoClickDelay::GetInstance()->name = "No Click Delay";
 	//CReach::GetInstance()->name = "Reach";
 
 	// don't create threads for these modules

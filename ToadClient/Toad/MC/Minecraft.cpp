@@ -126,6 +126,24 @@ std::string Minecraft::getMouseOverTypeStr()
     return str.substr(start, end - start);
 }
 
+int Minecraft::getLeftClickCounter()
+{
+    auto fId = get_fid(getMcClass(), mappingFields::leftClickCounterField, env);
+
+    if (!fId)
+    {
+        return -1;
+    }
+
+    auto mc = getMc();
+
+    auto res = env->GetIntField(mc, fId);
+
+    env->DeleteLocalRef(mc);
+
+    return res;
+}
+
 Minecraft::RAYTRACE_BLOCKS_RESULT Minecraft::rayTraceBlocks(Vec3 from, Vec3 direction, Vec3& result, bool stopOnLiquid, bool stopOnAirBlock, int subtractY)
 {
     auto world = getWorld();
@@ -232,6 +250,20 @@ void Minecraft::setObjMouseOver(jobject newMopObj)
     if (fid != nullptr)
     	env->SetObjectField(mc, fid, newMopObj);
     env->DeleteLocalRef(mc);
+}
+
+void Minecraft::setLeftClickCounter(int val)
+{
+    auto fId = get_fid(getMcClass(), mappingFields::leftClickCounterField, env);
+
+    if (!fId)
+    {
+        return;
+    }
+
+    auto mc = getMc();
+
+    env->SetIntField(mc, fId, val);
 }
 
 //void c_Minecraft::disableLightMap() const
