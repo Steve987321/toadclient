@@ -26,7 +26,7 @@ namespace toadll
 		if (velocity::jump_reset)
 		{
 			// jumping won't have any effect
-			if (lPlayer->Motion.y < -0.1)
+			if (lPlayer->Motion.y < -0.1f)
 				return;
 
 			if (velocity::only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
@@ -119,9 +119,11 @@ namespace toadll
 			if (abs(motionZ) > 0)
 				EditableLocalPlayer->setMotionZ(newMotionZ);
 
-			if (lPlayer->Motion.y > 0) // normal velocity when going down 
+			constexpr auto vcheck = (100.f - 0.1f);
+			if (velocity::vertical <= vcheck && lPlayer->Motion.y > 0) // normal velocity when going down 
+			{
 				EditableLocalPlayer->setMotionY(lPlayer->Motion.y * (velocity::vertical / 100.f));
-
+			}
 			StopFlag = true;
 		}
 		else if (hurttime <= 0)

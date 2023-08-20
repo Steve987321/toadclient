@@ -8,6 +8,12 @@ using namespace toad;
 
 namespace toadll {
 
+void CEsp::PreUpdate()
+{
+	SLEEP(10);
+	//precise_sleep(0.005);
+}
+
 void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	if (!esp::enabled || !CVarsUpdater::IsVerified)
@@ -96,12 +102,6 @@ void CEsp::OnRender()
 	glPopMatrix();
 
 	glPopMatrix();
-}
-
-void CEsp::PreUpdate()
-{
-	SLEEP(5);
-	//precise_sleep(0.005);
 }
 
 void CEsp::OnImGuiRender(ImDrawList* draw)
@@ -314,9 +314,14 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 {
 	std::vector<VisualEntity> res = {};
 
-	for (const auto& entity : GetPlayerList())
+	for (const auto& entity : MC->getPlayerList())
 	{
-		if (entity.Invis)
+		if (entity->isInvisible())
+			continue;
+
+		auto pos = entity->getPosition();
+
+		if (pos.dist(MC->getLocalPlayer()->getPosition()) < 0.5f)
 			continue;
 
 		// local player 
@@ -325,8 +330,7 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 		//auto currPos = lPlayer->getPosition();
 
 		//auto lpos = playerlasttickpos + (currPos - playerlasttickpos) * CVarsUpdater::RenderPartialTick;
-		auto lasttickpos = entity.LastTickPos;
-		auto pos = entity.Pos;
+		auto lasttickpos = entity->getLastTickPosition();
 		BBox b_box = { {}, {} };
 		b_box.min.x = lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick - 0.3f;
 		b_box.min.y = lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
@@ -335,19 +339,7 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 		b_box.max.y = lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick + 1.8f;
 		b_box.max.z = lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick + 0.3f;
 
-		/*
-		b_box.min.x = pos.x - 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
-		b_box.min.y = pos.y - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
-		b_box.min.z = pos.z - 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;
-		b_box.max.x = pos.x + 0.3f - lpos.x + -pos.x + lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick;
-		b_box.max.y = pos.y + 1.8f - lpos.y + -pos.y + lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick;
-		b_box.max.z = pos.z + 0.3f - lpos.z + -pos.z + lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick;*/
-
-		//entityList.emplace_back(entity->Name, bbox{{-b_box.min.x, -b_box.min.y, -b_box.min.z}, {-b_box.max.x, -b_box.max.y, -b_box.max.z}});
-		res.emplace_back(b_box, pos, entity.Name, entity.Health, entity.HurtTime);
-
-		/*visual_entity.name = entity->Name;
-		entity_list.push_back(visual_entity);*/
+		res.emplace_back(b_box, pos, entity->getName(), entity->getHealth(), entity->getHurtTime());
 	}
 
 	return res;

@@ -25,11 +25,19 @@ protected:
 				return false;
 		isMHInitialized = true;
 
-		m_oPtr = GetProcAddress(GetModuleHandleA(modName), procName);
-		LOGDEBUG("[HOOK] [Creating hook] modName: {} procName {} optr: {}", modName, procName, m_oPtr);
-
-		if (m_oPtr == nullptr)
+		auto hMod = GetModuleHandleA(modName);
+		if (!hMod)
+		{
 			return false;
+		}
+
+		m_oPtr = static_cast<void*>(GetProcAddress(hMod, procName));
+		LOGDEBUG("[HOOK] [Creating hook] modName: {} procName {} optr: {}", modName, procName, m_oPtr);
+		
+		if (!m_oPtr)
+		{
+			return false;
+		}
 
 		return MH_CreateHook(m_oPtr, detour, original) == MH_OK;
 	}

@@ -478,8 +478,7 @@ std::vector<std::shared_ptr<c_Entity>> Minecraft::getPlayerList()
     auto world = getWorld();
     if (!world)
         return {};
-
-
+    
      auto fId = get_fid(world, mappingFields::playerEntitiesField, env);
      if (!fId)
      {

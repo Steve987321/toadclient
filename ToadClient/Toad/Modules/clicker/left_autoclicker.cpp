@@ -237,7 +237,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			{
 				if (has_active_enemy)
 				{
-					if (enemy.HurtTime <= 2 && !block_hit_timer_started)
+					if (enemy.HurtTime > 0 && !block_hit_timer_started)
 					{
 						// block
 						right_mouse_down();

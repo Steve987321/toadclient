@@ -38,9 +38,9 @@ void toadll::CVarsUpdater::PreUpdate()
 
 	//static auto lPlayerName = localPlayer->getName();
 	//theLocalPlayer->Name = lPlayerName;
-	theLocalPlayer->obj = localPlayer->obj;
-	theLocalPlayer->Health = localPlayer->getHealth();
-	theLocalPlayer->Invis = localPlayer->isInvisible();
+	//theLocalPlayer->obj = localPlayer->obj;
+	//theLocalPlayer->Health = localPlayer->getHealth();
+	//theLocalPlayer->Invis = localPlayer->isInvisible();
 	theLocalPlayer->Pos = localPlayer->getPosition();
 	theLocalPlayer->HeldItem = localPlayer->getHeldItemStr();
 	theLocalPlayer->HurtTime = localPlayer->getHurtTime();

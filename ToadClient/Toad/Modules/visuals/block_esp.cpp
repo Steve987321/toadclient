@@ -8,7 +8,7 @@ using namespace toad;
 
 void toadll::CBlockEsp::PreUpdate()
 {
-	SLEEP(3);
+	SLEEP(10);
 }
 
 void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)

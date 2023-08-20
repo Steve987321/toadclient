@@ -45,6 +45,7 @@
 #include "Modules/aimassist.h"
 #include "Modules/bridge_assist.h"
 #include "Modules/blink.h"
+#include "Modules/reach.h"
 #include "Modules/velocity.h"
 #include "Modules/internal_ui.h"
 

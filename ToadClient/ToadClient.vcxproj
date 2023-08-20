@@ -58,6 +58,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\Modules\reach.h" />
     <ClInclude Include="Toad\Modules\bridge_assist.h" />
     <ClInclude Include="Toad\Modules\visuals\draw_helpers.h" />
     <ClInclude Include="Toad\Modules\visuals\of_screen_arrows.h" />
@@ -100,6 +101,7 @@
     <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\Modules\reach.cpp" />
     <ClCompile Include="Toad\Modules\bridge_assist.cpp" />
     <ClCompile Include="Toad\module.cpp" />
     <ClCompile Include="Toad\Modules\visuals\draw_helpers.cpp" />

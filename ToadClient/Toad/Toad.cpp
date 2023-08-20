@@ -472,7 +472,7 @@ void init_modules()
 	CBlink::GetInstance()->name = "Blink";
 	CInternalUI::GetInstance()->name = "Internal ui";
 	CBridgeAssist::GetInstance()->name = "Auto bridge";
-	CReach::GetInstance()->name = "Reach";
+	//CReach::GetInstance()->name = "Reach";
 
 	// don't create threads for these modules
 	CInternalUI::GetInstance()->IsOnlyRendering = true;
