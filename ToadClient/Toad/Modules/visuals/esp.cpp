@@ -316,12 +316,16 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 
 	for (const auto& entity : MC->getPlayerList())
 	{
+		auto lPlayer = MC->getLocalPlayer();
+
+		if (env->IsSameObject(lPlayer->obj, entity->obj))
+			continue;
 		if (entity->isInvisible())
 			continue;
 
 		auto pos = entity->getPosition();
 
-		if (pos.dist(MC->getLocalPlayer()->getPosition()) < 0.5f)
+		if (pos.dist(lPlayer->getPosition()) < 0.5f)
 			continue;
 
 		// local player 
