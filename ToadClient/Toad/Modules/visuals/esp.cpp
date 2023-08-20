@@ -343,7 +343,8 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 		b_box.max.y = lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick + 1.8f;
 		b_box.max.z = lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick + 0.3f;
 
-		res.emplace_back(b_box, pos, entity->getName(), entity->getHealth(), entity->getHurtTime());
+
+		res.emplace_back(b_box, pos, esp::show_name ? entity->getName() : "", esp::show_health ? entity->getHealth() : -1, 0);
 	}
 
 	return res;
