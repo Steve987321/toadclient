@@ -52,7 +52,6 @@ void toadll::CVarsUpdater::PreUpdate()
 	joiningWorld = false;
 	IsVerified = true;
 	SLEEP(1);
-
 }
 
 void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayer>& lPlayer)

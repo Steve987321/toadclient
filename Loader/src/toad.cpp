@@ -183,10 +183,13 @@ void update_settings()
 	dataOut["lc_breakblocks"] = left_clicker::break_blocks;
 	dataOut["lc_blockhit"] = left_clicker::block_hit;
 	dataOut["lc_blockhitms"] = left_clicker::block_hit_ms;
+	dataOut["lc_blockhitpause"] = left_clicker::block_hit_stop_lclick;
 	dataOut["lc_smartcps"] = left_clicker::targeting_affects_cps;
 	dataOut["lc_weaponsonly"] = left_clicker::weapons_only;
 	dataOut["lc_tradeassist"] = left_clicker::trade_assist;
-	
+	dataOut["lc_bbStart"] = left_clicker::start_break_blocks_reaction;
+	dataOut["lc_bbStop"] = left_clicker::stop_break_blocks_reaction;
+
 	// right auto clicker
 	dataOut["rc_enabled"] = right_clicker::enabled;
 	dataOut["rc_cps"] = right_clicker::cps;
@@ -205,7 +208,6 @@ void update_settings()
 	dataOut["aa_multipoint"] = aa::aim_at_closest_point;
 	dataOut["aa_lockaim"] = aa::lock_aim;
 	dataOut["aa_bb"] = aa::break_blocks;
-
 
 	// no click delay
 	dataOut["ncd_enabled"] = no_click_delay::enabled;

@@ -85,7 +85,11 @@ namespace toad
 		inline bool trade_assist = false; // when trading hits cps spikes
 		inline bool targeting_affects_cps = false; // when aiming at target cps is higher, else it lowers
 		inline bool block_hit = false; // when hitting player it blocks for ms, see @block_hit_ms
-		inline int block_hit_ms = 10;
+		inline int block_hit_ms = 50; // rmb hold time 
+		inline bool block_hit_stop_lclick = false; // pauses the left clicker while holding the rmb
+
+		inline int start_break_blocks_reaction = 60; // reaction time to start breaking blocks
+		inline int stop_break_blocks_reaction = 60; // reaction time to stop breaking blocks
 
 		inline toadll::Randomization rand = toadll::Randomization(
 			0,

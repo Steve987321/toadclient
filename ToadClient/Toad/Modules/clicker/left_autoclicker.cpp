@@ -24,7 +24,6 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static Timer trade_assist_timer;
 
 	/// a delay before breaking a block after aiming at one
-	static Timer break_blocks_timer;
 
 
 	if (!left_clicker::enabled)
@@ -193,6 +192,15 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		if (!mouse_down())
 			return;
 
+		if (left_clicker::block_hit && left_clicker::block_hit_stop_lclick)
+		{
+			if (block_hit_timer_started)
+			{
+				SLEEP(1);
+				return;
+			}
+		}
+
 		if (left_clicker::block_hit)
 		{
 			if (held_item.find("sword") != std::string::npos && mouse_over_type == "ENTITY")
@@ -224,6 +232,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (left_clicker::break_blocks)
 		{
+			static Timer start_break_blocks_timer;
+
 			static bool break_blocks_flag = false;
 			static bool start_once = false;
 
@@ -231,13 +241,15 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			{
 				if (!start_once)
 				{
-					break_blocks_timer.Start();
+					start_break_blocks_timer.Start();
 					start_once = true;
 				}
 				else
 				{
+					auto reactionms = left_clicker::start_break_blocks_reaction;
+
 					// reaction time in ms
-					if (break_blocks_timer.Elapsed<>() > rand_int(50, 200))
+					if (start_break_blocks_timer.Elapsed<>() > rand_float(reactionms - 10, reactionms + 30))
 					{
 						break_blocks_flag = true;
 					}
@@ -250,11 +262,23 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 					m_start = std::chrono::high_resolution_clock::now();
 				}
 
-				// TODO: add extra delay for when leaving block before clicking
+				if (mouse_over_type != "BLOCK")
+				{
+					Timer stop_break_blocks_timer;
+
+					auto reactionms = left_clicker::stop_break_blocks_reaction;
+					auto randreaction = rand_float(reactionms - 10, reactionms + 30);
+
+					// spinlock the reaction exit time
+					while (stop_break_blocks_timer.Elapsed<>() < randreaction)
+					{
+						SLEEP(1);
+					}
+				}
 			}
 			else
 			{
-				break_blocks_timer.Start();
+				start_break_blocks_timer.Start();
 				start_once = true;
 				break_blocks_flag = false;
 			}

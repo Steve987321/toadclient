@@ -104,7 +104,6 @@ namespace toad::ui
 		                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
 		                    ImGui::Checkbox("break blocks", &left_clicker::break_blocks);
 		                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
-		                    ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 0, 50);
 		                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
 		                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
                         }, true, 
@@ -121,6 +120,20 @@ namespace toad::ui
                                 rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
                                 vClick.SetRand(rand);
                             }
+
+							ImGui::Spacing();
+
+	                        ImGui::Text("break blocks");
+	                        ImGui::Separator();
+	                        ImGui::SliderInt("start delay", &left_clicker::start_break_blocks_reaction, 30, 500, "%dms");
+	                        ImGui::SliderInt("stop delay", &left_clicker::stop_break_blocks_reaction, 30, 500, "%dms");
+
+                            ImGui::Spacing();
+
+	                        ImGui::Text("block hit");
+                            ImGui::Separator();
+                            ImGui::Checkbox("pause left click", &left_clicker::block_hit_stop_lclick);
+	                        ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 10, 200);
                         });
 
                     else if (is_RClicker)

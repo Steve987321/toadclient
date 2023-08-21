@@ -355,9 +355,12 @@ bool UpdateSettings()
 	left_clicker::break_blocks = data["lc_breakblocks"];
 	left_clicker::block_hit = data["lc_blockhit"];
 	left_clicker::block_hit_ms = data["lc_blockhitms"];
+	left_clicker::block_hit_stop_lclick = data["lc_blockhitpause"];
 	left_clicker::targeting_affects_cps = data["lc_smartcps"];
 	left_clicker::weapons_only = data["lc_weaponsonly"];
 	left_clicker::trade_assist = data["lc_tradeassist"];
+	left_clicker::start_break_blocks_reaction = data["lc_bbStart"];
+	left_clicker::stop_break_blocks_reaction = data["lc_bbStop"];
 
 	// right auto clicker
 	right_clicker::enabled = data["rc_enabled"];
