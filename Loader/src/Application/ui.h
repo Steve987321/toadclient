@@ -76,8 +76,11 @@ namespace toad::ui
                     static bool is_AA = false;
                     static bool is_Velocity = false;
                     if (checkbox_button("Left Clicker", ICON_FA_MOUSE, &left_clicker::enabled)) is_LClicker = true;
-                    ImGui::SameLine(0, 80);
-                    checkbox_button("No Click Delay", ICON_FA_CLOCK, &no_click_delay::enabled);
+                    if (g_curr_client == MC_CLIENT::Lunar_189)
+                    {
+                        ImGui::SameLine(0, 80);
+                        checkbox_button("No Hit Delay", ICON_FA_CLOCK, &no_click_delay::enabled);
+                    }
                     if (checkbox_button("Right Clicker", ICON_FA_MOUSE, &right_clicker::enabled)) is_RClicker = true;
                     if (checkbox_button("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) is_AA = true;
                     if (checkbox_button("Velocity", ICON_FA_WIND, &velocity::enabled)) is_Velocity = true;
