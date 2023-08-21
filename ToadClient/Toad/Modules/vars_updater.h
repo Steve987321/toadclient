@@ -13,13 +13,6 @@ public:
 
 	static inline std::shared_ptr<LocalPlayer> theLocalPlayer = std::make_shared<LocalPlayer>();
 
-	/// True when the local player is looking at another player 
-	static inline std::atomic_bool IsMouseOverPlayer = false;
-
-	/// The player the local player is looking at.
-	///	Only gets updated when IsMouseOverPlayer is true
-	static inline Entity MouseOverPlayer {};
-
 	static inline std::atomic<float> PartialTick = 0;
 	static inline std::atomic<float> RenderPartialTick = 0;
 

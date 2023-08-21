@@ -49,24 +49,6 @@ void toadll::CVarsUpdater::PreUpdate()
 	theLocalPlayer->Yaw = localPlayer->getRotationYaw();
 	theLocalPlayer->Motion = { localPlayer->getMotionX(), localPlayer->getMotionY(), localPlayer->getMotionZ() };
 
-	if (auto tmpMouseOver = MC->getMouseOverPlayer(); tmpMouseOver != nullptr)
-	{
-		Entity e {};
-		e.Pos = tmpMouseOver->getPosition();
-		e.HurtTime = tmpMouseOver->getHurtTime();
-		MouseOverPlayer = e;
-
-		//MouseOverPlayer.Pos = tmpMouseOver->getPosition();
-		//MouseOverPlayer.HurtTime = tmpMouseOver->getHurtTime();
-		// add other properties when needed ...
-
-		IsMouseOverPlayer = true;
-	}
-	else
-	{
-		IsMouseOverPlayer = false;
-	}
-
 	joiningWorld = false;
 	IsVerified = true;
 	SLEEP(1);

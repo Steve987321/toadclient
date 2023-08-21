@@ -17,6 +17,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	/// randomized time in ms that the right button (for blocking) is held
 	static int block_hit_mdown_rand_ms = left_clicker::block_hit_ms;
 	static bool block_hit_timer_started = false;
+	static bool block_hit_allowed = true; 
 	static Timer block_hit_timer;
 
 	// TODO: test trade assist 
@@ -47,19 +48,19 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		m_start = std::chrono::high_resolution_clock::now();
 
 		m_pTick = CVarsUpdater::PartialTick;
-		static auto enemy = CVarsUpdater::MouseOverPlayer;
-		static bool has_active_enemy = false;
-		if (!CVarsUpdater::IsMouseOverPlayer)
+		static auto enemy = MC->getMouseOverPlayer();
+		if (!enemy)
 		{
-			enemy = CVarsUpdater::MouseOverPlayer;
-			has_active_enemy = false;
+			enemy = MC->getMouseOverPlayer();
 		}
 		else
 		{
-			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, enemy.Pos).first)));
+			auto ePos = enemy->getPosition();
+			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, ePos).first)));
 
 			// enemy is not valid anymore after it has gone out of these limits
-			has_active_enemy = enemy.Pos.dist(lPlayer->Pos) > 4.0f || yawDiff > 120;
+			if (ePos.dist(lPlayer->Pos) > 4.0f || yawDiff > 120)
+				enemy = nullptr;
 		}
 
 		auto mouse_over_type = MC->getMouseOverTypeStr();
@@ -75,6 +76,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (left_clicker::break_blocks && !is_already_clicking)
 		{
+			// spinlock while mouse is over block
 			while (mouse_over_type == "BLOCK" && GetAsyncKeyState(VK_LBUTTON))
 			{
 				SLEEP(1);
@@ -118,7 +120,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 			//LOGDEBUG("ENEMY HITS: %d | PLAYER HITS: %d | TRADING: {}", enemy_hit_count, lplayer_hit_count, is_trading ? "Y" : "N");
 
-			if (has_active_enemy)
+			if (enemy != nullptr)
 			{
 				if (first_hit)
 				{
@@ -157,7 +159,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				{
 					static bool is_player_hit = false;
 					static bool is_enemy_hit = false;
-					if (!is_enemy_hit && enemy.HurtTime <= 2)
+					if (!is_enemy_hit && enemy->getHurtTime() <= 2)
 					{
 						enemy_hit_count++;
 						is_enemy_hit = true;
@@ -190,6 +192,33 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (!mouse_down())
 			return;
+
+		if (left_clicker::block_hit)
+		{
+			if (held_item.find("sword") != std::string::npos && mouse_over_type == "ENTITY")
+			{
+				if (enemy != nullptr)
+				{
+					const auto hurtTime = enemy->getHurtTime();
+
+					if (block_hit_allowed && hurtTime > 0 && !block_hit_timer_started)
+					{
+						// block
+						right_mouse_down();
+
+						block_hit_mdown_rand_ms = rand_int(left_clicker::block_hit_ms - 5, left_clicker::block_hit_ms + 5);
+						block_hit_timer.Start();
+						block_hit_timer_started = true;
+						block_hit_allowed = false;
+					}
+					else
+					{
+						if (hurtTime <= 1)
+							block_hit_allowed = true;
+					}
+				}
+			}
+		}
 
 		is_already_clicking = true;
 
@@ -228,25 +257,6 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				break_blocks_timer.Start();
 				start_once = true;
 				break_blocks_flag = false;
-			}
-		}
-
-		if (left_clicker::block_hit)
-		{
-			if (held_item.find("sword") != std::string::npos && mouse_over_type == "ENTITY")
-			{
-				if (has_active_enemy)
-				{
-					if (enemy.HurtTime > 0 && !block_hit_timer_started)
-					{
-						// block
-						right_mouse_down();
-
-						block_hit_mdown_rand_ms = rand_int(left_clicker::block_hit_ms - 5, left_clicker::block_hit_ms + 5);
-						block_hit_timer.Start();
-						block_hit_timer_started = true;
-					}
-				}
 			}
 		}
 
@@ -310,11 +320,6 @@ bool CLeftAutoClicker::mouse_down()
 
 	m_start = std::chrono::high_resolution_clock::now();
 
-	if (no_click_delay::enabled)
-	{
-		CNoClickDelay::Invoke(MC);
-	}
-
 	update_rand_vars();
 	return true;
 }
@@ -335,6 +340,12 @@ void CLeftAutoClicker::mouse_up()
 	PostMessage(g_hWnd, WM_LBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 
 	m_start = std::chrono::high_resolution_clock::now();
+
+	if (no_click_delay::enabled)
+	{
+		CNoClickDelay::Invoke(MC);
+	}
+
 	update_rand_vars();
 }
 
