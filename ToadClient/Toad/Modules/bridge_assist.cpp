@@ -28,6 +28,17 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
+	// makes sure player has block in hand
+	if (lPlayer->HeldItem.find("tile") == std::string::npos)
+	{
+		if (isSneaking)
+		{
+			UnSneak();
+		}
+		SLEEP(50);
+		return;		
+	}
+
 	m_from = lPlayer->Pos;
 	m_from.y += 1;
 	Vec3 hitBlockPos = {};
