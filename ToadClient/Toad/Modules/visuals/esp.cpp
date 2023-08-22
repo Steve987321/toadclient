@@ -182,7 +182,7 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 		if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
 		{
 			const auto font = HSwapBuffers::GetFont();
-			char text[30];
+			char text[30] = {};
 
 			if (esp::show_name)
 			{
