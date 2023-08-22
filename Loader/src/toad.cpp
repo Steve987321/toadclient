@@ -250,15 +250,20 @@ void update_settings()
 	dataOut["esp_show_distance"] = esp::show_distance;
 	dataOut["esp_show_health"] = esp::show_health;
 	dataOut["esp_mode"] = esp::esp_mode;
+	dataOut["esp_bg"] = esp::show_txt_bg;
 	// esp extra
-	dataOut["esp_line_width"] = esp::line_width;
 	dataOut["esp_static_width"] = esp::static_esp_width;
 	dataOut["esp_text_shadow"] = esp::text_shadow;
 	dataOut["esp_text_colr"] = esp::text_col[0];
 	dataOut["esp_text_colg"] = esp::text_col[1];
 	dataOut["esp_text_colb"] = esp::text_col[2];
 	dataOut["esp_text_cola"] = esp::text_col[3];
+	dataOut["esp_bgcolr"] = esp::text_bg_col[0];
+	dataOut["esp_bgcolg"] = esp::text_bg_col[1];
+	dataOut["esp_bgcolb"] = esp::text_bg_col[2];
+	dataOut["esp_bgcola"] = esp::text_bg_col[3];
 	dataOut["esp_fontsize"] = esp::text_size;
+	dataOut["esp_border"] = esp::show_border;
 
 	// block esp
 	dataOut["blockesp_enabled"] = block_esp::enabled;

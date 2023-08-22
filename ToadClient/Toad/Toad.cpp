@@ -425,12 +425,17 @@ bool UpdateSettings()
 	esp::fill_col[1] = data["esp_fillcolg"];
 	esp::fill_col[2] = data["esp_fillcolb"];
 	esp::fill_col[3] = data["esp_fillcola"];
+	esp::text_bg_col[0] = data["esp_bgcolr"];
+	esp::text_bg_col[1] = data["esp_bgcolg"];
+	esp::text_bg_col[2] = data["esp_bgcolb"];
+	esp::text_bg_col[3] = data["esp_bgcola"];
 	esp::show_name = data["esp_show_name"];
 	esp::show_distance = data["esp_show_distance"];
 	esp::show_health = data["esp_show_health"];
 	esp::esp_mode = data["esp_mode"];
+	esp::show_txt_bg = data["esp_bg"];
+
 	// esp extra
-	esp::line_width = data["esp_line_width"];
 	esp::static_esp_width = data["esp_static_width"];
 	esp::text_shadow = data["esp_text_shadow"];
 	esp::text_col[0] = data["esp_text_colr"];
@@ -438,6 +443,7 @@ bool UpdateSettings()
 	esp::text_col[2] = data["esp_text_colb"];
 	esp::text_col[3] = data["esp_text_cola"];
 	esp::text_size = data["esp_fontsize"];
+	esp::show_border = data["esp_border"];
 	//esp::custom_font = data["esp_text_font"];
 
 	// block esp

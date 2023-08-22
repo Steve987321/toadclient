@@ -56,7 +56,7 @@ void CEsp::OnRender()
 	glDisable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	glLineWidth(esp::line_width);
+	glLineWidth(1.0f);
 
 	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
 
@@ -112,14 +112,13 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 	}
 
 	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
-	const auto font = HSwapBuffers::GetFont();
 
 	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
 	{
-		for (const auto& [bb, pos, name, health, hurttime] : m_bboxes)
+		for (const auto& ve : m_bboxes)
 		{
 			// get vertices from bounding box 
-			auto vertices = GetBBoxVertices(bb.min - lPos, bb.max - lPos);
+			auto vertices = GetBBoxVertices(ve.bb.min - lPos, ve.bb.max - lPos);
 
 			std::vector<Vec2> verticesScreenPos = {};
 
@@ -136,175 +135,142 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 			auto maxX = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
 			auto maxY = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
 
-			// convert color config
-			auto line_col = ImGui::ColorConvertFloat4ToU32({ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3]});
-			auto fill_col = ImGui::ColorConvertFloat4ToU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3]});
-
 			// skip invalid worldtoscreen's 
 			if ((int)minX * 10 == -10 && maxX > g_screen_width) continue;
 			if ((int)minY * 10 == -10 && maxY > g_screen_height) continue;
 
+			// convert color config
+			auto line_col = ImGui::ColorConvertFloat4ToU32({ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] });
+			auto fill_col = ImGui::ColorConvertFloat4ToU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] });
+
 			// draw box 
-			draw->AddRectFilled({ minX, minY }, { maxX, maxY }, fill_col);
-			draw->AddRect({ minX - esp::line_width, minY - esp::line_width }, { maxX + esp::line_width, maxY + esp::line_width }, line_col);
 
-			if (esp::show_name || esp::show_distance || esp::show_health)
+			if (esp::show_border)
 			{
-				// get the center top of player 
-				auto posAddedY = (bb.min + bb.max) * 0.5f;
-				posAddedY.y += 2.f;
-
-				auto screenpos = world_to_screen(posAddedY - lPos, renderPos);
-				auto text_col = ImGui::ColorConvertFloat4ToU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
-
-				if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
-				{
-					if (esp::show_name)
-					{
-						auto textSize = font->CalcTextSizeA(esp::text_size, 5000.f, 0, name.c_str());
-						auto posX = screenpos.x - textSize.x / 2;
-
-						if (esp::text_shadow)
-						{
-							draw->AddText(font, esp::text_size, { posX - 1, screenpos.y - 1 }, IM_COL32_BLACK, name.c_str());
-							draw->AddText(font, esp::text_size, { posX + 1, screenpos.y + 1 }, IM_COL32_BLACK, name.c_str());
-						}
-						
-						draw->AddText(font, esp::text_size, { posX, screenpos.y }, text_col, name.c_str());
-					}
-					if (esp::show_distance)
-					{
-						auto distStr = std::to_string(playerPos.dist(pos)).substr(0, 3);
-						auto textSize = ImGui::CalcTextSize(distStr.c_str());
-						auto posX = screenpos.x - textSize.x / 2;
-
-						if (esp::text_shadow)
-						{
-							draw->AddText({ posX - 1, screenpos.y + 10 - 1 }, IM_COL32_BLACK, distStr.c_str());
-							draw->AddText({ posX + 1, screenpos.y + 10 + 1 }, IM_COL32_BLACK, distStr.c_str());
-						}
-						draw->AddText({ posX, screenpos.y + 10 }, text_col, distStr.c_str());
-					}
-					if (esp::show_health)
-					{
-						if ((int)minX * 10 == -10 && maxX > g_screen_width) continue;
-						if ((int)minY * 10 == -10 && maxY > g_screen_height) continue;
-
-						float t = ((float)health / 20.f);
-
-						// t starts with 1 
-						ImVec2 rightTop = { maxX + 2.f, std::lerp(maxY, minY, t) };
-						ImVec2 rightDown = { maxX + 4.f, maxY };
-						ImVec4 col = { 0,0,0,1 };
-
-						if (t > 0.5f)
-						{
-							// to yellow
-							col.y = std::lerp(0.f, 1.f, t / 0.5f - 1);
-							col.x = std::lerp(1.f, 0.f, t / 0.5f - 1);
-						}
-						else
-						{
-							// to red
-							col.x = std::lerp(1.f, 0.f, t / 0.5f - 1);
-							col.y = std::lerp(0.f, 1.f, t / 0.5f - 1);
-						}
-
-						// top: green -> middle: yellow -> bottom: red
-						draw->AddRectFilled(rightTop, rightDown, ImGui::GetColorU32(col));
-					}
-				}
+				// double sided border (inside and outside outline)
+				draw->AddRect({ minX - 1, minY - 1 }, { maxX + 1, maxY + 1 }, IM_COL32_BLACK);
+				draw->AddRect({ minX + 1, minY + 1 }, { maxX - 1, maxY - 1 }, IM_COL32_BLACK);
 			}
+
+			draw->AddRectFilled({ minX - 1, minY - 1 }, { maxX + 1, maxY + 1 }, fill_col);
+			draw->AddRect({ minX, minY }, { maxX, maxY }, line_col);
+
+			drawPlayerInfo(draw, ve, lPos);
 		}
 	}
 	else
 	{
-		if (esp::show_name || esp::show_distance || esp::show_health)
+		for (const auto& ve : m_bboxes)
 		{
-			for (const auto& [bb, pos, name, health, hurttime] : m_bboxes)
+			drawPlayerInfo(draw, ve, lPos);
+		}
+	}
+	
+}
+
+
+void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& lPlayerPos)
+{
+	if (esp::show_name || esp::show_distance || esp::show_health)
+	{
+		// the center and top of player 
+		auto infoPos = (ve.bb.min + ve.bb.max) * 0.5f;
+		infoPos.y += 1.f;
+
+		auto screenpos = world_to_screen(infoPos - lPlayerPos, renderPos);
+
+		if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
+		{
+			const auto font = HSwapBuffers::GetFont();
+			char text[30];
+
+			if (esp::show_name)
 			{
-				// get the center and top of player 
-				auto posAddedY = (bb.min + bb.max) * 0.5f;
-				posAddedY.y += 2.f;
+				strncat_s(text, ve.name.c_str(), ve.name.length());
+			}
+			if (esp::show_distance)
+			{
+				auto distStr = " [" + std::to_string(playerPos.dist(ve.Pos)).substr(0, 3) + ']';
+				strncat_s(text, distStr.c_str(), distStr.length());
+			}
 
-				auto screenpos = world_to_screen(posAddedY - lPos, renderPos);
-				auto text_col = ImGui::ColorConvertFloat4ToU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
+			// draw our text
 
-				if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
+			const auto textsize = font->CalcTextSizeA(esp::text_size, 500, 0, text);
+
+			if (esp::show_txt_bg)
+			{
+				draw->AddRectFilled(
+					{ screenpos.x - textsize.x / 2, screenpos.y - 5 - textsize.y},
+					{ screenpos.x + textsize.x / 2, screenpos.y - 5},
+					ImGui::GetColorU32({ esp::text_bg_col[0], esp::text_bg_col[1], esp::text_bg_col[2], esp::text_bg_col[3] })
+				);
+			}
+
+			auto text_col_imu32 = ImGui::ColorConvertFloat4ToU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
+
+			// text position (positioned inside the background box)
+			auto boxPosYText = std::lerp(screenpos.y - 5 - textsize.y, screenpos.y - 5, 0.9f) - esp::text_size;
+
+			if (esp::text_shadow)
+			{
+				draw->AddText(font, esp::text_size, { screenpos.x - textsize.x / 2 - 1, boxPosYText - 1 }, IM_COL32_BLACK, text);
+				draw->AddText(font, esp::text_size, { screenpos.x - textsize.x / 2 + 1, boxPosYText + 1 }, IM_COL32_BLACK, text);
+			}
+
+			draw->AddText(font, esp::text_size, { screenpos.x - textsize.x / 2, boxPosYText }, text_col_imu32, text);
+
+			if (esp::show_health)
+			{
+				// get vertices from bounding box 
+				auto vertices = GetBBoxVertices(ve.bb.min - lPlayerPos, ve.bb.max - lPlayerPos);
+
+				std::vector<Vec2> verticesScreenPos = {};
+
+				// world vertices pos to screen pos
+				for (const auto& v : vertices)
 				{
-					if (esp::show_name)
-					{
-						auto textSize = ImGui::CalcTextSize(name.c_str());
-						auto posX = screenpos.x - textSize.x / 2;
-
-						if (esp::text_shadow)
-						{
-							draw->AddText({ posX - 1, screenpos.y - 1 }, IM_COL32_BLACK, name.c_str());
-							draw->AddText({ posX + 1, screenpos.y + 1 }, IM_COL32_BLACK, name.c_str());
-						}
-						draw->AddText({ posX, screenpos.y }, text_col, name.c_str());
-					}
-					if (esp::show_distance)
-					{
-						auto distStr = std::to_string(playerPos.dist(pos)).substr(0, 3);
-						auto textSize = ImGui::CalcTextSize(distStr.c_str());
-						auto posX = screenpos.x - textSize.x / 2;
-
-						if (esp::text_shadow)
-						{
-							draw->AddText({ posX - 1, screenpos.y + 10 - 1}, IM_COL32_BLACK, distStr.c_str());
-							draw->AddText({ posX + 1, screenpos.y + 10 + 1}, IM_COL32_BLACK, distStr.c_str());
-						}
-						draw->AddText({ posX, screenpos.y + 10 }, text_col, distStr.c_str());
-					}
-					if (esp::show_health)
-					{
-						// pasted from the dynamic 2d bbox
-
-						// get vertices from bounding box 
-						auto vertices = GetBBoxVertices(bb.min - lPos, bb.max - lPos);
-
-						std::vector<Vec2> verticesScreenPos = {};
-
-						// world vertices pos to screen pos
-						for (const auto& v : vertices)
-						{
-							auto screen = world_to_screen(v, renderPos);
-							verticesScreenPos.emplace_back(screen);
-						}
-
-						auto minX = std::ranges::min_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
-						auto minY = std::ranges::min_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
-						auto maxX = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
-						auto maxY = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
-
-						if ((int)minX * 10 == -10 && maxX > g_screen_width) continue;
-						if ((int)minY * 10 == -10 && maxY > g_screen_height) continue;
-
-						float t = ((float)health / 20.f);
-
-						// t starts with 1 
-						ImVec2 rightTop = { maxX + 2.f, std::lerp(maxY, minY, t) };
-						ImVec2 rightDown = { maxX + 4.f, maxY };
-						ImVec4 col = { 0,0,0,1 };
-
-						if (t > 0.5f)
-						{
-							// to yellow
-							col.x = std::lerp(1.f, 0.f, t / 0.5f - 1);
-							col.y = 1;
-						}
-						else
-						{
-							// to red
-							col.x = 1;
-							col.y = std::lerp(0.f, 1.f, t / 0.5f);
-						}
-
-						// top: green -> middle: yellow -> bottom: red
-						draw->AddRectFilled(rightTop, rightDown, ImGui::GetColorU32(col));
-					}
+					auto screen = world_to_screen(v, renderPos);
+					verticesScreenPos.emplace_back(screen);
 				}
+
+				auto minX = std::ranges::min_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
+				auto minY = std::ranges::min_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
+				auto maxX = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
+				auto maxY = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
+
+				if ((int)minX * 10 == -10 && maxX > g_screen_width) return;
+				if ((int)minY * 10 == -10 && maxY > g_screen_height) return;
+
+				float t = ((float)ve.health / 20.f);
+
+				if (t < 0) t = 0;
+
+				// t starts with 1 
+				ImVec2 rightTop = { maxX + 3.f, std::lerp(maxY, minY, t) };
+				ImVec2 rightDown = { maxX + 5.f, maxY };
+				ImVec4 col = { 0,0,0,1 };
+
+				if (t > 0.5f)
+				{
+					// to yellow
+					col.x = std::lerp(1.f, 0.f, t / 0.5f - 1);
+					col.y = 1;
+				}
+				else
+				{
+					// to red
+					col.x = 1;
+					col.y = std::lerp(0.f, 1.f, t / 0.5f);
+				}
+
+				if (esp::show_border)
+				{
+					draw->AddRectFilled({rightTop.x - 1, rightTop.y - 1}, {rightDown.x + 1, rightDown.y + 1}, IM_COL32_BLACK);
+				}
+
+				// top: green -> middle: yellow -> bottom: red
+				draw->AddRectFilled(rightTop, rightDown, ImGui::GetColorU32(col));
 			}
 		}
 	}
@@ -314,10 +280,10 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 {
 	std::vector<VisualEntity> res = {};
 
+	auto lPlayer = MC->getLocalPlayer();
+
 	for (const auto& entity : MC->getPlayerList())
 	{
-		auto lPlayer = MC->getLocalPlayer();
-
 		if (env->IsSameObject(lPlayer->obj, entity->obj))
 			continue;
 		if (entity->isInvisible())
@@ -325,7 +291,7 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 
 		auto pos = entity->getPosition();
 
-		if (pos.dist(lPlayer->getPosition()) < 0.5f)
+		if (pos.dist(lPlayer->getPosition() - renderPos) < 1.f)
 			continue;
 
 		// local player 

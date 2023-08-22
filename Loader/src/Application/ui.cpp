@@ -411,30 +411,59 @@ namespace toad::ui
             const auto window_pos = ImGui::GetWindowPos();
 
             const auto childsize = ImGui::GetWindowSize();
-            // box
+
             ImVec2 min = { window_pos.x + window_spacing + 20 , window_pos.y + window_spacing + 20 };
             ImVec2 max = { window_pos.x + childsize.x - window_spacing - 20,  window_pos.y + childsize.y - window_spacing - 20 };
-            ImGui::GetWindowDrawList()->AddRectFilled(min, max, ImGui::GetColorU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] }));
+            
+            // esp box
+            ImGui::GetWindowDrawList()->AddRectFilled({min.x - 1, min.y - 1}, {max.x + 1, max.y + 1}, ImGui::GetColorU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] }));
+
+            ImGui::GetWindowDrawList()->AddRect(min, max, ImGui::GetColorU32({ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3]}));
+
+            if (esp::show_border)
+            {
+                ImGui::GetWindowDrawList()->AddRect({ min.x - 1, min.y - 1}, {max.x + 1, max.y + 1}, IM_COL32_BLACK);
+                ImGui::GetWindowDrawList()->AddRect({ min.x + 1, min.y + 1}, {max.x - 1, max.y - 1}, IM_COL32_BLACK);
+            }
+
+            char text[30] = {};
 
             if (esp::show_name)
             {
-                const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
-                const auto halfsizex = preview_font->CalcTextSizeA(esp::text_size, 500, 0, "Player").x / 2;
-
-                if (esp::text_shadow)
-                {
-                    ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { (min.x + max.x) / 2 - halfsizex - 1, min.y -1 }, IM_COL32_BLACK, "Player");
-                    ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { (min.x + max.x) / 2 - halfsizex + 1, min.y +1 }, IM_COL32_BLACK, "Player");
-                }
-                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { (min.x + max.x) / 2 - halfsizex, min.y }, text_col_imu32, "Player");
+                strncat_s(text, "player", strlen("player"));
             }
             if (esp::show_distance)
             {
-                const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
-
-                const auto halfsizex = preview_font->CalcTextSizeA(esp::text_size, 500, 0, "5.0").x / 2;
-                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { (min.x + max.x) / 2 - halfsizex, min.y - 10 }, text_col_imu32, "5.0");
+                strncat_s(text, " [5.0]", strlen(" [5.0]"));
             }
+
+            // draw our text
+            const auto halfsizex = preview_font->CalcTextSizeA(esp::text_size, 500, 0, text).x / 2;
+            const auto halfsizey = preview_font->CalcTextSizeA(esp::text_size, 500, 0, text).y / 2;
+
+            const auto infoPosX = (min.x + max.x) / 2;
+
+            if (esp::show_txt_bg)
+            {
+                ImGui::GetWindowDrawList()->AddRectFilled(
+                    { infoPosX - halfsizex - 5, min.y - 5 - halfsizey * 2 },
+                    { infoPosX + halfsizex + 5, min.y - 5 },
+                    ImGui::GetColorU32({ esp::text_bg_col[0], esp::text_bg_col[1], esp::text_bg_col[2], esp::text_bg_col[3] }));
+            }
+
+            const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
+
+            // text position (positioned inside the background box) 
+            auto boxPosYText = std::lerp(min.y - 5 - halfsizey * 2, min.y - 5, 0.9f) - esp::text_size;
+
+            if (esp::text_shadow)
+            {
+                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex - 1, boxPosYText - 1 }, IM_COL32_BLACK, text);
+                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex + 1, boxPosYText + 1 }, IM_COL32_BLACK, text);
+            }
+
+            ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex, boxPosYText }, text_col_imu32, text);
+
             if (esp::show_health)
             {
                 float t = (float)visualize_health / 20.f;
@@ -452,8 +481,14 @@ namespace toad::ui
                     col.y = std::lerp(0.f, 1.f, t / 0.5f);
                 }
 
+                if (esp::show_border)
+                {
+                    ImGui::GetWindowDrawList()->AddRectFilled({ max.x + 3, std::lerp(max.y, min.y - 1, t) }, { max.x + 7, max.y + 1}, IM_COL32_BLACK);
+                }
+
+                // health bar
                 // top: green -> middle: yellow -> bottom: red
-                ImGui::GetWindowDrawList()->AddRectFilled({ max.x + 2, std::lerp(max.y, min.y, t) }, { max.x + 4, max.y }, ImGui::GetColorU32(col));
+                ImGui::GetWindowDrawList()->AddRectFilled({ max.x + 4, std::lerp(max.y, min.y, t) }, { max.x + 6, max.y }, ImGui::GetColorU32(col));
             }
             ImGui::EndChild();
         }
@@ -469,26 +504,27 @@ namespace toad::ui
                 ImGui::Checkbox("show name", &esp::show_name);
                 ImGui::Checkbox("show distance", &esp::show_distance);
                 ImGui::Checkbox("show health", &esp::show_health);
-
                 ImGui::SliderInt("Health", &visualize_health, 0, 20, "%d HP");
+
+                ImGui::Spacing();
+
+                ImGui::Checkbox("show background", &esp::show_txt_bg);
+                ImGui::ColorEdit4("background color", esp::text_bg_col, color_edit_flags);
 
                 ImGui::TreePop();
             }
 
             if (ImGui::TreeNode("Box Properties"))
             {
-                ImGui::SliderFloat("static 2d box width", &esp::static_esp_width, -10, 10);
-                ImGui::SliderInt("line box width", &esp::line_width, 1, 10);
+                ImGui::Checkbox("Border", &esp::show_border);
 
                 ImGui::TreePop();
             }
 
-            if (ImGui::TreeNode("text/font"))
+        	if (ImGui::TreeNode("text/font"))
             {
                 ImGui::ColorEdit4("text color", esp::text_col, color_edit_flags);
-                ImGui::ColorEdit4("text bg color", esp::text_bg_col, color_edit_flags);
                 ImGui::Checkbox("text shadow", &esp::text_shadow);
-                ImGui::Checkbox("text bg", &esp::text_bg);
                 ImGui::SliderFloat("text size", &esp::text_size, 10, 30, "%.1f");
 
                 static std::string name = "Default";

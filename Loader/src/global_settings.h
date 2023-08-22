@@ -186,8 +186,8 @@ namespace toad
 	namespace esp
 	{
 		inline bool enabled = false;
-		inline float line_col[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-		inline float fill_col[4] = {1.0f, 1.0f, 1.0f, 0.3f};
+		inline float line_col[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+		inline float fill_col[4] = {1.0f, 1.0f, 1.0f, 0.1f};
 
 		inline bool show_distance = false;
 		inline bool show_name = false;
@@ -195,13 +195,14 @@ namespace toad
 
 		inline ESP_MODE esp_mode;
 
-		inline int line_width = 1; // pixels
+		inline bool show_border = false; // enable border outlines for all boxes
 		inline bool text_shadow = false; // use a text outline
-		inline bool text_bg = false; // background for text
+		inline bool show_txt_bg = false; // background for text
 		inline float text_col[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		inline float text_bg_col[4] = { 0.0f, 0.0f, 0.0f, 0.5f };
+		inline float text_bg_col[4] = { 0.1f, 0.1f, 0.1f, 0.45f };
 		inline float text_size = 13.f;
-		inline float static_esp_width = 0;
+
+		inline int static_esp_width = 0;
 
 		inline std::string font_path = "Default";
 

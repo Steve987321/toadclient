@@ -6,17 +6,6 @@ namespace toadll
 
 class CEsp SET_MODULE_CLASS(CEsp)
 {
-public:
-	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
-	void OnRender() override;
-	void PreUpdate() override;
-
-	void OnImGuiRender(ImDrawList * draw) override;
-
-private:
-	Vec3 renderPos = {};
-	Vec3 playerPos = {};
-
 private:
 	// for visuals 
 	struct VisualEntity
@@ -25,8 +14,20 @@ private:
 		Vec3 Pos;
 		std::string name;
 		int health;
-		int hurttime; 
+		int hurttime;
 	};
+
+public:
+	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
+	void OnRender() override;
+	void PreUpdate() override;
+
+	void drawPlayerInfo(ImDrawList * draw, const VisualEntity& ve, const Vec3& lPlayerPos);
+	void OnImGuiRender(ImDrawList * draw) override;
+
+private:
+	Vec3 renderPos = {};
+	Vec3 playerPos = {};
 
 private:
 	inline static std::vector<VisualEntity> m_bboxes;
