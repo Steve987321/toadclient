@@ -261,6 +261,14 @@ namespace toadll::mappings
 			fieldnames.insert({ mappingFields::projectionField, "PROJECTION" });
 			fieldsigs.insert({ mappingFields::projectionField, "Ljava/nio/FloatBuffer;" });
 
+			//// .RenderManager
+			//methodnames.insert({ mapping::renderManGetRenderPosX, "bridge$viewerPosX" });
+			//methodsigs.insert({ mapping::renderManGetRenderPosY, "()D" });
+			//methodnames.insert({ mapping::renderManGetRenderPosZ, "bridge$viewerPosY" });
+			//methodsigs.insert({ mapping::renderManGetRenderPosX, "()D" });
+			//methodnames.insert({ mapping::renderManGetRenderPosY, "bridge$viewerPosZ" });
+			//methodsigs.insert({ mapping::renderManGetRenderPosZ, "()D" });
+
 			// ENTITY RENDERER
 			methodnames.insert({ mapping::enableLightmap, "enableLightmap" });
 			methodsigs.insert({ mapping::enableLightmap, "()V" });
@@ -318,6 +326,9 @@ namespace toadll::mappings
 			fieldnames.insert({ mappingFields::theWorldField , "theWorld" });
 			fieldsigs.insert({ mappingFields::theWorldField , "Lnet/minecraft/client/multiplayer/WorldClient;" });
 
+			fieldnames.insert({ mappingFields::objMouseOver, "objectMouseOver" });
+			fieldsigs.insert({ mappingFields::objMouseOver, "Lnet/minecraft/util/MovingObjectPosition;" });
+
 			// get world class (temp)
 			auto worldclass = findclass("net.minecraft.world.World", env);
 
@@ -370,8 +381,9 @@ namespace toadll::mappings
 			fieldnames.insert({ mappingFields::playerEntitiesField, "playerEntities" });
 			fieldsigs.insert({ mappingFields::playerEntitiesField, "Ljava/util/List;" });
 
-			methodnames.insert({ mapping::getRenderManager, "getRenderManager" });
-			methodsigs.insert({ mapping::getRenderManager, "()Lnet/minecraft/client/renderer/entity/RenderManager;" });
+			methodnames.insert({ mapping::getRenderManager, "bridge$getRenderManager" });
+			if (!getsig(mapping::getRenderManager, "bridge$getRenderManager", mcclass, env))
+				LOGERROR("can't find render manager");
 
 			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
 			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
@@ -472,7 +484,7 @@ namespace toadll::mappings
 			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
 				LOGERROR("can't find bbox");
 
-			methodnames.insert({ mapping::getName, "getName" });
+			methodnames.insert({ mapping::getName, "bridge$getDisplayName" });
 			methodsigs.insert({ mapping::getName, "()Ljava/lang/String;" });
 
 			methodnames.insert({ mapping::getMotionX, "bridge$getMotionX" });

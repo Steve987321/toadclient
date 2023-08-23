@@ -246,6 +246,7 @@ enum class mapping
     getObjectMouseOver,
     getEntityRenderer,
     getTimer,
+    getRenderManager,
 
     // objectmouseover
     getEntityHit,
@@ -255,7 +256,6 @@ enum class mapping
 
     // .World
     getPlayerEntities,
-    getRenderManager,
     getBlockAt,
     isAirBlock,
     rayTraceBlocks, // args: (jobject Vec3 from, jobject Vec3 direction, bool stopOnLiquid) returns: jobject MovingObjectPosition if block hit else null

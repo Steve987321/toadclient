@@ -2,6 +2,19 @@
 #include "Toad/Toad.h"
 #include "Entity.h"
 
+toadll::c_Entity::c_Entity(jobject jobj, JNIEnv* env, jclass elclass)
+	: env(env), elclass(elclass), obj(jobj)
+{
+	//static bool once = false;
+	//if (!once)
+	//{
+	//	auto klass = env->GetObjectClass(obj);
+	//	loop_through_class(elclass, env);
+	//	env->DeleteLocalRef(klass);
+	//	once = true;
+	//}
+}
+
 toadll::c_Entity::~c_Entity()
 {
 	env->DeleteLocalRef(obj);

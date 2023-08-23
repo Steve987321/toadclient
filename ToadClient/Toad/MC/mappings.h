@@ -1,6 +1,8 @@
 #pragma once
 #include "Toad/Types.h"
 
+// TODO: rewrite mapping handling
+
 namespace toadll::mappings
 {
 	struct MCMap

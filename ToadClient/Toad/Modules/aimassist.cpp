@@ -53,6 +53,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	if (aa::lock_aim && target != nullptr)
 	{
 		targetPos = target->getPosition();
+
 		// check if the target is still inside bounds and valid 
 		if (
 			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, targetPos).first))) <= aa::fov
@@ -143,20 +144,25 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (aa::aim_at_closest_point) // aims at the closest point of target
 	{
-		auto playerbb = BBox({ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z - 0.3f }, { targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z + 0.3f });
-
+		auto playerbb =
+			g_curr_client == MC_CLIENT::Lunar_189
+			? BBox({ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z - 0.3f }, { targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z + 0.3f })
+			: BBox({ targetPos.x - 0.3f, targetPos.y, targetPos.z - 0.3f }, { targetPos.x + 0.3f, targetPos.y + 1.8f, targetPos.z + 0.3f });
 		auto closest_corner = getClosesetPoint(playerbb, lplayer_pos);
 		aimPoint = closest_corner;
 	}
 	else // aims to target if players aim is not inside hitbox 
 	{
 		// hitbox vertices
+		if (g_curr_client == MC_CLIENT::Lunar_171)
+			targetPos.y += 1.6f;
+
 		const std::vector<Vec3> bbox_corners
 		{
-			{ targetPos.x - 0.3f, targetPos.y, targetPos.z + 0.3f },
-			{ targetPos.x - 0.3f, targetPos.y, targetPos.z - 0.3f },
-			{ targetPos.x + 0.3f, targetPos.y, targetPos.z - 0.3f },
-			{ targetPos.x + 0.3f, targetPos.y, targetPos.z + 0.3f },
+			{ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z + 0.3f },
+			{ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z - 0.3f },
+			{ targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z - 0.3f },
+			{ targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z + 0.3f },
 		};
 
 		auto lplayer_yaw = lPlayer->Yaw;

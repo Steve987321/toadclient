@@ -2,28 +2,7 @@
 #include "Toad/Toad.h"
 #include "ActiveRenderInfo.h"
 
-std::vector<float> toadll::ActiveRenderInfo::get_modelview() const
-{
-	std::vector<float> res = {}; 
-	auto fid = get_static_fid(ariclass, mappingFields::modelviewField, env);
-	if (!fid)
-		return {};
-	auto obj = env->GetStaticObjectField(ariclass, fid);
-	auto bufklass = env->GetObjectClass(obj);
-	auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
-
-	res.reserve(16);
-	for (int i = 0; i < 16; i++)
-	{
-		res.emplace_back(env->CallFloatMethod(obj, getIndexBuf, i));
-	}
-
-	env->DeleteLocalRef(obj);
-	env->DeleteLocalRef(bufklass);
-	return res;
-}
-
-void toadll::ActiveRenderInfo::set_modelview(std::array<float, 16>& arr) const
+void toadll::ActiveRenderInfo::getModelView(std::array<float, 16>& arr) const
 {
 	auto fid = get_static_fid(ariclass, mappingFields::modelviewField, env);
 	if (!fid)
@@ -40,28 +19,7 @@ void toadll::ActiveRenderInfo::set_modelview(std::array<float, 16>& arr) const
 	env->DeleteLocalRef(bufklass);
 }
 
-std::vector<float>  toadll::ActiveRenderInfo::get_projection() const
-{
-	std::vector<float> res = {};
-	auto fid = get_static_fid(ariclass, mappingFields::projectionField, env);
-	if (!fid)
-		return {};
-	auto obj = env->GetStaticObjectField(ariclass, fid);
-	auto bufklass = env->GetObjectClass(obj);
-	static auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
-
-	res.reserve(16);
-	for (int i = 0; i < 16; i++)
-	{
-		res.emplace_back(env->CallFloatMethod(obj, getIndexBuf, i));
-	}
-
-	env->DeleteLocalRef(obj);
-	env->DeleteLocalRef(bufklass);
-	return res;
-}
-
-void toadll::ActiveRenderInfo::set_projection(std::array<float, 16>& arr) const
+void toadll::ActiveRenderInfo::getProjection(std::array<float, 16>& arr) const
 {
 	auto fid = get_static_fid(ariclass, mappingFields::projectionField, env);
 	if (!fid)
@@ -97,5 +55,15 @@ void toadll::ActiveRenderInfo::set_projection(std::array<float, 16>& arr) const
 
 toadll::Vec3 toadll::ActiveRenderInfo::get_render_pos() const
 {
-	return to_vec3(env->CallStaticObjectMethod(ariclass, get_static_mid(ariclass, mapping::getRenderPos, env)), env);
+	auto mid = get_static_mid(ariclass, mapping::getRenderPos, env);
+	if (!mid)
+		return {};
+
+	auto obj = env->CallStaticObjectMethod(ariclass, mid);
+
+	auto res = to_vec3(obj, env);
+
+	env->DeleteLocalRef(obj);
+
+	return res;
 }

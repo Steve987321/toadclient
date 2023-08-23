@@ -76,20 +76,19 @@ std::unique_ptr<ActiveRenderInfo> Minecraft::getActiveRenderInfo()
 }
 
 
+//std::unique_ptr<RenderManager> Minecraft::getRenderManager()
+//{
+//    auto mc = getMc();
+//    auto mId = get_mid(mc, mapping::getRenderManager, env);
+//    auto obj = env->CallObjectMethod(mc, mId);
+//    env->DeleteLocalRef(mc);
+//
+//    return std::make_unique<RenderManager>(env->NewGlobalRef(obj), env); 
+//}
+
 jobject Minecraft::getMc()
 {
     return env->CallStaticObjectMethod(getMcClass(), get_static_mid(getMcClass(), mapping::getMinecraft, env));
-}
-
-jobject Minecraft::getRenderManager()
-{
-    auto mc = getMc();
-    auto mId = get_mid(mc, mapping::getRenderManager, env);
-    if (!mId)
-        return nullptr;
-    auto ret = env->CallObjectMethod(mc, mId);
-    env->DeleteLocalRef(mc);
-    return ret;
 }
 
 std::shared_ptr<c_Entity> Minecraft::getLocalPlayer()

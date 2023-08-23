@@ -55,11 +55,9 @@ namespace toadll
 			&screenX, &screenY, &screenZ);
 
 		Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
-		Vec3 cameraToProjected = { worldPos.x - cameraPos.x, worldPos.y - cameraPos.y, worldPos.z - cameraPos.z };
+		Vec3 cameraToProjected = worldPos - cameraPos;
 		float dotProduct = cameraToProjected.dot(Vec3::normalize(cameraForward));
-
-		//std::cout << dotProduct << std::endl;
-
+		
 		// check if worldPos is in front of the camera
 		if (dotProduct < 0) {
 			return { static_cast<float>(screenX), static_cast<float>(CVarsUpdater::Viewport[3] - screenY) };

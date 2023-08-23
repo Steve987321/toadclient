@@ -57,8 +57,8 @@ void toadll::CVarsUpdater::PreUpdate()
 void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	static auto ari = MC->getActiveRenderInfo();
-	ari->set_modelview(ModelView);
-	ari->set_projection(Projection);
+	ari->getModelView(ModelView);
+	ari->getProjection(Projection);
 	RenderPartialTick = MC->getRenderPartialTick();
 	PartialTick = MC->getPartialTick();
 	IsInGui = MC->isInGui();

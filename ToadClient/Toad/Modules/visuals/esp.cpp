@@ -2,6 +2,10 @@
 #include "Toad/Toad.h"
 #include "esp.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "draw_helpers.h"
 
 using namespace toad;
@@ -10,7 +14,7 @@ namespace toadll {
 
 void CEsp::PreUpdate()
 {
-	SLEEP(10);
+	SLEEP(1);
 	//precise_sleep(0.005);
 }
 
@@ -22,11 +26,20 @@ void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
-	renderPos = MC->getActiveRenderInfo()->get_render_pos();
+	auto modviewinverse = glm::inverse(glm::make_mat4(CVarsUpdater::ModelView.data()));
+
+	auto camPos = glm::vec3(modviewinverse[3]);
+	//std::cout << camPos.x << ' ' << camPos.y << ' ' << camPos.z << std::endl;
+	//renderPos = MC->getActiveRenderInfo()->get_render_pos();
+	//std::cout << "old: " << renderPos << std::endl;
+	renderPos = {camPos.x, camPos.y, camPos.z};
+	//std::cout << "new: " << renderPos << std::endl;
 	playerPos = lPlayer->Pos;
 
 	// Update our bounding boxes list
 	m_bboxes = GetBBoxes();
+
+	precise_sleep(0.01);
 }
 
 void CEsp::OnRender()
@@ -291,7 +304,10 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 
 		auto pos = entity->getPosition();
 
-		if (pos.dist(lPlayer->getPosition() - renderPos) < 1.f)
+		auto campos = lPlayer->getPosition() + renderPos;
+		campos.y -= 1.0f;
+		//std::cout << campos << " - " << pos << " = " << (pos.dist(campos)) << std::endl;
+		if (pos.dist(campos) < 1.f)
 			continue;
 
 		// local player 

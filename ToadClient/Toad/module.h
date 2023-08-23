@@ -56,13 +56,6 @@ public:
 protected:
 	JNIEnv* env = nullptr;
 	std::shared_ptr<Minecraft> MC = nullptr;
-
-protected:
-	// useful helper functions for cheat modules
-
-	/// Returns the player list excluding the local player
-	///	Should not be called frequently
-	//_NODISCARD std::vector<Entity> GetPlayerList() const;
 };
 
 }

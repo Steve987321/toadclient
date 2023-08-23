@@ -12,7 +12,7 @@ namespace toadll
 		jobject obj = nullptr;
 
 	public:
-		explicit c_Entity(jobject jobj, JNIEnv* env, jclass elclass) : env(env), elclass(elclass), obj(jobj) {}
+		explicit c_Entity(jobject jobj, JNIEnv* env, jclass elclass);
 		~c_Entity();
 
 	public:

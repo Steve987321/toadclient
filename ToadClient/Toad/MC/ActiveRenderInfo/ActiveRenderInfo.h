@@ -12,16 +12,11 @@ namespace toadll
 		explicit ActiveRenderInfo(jclass ariklass, JNIEnv* env) : ariclass(ariklass), env(env) {}
 
 	public:
-		[[deprecated]]
-		std::vector<float> get_modelview() const;
-		void set_modelview(std::array<float, 16>& arr) const;
-
-		[[deprecated]]
-		std::vector<float> get_projection() const;
-		void set_projection(std::array<float, 16>& arr) const;
-		//void get_viewport(GLint viewportBuf[4]) const;
-
+		void getModelView(std::array<float, 16>& arr) const;
+		void getProjection(std::array<float, 16>& arr) const;
 	public:
+		/// Returns the camera position,
+		///	ONLY WORKS ON 1.8.9
 		_NODISCARD Vec3 get_render_pos() const;
 	};
 }

@@ -45,9 +45,9 @@ public:
 	_NODISCARD jclass getMovingObjPosClass();
 
 	_NODISCARD std::unique_ptr<ActiveRenderInfo> getActiveRenderInfo();
+	//_NODISCARD std::unique_ptr<RenderManager> getRenderManager();
 
 	_NODISCARD jobject getMc();
-	_NODISCARD jobject getRenderManager();
 	_NODISCARD jobject getLocalPlayerObject();
 	_NODISCARD jobject getWorld();
 	_NODISCARD jobject getGameSettings();

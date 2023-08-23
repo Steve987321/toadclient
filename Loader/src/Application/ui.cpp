@@ -398,7 +398,7 @@ namespace toad::ui
         ImGui::Begin("ESP box settings", enabled, ImGuiWindowFlags_NoSavedSettings);
 
         const auto window_size = ImGui::GetWindowSize();
-        const float window_spacing = 15;
+        constexpr float window_spacing = 15;
 
         // for visualization
         static int visualize_health = 20;
