@@ -14,8 +14,7 @@ namespace toadll {
 
 void CEsp::PreUpdate()
 {
-	SLEEP(1);
-	//precise_sleep(0.005);
+	SLEEP(10);
 }
 
 void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
