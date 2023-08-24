@@ -138,16 +138,16 @@ void SaveConfigToClipBoard()
 	GlobalFree(pData);
 }
 
-std::vector<std::string> GetAllConfigsInDirectory(std::string_view path)
+std::vector<ConfigFile> GetAllConfigsInDirectory(std::string_view path)
 {
-	std::vector<std::string> res = {};
+	std::vector<ConfigFile> res = {};
 
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
 		auto ext = entry.path().extension();
 		if (ext == ".toad" || ext == ".txt")
 		{
-			res.emplace_back(entry.path().stem().string());
+			res.emplace_back(entry.path().stem().string(), entry.last_write_time());
 		}
 	}
 

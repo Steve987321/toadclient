@@ -32,6 +32,30 @@ namespace toad
 		return MC_CLIENT::NOT_SUPPORTED;
 	}
 
+	std::string time_to_str(const std::chrono::system_clock::time_point& t, std::string_view format)
+	{
+		std::time_t tt = std::chrono::system_clock::to_time_t(t);
+		tm newTime{};
+		localtime_s(&newTime, &tt);
+
+		std::stringstream ss;
+		ss << std::put_time(&newTime, format.data());
+		return ss.str();
+	}
+	std::string time_to_str(const std::filesystem::file_time_type& t, std::string_view format)
+	{
+		// cast to time_t
+		auto ttcast = std::chrono::time_point_cast<std::chrono::system_clock::duration>(t - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now());
+
+		std::time_t tt = std::chrono::system_clock::to_time_t(ttcast);
+		tm newTime{};
+		localtime_s(&newTime, &tt);
+
+		std::stringstream ss;
+		ss << std::put_time(&newTime, format.data());
+		return ss.str();
+	}
+
 	ImVec2 get_middle_point()
 	{
 		return { ImGui::GetWindowSize().x / 2, ImGui::GetWindowSize().y / 2 };

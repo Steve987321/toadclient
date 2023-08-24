@@ -25,6 +25,27 @@ namespace toad
 {
     Application::Application()
     {
+        // Auto load configs
+        auto pathStr = std::filesystem::current_path().string();
+        auto configs = config::GetAllConfigsInDirectory(pathStr);
+        if (!configs.empty())
+        {
+            // load the only available config 
+            if (configs.size() == 1)
+            {
+                config::LoadConfig(pathStr, configs.begin()->FileNameStem);
+            }
+            else
+            {
+                auto it = std::ranges::min_element(configs, [](const config::ConfigFile& a, const config::ConfigFile& b) {return a.LastWrite > b.LastWrite; });
+
+                if (it != configs.end())
+                {
+                    config::LoadConfig(pathStr, it->FileNameStem);
+                }
+            }
+        }
+
         s_Instance = this;
     }
 

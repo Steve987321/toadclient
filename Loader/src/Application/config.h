@@ -7,6 +7,12 @@
 
 namespace config
 {
+	struct ConfigFile
+	{
+		std::string FileNameStem;
+		std::filesystem::file_time_type LastWrite;
+	};
+
 	/// Load a config from a file
 	///
 	///	@param path the directory the file is in
@@ -30,5 +36,5 @@ namespace config
 	/// Returns a list of all possible configs for toad
 	///
 	///	@param path the directory we look in
-	std::vector<std::string> GetAllConfigsInDirectory(std::string_view path);
+	std::vector<ConfigFile> GetAllConfigsInDirectory(std::string_view path);
 }

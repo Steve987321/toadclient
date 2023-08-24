@@ -40,7 +40,7 @@ namespace toad::ui
         static bool esp_visuals_menu = false;
 
         // config
-        static std::vector<std::string> availableConfigs = {};
+        static std::vector<config::ConfigFile> availableConfigs = {};
 
 #ifdef TOAD_LOADER
         constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
@@ -394,10 +394,13 @@ namespace toad::ui
 
 	                            for (int i = 0; i < availableConfigs.size(); i++)
 	                            {
-                                    const auto& s = availableConfigs[i];
-                                    if (ImGui::Selectable(s.c_str(), selected == i))
+                                    const auto& [fileName, timePoint] = availableConfigs[i];
+
+                                    auto lable = fileName + " | " + time_to_str(timePoint, "%d-%m-%Y %H:%M");
+
+                                    if (ImGui::Selectable(lable.c_str(), selected == i))
                                     {
-                                        memcpy(config_name_buf, s.c_str(), s.length());
+                                        memcpy(config_name_buf, fileName.c_str(), fileName.length());
                                         selected = i;
                                     }
 	                            }
