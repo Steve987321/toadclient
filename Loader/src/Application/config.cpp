@@ -1,8 +1,10 @@
+#ifdef TOAD_LOADER
 #include "config.h"
+#include "toad.h"
+#endif
 #include <filesystem>
 #include <fstream>
 
-#include "toad.h"
 
 using json = nlohmann::json;
 

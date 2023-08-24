@@ -3,7 +3,9 @@
 #include <string_view>
 #include <vector>
 
+#ifdef TOAD_LOADER
 #include "../../ToadClient/vendor/nlohmann/json.hpp"
+#endif
 
 namespace config
 {
