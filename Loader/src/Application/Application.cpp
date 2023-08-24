@@ -23,6 +23,16 @@ static D3DPRESENT_PARAMETERS    g_d3dpp;
 
 namespace toad
 {
+    Application::Application()
+    {
+        s_Instance = this;
+    }
+
+    Application::~Application()
+    {
+        Exit();
+    }
+
     void Application::InitConsole()
     {
         AllocConsole();
@@ -85,5 +95,10 @@ namespace toad
 #ifdef _DEBUG
         FreeConsole();
 #endif
+    }
+
+    Application* Application::Get()
+    {
+        return s_Instance;
     }
 }

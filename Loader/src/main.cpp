@@ -1,17 +1,21 @@
 #include "toad.h"
 #include "Application/Application.h"
 
+using namespace toad;
+
 int main()
 {
+	Application app;
+	
 	// init window & toad
-	if (!toad::AppInstance->Init())
+	if (!app.Init())
 		return 1;
 
 	// main loop 
-	toad::AppInstance->MainLoop();
+	app.MainLoop();
 
 	// clean up and exit 
-	toad::AppInstance->Exit();
+	app.Exit();
 
 	return 0;
 }

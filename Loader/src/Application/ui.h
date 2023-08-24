@@ -3,9 +3,11 @@
 #ifdef TOAD_LOADER
 #include "VisualizeClicker/VisualizeClicker.h"
 #include "utils/imfilebrowser.h"
+#include "config.h"
 #else
 #include "../../Loader/src/Application/VisualizeClicker/VisualizeClicker.h"
 #include "../../Loader/src/Application/VisualizeClicker/VisualizeClicker.cpp"
+#include "../../Loader/src/Application/config.h"
 #include "../../Loader/src/utils/imfilebrowser.h"
 #endif
 
@@ -19,7 +21,6 @@ namespace toad::ui
     inline VisualizeClicker vClick;
 
     // loader extra setting window functions
-
     extern void clicker_rand_editor(bool* enabled);
     extern void clicker_rand_visualizer(bool* enabled);
     extern void esp_visualizer(bool* enabled);
@@ -38,6 +39,9 @@ namespace toad::ui
         // esp visuals visualization
         static bool esp_visuals_menu = false;
 
+        // config
+        static std::vector<std::string> availableConfigs = {};
+
 #ifdef TOAD_LOADER
         constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
 #else
@@ -49,16 +53,31 @@ namespace toad::ui
             static int tab = 0;
             ImGui::BeginChild("main Tabs", { 85, 0 });
             {
-                //ImGui::ImageButton(); 
-                if (ImGui::Button("Combat", { 85, 30 }))
+                constexpr ImVec2 btn_size = { 85, 30 };
+
+                if (ImGui::Button("Combat", btn_size))
                 {
                     tab = 0;
                 }
+
                 ImGui::Spacing();
-                if (ImGui::Button("Misc", { 85, 30 }))
+
+                if (ImGui::Button("Misc", btn_size))
                 {
                     tab = 1;
                 }
+
+                ImGui::Spacing();
+
+                if (ImGui::Button("Config", btn_size))
+                {
+                    tab = 2;
+                    if (availableConfigs.empty())
+                    {
+                        availableConfigs = config::GetAllConfigsInDirectory(std::filesystem::current_path().string());
+                    }
+                }
+
             } ImGui::EndChild();
 
             ImGui::SameLine();
@@ -328,6 +347,103 @@ namespace toad::ui
                         });
                     }
                 }
+                else if (tab == 2)
+                {
+                    static char searching_dir[MAX_PATH];
+                    static char config_name_buf[50] = {};
+
+                    static bool once = false;
+                    if (!once)
+                    {
+                        auto currPath = std::filesystem::current_path().string();
+                        memcpy(searching_dir, currPath.c_str(), currPath.length());
+                        once = true;
+                    }
+
+                    ImGui::BeginChild("config list", {ImGui::GetWindowSize().x / 2 - 5, 0 }, true);
+                    {
+                        ImGui::BeginChild("##available configs", {0, 150}, true);
+                        {
+                            const auto textSizeX = ImGui::CalcTextSize(searching_dir).x;
+                            ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x / 2 - textSizeX / 2);
+                            if (ImGui::Button(searching_dir))
+                            {
+                                config::GetAllConfigsInDirectory(searching_dir);
+                            }
+
+                            if (textSizeX > ImGui::GetContentRegionMax().x)
+                            {
+                                if (ImGui::IsItemHovered())
+                                {
+                                    ImGui::SetTooltip(searching_dir);
+                                }
+                            }
+
+                            ImGui::Separator();
+
+                            if (availableConfigs.empty())
+                            {
+                                center_text_multi({ 1, 0, 0, 0.5f }, 
+								"No configs found,\n"
+								"file ext must be .toad\n"
+                                );
+                            }
+                            else
+                            {
+                                static int selected = -1;
+
+	                            for (int i = 0; i < availableConfigs.size(); i++)
+	                            {
+                                    const auto& s = availableConfigs[i];
+                                    if (ImGui::Selectable(s.c_str(), selected == i))
+                                    {
+                                        memcpy(config_name_buf, s.c_str(), s.length());
+                                        selected = i;
+                                    }
+	                            }
+                            }
+                            ImGui::EndChild();
+                        }
+                        ImGui::Separator();
+
+                        if (ImGui::Button("Refresh"))
+                        {
+                            availableConfigs = config::GetAllConfigsInDirectory(searching_dir);
+                        }
+
+                        ImGui::BeginDisabled(strlen(config_name_buf) == 0);
+                        if (ImGui::Button("Load"))
+                        {
+                            config::LoadConfig(searching_dir, config_name_buf);
+                        }
+
+                        if (ImGui::Button("Save"))
+                        {
+                            config::SaveConfig(searching_dir, config_name_buf);
+                        }
+                        ImGui::EndDisabled();
+
+                        ImGui::InputText("name", config_name_buf, 50);
+
+                        ImGui::EndChild();
+                    }
+
+                    ImGui::SameLine(0, 5);
+
+                    ImGui::BeginChild("##config selection menu", {ImGui::GetContentRegionAvail().x - 30, 0}, true);
+                    {
+                        if (ImGui::Button("Load from Clipboard"))
+                        {
+                            config::LoadConfigFromClipBoard();
+                        }
+                        if (ImGui::Button("Save to ClipBoard"))
+                        {
+                            config::SaveConfigToClipBoard();
+                        }
+                        ImGui::EndChild();
+                    }
+
+                }
             } ImGui::EndChild();
 
             // side extra settings bar
@@ -353,12 +469,12 @@ namespace toad::ui
             ImGui::SetCursorPosX(setting_bar_posXsmooth);
             ImGui::SetCursorPosY(5);
             const static auto border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
-            //const static auto childbg_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
-            //ImGui::PushStyleColor(ImGuiCol_ChildBg, { childbg_col.x + 0.1f, childbg_col.y + 0.1f, childbg_col.z + 0.1f, childbg_col.w });
+            const static auto childbg_col = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, { childbg_col.x, childbg_col.y, childbg_col.z, setting_bar_alpha });
             ImGui::PushStyleColor(ImGuiCol_Border, { border_col.x, border_col.y, border_col.z, setting_bar_alpha });
             ImGui::BeginChild("settings bar", { 150, windowright.y - 20 }, true);
             {
-                ImGui::PopStyleColor(1);
+                ImGui::PopStyleColor(2);
                 ImGui::SetCursorPosY(20);
                 ImGui::PushID("Settings");
                 ImGui::Text(ICON_FA_BARS);
@@ -397,7 +513,7 @@ namespace toad::ui
                     {
 #ifdef TOAD_LOADER
                         g_is_ui_internal = true;
-                        ShowWindow(AppInstance->GetWindow()->GetHandle(), SW_HIDE);
+                        ShowWindow(Application::Get()->GetWindow()->GetHandle(), SW_HIDE);
 #else
                         LOGDEBUG("Closing Internal UI and switching to Loader's UI");
                         toadll::CInternalUI::ShouldClose = true;

@@ -545,7 +545,7 @@ namespace toad::ui
                     esp::font_path = "Default";
                     esp::update_font_flag = true;
 #ifdef TOAD_LOADER
-                    AppInstance->GetWindow()->AddFontTTF(esp::font_path);
+                    Application::Get()->GetWindow()->AddFontTTF(esp::font_path);
 #endif
                 }
 
@@ -560,7 +560,7 @@ namespace toad::ui
                     espFontDialog.ClearSelected();
                     esp::update_font_flag = true;
 #ifdef TOAD_LOADER
-                    AppInstance->GetWindow()->AddFontTTF(esp::font_path);
+                    Application::Get()->GetWindow()->AddFontTTF(esp::font_path);
 #endif
                 }
 
@@ -568,14 +568,14 @@ namespace toad::ui
                 // update preview font
                 if (esp::update_font_flag)
                 {
-	                if (AppInstance->GetWindow()->IsFontUpdated())
+	                if (Application::Get()->GetWindow()->IsFontUpdated())
 	                {
 		                // get newly added font
                         preview_font = io->Fonts->Fonts.back();
 	                }
                 }
 
-                if (esp::update_font_flag && !AppInstance->GetWindow()->IsFontUpdated())
+                if (esp::update_font_flag && !Application::Get()->GetWindow()->IsFontUpdated())
                 {
                     load_spinner("update font spinner", 10, 2, IM_COL32_WHITE);
                 }

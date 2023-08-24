@@ -12,10 +12,15 @@ namespace toad
 class Application
 {
 public:
+	Application();
+	~Application();
+
+public:
 	_NODISCARD bool Init();
 	void MainLoop();
 	void Exit() const;
 
+	static Application* Get();
 public:
 	_NODISCARD std::shared_ptr<ImGuiWindow> GetWindow() const
 	{
@@ -26,15 +31,13 @@ public:
 	constexpr static int WINDOW_WIDTH = 500, WINDOW_HEIGHT = 400;
 
 private:
+	inline static Application* s_Instance = nullptr;
 	std::shared_ptr<ImGuiWindow> m_window = nullptr;
 
 	void InitConsole();
-	//bool SetupMenu();
-	//void MenuLoop();
 
 private:
 	static void render_UI(ImGuiIO* io);
 };
-inline auto AppInstance = std::make_unique<Application>();
 
 }
