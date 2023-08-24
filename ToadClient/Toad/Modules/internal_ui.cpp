@@ -10,6 +10,10 @@
 #include "../Loader/src/Application/ui.h"
 #include "../Loader/src/Application/ui.cpp"
 
+#include "nlohmann/json.hpp"
+#include "../Loader/src/Application/config.h"
+#include "../Loader/src/Application/config.cpp"
+
 #include "imgui/imgui_internal.h"
 
 using namespace toad;
