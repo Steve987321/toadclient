@@ -206,6 +206,12 @@ bool toadll::c_Entity::isInvisible() const
 	return env->CallBooleanMethod(obj, mId);
 }
 
+bool toadll::c_Entity::isSneaking() const
+{
+	auto mid = get_mid(obj, mapping::isSneaking, env);
+	return env->CallBooleanMethod(obj, mid);
+}
+
 toadll::BBox toadll::c_Entity::get_BBox() const
 {
 	auto bboxobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getBBox, env));

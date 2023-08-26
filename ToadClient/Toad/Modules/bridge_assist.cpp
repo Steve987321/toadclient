@@ -6,10 +6,10 @@ using namespace toad;
 
 namespace toadll
 {
-	void CBridgeAssist::PreUpdate()
-	{
-		SLEEP(10);
-	}
+void CBridgeAssist::PreUpdate()
+{
+	SLEEP(10);
+}
 
 void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {

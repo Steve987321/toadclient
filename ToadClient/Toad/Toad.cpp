@@ -432,6 +432,7 @@ bool UpdateSettings()
 	esp::show_name = data["esp_show_name"];
 	esp::show_distance = data["esp_show_distance"];
 	esp::show_health = data["esp_show_health"];
+	esp::show_sneaking = data["esp_show_sneak"];
 	esp::esp_mode = data["esp_mode"];
 	esp::show_txt_bg = data["esp_bg"];
 

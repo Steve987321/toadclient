@@ -262,7 +262,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 					m_start = std::chrono::high_resolution_clock::now();
 				}
 
-				if (mouse_over_type != "BLOCK")
+				if (mouse_over_type != "BLOCK" && break_blocks_flag)
 				{
 					Timer stop_break_blocks_timer;
 

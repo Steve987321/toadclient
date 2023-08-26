@@ -278,6 +278,7 @@ enum class mapping
     getBlockPosition,
     getBlockPos,
     getBlockPositionFromMovingBlock,
+    isSneaking, // ()Z
 
     setRotationYaw,
     setRotationPitch,

@@ -192,6 +192,7 @@ namespace toad
 		inline bool show_distance = false;
 		inline bool show_name = false;
 		inline bool show_health = false;
+		inline bool show_sneaking = false;
 
 		inline ESP_MODE esp_mode;
 

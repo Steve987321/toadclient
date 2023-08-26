@@ -65,6 +65,7 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				}
 			}
 	m_blocks = blockPositions;
+	SLEEP(100);
 }
 
 void toadll::CBlockEsp::OnRender()

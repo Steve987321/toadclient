@@ -519,9 +519,6 @@ std::vector<std::shared_ptr<c_Entity>> Minecraft::getPlayerList()
 
     auto entities = env->GetObjectField(world, fId);
 
-    //auto mId = get_mid(world, mapping::getPlayerEntities, env);
-    //auto entities = env->CallObjectMethod(world, mId);
-
     env->DeleteLocalRef(world);
 
     if (!entities)

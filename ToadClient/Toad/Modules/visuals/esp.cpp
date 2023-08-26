@@ -14,7 +14,7 @@ namespace toadll {
 
 void CEsp::PreUpdate()
 {
-	SLEEP(10);
+	SLEEP(5);
 }
 
 void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
@@ -28,17 +28,13 @@ void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	auto modviewinverse = glm::inverse(glm::make_mat4(CVarsUpdater::ModelView.data()));
 
 	auto camPos = glm::vec3(modviewinverse[3]);
-	//std::cout << camPos.x << ' ' << camPos.y << ' ' << camPos.z << std::endl;
-	//renderPos = MC->getActiveRenderInfo()->get_render_pos();
-	//std::cout << "old: " << renderPos << std::endl;
 	renderPos = {camPos.x, camPos.y, camPos.z};
-	//std::cout << "new: " << renderPos << std::endl;
 	playerPos = lPlayer->Pos;
 
 	// Update our bounding boxes list
 	m_bboxes = GetBBoxes();
 
-	precise_sleep(0.01);
+	SLEEP(1);
 }
 
 void CEsp::OnRender()
@@ -205,6 +201,13 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 				auto distStr = " [" + std::to_string(playerPos.dist(ve.Pos)).substr(0, 3) + ']';
 				strncat_s(text, distStr.c_str(), distStr.length());
 			}
+			if (esp::show_sneaking)
+			{
+				if (ve.sneaking)
+				{
+					strncat_s(text, "(sneaking)", strlen("(sneaking)"));
+				}
+			}
 
 			// draw our text
 
@@ -251,8 +254,8 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 				auto maxX = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.x < b.x; })->x;
 				auto maxY = std::ranges::max_element(verticesScreenPos, [](const Vec2& a, const Vec2& b) { return a.y < b.y; })->y;
 
-				if ((int)minX * 10 == -10 && maxX > g_screen_width) return;
-				if ((int)minY * 10 == -10 && maxY > g_screen_height) return;
+				if ((int)minX * 10 == -10 || maxX > g_screen_width) return;
+				if ((int)minY * 10 == -10 || maxY > g_screen_height) return;
 
 				float t = ((float)ve.health / 20.f);
 
@@ -324,8 +327,12 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 		b_box.max.y = lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick + 1.8f;
 		b_box.max.z = lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick + 0.3f;
 
-
-		res.emplace_back(b_box, pos, esp::show_name ? entity->getName() : "", esp::show_health ? entity->getHealth() : -1, 0);
+		res.emplace_back(
+			b_box,
+			pos, 
+			esp::show_name ? entity->getName() : "", 
+			esp::show_health ? entity->getHealth() : -1,
+			esp::show_sneaking ? entity->isSneaking() : false);
 	}
 
 	return res;

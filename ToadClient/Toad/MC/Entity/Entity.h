@@ -37,6 +37,7 @@ namespace toadll
 		_NODISCARD float getMotionZ() const;
 
 		_NODISCARD bool isInvisible() const;
+		bool isSneaking() const;
 
 		//[[nodiscard]] jobject get_open_container() const;
 		_NODISCARD BBox get_BBox() const;

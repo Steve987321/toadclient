@@ -185,6 +185,9 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getBlockPosition, "getPosition" });
 			methodsigs.insert({ mapping::getBlockPosition, "()Lnet/minecraft/util/BlockPos;" });
 
+			methodnames.insert({ mapping::isSneaking, "isSneaking" });
+			methodsigs.insert({ mapping::isSneaking, "()Z" });
+
 			auto movingblockklass = findclass("net.minecraft.util.MovingObjectPosition", env);
 			methodnames.insert({ mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition" });
 			if (!getsig(mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition", movingblockklass, env))
@@ -460,6 +463,9 @@ namespace toadll::mappings
 
 			methodnames.insert({ mapping::getBlockPosition, "getPosition" });
 			methodsigs.insert({ mapping::getBlockPosition, "()Lnet/minecraft/util/BlockPos;" });
+
+			methodnames.insert({ mapping::isSneaking, "isSneaking" });
+			methodsigs.insert({ mapping::isSneaking, "()Z" });
 
 			fieldnames.insert({ mappingFields::inventoryField, "inventory" });
 			fieldsigs.insert({ mappingFields::inventoryField, "Lnet/minecraft/entity/player/InventoryPlayer;" });

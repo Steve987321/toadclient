@@ -14,7 +14,7 @@ private:
 		Vec3 Pos;
 		std::string name;
 		int health;
-		int hurttime;
+		bool sneaking = false;
 	};
 
 public:

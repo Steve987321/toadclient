@@ -504,6 +504,7 @@ namespace toad::ui
                 ImGui::Checkbox("show name", &esp::show_name);
                 ImGui::Checkbox("show distance", &esp::show_distance);
                 ImGui::Checkbox("show health", &esp::show_health);
+                ImGui::Checkbox("show sneaking", &esp::show_sneaking);
                 ImGui::SliderInt("Health", &visualize_health, 0, 20, "%d HP");
 
                 ImGui::Spacing();

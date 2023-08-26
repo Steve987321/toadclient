@@ -249,6 +249,7 @@ void update_settings()
 	dataOut["esp_show_name"] = esp::show_name;
 	dataOut["esp_show_distance"] = esp::show_distance;
 	dataOut["esp_show_health"] = esp::show_health;
+	dataOut["esp_show_sneak"] = esp::show_sneaking;
 	dataOut["esp_mode"] = esp::esp_mode;
 	dataOut["esp_bg"] = esp::show_txt_bg;
 	// esp extra
