@@ -69,6 +69,9 @@ namespace toad
 	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;
 	inline bool g_is_ui_internal = false;
 
+	inline std::string loader_path;
+	inline std::string loaded_config;
+
 	namespace left_clicker
 	{
 		// if we want to update the rand to the internal clicker 

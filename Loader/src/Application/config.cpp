@@ -22,6 +22,8 @@ void LoadConfig(std::string_view path, std::string_view file_name, std::string_v
 	std::ifstream f;
 	char fullPath[MAX_PATH] = {};
 
+	toad::loaded_config = file_name;
+
 	memcpy_s(fullPath, MAX_PATH, path.data(), path.length());
 
 	if (!path.ends_with("\\"))

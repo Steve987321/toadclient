@@ -26,14 +26,14 @@ namespace toad
     Application::Application()
     {
         // Auto load configs
-        auto pathStr = std::filesystem::current_path().string();
-        auto configs = config::GetAllConfigsInDirectory(pathStr);
+        loader_path = std::filesystem::current_path().string();
+        auto configs = config::GetAllConfigsInDirectory(loader_path);
         if (!configs.empty())
         {
             // load the only available config 
             if (configs.size() == 1)
             {
-                config::LoadConfig(pathStr, configs.begin()->FileNameStem);
+                config::LoadConfig(loader_path, configs.begin()->FileNameStem);
             }
             else
             {
@@ -41,7 +41,7 @@ namespace toad
 
                 if (it != configs.end())
                 {
-                    config::LoadConfig(pathStr, it->FileNameStem);
+                    config::LoadConfig(loader_path, it->FileNameStem);
                 }
             }
         }

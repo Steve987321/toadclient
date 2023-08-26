@@ -169,12 +169,25 @@ void update_settings()
 	{
 		dataOut["esp_font"] = esp::font_path.c_str();
 
-		if (dataIn.contains("done"))
+		if (dataIn.contains("done")) {
 			esp::update_font_flag = false;
+		}
+	}
+
+	// update loader path once 
+	static bool once = false;
+	if (!once)
+	{
+		dataOut["path"] = loader_path.c_str();
+		if (dataIn.contains("donepath"))
+		{
+			once = true;
+		}
 	}
 
 	dataOut["ui_internal"] = g_is_ui_internal;
 	dataOut["client_type"] = g_curr_client;
+	dataOut["config"] = loaded_config;
 
 	// left auto clicker
 	dataOut["lc_enabled"] = left_clicker::enabled;

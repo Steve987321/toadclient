@@ -317,6 +317,12 @@ bool UpdateSettings()
 		data["done"] = 0;
 	}
 
+	if (data.contains("path"))
+	{
+		loader_path = data["path"];
+		data["donepath"] = 0;
+	}
+
 	std::stringstream ss;
 	ss << data << "END";
 	memcpy(pMem, ss.str().c_str(), ss.str().length()); 
@@ -347,6 +353,7 @@ bool UpdateSettings()
 	}
 
 	g_curr_client = data["client_type"];
+	loaded_config = data["config"];
 
 	// left auto clicker
 	left_clicker::enabled = data["lc_enabled"];

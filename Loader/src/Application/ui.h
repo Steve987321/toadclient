@@ -74,7 +74,7 @@ namespace toad::ui
                     tab = 2;
                     if (availableConfigs.empty())
                     {
-                        availableConfigs = config::GetAllConfigsInDirectory(std::filesystem::current_path().string());
+                        availableConfigs = config::GetAllConfigsInDirectory(loader_path);
                     }
                 }
 
@@ -357,8 +357,8 @@ namespace toad::ui
                     static bool once = false;
                     if (!once)
                     {
-                        auto currPath = std::filesystem::current_path().string();
-                        memcpy(searching_dir, currPath.c_str(), currPath.length());
+                        memcpy(searching_dir, loader_path.c_str(), loader_path.length());
+                        memcpy(config_name_buf, loaded_config.c_str(), loaded_config.length());
                         once = true;
                     }
 
@@ -404,6 +404,10 @@ namespace toad::ui
                                     {
                                         memcpy(config_name_buf, fileName.c_str(), fileName.length());
                                         selected = i;
+                                    }
+                                    if (ImGui::IsItemHovered())
+                                    {
+                                        ImGui::SetTooltip(lable.c_str());
                                     }
 	                            }
                             }

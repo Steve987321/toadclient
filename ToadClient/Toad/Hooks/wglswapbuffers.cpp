@@ -43,7 +43,7 @@ namespace toadll
 			}
 		}
 		
-		if (toad::g_is_ui_internal && CInternalUI::MenuIsOpen && m_is_imgui_initialized)
+		if (GetForegroundWindow() == hwnd && toad::g_is_ui_internal && CInternalUI::MenuIsOpen && m_is_imgui_initialized)
 		{
 			ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam);
 			return true;
