@@ -124,7 +124,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		UnSneak();
 	}
 
-	SLEEP(1);
+	SLEEP(20);
 }
 
 void CBridgeAssist::Sneak()
