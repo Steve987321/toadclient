@@ -24,6 +24,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			UnSneak();
 		}
+		m_hasPressedShift = false;
 		SLEEP(100);
 		return;
 	}
@@ -35,8 +36,36 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			UnSneak();
 		}
+		m_hasPressedShift = false;
 		SLEEP(50);
 		return;		
+	}
+
+	if (bridge_assist::only_initiate_when_sneaking)
+	{
+		if (!m_hasPressedShift && isSneaking)
+		{
+			m_hasPressedShift = true;
+		}
+	}
+
+	//const bool standingOnBlock = diffY <= FLT_EPSILON;
+
+	if (lPlayer->Pitch < bridge_assist::pitch_check)
+	{
+		if (isSneaking)
+			UnSneak();
+
+		m_hasPressedShift = false;
+
+		SLEEP(1);
+		return;
+	}
+
+	if (!m_hasPressedShift)
+	{
+		SLEEP(1);
+		return;
 	}
 
 	m_from = lPlayer->Pos;
@@ -46,22 +75,10 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// trace down exactly under the player 
 	auto res = MC->rayTraceBlocks(m_from, m_direction, hitBlockPos, false);
 
-	//auto dist = hitBlockPos.dist(lPlayer->Pos);
-	//std::cout << dist << std::endl;
-
 	// the vertical diff between the player and block under the player
 	auto diffY = lPlayer->Pos.y - hitBlockPos.y;
 	diffY -= 1;
-	const bool standingOnBlock = diffY <= FLT_EPSILON;
 
-	if (lPlayer->Pitch < bridge_assist::pitch_check)
-	{
-		if (isSneaking && standingOnBlock)
-			UnSneak();
-
-		SLEEP(1);
-		return;
-	}
 	if (diffY != 0 && diffY <= bridge_assist::block_check)
 	{
 		SLEEP(1);
@@ -108,6 +125,26 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	}
 
 	SLEEP(1);
+}
+
+void CBridgeAssist::Sneak()
+{
+	m_isEdge = true;
+	if (!m_prev)
+	{
+		send_key(VK_SHIFT, true);
+		m_prev = true;
+	}
+}
+
+void CBridgeAssist::UnSneak()
+{
+	m_isEdge = false;
+	if (m_prev)
+	{
+		send_key(VK_SHIFT, false);
+		m_prev = false;
+	}
 }
 
 }

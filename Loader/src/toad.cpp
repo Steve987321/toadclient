@@ -216,6 +216,7 @@ void update_settings()
 	dataOut["ba_enabled"] = bridge_assist::enabled;
 	dataOut["ba_pitch_check"] = bridge_assist::pitch_check;
 	dataOut["ba_block_check"] = bridge_assist::block_check;
+	dataOut["ba_iws"] = bridge_assist::only_initiate_when_sneaking;
 
 	// blink
 	dataOut["bl_enabled"] = blink::enabled;

@@ -388,6 +388,7 @@ bool UpdateSettings()
 	bridge_assist::enabled = data["ba_enabled"];
 	bridge_assist::pitch_check = data["ba_pitch_check"];
 	bridge_assist::block_check = data["ba_block_check"];
+	bridge_assist::only_initiate_when_sneaking = data["ba_iws"];
 
 	// blink
 	blink::enabled = data["bl_enabled"];

@@ -229,6 +229,8 @@ namespace toad::ui
 
 							// zero and 1 means sneak at any edge
                             ImGui::SliderInt("block height check", &bridge_assist::block_check, 0, 10);
+
+                            ImGui::Checkbox("Only initiate when sneaking", &bridge_assist::only_initiate_when_sneaking);
                         });
                     }
 
