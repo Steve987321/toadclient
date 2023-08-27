@@ -3,6 +3,7 @@
 #include "left_autoclicker.h"
 
 using namespace toad;
+using namespace toadll::math;
 
 namespace toadll {
 

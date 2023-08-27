@@ -29,6 +29,7 @@
 #include "Toad/MC/Entity/Entity.h"
 #include "Toad/MC/Minecraft.h"
 
+#include "math.h"
 #include "timer.h"
 #include "singleton.h"
 #include "module.h"

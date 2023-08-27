@@ -2,13 +2,10 @@
 #include "Toad/Toad.h"
 #include "esp.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include "draw_helpers.h"
 
 using namespace toad;
+using namespace toadll::math;
 
 namespace toadll {
 
@@ -24,11 +21,7 @@ void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		SLEEP(250);
 		return;
 	}
-
-	auto modviewinverse = glm::inverse(glm::make_mat4(CVarsUpdater::ModelView.data()));
-
-	auto camPos = glm::vec3(modviewinverse[3]);
-	renderPos = {camPos.x, camPos.y, camPos.z};
+	renderPos = get_cam_pos(CVarsUpdater::ModelView);
 	playerPos = lPlayer->Pos;
 
 	// Update our bounding boxes list

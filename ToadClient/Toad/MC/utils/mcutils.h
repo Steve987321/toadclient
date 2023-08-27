@@ -88,9 +88,6 @@ namespace toadll
 
     //vec3 get_closest_point()
 
-    std::pair<float, float> get_angles(const Vec3& pos1, const Vec3& pos2);
-    float wrap_to_180(float value);
-
     void loop_through_class(const jclass klass, JNIEnv* env);
 
 }

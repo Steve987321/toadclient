@@ -58,6 +58,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Toad\math.h" />
     <ClInclude Include="Toad\Modules\no_click_delay.h" />
     <ClInclude Include="Toad\Modules\reach.h" />
     <ClInclude Include="Toad\Modules\bridge_assist.h" />
@@ -102,6 +103,7 @@
     <ClInclude Include="Toad\Modules\vars_updater.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Toad\math.cpp" />
     <ClCompile Include="Toad\Modules\no_click_delay.cpp" />
     <ClCompile Include="Toad\Modules\reach.cpp" />
     <ClCompile Include="Toad\Modules\bridge_assist.cpp" />

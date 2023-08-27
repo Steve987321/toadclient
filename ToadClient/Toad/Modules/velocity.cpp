@@ -3,6 +3,7 @@
 #include "velocity.h"
 
 using namespace toad;
+using namespace toadll::math;
 
 namespace toadll
 {
@@ -13,6 +14,7 @@ namespace toadll
 
 	void CVelocity::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
+		using namespace math;
 		if (!velocity::enabled)
 		{
 			SLEEP(250);

@@ -2,6 +2,8 @@
 #include "Toad/Toad.h"
 #include "reach.h"
 
+using namespace toadll::math;
+
 void toadll::CReach::PreUpdate()
 {
 	SLEEP(1);
