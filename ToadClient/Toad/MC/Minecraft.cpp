@@ -332,7 +332,10 @@ bool Minecraft::isInGui()
         env->DeleteLocalRef(mc);
         return false;
     }
-    auto res = env->GetObjectField(mc, fId) != nullptr;
+    auto obj = env->GetObjectField(mc, fId);
+    auto res = obj != nullptr;
+
+    env->DeleteLocalRef(obj);
     env->DeleteLocalRef(mc);
     return res;
 }

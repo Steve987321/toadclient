@@ -423,6 +423,10 @@ bool UpdateSettings()
 	velocity::chance = data["vel_chance"];
 	velocity::delay = data["vel_delay"];
 
+	// ui
+	ui::show_array_list = data["ui_list"];
+	ui::show_water_mark = data["ui_mark"];
+
 	// esp
 	esp::enabled = data["esp_enabled"];
 	esp::line_col[0] = data["esp_linecolr"];
@@ -495,6 +499,7 @@ void init_modules()
 	CBridgeAssist::GetInstance()->name = "Auto bridge";
 	CNoClickDelay::GetInstance()->name = "No Click Delay";
 	//CReach::GetInstance()->name = "Reach";
+	COfScreenArrows::GetInstance()->name = "Off Screen Arrow ESP";
 
 	// don't create threads for these modules
 	CInternalUI::GetInstance()->IsOnlyRendering = true;

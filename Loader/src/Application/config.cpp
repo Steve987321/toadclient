@@ -183,6 +183,8 @@ void LoadSettings(std::string_view jsonSettings)
 
 	try
 	{
+		g_is_ui_internal = data["ui_internal"];
+
 		// left auto clicker
 		left_clicker::enabled = data["lc_enabled"];
 		left_clicker::min_cps = data["lc_mincps"];
@@ -250,6 +252,10 @@ void LoadSettings(std::string_view jsonSettings)
 		velocity::chance = data["vel_chance"];
 		velocity::delay = data["vel_delay"];
 
+		// ui
+		ui::show_array_list = data["ui_list"];
+		ui::show_water_mark = data["ui_mark"];
+
 		// esp
 		esp::enabled = data["esp_enabled"];
 		esp::line_col[0] = data["esp_linecolr"];
@@ -300,6 +306,10 @@ void LoadSettings(std::string_view jsonSettings)
 	catch(json::out_of_range& e)
 	{
 		std::cout << "error getting settings: " << e.what() << std::endl;
+	}
+	catch(json::exception& e)
+	{
+		std::cout << e.what() << std::endl;
 	}
 }
 
@@ -356,6 +366,8 @@ json SettingsToJson()
 			{"f", in.frequency}
 		};
 	}
+
+	data["ui_internal"] = g_is_ui_internal;
 
 	data["lc_randb"] = lcRandBoosts;
 	data["lc_randi"] = lcRandInconsistenties;
@@ -420,6 +432,10 @@ json SettingsToJson()
 	data["vel_vertical"] = velocity::vertical;
 	data["vel_chance"] = velocity::chance;
 	data["vel_delay"] = velocity::delay;
+
+	// ui
+	data["ui_list"] = ui::show_array_list;
+	data["ui_mark"] = ui::show_water_mark;
 
 	// esp
 	data["esp_enabled"] = esp::enabled;

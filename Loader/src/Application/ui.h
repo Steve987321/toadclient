@@ -216,10 +216,12 @@ namespace toad::ui
                     static bool is_Esp = false;
                     static bool is_BlockEsp = false;
                     static bool is_Blink = false;
+                    static bool is_ArrayList = false;
                     if (checkbox_button("Auto Bridge", ICON_FA_CUBE, &bridge_assist::enabled)) is_Bridge = true;
                     if (checkbox_button("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
                     if (checkbox_button("Block ESP", ICON_FA_CUBES, &block_esp::enabled)) is_BlockEsp = true;
                     if (checkbox_button("Blink", ICON_FA_GHOST, &blink::enabled)) is_Blink = true;
+                    if (checkbox_button("Array List", ICON_FA_BARS, &ui::show_array_list)) is_ArrayList = true;
 
                     if (is_Bridge)
                     {
@@ -347,6 +349,14 @@ namespace toad::ui
 	                        ImGui::Checkbox("render trail", &blink::show_trail);
 	                        ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
                         });
+                    }
+
+                    else if (is_ArrayList)
+                    {
+                        setting_menu("Array List", is_ArrayList, []
+                            {
+                                
+                            });
                     }
                 }
                 else if (tab == 2)

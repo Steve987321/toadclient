@@ -26,8 +26,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	/// a delay before breaking a block after aiming at one
 
-
-	if (!left_clicker::enabled)
+	Enabled = left_clicker::enabled; 
+	if (!Enabled)
 	{
 		SLEEP(250);
 		return;

@@ -241,4 +241,13 @@ namespace toad
 		inline bool stop_rec_packets = false; // also stops/pauses incoming packets
 		inline bool show_trail = false; // renders a trail from the position when enabled to current position
 	}
+
+	namespace ui
+	{
+		inline bool show_array_list = false;
+
+		inline int array_list_size = 20;
+
+		inline bool show_water_mark = false;
+	}
 }

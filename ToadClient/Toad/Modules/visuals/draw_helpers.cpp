@@ -69,6 +69,35 @@ namespace toadll
 		//return { static_cast<float>(screenX), static_cast<float>(viewport[3] - screenY) };
 	}
 
+	Vec2 world_to_screen_no_behind_check(const Vec3& worldPos, const Vec3& cameraPos)
+	{
+		GLdouble modelview[16];
+		GLdouble projection[16];
+
+		// convert to double types 
+		for (int i = 0; i < 16; i++)
+		{
+			modelview[i] = static_cast<GLdouble>(CVarsUpdater::ModelView[i]);
+			projection[i] = static_cast<GLdouble>(CVarsUpdater::Projection[i]);
+		}
+
+		double screenX, screenY, screenZ;
+		gluProject(worldPos.x, worldPos.y, worldPos.z,
+			modelview, projection, CVarsUpdater::Viewport.data(),
+			&screenX, &screenY, &screenZ);
+
+		Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
+		Vec3 cameraToProjected = worldPos - cameraPos;
+		float dotProduct = cameraToProjected.dot(Vec3::normalize(cameraForward));
+		std::cout << dotProduct << std::endl;
+		// check if worldPos is in front of the camera
+		if (dotProduct > 0)
+		{
+			return { static_cast<float>(screenX), static_cast<float>(CVarsUpdater::Viewport[3] - screenY) };
+		}
+		return { -1, -1 };
+	}
+
 	void draw3d_bbox_fill(const BBox& bbox, const Vec4& col)
 	{
 		glBegin(GL_QUADS);

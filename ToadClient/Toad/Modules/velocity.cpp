@@ -14,8 +14,8 @@ namespace toadll
 
 	void CVelocity::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
-		using namespace math;
-		if (!velocity::enabled)
+		Enabled = velocity::enabled;
+		if (!Enabled)
 		{
 			SLEEP(250);
 			return;

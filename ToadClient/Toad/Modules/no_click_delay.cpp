@@ -4,14 +4,15 @@
 
 void toadll::CNoClickDelay::PreUpdate()
 {
-	SLEEP(10);
+	Enabled = toad::no_click_delay::enabled;
+	SLEEP(100);
 }
 
 void toadll::CNoClickDelay::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	if (toad::left_clicker::enabled)
 	{
-		SLEEP(500);
+		SLEEP(100);
 		return;
 	}
 
@@ -20,7 +21,7 @@ void toadll::CNoClickDelay::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		Invoke(MC);
 	}
 
-	SLEEP(100);
+	SLEEP(10);
 }
 
 void toadll::CNoClickDelay::Invoke(const std::shared_ptr<Minecraft>& minecraft)

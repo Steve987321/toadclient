@@ -16,7 +16,8 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
-	if (!aa::enabled || CVarsUpdater::IsInGui)
+	Enabled = aa::enabled;
+	if (!Enabled || CVarsUpdater::IsInGui)
 	{
 		SLEEP(250);
 		return;

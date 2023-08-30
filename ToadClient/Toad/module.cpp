@@ -5,6 +5,17 @@
 namespace toadll
 {
 
+std::vector<CModule*> CModule::GetEnabledModules()
+{
+	std::vector<CModule*> res = {};
+	for (const auto m : moduleInstances)
+	{
+		if (m->Enabled)
+			res.push_back(m);
+	}
+	return res;
+}
+
 void CModule::SetEnv(JNIEnv* Env)
 {
 	env = Env;

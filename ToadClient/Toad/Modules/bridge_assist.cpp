@@ -17,7 +17,9 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// will help against being stuck on sneaking
 	bool isSneaking = (bool)GetAsyncKeyState(VK_SHIFT);
 
-	if (!bridge_assist::enabled)
+	Enabled = bridge_assist::enabled;
+
+	if (!Enabled)
 	{
 		// when disabling this cheat module, make sure we aren't sneaking anymore
 		if (isSneaking)

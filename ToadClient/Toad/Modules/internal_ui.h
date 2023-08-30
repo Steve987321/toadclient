@@ -19,6 +19,9 @@ public:
 
 public:
 	void OnImGuiRender(ImDrawList * draw) override;
+
+private:
+	void ArrayList();
 };
 
 }

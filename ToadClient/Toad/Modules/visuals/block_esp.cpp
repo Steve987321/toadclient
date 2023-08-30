@@ -13,7 +13,8 @@ void toadll::CBlockEsp::PreUpdate()
 
 void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	if (!block_esp::enabled)
+	Enabled = block_esp::enabled;
+	if (!Enabled)
 	{
 		SLEEP(250);
 		return;

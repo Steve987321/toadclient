@@ -16,7 +16,8 @@ void CEsp::PreUpdate()
 
 void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	if (!esp::enabled || !CVarsUpdater::IsVerified)
+	Enabled = esp::enabled;
+	if (!Enabled || !CVarsUpdater::IsVerified)
 	{
 		SLEEP(250);
 		return;

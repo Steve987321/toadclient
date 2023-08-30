@@ -18,16 +18,20 @@ public:
 public:
 	bool Initialized = false;
 
-	// debugging purposes
 	std::string name; 
 
 	// will skip creating a thread for this module on initialization
 	bool IsOnlyRendering = false;
+
+	bool Enabled = false;
 public:
 	CModule()
 	{
 		moduleInstances.emplace_back(this);
 	}
+
+public:
+	static std::vector<CModule*> GetEnabledModules();
 
 public:
 	void SetEnv(JNIEnv* Env);

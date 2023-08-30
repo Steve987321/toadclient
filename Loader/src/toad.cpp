@@ -250,6 +250,10 @@ void update_settings()
 	dataOut["vel_chance"] = velocity::chance;
 	dataOut["vel_delay"] = velocity::delay;
 
+	// ui
+	dataOut["ui_list"] = ui::show_array_list;
+	dataOut["ui_mark"] = ui::show_water_mark;
+
 	// esp
 	dataOut["esp_enabled"] = esp::enabled;
 	dataOut["esp_linecolr"] = esp::line_col[0];

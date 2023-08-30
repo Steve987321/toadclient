@@ -18,7 +18,9 @@ void toadll::CBlink::PreUpdate()
 
 void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	if (!blink::enabled)
+	Enabled = blink::enabled;
+
+	if (!Enabled)
 	{
 		SLEEP(250);
 		return;

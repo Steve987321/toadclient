@@ -10,7 +10,8 @@ namespace toadll
 	{
 		static bool is_starting_click = false;
 
-		if (!right_clicker::enabled)
+		Enabled = right_clicker::enabled;
+		if (!Enabled)
 		{
 			SLEEP(250);
 			return;
