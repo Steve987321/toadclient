@@ -499,7 +499,7 @@ void init_modules()
 	CBridgeAssist::GetInstance()->name = "Auto bridge";
 	CNoClickDelay::GetInstance()->name = "No Click Delay";
 	//CReach::GetInstance()->name = "Reach";
-	COfScreenArrows::GetInstance()->name = "Off Screen Arrow ESP";
+	//COfScreenArrows::GetInstance()->name = "Off Screen Arrow ESP";
 
 	// don't create threads for these modules
 	CInternalUI::GetInstance()->IsOnlyRendering = true;

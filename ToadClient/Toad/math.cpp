@@ -35,5 +35,39 @@ namespace toadll::math
 		auto pos = glm::vec3(modviewinverse[3]);
 		return {pos.x, pos.y, pos.z};
 	}
+
+	void rotate_triangle(std::array<Vec2, 3>& points, float rotation_rad)
+	{
+		auto points_center = (points.at(0) + points.at(1) + points.at(2)) / 3;
+		for (auto& point : points)
+		{
+			const auto temp_x = point.x - points_center.x;
+			const auto temp_y = point.y - points_center.y;
+
+			const auto c = cosf(rotation_rad);
+			const auto s = sinf(rotation_rad);
+
+			point.x = temp_x * c - temp_y * s;
+			point.y = temp_x * s + temp_y * c;
+		}
+	}
+
+	void rotate_triangle(std::array<glm::vec2, 3>& points, float rotation_rad)
+	{
+		auto points_center = (points.at(0) + points.at(1) + points.at(2));
+		points_center /= 3;
+		for (auto& point : points)
+		{
+			const auto temp_x = point.x - points_center.x;
+			const auto temp_y = point.y - points_center.y;
+
+			const auto c = cosf(rotation_rad);
+			const auto s = sinf(rotation_rad);
+
+			point.x = temp_x * c - temp_y * s;
+			point.y = temp_x * s + temp_y * c;
+		}
+	}
+
 }
 
