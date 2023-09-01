@@ -105,6 +105,12 @@ namespace toad
     void Application::Exit() const
     {
         std::unique_lock lock(mutex);
+
+        if (!g_is_running)
+        {
+            return;
+        }
+
         std::cout << "closing\n";
         g_is_running = false;
 

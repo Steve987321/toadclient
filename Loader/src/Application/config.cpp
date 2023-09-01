@@ -6,165 +6,17 @@
 #include <fstream>
 
 
-using json = nlohmann::json;
-
-/// Sets the current settings of a json string 
-extern void LoadSettings(std::string_view jsonSettings);
-
-/// Returns a json of the current settings
-extern json SettingsToJson();
 
 namespace config
 {
 
-void LoadConfig(std::string_view path, std::string_view file_name, std::string_view file_ext)
-{
-	std::ifstream f;
-	char fullPath[MAX_PATH] = {};
-
-	toad::loaded_config = file_name;
-
-	memcpy_s(fullPath, MAX_PATH, path.data(), path.length());
-
-	if (!path.ends_with("\\"))
-	{
-		strncat_s(fullPath, "\\", strlen("\\"));
-	}
-
-	strncat_s(fullPath, file_name.data(), file_name.length());
-	strncat_s(fullPath, file_ext.data(), file_ext.length());
-
-	f.open(fullPath);
-
-	if (f.is_open())
-	{
-		std::stringstream ssbuf;
-		ssbuf << f.rdbuf();
-		f.close();
-
-		LoadSettings(ssbuf.str());
-	}
-	else
-	{
-		std::cout << "failed to open file with path: " << fullPath << std::endl;
-	}
-
-}
-
-void SaveConfig(std::string_view path, std::string_view file_name, std::string_view file_ext)
-{
-	std::ofstream f;
-	char fullPath[MAX_PATH] = {};
-
-	memcpy_s(fullPath, MAX_PATH, path.data(), path.length());
-
-	if (!path.ends_with("\\"))
-	{
-		strncat_s(fullPath, "\\", strlen("\\"));
-	}
-
-	strncat_s(fullPath, file_name.data(), file_name.length());
-	strncat_s(fullPath, file_ext.data(), file_ext.length());
-
-	f.open(fullPath, std::fstream::out | std::fstream::trunc);
-
-	if (f.is_open())
-	{
-		f << SettingsToJson().dump();
-		f.close();
-	}
-	else if (f.fail())
-	{
-		std::cout << "Failed to save config to " << fullPath << std::endl;
-	}
-}
-
-bool LoadConfigFromClipBoard()
-{
-	if (!OpenClipboard(nullptr))
-	{
-		std::cout << "Failed opening clipboard\n";
-		return false;
-	}
-
-	HANDLE hData = GetClipboardData(CF_TEXT);
-	if (hData == nullptr)
-	{
-		std::cout << "Failed getting data [1]\n";
-		CloseClipboard();
-		return false;
-	}
-
-	char* data = static_cast<char*>(GlobalLock(hData));
-	if (data == nullptr)
-	{
-		std::cout << "Failed getting data [2]\n";
-		CloseClipboard();
-		return false;
-	}
-
-	GlobalUnlock(hData);
-
-	CloseClipboard();
-
-	LoadSettings(data);
-
-	return true;
-
-}
-
-void SaveConfigToClipBoard()
-{
-	std::stringstream ss;
-	ss << SettingsToJson().dump();
-
-	int n = ss.str().length() + 1;
-
-	// must be called with GMEM_MOVABLE as stated in the docs
-	void* pData = GlobalAlloc(GMEM_MOVEABLE, n);
-
-	if (pData != nullptr)
-	{
-		if (auto pMemData = GlobalLock(pData); pMemData != nullptr)
-		{
-			memcpy(pMemData, ss.str().c_str(), n);
-			GlobalUnlock(pData);
-
-			if (OpenClipboard(nullptr))
-			{
-				EmptyClipboard();
-				SetClipboardData(CF_TEXT, pData);
-				CloseClipboard();
-			}
-		}
-	}
-
-	GlobalFree(pData);
-}
-
-std::vector<ConfigFile> GetAllConfigsInDirectory(std::string_view path)
-{
-	std::vector<ConfigFile> res = {};
-
-	for (const auto& entry : std::filesystem::directory_iterator(path))
-	{
-		auto ext = entry.path().extension();
-		if (ext == ".toad" || ext == ".txt")
-		{
-			res.emplace_back(entry.path().stem().string(), entry.last_write_time());
-		}
-	}
-
-	return res;
-}
-
-}
+	using json = nlohmann::json;
 
 void LoadSettings(std::string_view jsonSettings)
 {
 	json data;
 
-	try 
+	try
 	{
 		data = json::parse(jsonSettings);
 	}
@@ -303,14 +155,27 @@ void LoadSettings(std::string_view jsonSettings)
 
 		block_esp::block_list = tmpList;
 	}
-	catch(json::out_of_range& e)
+	catch (json::out_of_range& e)
 	{
 		std::cout << "error getting settings: " << e.what() << std::endl;
 	}
-	catch(json::exception& e)
+	catch (json::exception& e)
 	{
 		std::cout << e.what() << std::endl;
 	}
+}
+
+json MergeJson(const json& a, const json& b)
+{
+	json result = a.flatten();
+	json tmp = b.flatten();
+
+	for (json::iterator it = tmp.begin(); it != tmp.end(); ++it)
+	{
+		result[it.key()] = it.value();
+	}
+
+	return result.unflatten();
 }
 
 json SettingsToJson()
@@ -483,4 +348,147 @@ json SettingsToJson()
 	data["block_esp_array"] = blockArray;
 
 	return data;
+}
+
+void LoadConfig(std::string_view path, std::string_view file_name, std::string_view file_ext)
+{
+	std::ifstream f;
+	char fullPath[MAX_PATH] = {};
+
+	toad::loaded_config = file_name;
+
+	memcpy_s(fullPath, MAX_PATH, path.data(), path.length());
+
+	if (!path.ends_with("\\"))
+	{
+		strncat_s(fullPath, "\\", strlen("\\"));
+	}
+
+	strncat_s(fullPath, file_name.data(), file_name.length());
+	strncat_s(fullPath, file_ext.data(), file_ext.length());
+
+	f.open(fullPath);
+
+	if (f.is_open())
+	{
+		std::stringstream ssbuf;
+		ssbuf << f.rdbuf();
+		f.close();
+
+		LoadSettings(ssbuf.str());
+	}
+	else
+	{
+		std::cout << "failed to open file with path: " << fullPath << std::endl;
+	}
+
+}
+
+void SaveConfig(std::string_view path, std::string_view file_name, std::string_view file_ext)
+{
+	std::ofstream f;
+	char fullPath[MAX_PATH] = {};
+
+	memcpy_s(fullPath, MAX_PATH, path.data(), path.length());
+
+	if (!path.ends_with("\\"))
+	{
+		strncat_s(fullPath, "\\", strlen("\\"));
+	}
+
+	strncat_s(fullPath, file_name.data(), file_name.length());
+	strncat_s(fullPath, file_ext.data(), file_ext.length());
+
+	f.open(fullPath, std::fstream::out | std::fstream::trunc);
+
+	if (f.is_open())
+	{
+		f << SettingsToJson().dump();
+		f.close();
+	}
+	else if (f.fail())
+	{
+		std::cout << "Failed to save config to " << fullPath << std::endl;
+	}
+}
+
+bool LoadConfigFromClipBoard()
+{
+	if (!OpenClipboard(nullptr))
+	{
+		std::cout << "Failed opening clipboard\n";
+		return false;
+	}
+
+	HANDLE hData = GetClipboardData(CF_TEXT);
+	if (hData == nullptr)
+	{
+		std::cout << "Failed getting data [1]\n";
+		CloseClipboard();
+		return false;
+	}
+
+	char* data = static_cast<char*>(GlobalLock(hData));
+	if (data == nullptr)
+	{
+		std::cout << "Failed getting data [2]\n";
+		CloseClipboard();
+		return false;
+	}
+
+	GlobalUnlock(hData);
+
+	CloseClipboard();
+
+	LoadSettings(data);
+
+	return true;
+
+}
+
+void SaveConfigToClipBoard()
+{
+	std::stringstream ss;
+	ss << SettingsToJson().dump();
+
+	int n = ss.str().length() + 1;
+
+	// must be called with GMEM_MOVABLE as stated in the docs
+	void* pData = GlobalAlloc(GMEM_MOVEABLE, n);
+
+	if (pData != nullptr)
+	{
+		if (auto pMemData = GlobalLock(pData); pMemData != nullptr)
+		{
+			memcpy(pMemData, ss.str().c_str(), n);
+			GlobalUnlock(pData);
+
+			if (OpenClipboard(nullptr))
+			{
+				EmptyClipboard();
+				SetClipboardData(CF_TEXT, pData);
+				CloseClipboard();
+			}
+		}
+	}
+
+	GlobalFree(pData);
+}
+
+std::vector<ConfigFile> GetAllConfigsInDirectory(std::string_view path)
+{
+	std::vector<ConfigFile> res = {};
+
+	for (const auto& entry : std::filesystem::directory_iterator(path))
+	{
+		auto ext = entry.path().extension();
+		if (ext == ".toad" || ext == ".txt")
+		{
+			res.emplace_back(entry.path().stem().string(), entry.last_write_time());
+		}
+	}
+
+	return res;
+}
+
 }

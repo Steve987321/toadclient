@@ -5,6 +5,8 @@
 
 #ifdef TOAD_LOADER
 #include "../../ToadClient/vendor/nlohmann/json.hpp"
+#else
+#include "nlohmann/json.hpp"
 #endif
 
 namespace config
@@ -14,6 +16,15 @@ namespace config
 		std::string FileNameStem;
 		std::filesystem::file_time_type LastWrite;
 	};
+
+	/// Sets the current settings of a json string 
+	void LoadSettings(std::string_view jsonSettings);
+
+	/// Returns the combined data of a and b 
+	nlohmann::json MergeJson(const nlohmann::json& a, const nlohmann::json& b);
+
+	/// Returns a json of the current settings
+	nlohmann::json SettingsToJson();
 
 	/// Load a config from a file
 	///
