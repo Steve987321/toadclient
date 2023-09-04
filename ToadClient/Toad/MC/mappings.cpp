@@ -116,8 +116,6 @@ namespace toadll::mappings
 			methodnames.insert({ mapping::getIdFromBlockStatic, "getIdFromBlock" });
 			methodsigs.insert({ mapping::getIdFromBlockStatic, "(Lnet/minecraft/block/Block;)I" });
 
-			
-
 
 			// Player
 			//auto mcobj = env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));

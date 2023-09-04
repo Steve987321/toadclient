@@ -46,6 +46,7 @@ void LoadSettings(std::string_view jsonSettings)
 		left_clicker::block_hit_ms = data["lc_blockhitms"];
 		left_clicker::block_hit_stop_lclick = data["lc_blockhitpause"];
 		left_clicker::targeting_affects_cps = data["lc_smartcps"];
+		left_clicker::click_check = data["lc_check"];
 		left_clicker::weapons_only = data["lc_weaponsonly"];
 		left_clicker::trade_assist = data["lc_tradeassist"];
 		left_clicker::start_break_blocks_reaction = data["lc_bbStart"];
@@ -247,6 +248,7 @@ json SettingsToJson()
 	data["lc_blockhitms"] = left_clicker::block_hit_ms;
 	data["lc_blockhitpause"] = left_clicker::block_hit_stop_lclick;
 	data["lc_smartcps"] = left_clicker::targeting_affects_cps;
+	data["lc_check"] = left_clicker::click_check;
 	data["lc_weaponsonly"] = left_clicker::weapons_only;
 	data["lc_tradeassist"] = left_clicker::trade_assist;
 	data["lc_bbStart"] = left_clicker::start_break_blocks_reaction;

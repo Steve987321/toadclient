@@ -33,6 +33,17 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
+	if (CVarsUpdater::IsInGui && left_clicker::click_check == CLICK_CHECK::ONLY_GAME)
+	{
+		SLEEP(10);
+		return;
+	}
+	if (!CVarsUpdater::IsInGui && left_clicker::click_check == CLICK_CHECK::ONLY_INVENTORY)
+	{
+		SLEEP(10);
+		return;
+	}
+
 	// also checking outside of autoclicking
 	if (block_hit_timer_started)
 	{
@@ -43,7 +54,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		}
 	}
 
-	if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_LBUTTON) && !CVarsUpdater::IsInGui)
+	if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_LBUTTON))
 	{
 		m_start = std::chrono::high_resolution_clock::now();
 

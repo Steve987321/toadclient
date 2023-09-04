@@ -125,6 +125,15 @@ namespace toad::ui
 		                    ImGui::Checkbox("block hit", &left_clicker::block_hit);
 		                    ImGui::Checkbox("smart cps", &left_clicker::targeting_affects_cps);
 		                    ImGui::Checkbox("trade assist", &left_clicker::trade_assist);
+                            if (ImGui::BeginCombo("click check", clickCheckToCStrMap[left_clicker::click_check], ImGuiComboFlags_NoArrowButton))
+                            {
+                                for (const auto& [clickCheck, name] : clickCheckToCStrMap)
+                                {
+                                    if (ImGui::Selectable(name, clickCheck == left_clicker::click_check))
+                                        left_clicker::click_check = clickCheck;
+                                }
+                                ImGui::EndCombo();
+                            }
                         }, true, 
                         []{
                             if (ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit))

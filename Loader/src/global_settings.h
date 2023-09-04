@@ -31,6 +31,13 @@ namespace toad
 		Forge
 	};
 
+	enum class CLICK_CHECK
+	{
+		ONLY_INVENTORY,
+		ONLY_GAME,
+		ALWAYS
+	};
+
 	enum class ESP_MODE
 	{
 		BOX3D,
@@ -66,6 +73,13 @@ namespace toad
 		{AA_TARGET::FOV, "Closest to Crosshair"},
 	};
 
+	inline std::unordered_map<CLICK_CHECK, const char*> clickCheckToCStrMap =
+	{
+		{CLICK_CHECK::ONLY_INVENTORY, "Only in inventory"},
+		{CLICK_CHECK::ONLY_GAME, "Only in game"},
+		{CLICK_CHECK::ALWAYS, "Always click"},
+	};
+
 	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;
 	inline bool g_is_ui_internal = false;
 
@@ -87,6 +101,7 @@ namespace toad
 		inline bool break_blocks = false; // will hold down lmb when aiming at block
 		inline bool trade_assist = false; // when trading hits cps spikes
 		inline bool targeting_affects_cps = false; // when aiming at target cps is higher, else it lowers
+		inline CLICK_CHECK click_check = CLICK_CHECK::ONLY_GAME; // checks when clicking should happen
 		inline bool block_hit = false; // when hitting player it blocks for ms, see @block_hit_ms
 		inline int block_hit_ms = 50; // rmb hold time 
 		inline bool block_hit_stop_lclick = false; // pauses the left clicker while holding the rmb
