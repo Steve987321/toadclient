@@ -70,7 +70,8 @@ namespace toadll
 
 		// normal velocity
 
-		static int beginHurtTime = 0;
+		// the hurttime value on player hit
+		static int begin_hurt_time = 0;
 
 		if (velocity::only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
 			return;
@@ -80,9 +81,9 @@ namespace toadll
 
 		if (int hurttime = lPlayer->HurtTime; hurttime > 0 && !StopFlag)
 		{
-			if (beginHurtTime < hurttime) beginHurtTime = hurttime;
+			if (begin_hurt_time < hurttime) begin_hurt_time = hurttime;
 
-			if (hurttime != beginHurtTime - (int)velocity::delay)
+			if (hurttime != begin_hurt_time - (int)velocity::delay)
 			{
 				SLEEP(1);
 				return;
@@ -131,7 +132,7 @@ namespace toadll
 		else if (hurttime <= 0)
 		{
 			StopFlag = false;
-			beginHurtTime = 0;
+			begin_hurt_time = 0;
 		}
 
 		SLEEP(1);

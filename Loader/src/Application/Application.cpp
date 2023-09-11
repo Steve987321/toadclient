@@ -46,7 +46,7 @@ namespace toad
             }
         }
 
-        s_Instance = this;
+        s_instance = this;
     }
 
     Application::~Application()
@@ -126,6 +126,6 @@ namespace toad
 
     Application* Application::Get()
     {
-        return s_Instance;
+        return s_instance;
     }
 }

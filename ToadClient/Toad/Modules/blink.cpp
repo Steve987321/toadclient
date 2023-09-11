@@ -48,7 +48,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				tmpPositions.emplace_back(lPlayer->Pos);
 			}
 
-			if (m_canSavePos)
+			if (m_can_save_position)
 			{
 				m_positions = tmpPositions;
 			}
@@ -58,18 +58,18 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		if (m_timer.Elapsed<>() >= blink::limit_seconds * 1000)
 		{
 			DisableBlink();
-			m_canEnable = false;
+			m_can_enable = false;
 		}
 	}
 	else
 	{
-		if (m_canSavePos)
+		if (m_can_save_position)
 		{
 			m_positions.clear();
 		}
 		else
 		{
-			while (!m_canSavePos)
+			while (!m_can_save_position)
 			{
 				SLEEP(1);
 			}
@@ -82,19 +82,19 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (!CVarsUpdater::IsInGui)
 	{
-		if (GetAsyncKeyState(blink::key) && m_canEnable)
+		if (GetAsyncKeyState(blink::key) && m_can_enable)
 		{
 			HWSASend::StopSends = true;
 			if (blink::stop_rec_packets)
 				HWSARecv::StopRecvs = true;
 
 			m_timer.Start();
-			m_canEnable = false;
+			m_can_enable = false;
 		}
 		else if (!GetAsyncKeyState(blink::key))
 		{
 			DisableBlink();
-			m_canEnable = true;
+			m_can_enable = true;
 			SLEEP(10);
 		}
 	}
@@ -122,7 +122,7 @@ void toadll::CBlink::OnRender()
 	glEnable(GL_BLEND);
 	glLineWidth(3.f);
 
-	m_canSavePos = false;
+	m_can_save_position = false;
 
 	// draw lines connecting the positions when blinking
 	for (unsigned int i = 1, j = 0; i < m_positions.size(); i++, j++)
@@ -139,7 +139,7 @@ void toadll::CBlink::OnRender()
 		glEnd();
 	}
 
-	m_canSavePos = true;
+	m_can_save_position = true;
 
 	glDisable(GL_BLEND);
 	glDepthMask(true);

@@ -335,7 +335,7 @@ namespace toad::ui
                 show_graph = false,
                 show_playback = false;
 
-            visual_clicker.dTime = ImGui::GetIO().DeltaTime;
+            visual_clicker.d_time = ImGui::GetIO().DeltaTime;
             if (ImGui::BeginMenuBar())
             {
                 if (ImGui::BeginMenu("Extra"))
