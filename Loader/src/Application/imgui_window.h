@@ -60,32 +60,32 @@ private:
 	void UpdateMenu();
 
 private:
-	std::string m_windowName;
-	std::string m_windowClassName;
+	std::string m_window_name;
+	std::string m_window_class_name;
 
 	int m_window_width, m_window_height;
 
-	std::mutex m_destroyWindowMutex;
+	std::mutex m_destroy_window_mutex;
 
-	std::atomic_bool m_isRunning = true;
-	std::atomic_bool m_shouldClose = false;
+	std::atomic_bool m_running = true;
+	std::atomic_bool m_should_close = false;
 
-	bool m_isUIFuncSet = false;
+	bool m_uifunc_set = false;
 
 	bool m_update_font = false;
 	std::string m_update_font_path;
 
-	inline static std::unordered_map<std::string, ImGuiWindow*> m_windowNameMap = {};
-	inline static std::unordered_map<HWND, ImGuiWindow*> m_windowHwndMap = {};
+	inline static std::unordered_map<std::string, ImGuiWindow*> m_window_from_name = {};
+	inline static std::unordered_map<HWND, ImGuiWindow*> m_window_from_hwnd = {};
 
-	std::function<void(ImGuiIO* io)> m_uiFunction = DefaultUIWindow;
+	std::function<void(ImGuiIO* io)> m_uifunc = DefaultUIWindow;
 
-	std::thread m_windowThread; 
+	std::thread m_window_thread; 
 
 	HWND m_hwnd = {};
 	WNDCLASSEXA m_wc = {};
 
-	D3DProperties m_d3dProperties = {};
+	D3DProperties m_d3d_properties = {};
 
 	// imgui
 	ImGuiIO* m_io = {};

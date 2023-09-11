@@ -7,10 +7,10 @@ class CBlink SET_MODULE_CLASS(CBlink)
 private:
 	Timer m_timer;
 
-	std::atomic_bool m_canSavePos = true;
+	std::atomic_bool m_can_save_position = true;
 
 	/// extra flag that gets checked for when trying to enable blink
-	bool m_canEnable = true;
+	bool m_can_enable = true;
 
 	/// when having blink::show_trail enabled,
 	/// positions of the trail are stored here

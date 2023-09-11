@@ -31,7 +31,7 @@ public:
 	constexpr static int WINDOW_WIDTH = 500, WINDOW_HEIGHT = 400;
 
 private:
-	inline static Application* s_Instance = nullptr;
+	inline static Application* s_instance = nullptr;
 	std::shared_ptr<ImGuiWindow> m_window = nullptr;
 
 	void InitConsole();

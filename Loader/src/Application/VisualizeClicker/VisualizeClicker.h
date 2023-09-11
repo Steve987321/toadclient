@@ -21,7 +21,7 @@ public:
 	void SetRand(const toadll::Randomization& rand);
 
 public:
-	float dTime = 0;
+	float d_time = 0;
 
 private:
 	void clicking_thread();
@@ -35,13 +35,13 @@ private:
 	void update_rand();
 
 private:
-	toadll::Timer m_randDelayTimer;
+	toadll::Timer m_rand_delay_timer;
 
-	std::queue<toadll::Timer> m_trackCpsQueue;
+	std::queue<toadll::Timer> m_click_queue;
 
 private:
 	std::thread m_clicking_thread;
-	std::atomic_bool m_isThreadRunning = false;
+	std::atomic_bool m_thread_running = false;
 
 private:
 	// ~same as clicker 

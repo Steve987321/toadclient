@@ -161,22 +161,23 @@ namespace toad::ui
 
         ImGui::Begin("clicker rand edit", enabled, ImGuiWindowFlags_NoSavedSettings);
         {
-            const int incN = left_clicker::rand.inconsistencies.size();
-            const int inc2N = left_clicker::rand.inconsistencies2.size();
-            const int boostsN = left_clicker::rand.boosts.size();
+            const int n_inconsistencies = left_clicker::rand.inconsistencies.size();
+            const int n_inconsistencies2 = left_clicker::rand.inconsistencies2.size();
+            const int n_boosts = left_clicker::rand.boosts.size();
 
-            static std::queue<int> removeInconsistencyQueue = {};
-            static std::queue<int> removeInconsistency2Queue = {};
-            static std::queue<int> removeBoostQueue = {};
+            // stores the index
+            static std::queue<int> remove_inconsistency_queue = {};
+            static std::queue<int> remove_inconsistency2_queue = {};
+            static std::queue<int> remove_boost_queue = {};
 
-            if (ImGui::TreeNode(("Inconsistencies (mouse down) " + std::to_string(incN)).c_str()))
+            if (ImGui::TreeNode(("Inconsistencies (mouse down) " + std::to_string(n_inconsistencies)).c_str()))
             {
-                for (int i = 0; i < incN; i++)
+                for (int i = 0; i < n_inconsistencies; i++)
                 {
                     ImGui::PushID(i);
                     if (ImGui::Button("X"))
                     {
-                        removeInconsistencyQueue.push(i);
+                        remove_inconsistency_queue.push(i);
                     }
                     ImGui::PopID();
 
@@ -203,11 +204,11 @@ namespace toad::ui
                     }
                 }
 
-                while (!removeInconsistencyQueue.empty())
+                while (!remove_inconsistency_queue.empty())
                 {
-                    const auto index = removeInconsistencyQueue.front();
+                    const auto index = remove_inconsistency_queue.front();
                     left_clicker::rand.inconsistencies.erase(left_clicker::rand.inconsistencies.begin() + index);
-                    removeInconsistencyQueue.pop();
+                    remove_inconsistency_queue.pop();
                 }
 
                 if (ImGui::Button("+"))
@@ -216,14 +217,14 @@ namespace toad::ui
                 }
                 ImGui::TreePop();
             }
-            if (ImGui::TreeNode(("Inconsistencies (mouse up) " + std::to_string(inc2N)).c_str()))
+            if (ImGui::TreeNode(("Inconsistencies (mouse up) " + std::to_string(n_inconsistencies2)).c_str()))
             {
-                for (int i = 0; i < inc2N; i++)
+                for (int i = 0; i < n_inconsistencies2; i++)
                 {
                     ImGui::PushID(i);
                     if (ImGui::Button("X"))
                     {
-                        removeInconsistency2Queue.push(i);
+                        remove_inconsistency2_queue.push(i);
                     }
                     ImGui::PopID();
 
@@ -250,11 +251,11 @@ namespace toad::ui
                     }
                 }
 
-                while (!removeInconsistency2Queue.empty())
+                while (!remove_inconsistency2_queue.empty())
                 {
-                    const auto index = removeInconsistency2Queue.front();
+                    const auto index = remove_inconsistency2_queue.front();
                     left_clicker::rand.inconsistencies2.erase(left_clicker::rand.inconsistencies2.begin() + index);
-                    removeInconsistency2Queue.pop();
+                    remove_inconsistency2_queue.pop();
                 }
 
                 if (ImGui::Button("+"))
@@ -263,14 +264,14 @@ namespace toad::ui
                 }
                 ImGui::TreePop();
             }
-            if (ImGui::TreeNode(("Boosts/Drops " + std::to_string(boostsN)).c_str()))
+            if (ImGui::TreeNode(("Boosts/Drops " + std::to_string(n_boosts)).c_str()))
             {
-                for (int i = 0; i < boostsN; i++)
+                for (int i = 0; i < n_boosts; i++)
                 {
                     ImGui::PushID(i);
                     if (ImGui::Button("X"))
                     {
-                        removeBoostQueue.push(i);
+                        remove_boost_queue.push(i);
                     }
                     ImGui::PopID();
 
@@ -297,22 +298,22 @@ namespace toad::ui
                     }
                 }
 
-                while (!removeBoostQueue.empty())
+                while (!remove_boost_queue.empty())
                 {
-                    const auto index = removeBoostQueue.front();
+                    const auto index = remove_boost_queue.front();
                     left_clicker::rand.boosts.erase(left_clicker::rand.boosts.begin() + index);
-                    removeBoostQueue.pop();
+                    remove_boost_queue.pop();
                 }
 
                 if (ImGui::Button("+"))
                 {
-                    left_clicker::rand.boosts.emplace_back(0.5f, 5, 50, 20, 50, boostsN);
+                    left_clicker::rand.boosts.emplace_back(0.5f, 5, 50, 20, 50, n_boosts);
                 }
                 ImGui::TreePop();
             }
             if (ImGui::Button("Update Rand"))
             {
-                visualClicker.SetRand(left_clicker::rand);
+                visual_clicker.SetRand(left_clicker::rand);
                 left_clicker::update_rand_flag = true;
             }
             if (left_clicker::update_rand_flag)
@@ -330,18 +331,18 @@ namespace toad::ui
         ImGui::Begin("clicker rand visualize", enabled, ImGuiWindowFlags_NoSavedSettings);
         {
         	static bool
-                showRand = false,
-                showGraph = false,
-                showPlayback = false;
+                show_rand = false,
+                show_graph = false,
+                show_playback = false;
 
-            visualClicker.dTime = ImGui::GetIO().DeltaTime;
+            visual_clicker.dTime = ImGui::GetIO().DeltaTime;
             if (ImGui::BeginMenuBar())
             {
                 if (ImGui::BeginMenu("Extra"))
                 {
-                    ImGui::MenuItem("Show Graph", nullptr, &showGraph);
-                    ImGui::MenuItem("Show Playback", nullptr, &showPlayback);
-                    ImGui::MenuItem("Show Rand Status", nullptr, &showRand);
+                    ImGui::MenuItem("Show Graph", nullptr, &show_graph);
+                    ImGui::MenuItem("Show Playback", nullptr, &show_playback);
+                    ImGui::MenuItem("Show Rand Status", nullptr, &show_rand);
 
                     ImGui::EndMenu();
                 }
@@ -349,21 +350,21 @@ namespace toad::ui
                 ImGui::EndMenuBar();
             }
 
-            static bool isPlaying = false;
-            if (ImGui::Button(isPlaying ? "pause" : "play"))
+            static bool is_playing = false;
+            if (ImGui::Button(is_playing ? "pause" : "play"))
             {
-                isPlaying = !isPlaying;
-                isPlaying ? visualClicker.Start() : visualClicker.Stop();
+                is_playing = !is_playing;
+                is_playing ? visual_clicker.Start() : visual_clicker.Stop();
             }
 
-            if (isPlaying)
+            if (is_playing)
             {
 
             }
 
-            ImGui::Text("CPS: %d", visualClicker.GetCPS());
+            ImGui::Text("CPS: %d", visual_clicker.GetCPS());
 
-            const auto& rand = visualClicker.GetRand();
+            const auto& rand = visual_clicker.GetRand();
             ImGui::Text("range(%f - %f) | delay: %f", rand.edited_min, rand.edited_max, rand.delay);
             ImGui::Text("inconsistency delay: %f", rand.inconsistency_delay);
 
@@ -410,10 +411,10 @@ namespace toad::ui
         {
             const auto window_pos = ImGui::GetWindowPos();
 
-            const auto childsize = ImGui::GetWindowSize();
+            const auto child_size = ImGui::GetWindowSize();
 
             ImVec2 min = { window_pos.x + window_spacing + 20 , window_pos.y + window_spacing + 20 };
-            ImVec2 max = { window_pos.x + childsize.x - window_spacing - 20,  window_pos.y + childsize.y - window_spacing - 20 };
+            ImVec2 max = { window_pos.x + child_size.x - window_spacing - 20,  window_pos.y + child_size.y - window_spacing - 20 };
             
             // esp box
             ImGui::GetWindowDrawList()->AddRectFilled({min.x - 1, min.y - 1}, {max.x + 1, max.y + 1}, ImGui::GetColorU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] }));
@@ -454,15 +455,15 @@ namespace toad::ui
             const auto text_col_imu32 = ImGui::GetColorU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
 
             // text position (positioned inside the background box) 
-            auto boxPosYText = std::lerp(min.y - 5 - halfsizey * 2, min.y - 5, 0.9f) - esp::text_size;
+            auto pos_y_text = std::lerp(min.y - 5 - halfsizey * 2, min.y - 5, 0.9f) - esp::text_size;
 
             if (esp::text_shadow)
             {
-                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex - 1, boxPosYText - 1 }, IM_COL32_BLACK, text);
-                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex + 1, boxPosYText + 1 }, IM_COL32_BLACK, text);
+                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex - 1, pos_y_text - 1 }, IM_COL32_BLACK, text);
+                ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex + 1, pos_y_text + 1 }, IM_COL32_BLACK, text);
             }
 
-            ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex, boxPosYText }, text_col_imu32, text);
+            ImGui::GetWindowDrawList()->AddText(preview_font, esp::text_size, { infoPosX - halfsizex, pos_y_text }, text_col_imu32, text);
 
             if (esp::show_health)
             {

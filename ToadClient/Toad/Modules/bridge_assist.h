@@ -19,10 +19,10 @@ private:
 
 	// true if player is on the egde of a block
 	// m_prev will store the previous value of m_isEdge, this will help when player has entered or left an edge
-	bool m_isEdge = false, m_prev = false; 
+	bool m_is_edge = false, m_prev = false; 
 
 	// used for block_esp::only_initiate_when_sneaking
-	bool m_hasPressedShift = false;
+	bool m_has_pressed_shift = false;
 };
 
 }

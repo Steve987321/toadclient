@@ -43,7 +43,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	// our (locked) target
 	static std::shared_ptr<c_Entity> target = nullptr;
-	static Vec3 targetPos = {0, 0, 0};
+	static Vec3 target_pos = {0, 0, 0};
 
 	// horizontal and vertical speed
 	float speed = aa::speed * 3;
@@ -55,13 +55,13 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (aa::lock_aim && target != nullptr)
 	{
-		targetPos = target->getPosition();
+		target_pos = target->getPosition();
 
 		// check if the target is still inside bounds and valid 
 		if (
-			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, targetPos).first))) <= aa::fov
+			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first))) <= aa::fov
 			&&
-			targetPos.dist(lPlayer->Pos) <= aa::distance
+			target_pos.dist(lPlayer->Pos) <= aa::distance
 			)
 
 			skip_get_target = true;
@@ -92,7 +92,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				if (yaw_diff < minimal_angle_diff)
 				{
 					minimal_angle_diff = yaw_diff;
-					targetPos = entityPos;
+					target_pos = entityPos;
 					target = e;
 				}
 			}
@@ -101,7 +101,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				if (entityHealth < lowestHealth)
 				{
 					lowestHealth = entityHealth;
-					targetPos = entityPos;
+					target_pos = entityPos;
 					target = e;
 				}
 			}
@@ -123,11 +123,11 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			});
 
 			target = t->second.first;
-			targetPos = t->second.first->getPosition();
+			target_pos = t->second.first->getPosition();
 		}
 		else if (aa::target_mode == AA_TARGET::HEALTH)
 		{
-			const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, targetPos).first)));
+			const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first)));
 			if (l_yaw_diff > minimal_angle_diff) // target out of fov range
 			{
 				SLEEP(10);
@@ -143,33 +143,33 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	}
 
 	auto lplayer_pos = lPlayer->Pos;
-	Vec3 aimPoint;
+	Vec3 aim_point;
 
 	if (aa::aim_at_closest_point) // aims at the closest point of target
 	{
 		auto playerbb =
 			g_curr_client == MC_CLIENT::Lunar_189
-			? BBox({ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z - 0.3f }, { targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z + 0.3f })
-			: BBox({ targetPos.x - 0.3f, targetPos.y, targetPos.z - 0.3f }, { targetPos.x + 0.3f, targetPos.y + 1.8f, targetPos.z + 0.3f });
+			? BBox({ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z + 0.3f })
+			: BBox({ target_pos.x - 0.3f, target_pos.y, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 1.8f, target_pos.z + 0.3f });
 		auto closest_corner = getClosesetPoint(playerbb, lplayer_pos);
-		aimPoint = closest_corner;
+		aim_point = closest_corner;
 	}
 	else // aims to target if players aim is not inside hitbox 
 	{
 		// hitbox vertices
 		if (g_curr_client == MC_CLIENT::Lunar_171)
-			targetPos.y += 1.6f;
+			target_pos.y += 1.6f;
 
 		const std::vector<Vec3> bbox_corners
 		{
-			{ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z + 0.3f },
-			{ targetPos.x - 0.3f, targetPos.y - 1.6f, targetPos.z - 0.3f },
-			{ targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z - 0.3f },
-			{ targetPos.x + 0.3f, targetPos.y + 0.2f, targetPos.z + 0.3f },
+			{ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z + 0.3f },
+			{ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z - 0.3f },
+			{ target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z - 0.3f },
+			{ target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z + 0.3f },
 		};
 
 		auto lplayer_yaw = lPlayer->Yaw;
-		auto yawdiff_to_pos = wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, targetPos).first));
+		auto yawdiff_to_pos = wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, target_pos).first));
 
 		const std::vector<float> yawdiffs = {
 			wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, bbox_corners.at(0)).first)),
@@ -196,21 +196,21 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			}
 		}		
 
-		aimPoint = targetPos;
+		aim_point = target_pos;
 	}
 
-	auto [yawtarget, pitchtarget] = get_angles(lPlayer->Pos, aimPoint/*target->get_position()*/);
+	auto [yawtarget, pitchtarget] = get_angles(lPlayer->Pos, aim_point/*target->get_position()*/);
 
 	auto lyaw = lPlayer->Yaw;
 	auto lpitch = lPlayer->Pitch;
 
 	// the horizontal distance to aim to aim at target
-	float yawDiff = wrap_to_180(-(lyaw - yawtarget));
+	float yaw_diff = wrap_to_180(-(lyaw - yawtarget));
 
-	float pitchDiff = wrap_to_180(-(lpitch - pitchtarget));
+	float pitch_diff = wrap_to_180(-(lpitch - pitchtarget));
 
-	yawDiff += rand_float(-2.f, 2.f);
-	pitchDiff += rand_float(-2.f, 2.f);
+	yaw_diff += rand_float(-2.f, 2.f);
+	pitch_diff += rand_float(-2.f, 2.f);
 
 	const int rand_100 = rand_int(0, 100);
 
@@ -233,7 +233,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (static bool once = false; !once || reaction_time_timer.Elapsed<>() > aa::reaction_time)
 	{
-		yawdiff_speed = yawDiff / (15000.f / speed * long_speed_modifier_smooth);
+		yawdiff_speed = yaw_diff / (15000.f / speed * long_speed_modifier_smooth);
 		once = true;
 		reaction_time_timer.Start();
 	}
@@ -292,8 +292,8 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	if (!aa::horizontal_only)
 	{
 		auto updatedPitch = editable_local_player->getRotationPitch();
-		editable_local_player->setRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
-		editable_local_player->setPrevRotationPitch(updatedPitch + pitchDiff / (15000.f / speed));
+		editable_local_player->setRotationPitch(updatedPitch + pitch_diff / (15000.f / speed));
+		editable_local_player->setPrevRotationPitch(updatedPitch + pitch_diff / (15000.f / speed));
 	}
 }
 

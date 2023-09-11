@@ -18,7 +18,7 @@ namespace toad::ui
     extern void ui_main(const ImGuiIO* io);
     extern void ui_init(const ImGuiIO* io);
 
-    inline VisualizeClicker visualClicker;
+    inline VisualizeClicker visual_clicker;
 
     // loader extra setting window functions
     extern void clicker_rand_editor(bool* enabled);
@@ -110,14 +110,14 @@ namespace toad::ui
                             {
                                 // update rand delays
                                 left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                visualClicker.SetRand(left_clicker::rand);
+                                visual_clicker.SetRand(left_clicker::rand);
                             }
 
                         	if (ImGui::SliderInt("max cps", &left_clicker::max_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
                                 {
                                     // update rand delays
 									left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                    visualClicker.SetRand(left_clicker::rand);
+                                    visual_clicker.SetRand(left_clicker::rand);
                                 }
 
 		                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
@@ -138,15 +138,15 @@ namespace toad::ui
                         []{
                             if (ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit))
                             {
-                                auto rand = visualClicker.GetRand();
+                                auto rand = visual_clicker.GetRand();
                                 rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                visualClicker.SetRand(rand);
+                                visual_clicker.SetRand(rand);
                             }
                             else if (ImGui::Checkbox("Visualize Randomization", &clicker_rand_visualize))
                             {
-                                auto rand = visualClicker.GetRand();
+                                auto rand = visual_clicker.GetRand();
                                 rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                visualClicker.SetRand(rand);
+                                visual_clicker.SetRand(rand);
                             }
 
 							ImGui::Spacing();

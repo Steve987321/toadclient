@@ -26,7 +26,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			UnSneak();
 		}
-		m_hasPressedShift = false;
+		m_has_pressed_shift = false;
 		SLEEP(100);
 		return;
 	}
@@ -38,16 +38,16 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			UnSneak();
 		}
-		m_hasPressedShift = false;
+		m_has_pressed_shift = false;
 		SLEEP(50);
 		return;		
 	}
 
 	if (bridge_assist::only_initiate_when_sneaking)
 	{
-		if (!m_hasPressedShift && isSneaking)
+		if (!m_has_pressed_shift && isSneaking)
 		{
-			m_hasPressedShift = true;
+			m_has_pressed_shift = true;
 		}
 	}
 
@@ -58,13 +58,13 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		if (isSneaking)
 			UnSneak();
 
-		m_hasPressedShift = false;
+		m_has_pressed_shift = false;
 
 		SLEEP(1);
 		return;
 	}
 
-	if (!m_hasPressedShift)
+	if (!m_has_pressed_shift)
 	{
 		SLEEP(1);
 		return;
@@ -89,8 +89,8 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	static bool jumped = false;
 
-	m_prev = m_isEdge;
-	m_isEdge = false;
+	m_prev = m_is_edge;
+	m_is_edge = false;
 
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
@@ -131,7 +131,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 void CBridgeAssist::Sneak()
 {
-	m_isEdge = true;
+	m_is_edge = true;
 	if (!m_prev)
 	{
 		send_key(VK_SHIFT, true);
@@ -141,7 +141,7 @@ void CBridgeAssist::Sneak()
 
 void CBridgeAssist::UnSneak()
 {
-	m_isEdge = false;
+	m_is_edge = false;
 	if (m_prev)
 	{
 		send_key(VK_SHIFT, false);

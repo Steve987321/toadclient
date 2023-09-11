@@ -39,23 +39,23 @@ DWORD WINAPI toadll::init()
 #endif
 
 	// get functions from jvm.dll
-	auto jvmHandle = GetModuleHandleA("jvm.dll");
+	auto jvm_handle = GetModuleHandleA("jvm.dll");
 
-	if (jvmHandle == nullptr)
+	if (jvm_handle == nullptr)
 	{
 		clean_up(1, "Failed to get handle from jvm.dll");
 		return 1;
 	}
 
-	jvmfunc::oJNI_GetCreatedJavaVMs = reinterpret_cast<jvmfunc::hJNI_GetCreatedJavaVMs>(GetProcAddress(jvmHandle, "JNI_GetCreatedJavaVMs"));
-	jvmfunc::oJVM_GetMethodIxNameUTF = reinterpret_cast<jvmfunc::hJVM_GetMethodIxNameUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxNameUTF"));
-	jvmfunc::oJVM_GetMethodIxSignatureUTF = reinterpret_cast<jvmfunc::hJVM_GetMethodIxSignatureUTF>(GetProcAddress(jvmHandle, "JVM_GetMethodIxSignatureUTF"));
-	jvmfunc::oJVM_GetClassMethodsCount = reinterpret_cast<jvmfunc::hJVM_GetClassMethodsCount>(GetProcAddress(jvmHandle, "JVM_GetClassMethodsCount"));
-	jvmfunc::oJVM_GetClassFieldsCount = reinterpret_cast<jvmfunc::hJVM_GetClassFieldsCount>(GetProcAddress(jvmHandle, "JVM_GetClassFieldsCount"));
-	jvmfunc::oJVM_GetClassDeclaredFields = reinterpret_cast<jvmfunc::hJVM_GetClassDeclaredFields>(GetProcAddress(jvmHandle, "JVM_GetClassDeclaredFields"));
-	jvmfunc::oJVM_GetArrayElement = reinterpret_cast<jvmfunc::hJVM_GetArrayElement>(GetProcAddress(jvmHandle, "JVM_GetArrayElement"));
-	jvmfunc::oJVM_GetArrayLength = reinterpret_cast<jvmfunc::hJVM_GetArrayLength>(GetProcAddress(jvmHandle, "JVM_GetArrayLength"));
-	jvmfunc::oJVM_GetMethodIxArgsSize = reinterpret_cast<jvmfunc::hJVM_GetMethodIxArgsSize>(GetProcAddress(jvmHandle, "JVM_GetMethodIxArgsSize"));
+	jvmfunc::oJNI_GetCreatedJavaVMs = reinterpret_cast<jvmfunc::hJNI_GetCreatedJavaVMs>(GetProcAddress(jvm_handle, "JNI_GetCreatedJavaVMs"));
+	jvmfunc::oJVM_GetMethodIxNameUTF = reinterpret_cast<jvmfunc::hJVM_GetMethodIxNameUTF>(GetProcAddress(jvm_handle, "JVM_GetMethodIxNameUTF"));
+	jvmfunc::oJVM_GetMethodIxSignatureUTF = reinterpret_cast<jvmfunc::hJVM_GetMethodIxSignatureUTF>(GetProcAddress(jvm_handle, "JVM_GetMethodIxSignatureUTF"));
+	jvmfunc::oJVM_GetClassMethodsCount = reinterpret_cast<jvmfunc::hJVM_GetClassMethodsCount>(GetProcAddress(jvm_handle, "JVM_GetClassMethodsCount"));
+	jvmfunc::oJVM_GetClassFieldsCount = reinterpret_cast<jvmfunc::hJVM_GetClassFieldsCount>(GetProcAddress(jvm_handle, "JVM_GetClassFieldsCount"));
+	jvmfunc::oJVM_GetClassDeclaredFields = reinterpret_cast<jvmfunc::hJVM_GetClassDeclaredFields>(GetProcAddress(jvm_handle, "JVM_GetClassDeclaredFields"));
+	jvmfunc::oJVM_GetArrayElement = reinterpret_cast<jvmfunc::hJVM_GetArrayElement>(GetProcAddress(jvm_handle, "JVM_GetArrayElement"));
+	jvmfunc::oJVM_GetArrayLength = reinterpret_cast<jvmfunc::hJVM_GetArrayLength>(GetProcAddress(jvm_handle, "JVM_GetArrayLength"));
+	jvmfunc::oJVM_GetMethodIxArgsSize = reinterpret_cast<jvmfunc::hJVM_GetMethodIxArgsSize>(GetProcAddress(jvm_handle, "JVM_GetMethodIxArgsSize"));
 
 	jvmfunc::oJNI_GetCreatedJavaVMs(&g_jvm, 1, nullptr);
 
@@ -244,7 +244,7 @@ bool UpdateSettings()
 	json data = json::parse(settings);
 
 	// flag that will make sure the menu will show when switching to internal ui
-	static bool openMenuOnceFlag = true;
+	static bool open_menu_once_flag = true;
 
 	// things that are written to data till memcpy gets called will be read by the loader 
 
@@ -254,7 +254,7 @@ bool UpdateSettings()
 		{
 			if (CInternalUI::ShouldClose && !data["ui_internal"])
 			{
-				openMenuOnceFlag = true;
+				open_menu_once_flag = true;
 				CInternalUI::ShouldClose = false;
 			}
 		}
@@ -340,10 +340,10 @@ bool UpdateSettings()
 		g_is_ui_internal = data["ui_internal"];
 		CInternalUI::ShouldClose = false;
 
-		if (openMenuOnceFlag && g_is_ui_internal)
+		if (open_menu_once_flag && g_is_ui_internal)
 		{
 			CInternalUI::MenuIsOpen = true;
-			openMenuOnceFlag = false;
+			open_menu_once_flag = false;
 		}
 	}
 
@@ -493,17 +493,17 @@ bool UpdateSettings()
 void init_modules()
 {
 	// Instantiate all cheat modules
-	CVarsUpdater::GetInstance()->name = "Vars updater";
-	CLeftAutoClicker::GetInstance()->name = "Left autoclicker";
-	CRightAutoClicker::GetInstance()->name = "Left autoclicker";
-	CAimAssist::GetInstance()->name = "Aim assist";
-	CEsp::GetInstance()->name = "Esp";
-	CBlockEsp::GetInstance()->name = "Block esp";
-	CVelocity::GetInstance()->name = "Velocity";
-	CBlink::GetInstance()->name = "Blink";
-	CInternalUI::GetInstance()->name = "Internal ui";
-	CBridgeAssist::GetInstance()->name = "Auto bridge";
-	CNoClickDelay::GetInstance()->name = "No Click Delay";
+	CVarsUpdater::GetInstance()->Name = "Vars updater";
+	CLeftAutoClicker::GetInstance()->Name = "Left autoclicker";
+	CRightAutoClicker::GetInstance()->Name = "Left autoclicker";
+	CAimAssist::GetInstance()->Name = "Aim assist";
+	CEsp::GetInstance()->Name = "Esp";
+	CBlockEsp::GetInstance()->Name = "Block esp";
+	CVelocity::GetInstance()->Name = "Velocity";
+	CBlink::GetInstance()->Name = "Blink";
+	CInternalUI::GetInstance()->Name = "Internal ui";
+	CBridgeAssist::GetInstance()->Name = "Auto bridge";
+	CNoClickDelay::GetInstance()->Name = "No Click Delay";
 	//CReach::GetInstance()->name = "Reach";
 	//COfScreenArrows::GetInstance()->name = "Off Screen Arrow ESP";
 
@@ -517,7 +517,7 @@ void init_modules()
 			continue;
 		}
 
-		LOGDEBUG("Starting cheat module: {}", Module->name);
+		LOGDEBUG("Starting cheat module: {}", Module->Name);
 
 		cmodule_threads.emplace_back([&]()
 			{
@@ -550,7 +550,7 @@ void init_modules()
 			}
 		}
 
-		LOGDEBUG("Closing cheat module: {}", Module->name);
+		LOGDEBUG("Closing cheat module: {}", Module->Name);
 		g_jvm->DetachCurrentThread();
 			});
 	}

@@ -20,19 +20,19 @@ VisualizeClicker::~VisualizeClicker()
 
 void VisualizeClicker::Start()
 {
-	m_isThreadRunning = true;
+	m_thread_running = true;
 	m_clicking_thread = std::thread(&VisualizeClicker::clicking_thread, this);
 } 
 
 void VisualizeClicker::Stop()
 {
-	m_isThreadRunning = false;
+	m_thread_running = false;
 	if (m_clicking_thread.joinable()) m_clicking_thread.join();
 }
 
 int VisualizeClicker::GetCPS() const
 {
-	return m_trackCpsQueue.size();
+	return m_click_queue.size();
 }
 
 toadll::Randomization VisualizeClicker::GetRand()
@@ -43,7 +43,7 @@ toadll::Randomization VisualizeClicker::GetRand()
 void VisualizeClicker::SetRand(const toadll::Randomization& rand)
 {
 	bool restart = false;
-	if (m_isThreadRunning)
+	if (m_thread_running)
 	{
 		restart = true;
 		Stop();
@@ -55,25 +55,25 @@ void VisualizeClicker::SetRand(const toadll::Randomization& rand)
 
 void VisualizeClicker::clicking_thread()
 {
-	while (m_isThreadRunning)
+	while (m_thread_running)
 	{
 		// m_delayTimer gets resetted in the click functions 
 		click_down();
-		while (m_randDelayTimer.Elapsed<>() < m_rand.delay + m_rand.inconsistency_delay)
+		while (m_rand_delay_timer.Elapsed<>() < m_rand.delay + m_rand.inconsistency_delay)
 		{
-			if (!m_trackCpsQueue.empty())
-				if (m_trackCpsQueue.front().Elapsed<>() >= 1000.f)
+			if (!m_click_queue.empty())
+				if (m_click_queue.front().Elapsed<>() >= 1000.f)
 				{
-					m_trackCpsQueue.pop();
+					m_click_queue.pop();
 				}
 		}
 		click_up();
-		while (m_randDelayTimer.Elapsed<>() < m_rand.delay + m_rand.inconsistency_delay)
+		while (m_rand_delay_timer.Elapsed<>() < m_rand.delay + m_rand.inconsistency_delay)
 		{
-			if (!m_trackCpsQueue.empty())
-				if (m_trackCpsQueue.front().Elapsed<>() >= 1000.f)
+			if (!m_click_queue.empty())
+				if (m_click_queue.front().Elapsed<>() >= 1000.f)
 				{
-					m_trackCpsQueue.pop();
+					m_click_queue.pop();
 				}
 		}
 	}
@@ -85,9 +85,9 @@ void VisualizeClicker::click_down()
 
 	apply_rand(m_rand.inconsistencies);
 
-	m_randDelayTimer.Start(); // where the sleep should be in the actual clicker
+	m_rand_delay_timer.Start(); // where the sleep should be in the actual clicker
 
-	m_trackCpsQueue.emplace();
+	m_click_queue.emplace();
 
 	update_rand();
 }
@@ -98,7 +98,7 @@ void VisualizeClicker::click_up()
 
 	apply_rand(m_rand.inconsistencies2);
 
-	m_randDelayTimer.Start(); // where the sleep should be in the actual clicker
+	m_rand_delay_timer.Start(); // where the sleep should be in the actual clicker
 
 	// don't add, only for click_down
 	//m_trackCpsQueue.emplace();

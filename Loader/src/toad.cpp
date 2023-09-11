@@ -71,8 +71,8 @@ bool toad::init()
 
 void update_settings()
 {
-	auto pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0);
-	if (pMem == NULL)
+	auto pmem = MapViewOfFile(hMapFile, FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0);
+	if (pmem == NULL)
 	{
 		std::cout << "[!] something went wrong calling MapViewOfFile\n";
 		return;
@@ -80,28 +80,28 @@ void update_settings()
 
 	using json = nlohmann::json;
 
-	auto s = std::string(static_cast<LPCSTR>(pMem));
-	json dataIn;
+	auto s = std::string(static_cast<LPCSTR>(pmem));
+	json d_in;
 	if (!s.empty())
 	{
 		auto endof = s.find("END");
 		std::string settings = s.substr(0, endof);
-		dataIn = json::parse(settings);
+		d_in = json::parse(settings);
 	}
 
-	json dataOut;
+	json d_out;
 
 	// don't update these in a loop
 
-	if (dataIn.contains("ui_internal_should_close"))
+	if (d_in.contains("ui_internal_should_close"))
 	{
-		if (dataIn["ui_internal_should_close"])
+		if (d_in["ui_internal_should_close"])
 		{
 			if (g_is_ui_internal)
 			{
 				ShowWindow(Application::Get()->GetWindow()->GetHandle(), SW_SHOW);
-				dataOut["ui_internal_should_close"] = false;
-				dataOut["ui_internal"] = false;
+				d_out["ui_internal_should_close"] = false;
+				d_out["ui_internal"] = false;
 				g_is_ui_internal = false;
 			}
 		}
@@ -110,15 +110,15 @@ void update_settings()
 	if (left_clicker::update_rand_flag)
 	{
 		// rand
-		json lcRandInconsistenties = json::object();
-		json lcRandInconsistenties2 = json::object();
-		json lcRandBoosts = json::object();
+		json lc_rand_inconsistenties = json::object();
+		json lc_rand_inconsistenties2 = json::object();
+		json lc_rand_boosts = json::object();
 
 		for (int i = 0; i < left_clicker::rand.boosts.size(); i++)
 		{
 			const auto& b = left_clicker::rand.boosts[i];
 
-			lcRandBoosts[std::to_string(b.id)] =
+			lc_rand_boosts[std::to_string(b.id)] =
 			{
 				//float amount, float dur, float transition_dur, Vec2 freq, int id
 				{"n", b.amount_ms},
@@ -134,7 +134,7 @@ void update_settings()
 			//float min, float max, int chance, int frequency)
 
 			const auto& in = left_clicker::rand.inconsistencies[i];
-			lcRandInconsistenties[std::to_string(i)] =
+			lc_rand_inconsistenties[std::to_string(i)] =
 			{
 				{"nmin", in.min_amount_ms},
 				{"nmax", in.max_amount_ms},
@@ -147,7 +147,7 @@ void update_settings()
 		{
 			const auto& in = left_clicker::rand.inconsistencies2[i];
 
-			lcRandInconsistenties2[std::to_string(i)] =
+			lc_rand_inconsistenties2[std::to_string(i)] =
 			{
 				{"nmin", in.min_amount_ms},
 				{"nmax", in.max_amount_ms},
@@ -156,20 +156,20 @@ void update_settings()
 			};
 		}
 
-		dataOut["lc_randb"] = lcRandBoosts;
-		dataOut["lc_randi"] = lcRandInconsistenties;
-		dataOut["lc_randi2"] = lcRandInconsistenties2;
-		dataOut["updatelcrand"] = 1;
+		d_out["lc_randb"] = lc_rand_boosts;
+		d_out["lc_randi"] = lc_rand_inconsistenties;
+		d_out["lc_randi2"] = lc_rand_inconsistenties2;
+		d_out["updatelcrand"] = 1;
 	
-		if (dataIn.contains("done"))
+		if (d_in.contains("done"))
 			left_clicker::update_rand_flag = false;
 	}
 
 	if (esp::update_font_flag)
 	{
-		dataOut["esp_font"] = esp::font_path.c_str();
+		d_out["esp_font"] = esp::font_path.c_str();
 
-		if (dataIn.contains("done")) {
+		if (d_in.contains("done")) {
 			esp::update_font_flag = false;
 		}
 	}
@@ -178,20 +178,20 @@ void update_settings()
 	static bool once = false;
 	if (!once)
 	{
-		dataOut["path"] = loader_path.c_str();
-		if (dataIn.contains("donepath"))
+		d_out["path"] = loader_path.c_str();
+		if (d_in.contains("donepath"))
 		{
 			once = true;
 		}
 	}
 
-	dataOut["client_type"] = g_curr_client;
-	dataOut["config"] = loaded_config;
+	d_out["client_type"] = g_curr_client;
+	d_out["config"] = loaded_config;
 
-	dataOut = config::MergeJson(dataOut, config::SettingsToJson());
+	d_out = config::MergeJson(d_out, config::SettingsToJson());
 
 	std::stringstream ss;
-	ss << dataOut << "END";
+	ss << d_out << "END";
 
 	if (static bool once = false; !once)
 	{
@@ -205,9 +205,9 @@ void update_settings()
 		once = true;
 	}
 	//OutputDebugStringA(ss.str().c_str());
-	memcpy(pMem, ss.str().c_str(), ss.str().length());
+	memcpy(pmem, ss.str().c_str(), ss.str().length());
 
-	UnmapViewOfFile(pMem);
+	UnmapViewOfFile(pmem);
 }
 
 void toad::stop_all_threads()

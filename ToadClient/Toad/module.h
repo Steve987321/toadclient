@@ -18,7 +18,7 @@ public:
 public:
 	bool Initialized = false;
 
-	std::string name; 
+	std::string Name; 
 
 	// will skip creating a thread for this module on initialization
 	bool IsOnlyRendering = false;

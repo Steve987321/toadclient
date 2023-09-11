@@ -166,7 +166,7 @@ struct Entity
     float Pitch = 0;
     float Yaw = 0;
 
-    jobject obj = nullptr;
+    jobject Obj = nullptr;
 
 };
 
@@ -178,10 +178,10 @@ struct LocalPlayer : Entity
 
 struct MCMap
 {
-    MCMap(const char* n, const char* s) : name(n), sig(s) {}
+    MCMap(const char* n, const char* s) : Name(n), Sig(s) {}
 
-    const char* name;
-    const char* sig;
+    const char* Name;
+    const char* Sig;
 };
 
 enum class mappingFields
