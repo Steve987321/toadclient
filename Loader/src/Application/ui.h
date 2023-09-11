@@ -18,7 +18,7 @@ namespace toad::ui
     extern void ui_main(const ImGuiIO* io);
     extern void ui_init(const ImGuiIO* io);
 
-    inline VisualizeClicker vClick;
+    inline VisualizeClicker visualClicker;
 
     // loader extra setting window functions
     extern void clicker_rand_editor(bool* enabled);
@@ -40,7 +40,7 @@ namespace toad::ui
         static bool esp_visuals_menu = false;
 
         // config
-        static std::vector<config::ConfigFile> availableConfigs = {};
+        static std::vector<config::ConfigFile> available_configs = {};
 
 #ifdef TOAD_LOADER
         constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
@@ -72,9 +72,9 @@ namespace toad::ui
                 if (ImGui::Button("Config", btn_size))
                 {
                     tab = 2;
-                    if (availableConfigs.empty())
+                    if (available_configs.empty())
                     {
-                        availableConfigs = config::GetAllConfigsInDirectory(loader_path);
+                        available_configs = config::GetAllConfigsInDirectory(loader_path);
                     }
                 }
 
@@ -90,34 +90,34 @@ namespace toad::ui
             {
                 if (tab == 0)
                 {
-                    static bool is_LClicker = false;
-                    static bool is_RClicker = false;
-                    static bool is_AA = false;
-                    static bool is_Velocity = false;
-                    if (checkbox_button("Left Clicker", ICON_FA_MOUSE, &left_clicker::enabled)) is_LClicker = true;
+                    static bool menu_lc = false;
+                    static bool menu_rc = false;
+                    static bool menu_aa = false;
+                    static bool menu_vel = false;
+                    if (checkbox_button("Left Clicker", ICON_FA_MOUSE, &left_clicker::enabled)) menu_lc = true;
                     if (g_curr_client == MC_CLIENT::Lunar_189)
                     {
                         ImGui::SameLine(0, 80);
                         checkbox_button("No Hit Delay", ICON_FA_CLOCK, &no_click_delay::enabled);
                     }
-                    if (checkbox_button("Right Clicker", ICON_FA_MOUSE, &right_clicker::enabled)) is_RClicker = true;
-                    if (checkbox_button("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) is_AA = true;
-                    if (checkbox_button("Velocity", ICON_FA_WIND, &velocity::enabled)) is_Velocity = true;
-                    if (is_LClicker)
-                        setting_menu("LeftClicker", is_LClicker, []
+                    if (checkbox_button("Right Clicker", ICON_FA_MOUSE, &right_clicker::enabled)) menu_rc = true;
+                    if (checkbox_button("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) menu_aa = true;
+                    if (checkbox_button("Velocity", ICON_FA_WIND, &velocity::enabled)) menu_vel = true;
+                    if (menu_lc)
+                        setting_menu("LeftClicker", menu_lc, []
                         {
                             if (ImGui::SliderInt("min cps", &left_clicker::min_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
                             {
                                 // update rand delays
                                 left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                vClick.SetRand(left_clicker::rand);
+                                visualClicker.SetRand(left_clicker::rand);
                             }
 
                         	if (ImGui::SliderInt("max cps", &left_clicker::max_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
                                 {
                                     // update rand delays
 									left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                    vClick.SetRand(left_clicker::rand);
+                                    visualClicker.SetRand(left_clicker::rand);
                                 }
 
 		                    ImGui::Checkbox("weapons only", &left_clicker::weapons_only);
@@ -138,15 +138,15 @@ namespace toad::ui
                         []{
                             if (ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit))
                             {
-                                auto rand = vClick.GetRand();
+                                auto rand = visualClicker.GetRand();
                                 rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                vClick.SetRand(rand);
+                                visualClicker.SetRand(rand);
                             }
                             else if (ImGui::Checkbox("Visualize Randomization", &clicker_rand_visualize))
                             {
-                                auto rand = vClick.GetRand();
+                                auto rand = visualClicker.GetRand();
                                 rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
-                                vClick.SetRand(rand);
+                                visualClicker.SetRand(rand);
                             }
 
 							ImGui::Spacing();
@@ -164,16 +164,16 @@ namespace toad::ui
 	                        ImGui::SliderInt("block hit delay", &left_clicker::block_hit_ms, 10, 200);
                         });
 
-                    else if (is_RClicker)
-                        setting_menu("RightClicker", is_RClicker, []
+                    else if (menu_rc)
+                        setting_menu("RightClicker", menu_rc, []
                         {
                             ImGui::SliderInt("cps", &right_clicker::cps, 1, 20, "%dcps");
 		                    ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
 		                    ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
 		                });
 
-                    else if (is_AA)
-                        setting_menu("Aim Assist", is_AA, []
+                    else if (menu_aa)
+                        setting_menu("Aim Assist", menu_aa, []
                         {
                             ImGui::SliderFloat("Speed", &aa::speed, 0, 100);
 		                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
@@ -195,8 +195,8 @@ namespace toad::ui
 			                }
                         });
 
-                    else if (is_Velocity)
-                        setting_menu("Velocity", is_Velocity, []
+                    else if (menu_vel)
+                        setting_menu("Velocity", menu_vel, []
                         {
                             ImGui::Checkbox("Use Jump Reset", &velocity::jump_reset);
 
@@ -385,14 +385,14 @@ namespace toad::ui
                     {
                         ImGui::BeginChild("##available configs", {0, 150}, true);
                         {
-                            const auto textSizeX = ImGui::CalcTextSize(searching_dir).x;
-                            ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x / 2 - textSizeX / 2);
+                            const auto size_x = ImGui::CalcTextSize(searching_dir).x;
+                            ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x / 2 - size_x / 2);
                             if (ImGui::Button(searching_dir))
                             {
                                 config::GetAllConfigsInDirectory(searching_dir);
                             }
 
-                            if (textSizeX > ImGui::GetContentRegionMax().x)
+                            if (size_x > ImGui::GetContentRegionMax().x)
                             {
                                 if (ImGui::IsItemHovered())
                                 {
@@ -402,7 +402,7 @@ namespace toad::ui
 
                             ImGui::Separator();
 
-                            if (availableConfigs.empty())
+                            if (available_configs.empty())
                             {
                                 center_text_multi({ 1, 0, 0, 0.5f }, 
 								"No configs found,\n"
@@ -413,20 +413,20 @@ namespace toad::ui
                             {
                                 static int selected = -1;
 
-	                            for (int i = 0; i < availableConfigs.size(); i++)
+	                            for (int i = 0; i < available_configs.size(); i++)
 	                            {
-                                    const auto& [fileName, timePoint] = availableConfigs[i];
+                                    const auto& [file_name, time_point] = available_configs[i];
 
-                                    auto lable = fileName + " | " + time_to_str(timePoint, "%d-%m-%Y %H:%M");
+                                    auto label = file_name + " | " + time_to_str(time_point, "%d-%m-%Y %H:%M");
 
-                                    if (ImGui::Selectable(lable.c_str(), selected == i))
+                                    if (ImGui::Selectable(label.c_str(), selected == i))
                                     {
-                                        memcpy(config_name_buf, fileName.c_str(), fileName.length());
+                                        memcpy(config_name_buf, file_name.c_str(), file_name.length());
                                         selected = i;
                                     }
                                     if (ImGui::IsItemHovered())
                                     {
-                                        ImGui::SetTooltip(lable.c_str());
+                                        ImGui::SetTooltip(label.c_str());
                                     }
 	                            }
                             }
@@ -436,7 +436,7 @@ namespace toad::ui
 
                         if (ImGui::Button("Refresh"))
                         {
-                            availableConfigs = config::GetAllConfigsInDirectory(searching_dir);
+                            available_configs = config::GetAllConfigsInDirectory(searching_dir);
                         }
 
                         ImGui::BeginDisabled(strlen(config_name_buf) == 0);
@@ -476,22 +476,22 @@ namespace toad::ui
 
             // side extra settings bar
 
-            auto windowright = ImVec2{ImGui::GetContentRegionMax().x + 10,ImGui::GetContentRegionMax().y };
+            auto window_right = ImVec2{ImGui::GetContentRegionMax().x + 10,ImGui::GetContentRegionMax().y };
 
             static bool is_settings_open = false;
             static float setting_bar_t = 1;
-            static float setting_bar_posX = windowright.x - 40;
-            static float setting_bar_posXsmooth = windowright.x - 40;
+            static float setting_bar_posX = window_right.x - 40;
+            static float setting_bar_posXsmooth = window_right.x - 40;
             static float setting_bar_alpha = 0;
 
             if (is_settings_open)
             {
-                setting_bar_posXsmooth = std::lerp(windowright.x - 40, setting_bar_posX, setting_bar_t);
+                setting_bar_posXsmooth = std::lerp(window_right.x - 40, setting_bar_posX, setting_bar_t);
                 setting_bar_alpha = std::lerp(0, 1, setting_bar_t);
             }
             else
             {
-                setting_bar_posXsmooth = std::lerp(windowright.x - 150, setting_bar_posX, setting_bar_t);
+                setting_bar_posXsmooth = std::lerp(window_right.x - 150, setting_bar_posX, setting_bar_t);
                 setting_bar_alpha = std::lerp(1, 0, setting_bar_t);
             }
             ImGui::SetCursorPosX(setting_bar_posXsmooth);
@@ -500,7 +500,7 @@ namespace toad::ui
             const static auto childbg_col = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
             ImGui::PushStyleColor(ImGuiCol_ChildBg, { childbg_col.x, childbg_col.y, childbg_col.z, setting_bar_alpha });
             ImGui::PushStyleColor(ImGuiCol_Border, { border_col.x, border_col.y, border_col.z, setting_bar_alpha });
-            ImGui::BeginChild("settings bar", { 150, windowright.y - 20 }, true);
+            ImGui::BeginChild("settings bar", { 150, window_right.y - 20 }, true);
             {
                 ImGui::PopStyleColor(2);
                 ImGui::SetCursorPosY(20);
@@ -515,13 +515,13 @@ namespace toad::ui
                     if (!is_settings_open)
                     {
                         is_settings_open = true;
-                        setting_bar_posX = windowright.x - 150;
+                        setting_bar_posX = window_right.x - 150;
                         setting_bar_t = 0;
                     }
                     else
                     {
                         is_settings_open = false;
-                        setting_bar_posX = windowright.x - 40;
+                        setting_bar_posX = window_right.x - 40;
                         setting_bar_t = 0;
                     }
                 }
@@ -553,10 +553,10 @@ namespace toad::ui
             ImGui::EndChild();
 
             if (is_settings_open && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && setting_bar_t > 0.1f)
-                if (ImGui::IsMouseHoveringRect({ 0,0 }, { ImGui::GetWindowPos().x + setting_bar_posX, ImGui::GetWindowPos().y + windowright.y }))
+                if (ImGui::IsMouseHoveringRect({ 0,0 }, { ImGui::GetWindowPos().x + setting_bar_posX, ImGui::GetWindowPos().y + window_right.y }))
                 {
                     is_settings_open = false;
-                    setting_bar_posX = windowright.x - 40;
+                    setting_bar_posX = window_right.x - 40;
                     setting_bar_t = 0;
                 }
 

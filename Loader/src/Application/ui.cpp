@@ -312,7 +312,7 @@ namespace toad::ui
             }
             if (ImGui::Button("Update Rand"))
             {
-                vClick.SetRand(left_clicker::rand);
+                visualClicker.SetRand(left_clicker::rand);
                 left_clicker::update_rand_flag = true;
             }
             if (left_clicker::update_rand_flag)
@@ -334,7 +334,7 @@ namespace toad::ui
                 showGraph = false,
                 showPlayback = false;
 
-            vClick.dTime = ImGui::GetIO().DeltaTime;
+            visualClicker.dTime = ImGui::GetIO().DeltaTime;
             if (ImGui::BeginMenuBar())
             {
                 if (ImGui::BeginMenu("Extra"))
@@ -353,7 +353,7 @@ namespace toad::ui
             if (ImGui::Button(isPlaying ? "pause" : "play"))
             {
                 isPlaying = !isPlaying;
-                isPlaying ? vClick.Start() : vClick.Stop();
+                isPlaying ? visualClicker.Start() : visualClicker.Stop();
             }
 
             if (isPlaying)
@@ -361,9 +361,9 @@ namespace toad::ui
 
             }
 
-            ImGui::Text("CPS: %d", vClick.GetCPS());
+            ImGui::Text("CPS: %d", visualClicker.GetCPS());
 
-            const auto& rand = vClick.GetRand();
+            const auto& rand = visualClicker.GetRand();
             ImGui::Text("range(%f - %f) | delay: %f", rand.edited_min, rand.edited_max, rand.delay);
             ImGui::Text("inconsistency delay: %f", rand.inconsistency_delay);
 
