@@ -170,6 +170,15 @@ namespace toad::ui
                             ImGui::SliderInt("cps", &right_clicker::cps, 1, 20, "%dcps");
 		                    ImGui::Checkbox("blocks only", &right_clicker::blocks_only);
 		                    ImGui::SliderInt("start delay", &right_clicker::start_delayms, 0, 200, "%dms");
+                            if (ImGui::BeginCombo("click check", clickCheckToCStrMap[right_clicker::click_check], ImGuiComboFlags_NoArrowButton))
+                            {
+                                for (const auto& [clickCheck, name] : clickCheckToCStrMap)
+                                {
+                                    if (ImGui::Selectable(name, clickCheck == right_clicker::click_check))
+                                        right_clicker::click_check = clickCheck;
+                                }
+                                ImGui::EndCombo();
+                            }
 		                });
 
                     else if (menu_aa)
