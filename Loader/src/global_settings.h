@@ -150,6 +150,8 @@ namespace toad
 		inline bool enabled = false;
 		inline int cps = 15;
 
+		inline CLICK_CHECK click_check = CLICK_CHECK::ONLY_GAME; // checks when clicking should happen
+
 		inline int start_delayms = 10;
 		inline bool blocks_only = false;
 	}

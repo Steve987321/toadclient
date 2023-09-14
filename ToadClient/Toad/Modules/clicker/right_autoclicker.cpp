@@ -17,6 +17,17 @@ namespace toadll
 			return;
 		}
 
+		if (CVarsUpdater::IsInGui && right_clicker::click_check == CLICK_CHECK::ONLY_GAME)
+		{
+			SLEEP(10);
+			return;
+		}
+		if (!CVarsUpdater::IsInGui && right_clicker::click_check == CLICK_CHECK::ONLY_INVENTORY)
+		{
+			SLEEP(10);
+			return;
+		}
+
 		if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_RBUTTON) && !CVarsUpdater::IsInGui)
 		{
 			m_start = std::chrono::high_resolution_clock::now();
