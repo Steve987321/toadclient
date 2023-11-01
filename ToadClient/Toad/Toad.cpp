@@ -523,35 +523,35 @@ void init_modules()
 			{
 				JNIEnv* env = nullptr;
 
-		g_jvm->GetEnv(reinterpret_cast<void**>(&env), g_env->GetVersion());
-		g_jvm->AttachCurrentThreadAsDaemon(reinterpret_cast<void**>(&env), nullptr);
+				g_jvm->GetEnv(reinterpret_cast<void**>(&env), g_env->GetVersion());
+				g_jvm->AttachCurrentThreadAsDaemon(reinterpret_cast<void**>(&env), nullptr);
 
-		auto mc = std::make_unique<Minecraft>();
+				auto mc = std::make_unique<Minecraft>();
 
-		mc->env = env;
+				mc->env = env;
 
-		Module->SetEnv(env);
-		Module->SetMC(mc);
+				Module->SetEnv(env);
+				Module->SetMC(mc);
 
-		Module->Initialized = true;
+				Module->Initialized = true;
 
-		while (g_is_running)
-		{
-			Module->PreUpdate();
+				while (g_is_running)
+				{
+					Module->PreUpdate();
 			
-			if (!CVarsUpdater::IsVerified)
-			{
-				SLEEP(100);
-			}
-			else
-			{
-				const auto& lPlayer = CVarsUpdater::theLocalPlayer;
-				Module->Update(lPlayer);
-			}
-		}
+					if (!CVarsUpdater::IsVerified)
+					{
+						SLEEP(100);
+					}
+					else
+					{
+						const auto& lPlayer = CVarsUpdater::theLocalPlayer;
+						Module->Update(lPlayer);
+					}
+				}
 
-		LOGDEBUG("Closing cheat module: {}", Module->Name);
-		g_jvm->DetachCurrentThread();
+				LOGDEBUG("Closing cheat module: {}", Module->Name);
+				g_jvm->DetachCurrentThread();
 			});
 	}
 
