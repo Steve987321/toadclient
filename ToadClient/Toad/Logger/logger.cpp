@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Toad/Toad.h"
+
+#include <shlobj_core.h>
+
 #include "logger.h"
 
 namespace toadll
