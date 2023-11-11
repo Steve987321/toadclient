@@ -64,7 +64,8 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
-	if (!m_has_pressed_shift)
+
+	if (bridge_assist::only_initiate_when_sneaking && !m_has_pressed_shift)
 	{
 		SLEEP(1);
 		return;

@@ -78,6 +78,7 @@ void LoadSettings(std::string_view jsonSettings)
 		bridge_assist::enabled = data["ba_enabled"];
 		bridge_assist::pitch_check = data["ba_pitch_check"];
 		bridge_assist::block_check = data["ba_block_check"];
+		bridge_assist::only_initiate_when_sneaking = data["ba_sneak"];
 
 		// blink
 		blink::enabled = data["bl_enabled"];
@@ -280,6 +281,7 @@ json SettingsToJson()
 	data["ba_enabled"] = bridge_assist::enabled;
 	data["ba_pitch_check"] = bridge_assist::pitch_check;
 	data["ba_block_check"] = bridge_assist::block_check;
+	data["ba_sneak"] = bridge_assist::only_initiate_when_sneaking;
 
 	// blink
 	data["bl_enabled"] = blink::enabled;
