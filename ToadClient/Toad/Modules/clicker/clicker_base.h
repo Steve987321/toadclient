@@ -34,7 +34,6 @@ protected:
 	inline virtual void mouse_up() = 0;
 
 protected:
-
 	/// Updates randomization counters and flags.
 	///
 	/// The randomization is based of cps as counters are incremented per click.

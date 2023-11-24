@@ -27,7 +27,6 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			UnSneak();
 		}
 		m_has_pressed_shift = false;
-		SLEEP(100);
 		return;
 	}
 
@@ -39,7 +38,6 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			UnSneak();
 		}
 		m_has_pressed_shift = false;
-		SLEEP(50);
 		return;		
 	}
 
@@ -60,14 +58,12 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		m_has_pressed_shift = false;
 
-		SLEEP(1);
 		return;
 	}
 
 
 	if (bridge_assist::only_initiate_when_sneaking && !m_has_pressed_shift)
 	{
-		SLEEP(1);
 		return;
 	}
 
@@ -84,7 +80,6 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (diffY != 0 && diffY <= bridge_assist::block_check)
 	{
-		SLEEP(1);
 		return;
 	}
 
@@ -126,8 +121,6 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		UnSneak();
 	}
-
-	SLEEP(20);
 }
 
 void CBridgeAssist::Sneak()

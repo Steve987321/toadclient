@@ -17,7 +17,6 @@ namespace toadll
 		Enabled = velocity::enabled;
 		if (!Enabled)
 		{
-			SLEEP(250);
 			return;
 		}
 
@@ -85,13 +84,11 @@ namespace toadll
 
 			if (hurttime != begin_hurt_time - (int)velocity::delay)
 			{
-				SLEEP(1);
 				return;
 			}
 			if (rand_int(0, 100) > velocity::chance)
 			{
 				StopFlag = true;
-				SLEEP(1);
 				return;
 			}
 
@@ -134,8 +131,6 @@ namespace toadll
 			StopFlag = false;
 			begin_hurt_time = 0;
 		}
-
-		SLEEP(1);
 	}
 
 	bool CVelocity::isDirectionAligned(float yaw, float hdirx, float hdirz)

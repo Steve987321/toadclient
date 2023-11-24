@@ -12,7 +12,10 @@ using namespace toadll;
 constexpr static size_t bufsize = 3000;
 std::thread Tupdate_settings;
 
+// module threads 
 inline std::vector<std::thread> cmodule_threads;
+// modules where no separate threads were made
+inline std::vector<CModule*> cmodule_nonthreads;
 
 /// called when wanting to un-inject and cleans up
 extern void clean_up(int exitcode = 0, std::string_view msg = "");
@@ -162,7 +165,12 @@ DWORD WINAPI toadll::init()
 
 		UpdateSettings();
 
-		SLEEP(100);
+		for (const auto& module : cmodule_nonthreads)
+		{
+			module->Update(CVarsUpdater::theLocalPlayer);
+		}
+
+		//SLEEP(100);
 	}
 	clean_up(0);
 	
@@ -175,40 +183,40 @@ void clean_up(int exitcode, std::string_view msg)
 	static std::once_flag flag;
 
 	std::call_once(flag, [&]
-		{
-			g_is_running = false;
-
-	if (!msg.empty())
-		LOGDEBUG("closing: {}, {}", exitcode, msg.data());
-	else
-		LOGDEBUG("closing: {}", exitcode);
-
-	LOGDEBUG("hooks");
-	Hook::CleanAllHooks();
-
-	LOGDEBUG("jvm");
-	if (g_jvm != nullptr)
 	{
-		g_jvm->DetachCurrentThread();
-	}
+		g_is_running = false;
 
-	LOGDEBUG("threads");
-	if (Tupdate_settings.joinable()) Tupdate_settings.join();
+		if (!msg.empty())
+			LOGDEBUG("closing: {}, {}", exitcode, msg.data());
+		else
+			LOGDEBUG("closing: {}", exitcode);
 
-	for (auto& ModuleThread : cmodule_threads)
-		if (ModuleThread.joinable()) ModuleThread.join();
+		LOGDEBUG("hooks");
+		Hook::CleanAllHooks();
 
-	g_env = nullptr;
-	g_jvm = nullptr;
+		LOGDEBUG("jvm");
+		if (g_jvm != nullptr)
+		{
+			g_jvm->DetachCurrentThread();
+		}
 
-#ifdef ENABLE_LOGGING
-	LOGDEBUG("console");
-	Logger::GetInstance()->DisposeLogger();
-#endif
+		LOGDEBUG("threads");
+		if (Tupdate_settings.joinable()) Tupdate_settings.join();
 
-	FreeLibraryAndExitThread(g_hMod, 0);
+		for (auto& ModuleThread : cmodule_threads)
+			if (ModuleThread.joinable()) ModuleThread.join();
 
-		});
+		g_env = nullptr;
+		g_jvm = nullptr;
+
+	#ifdef ENABLE_LOGGING
+		LOGDEBUG("console");
+		Logger::GetInstance()->DisposeLogger();
+	#endif
+
+		FreeLibraryAndExitThread(g_hMod, 0);
+
+	});
 }
 
 bool UpdateSettings()
@@ -358,128 +366,7 @@ bool UpdateSettings()
 	g_curr_client = data["client_type"];
 	loaded_config = data["config"];
 
-
-	//// left auto clicker
-	//left_clicker::enabled = data["lc_enabled"];
-	//left_clicker::min_cps = data["lc_mincps"];
-	//left_clicker::max_cps = data["lc_maxcps"];
-	//left_clicker::break_blocks = data["lc_breakblocks"];
-	//left_clicker::block_hit = data["lc_blockhit"];
-	//left_clicker::block_hit_ms = data["lc_blockhitms"];
-	//left_clicker::block_hit_stop_lclick = data["lc_blockhitpause"];
-	//left_clicker::targeting_affects_cps = data["lc_smartcps"];
-	//left_clicker::weapons_only = data["lc_weaponsonly"];
-	//left_clicker::trade_assist = data["lc_tradeassist"];
-	//left_clicker::start_break_blocks_reaction = data["lc_bbStart"];
-	//left_clicker::stop_break_blocks_reaction = data["lc_bbStop"];
-
-	//// right auto clicker
-	//right_clicker::enabled = data["rc_enabled"];
-	//right_clicker::cps = data["rc_cps"];
-	//right_clicker::blocks_only = data["rc_blocks_only"];
-	//right_clicker::start_delayms = data["rc_start_delay"];
-
-	//// aim assist
-	//aa::enabled = data["aa_enabled"];
-	//aa::distance = data["aa_distance"];
-	//aa::speed = data["aa_speed"];
-	//aa::horizontal_only = data["aa_horizontal_only"];
-	//aa::fov = data["aa_fov"];
-	//aa::invisibles = data["aa_invisibles"];
-	//aa::target_mode = data["aa_mode"];
-	//aa::always_aim = data["aa_always_aim"];
-	//aa::aim_at_closest_point = data["aa_multipoint"];
-	//aa::lock_aim = data["aa_lockaim"];
-	//aa::break_blocks = data["aa_bb"];
-
-	//// no click delay
-	//no_click_delay::enabled = data["ncd_enabled"];
-
-	//// bridge assist
-	//bridge_assist::enabled = data["ba_enabled"];
-	//bridge_assist::pitch_check = data["ba_pitch_check"];
-	//bridge_assist::block_check = data["ba_block_check"];
-	//bridge_assist::only_initiate_when_sneaking = data["ba_iws"];
-
-	//// blink
-	//blink::enabled = data["bl_enabled"];
-	//blink::key = data["bl_key"];
-	//blink::stop_rec_packets = data["bl_stop_incoming_packets"];
-	//blink::show_trail = data["bl_show_trail"];
-	//blink::limit_seconds = data["bl_limit_seconds"];
-
-	//// velocity
-	//velocity::enabled = data["vel_enabled"];
-	//velocity::jump_reset = data["vel_jumpreset"];
-	//velocity::horizontal = data["vel_horizontal"];
-	//velocity::vertical = data["vel_vertical"];
-	//velocity::chance = data["vel_chance"];
-	//velocity::delay = data["vel_delay"];
-
-	//velocity::enabled = data["vel_enabled"];
-	//velocity::only_when_clicking = data["vel_onlyclicking"];
-	//velocity::only_when_moving = data["vel_onlymoving"];
-	//velocity::kite = data["vel_kite"];
-	//velocity::jump_reset = data["vel_jumpreset"];
-	//velocity::jump_press_chance = data["vel_jumpchance"];
-	//velocity::horizontal = data["vel_horizontal"];
-	//velocity::vertical = data["vel_vertical"];
-	//velocity::chance = data["vel_chance"];
-	//velocity::delay = data["vel_delay"];
-
-	//// ui
-	//ui::show_array_list = data["ui_list"];
-	//ui::show_water_mark = data["ui_mark"];
-
-	//// esp
-	//esp::enabled = data["esp_enabled"];
-	//esp::line_col[0] = data["esp_linecolr"];
-	//esp::line_col[1] = data["esp_linecolg"];
-	//esp::line_col[2] = data["esp_linecolb"];
-	//esp::line_col[3] = data["esp_linecola"];
-	//esp::fill_col[0] = data["esp_fillcolr"];
-	//esp::fill_col[1] = data["esp_fillcolg"];
-	//esp::fill_col[2] = data["esp_fillcolb"];
-	//esp::fill_col[3] = data["esp_fillcola"];
-	//esp::text_bg_col[0] = data["esp_bgcolr"];
-	//esp::text_bg_col[1] = data["esp_bgcolg"];
-	//esp::text_bg_col[2] = data["esp_bgcolb"];
-	//esp::text_bg_col[3] = data["esp_bgcola"];
-	//esp::show_name = data["esp_show_name"];
-	//esp::show_distance = data["esp_show_distance"];
-	//esp::show_health = data["esp_show_health"];
-	//esp::show_sneaking = data["esp_show_sneak"];
-	//esp::esp_mode = data["esp_mode"];
-	//esp::show_txt_bg = data["esp_bg"];
-
-	//// esp extra
-	//esp::static_esp_width = data["esp_static_width"];
-	//esp::text_shadow = data["esp_text_shadow"];
-	//esp::text_col[0] = data["esp_text_colr"];
-	//esp::text_col[1] = data["esp_text_colg"];
-	//esp::text_col[2] = data["esp_text_colb"];
-	//esp::text_col[3] = data["esp_text_cola"];
-	//esp::text_size = data["esp_fontsize"];
-	//esp::show_border = data["esp_border"];
-	//esp::custom_font = data["esp_text_font"];
-
 	config::LoadSettings(data.dump());
-
-	// block esp
-	/*block_esp::enabled = data["blockesp_enabled"];
-	json blockArray = data["block_esp_array"];
-	std::unordered_map<int, ImVec4> tmpList = {};
-	for (const auto& element : blockArray.items())
-	{
-		int id = std::stoi(element.key());
-		float r = element.value().at("x").get<float>();
-		float g = element.value().at("y").get<float>();
-		float b = element.value().at("z").get<float>();
-		float a = element.value().at("w").get<float>();
-		tmpList[id] = { r,g,b,a };
-	}
-
-	block_esp::block_list = tmpList;*/
 
 	CLeftAutoClicker::SetDelays(left_clicker::min_cps, left_clicker::max_cps);
 	CRightAutoClicker::SetDelays(right_clicker::cps);
@@ -507,18 +394,33 @@ void init_modules()
 	//CReach::GetInstance()->name = "Reach";
 	//COfScreenArrows::GetInstance()->name = "Off Screen Arrow ESP";
 
-	// don't create threads for these modules
+	// modules only for drawing
 	CInternalUI::GetInstance()->IsOnlyRendering = true;
+
+	// create separate thread for these modules 
+	CVarsUpdater::GetInstance()->CreateThread = true;
+	CLeftAutoClicker::GetInstance()->CreateThread = true;
+	CRightAutoClicker::GetInstance()->CreateThread = true;
 
 	for (const auto& Module : CModule::moduleInstances)
 	{
-		if (Module->IsOnlyRendering)
+		LOGDEBUG("Starting cheat module: {}, HasThread: {}", Module->Name, Module->CreateThread);
+
+		// no separate thread 
+		if (Module->IsOnlyRendering || !Module->CreateThread)
 		{
+			// TODO: .. 
+			auto mc = std::make_unique<Minecraft>();
+			mc->env = g_env;
+
+			Module->SetMC(mc);
+			Module->SetEnv(g_env);
+
+			cmodule_nonthreads.emplace_back(Module);
+			
 			continue;
 		}
-
-		LOGDEBUG("Starting cheat module: {}", Module->Name);
-
+		
 		cmodule_threads.emplace_back([&]()
 			{
 				JNIEnv* env = nullptr;

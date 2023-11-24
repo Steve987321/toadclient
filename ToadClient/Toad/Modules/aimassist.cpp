@@ -19,13 +19,11 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	Enabled = aa::enabled;
 	if (!Enabled || CVarsUpdater::IsInGui)
 	{
-		SLEEP(250);
 		return;
 	}
 
 	if (!aa::always_aim && !GetAsyncKeyState(VK_LBUTTON))
 	{
-		SLEEP(100);
 		return;
 	}
 
@@ -33,7 +31,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		if (MC->getMouseOverTypeStr() == "BLOCK")
 		{
-			SLEEP(50);
 			return;
 		}
 	}
@@ -109,7 +106,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		// atleast one other player
 		if (distances.empty())
 		{
-			SLEEP(10);
 			return;
 		} 
 
@@ -130,7 +126,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first)));
 			if (l_yaw_diff > minimal_angle_diff) // target out of fov range
 			{
-				SLEEP(10);
 				return;
 			}
 		}
@@ -138,7 +133,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (target == nullptr)
 	{
-		SLEEP(10);
 		return;
 	}
 
@@ -183,7 +177,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			if (*std::ranges::max_element(yawdiffs) > 0)
 			{
-				SLEEP(10);
 				return;
 			}
 		}
@@ -191,7 +184,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			if (*std::ranges::min_element(yawdiffs) < 0)
 			{
-				SLEEP(10);
 				return;
 			}
 		}		
@@ -243,7 +235,6 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	auto editable_local_player = MC->getLocalPlayer();
 	if (!editable_local_player)
 	{
-		SLEEP(10);
 		return;
 	}
 

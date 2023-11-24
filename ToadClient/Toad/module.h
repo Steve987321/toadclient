@@ -23,6 +23,9 @@ public:
 	// will skip creating a thread for this module on initialization
 	bool IsOnlyRendering = false;
 
+	// Create a separate thread for this module
+	bool CreateThread = false;
+
 	bool Enabled = false;
 public:
 	CModule()
