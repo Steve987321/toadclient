@@ -41,7 +41,7 @@ public:
 
 	/// Moves a newly made unique instance of Minecraft to this Cheat Module
 	void SetMC(std::unique_ptr<Minecraft>& mc);
-
+	void SetMC(Minecraft* mc);
 public:
 	/// Executes in a loop or 100ms(when not in game) even when player is null
 	///	Calls sleep method of 5ms
@@ -62,7 +62,7 @@ public:
 
 protected:
 	JNIEnv* env = nullptr;
-	std::shared_ptr<Minecraft> MC = nullptr;
+	Minecraft* MC = nullptr;
 };
 
 }

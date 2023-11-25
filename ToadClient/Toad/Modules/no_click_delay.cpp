@@ -25,3 +25,7 @@ void toadll::CNoClickDelay::Invoke(const std::shared_ptr<Minecraft>& minecraft)
 {
 	minecraft->setLeftClickCounter(0);
 }
+void toadll::CNoClickDelay::Invoke(Minecraft* minecraft)
+{
+	minecraft->setLeftClickCounter(0);
+}

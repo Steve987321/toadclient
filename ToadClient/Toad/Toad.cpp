@@ -157,6 +157,12 @@ DWORD WINAPI toadll::init()
 
 	LOGDEBUG("starting modules");
 	init_modules();
+	Minecraft mc;
+	mc.env = g_env;
+	for (const auto& module : cmodule_nonthreads)
+	{
+		module->SetMC(&mc);
+	}
 
 	LOGDEBUG("entering main loop");
 	while (g_is_running)
@@ -165,11 +171,13 @@ DWORD WINAPI toadll::init()
 
 		UpdateSettings();
 
-		for (const auto& module : cmodule_nonthreads)
+		if (CVarsUpdater::IsVerified)
 		{
-			module->Update(CVarsUpdater::theLocalPlayer);
+			for (const auto& module : cmodule_nonthreads)
+			{
+				module->Update(CVarsUpdater::theLocalPlayer);
+			}
 		}
-
 		//SLEEP(100);
 	}
 	clean_up(0);
@@ -359,7 +367,7 @@ bool UpdateSettings()
 	{
 		UnmapViewOfFile(pMem);
 		CloseHandle(hMapFile);
-		SLEEP(1000);
+		//SLEEP(1000);
 		return false;
 	}
 
@@ -409,15 +417,11 @@ void init_modules()
 		// no separate thread 
 		if (Module->IsOnlyRendering || !Module->CreateThread)
 		{
-			// TODO: .. 
-			auto mc = std::make_unique<Minecraft>();
-			mc->env = g_env;
-
-			Module->SetMC(mc);
 			Module->SetEnv(g_env);
 
 			cmodule_nonthreads.emplace_back(Module);
 			
+			Module->Initialized = true;
 			continue;
 		}
 		

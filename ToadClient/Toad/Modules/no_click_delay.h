@@ -10,7 +10,8 @@ public:
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 
 public:
-	static void Invoke(const std::shared_ptr<Minecraft>& minecraft);
+	static void Invoke(const std::shared_ptr<Minecraft>&minecraft);
+	static void Invoke(Minecraft* minecraft);
 };
 
 }

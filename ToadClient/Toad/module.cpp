@@ -23,7 +23,12 @@ void CModule::SetEnv(JNIEnv* Env)
 
 void CModule::SetMC(std::unique_ptr<Minecraft>& mc)
 {
-	MC = std::move(mc);
+	MC = std::move(mc.get());
+}
+
+void CModule::SetMC(Minecraft* mc)
+{
+	MC = mc;
 }
 
 void CModule::PreUpdate()
