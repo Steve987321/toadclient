@@ -27,7 +27,7 @@ private:
 	void clicking_thread();
 
 private:
-	// ~same as clicker
+	// same as clicker
 	void click_down();
 	void click_up();
 
@@ -39,7 +39,6 @@ private:
 
 	std::queue<toadll::Timer> m_click_queue;
 
-private:
 	std::thread m_clicking_thread;
 	std::atomic_bool m_thread_running = false;
 
