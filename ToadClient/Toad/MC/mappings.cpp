@@ -38,7 +38,7 @@ namespace toadll::mappings
 		{
 			methodnames.insert({ mapping::getMinecraft, "getMinecraft" });
 			methodsigs.insert({ mapping::getMinecraft, "()Lnet/minecraft/client/Minecraft;" });
-
+			
 			methodnames.insert({ mapping::getWorld, "bridge$getWorld" });
 			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
 				LOGERROR("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
@@ -571,4 +571,19 @@ namespace toadll::mappings
 			methodsigs.insert({ mapping::partialTick, "()F" });
 		}
 	}
+
+	bool getsig(mapping map, const char* name, const jclass klass, JNIEnv* env)
+	{
+		for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
+		{
+			if (std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i)) == name)
+			{
+				//std::cout << name << " = " << std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, mcclass, i)) << " sig: " << jvmfunc::oJVM_GetMethodIxSignatureUTF(env, mcclass, i) << std::endl;
+				methodsigs.insert({ map, jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i) });
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

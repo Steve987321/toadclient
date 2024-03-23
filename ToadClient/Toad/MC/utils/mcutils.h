@@ -68,6 +68,7 @@ namespace toadll
     }
 
     // function to find classes on (any) minecraft client
+	// https://www.unknowncheats.me/forum/minecraft/482232-lunar-client-class.html
     jclass findclass(const char* clsName, JNIEnv* env);
 
     std::string jstring2string(jstring jStr, JNIEnv* env);
