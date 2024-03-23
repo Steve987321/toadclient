@@ -72,6 +72,8 @@ MC_CLIENT get_client_type(std::string_view window_title);
 std::string time_to_str(const std::chrono::system_clock::time_point& t, std::string_view format = "%H:%M:%S");
 std::string time_to_str(const std::filesystem::file_time_type& t, std::string_view format = "%H:%M:%S");
 
+std::filesystem::path get_exe_path();
+
 /// 
 /// Wrapper for getting the middle of the window
 ///

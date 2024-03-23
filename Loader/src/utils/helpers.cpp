@@ -56,6 +56,13 @@ namespace toad
 		return ss.str();
 	}
 
+	std::filesystem::path get_exe_path()
+	{
+		char path[MAX_PATH];
+		GetModuleFileNameA(NULL, path, MAX_PATH);
+		return path;
+	}
+
 	ImVec2 get_middle_point()
 	{
 		return { ImGui::GetWindowSize().x / 2, ImGui::GetWindowSize().y / 2 };
