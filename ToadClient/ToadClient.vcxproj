@@ -32,7 +32,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(ProjectDir)vendor\MinHook\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(ProjectDir)bin\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-Inter\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir);$(ProjectDir)vendor;$(ProjectDir)vendor\JDK\include;$(ProjectDir)vendor\JDK\include\win32;$(IncludePath)</IncludePath>
   </PropertyGroup>
@@ -52,7 +52,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

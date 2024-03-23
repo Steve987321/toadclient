@@ -342,9 +342,8 @@ bool inject(DWORD pid)
 	inject_status = "init #2";
 	do
 	{
-		// TODO: load from memory later 
-		auto dllPath = "D:\\VSProjects\\ToadClient\\ToadClient\\bin\\Release\\ToadClient.dll";
-
+		std::filesystem::path dllPath = toad::get_exe_path().parent_path() / "ToadClient.dll";
+	
 		if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
 			priv.PrivilegeCount = 1;
 			priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
@@ -363,7 +362,7 @@ bool inject(DWORD pid)
 
 		ishProcValid = true;
 
-		if (GetFileAttributesA(dllPath) == INVALID_FILE_ATTRIBUTES)
+		if (GetFileAttributesA(dllPath.string().c_str()) == INVALID_FILE_ATTRIBUTES)
 		{
 			inject_status = "failed retrieving dll";
 			break;

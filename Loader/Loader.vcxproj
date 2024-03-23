@@ -44,12 +44,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-inter\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)src\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)bin-inter\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(ProjectDir)src\;$(IncludePath)</IncludePath>
   </PropertyGroup>
@@ -73,7 +73,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TOAD_LOADER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);TOAD_LOADER</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
