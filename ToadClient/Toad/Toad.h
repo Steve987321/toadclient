@@ -70,6 +70,7 @@ namespace toadll
 
 	inline JNIEnv* g_env = nullptr;
 	inline JavaVM* g_jvm = nullptr;
+	inline jvmtiEnv* g_jvmti_env = nullptr;
 
 	/// called when dll has injected
 	DWORD WINAPI init();

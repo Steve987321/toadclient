@@ -65,42 +65,140 @@ DWORD WINAPI toadll::init()
 		return 1;
 	}
 
-	/*jvmtiEnv* jvmtiEnv = nullptr;
-	if (g_jvm->GetEnv(reinterpret_cast<void**>(&jvmtiEnv), JVMTI_VERSION_1) == JNI_OK)
+	if (g_jvm->GetEnv((void**)&g_jvmti_env, JVMTI_VERSION_1) == JNI_OK)
 	{
-		log_Debug("yoooo");
-		jint n;
-		jclass* classes;
-		jvmtiEnv->GetLoadedClasses(&n, &classes);
-		
-		for (int i = 0; i < n; i++)
-		{
-			auto klass = classes[i];
-			auto cls = findclass("java/lang/Class", g_env);
-			if (!cls)
-				continue;
 
-			auto mId = g_env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-			if (!mId)
-			{
-				g_env->DeleteLocalRef(cls);
-				continue;
-			}
-			g_env->DeleteLocalRef(cls);
+		// check capabilities first 
+		//jvmtiCapabilities capa;
+		//if (g_jvmti_env->GetCapabilities(&capa) == JVMTI_ERROR_NONE)
+		//{
+		//	LOGDEBUG("can_get_bytecodes {}", capa.can_get_bytecodes);
+		//	LOGDEBUG("can_tag_objects {}", capa.can_tag_objects);
+		//	//LOGDEBUG("can_maintain_original_method_order {}", capa.can_maintain_original_method_order);
 
-			const auto jstrname = static_cast<jstring>(g_env->CallObjectMethod(klass, mId));
-			if (!jstrname)
-			{
-				log_Error("jstrname = nit shjicyed");
-				continue;
-			}
-			log_Debug(jstring2string(jstrname, g_env).c_str());
-		}
+		//	//if (!capa.can_get_bytecodes || !capa.can_tag_objects)
+		//		//clean_up(6, "no good jvm capabilities");
+		//}
+
+		//jint n = 0;
+		//jclass* classes = nullptr;
+		//g_jvmti_env->GetLoadedClasses(&n, &classes);
+		//LOGDEBUG("classes count {}", n);
+
+		//auto cls = findclass("java/lang/Class", g_env);
+		//auto mId = g_env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
+		//
+		//do 
+		//{
+		//	if (!cls)
+		//		break;
+
+		//	if (!mId)
+		//	{
+		//		g_env->DeleteLocalRef(cls);
+		//		break;
+		//	}
+
+		//	for (jint i = 0; i < n; i++)
+		//	{
+		//		auto klass = classes[i];
+
+		//		if (!klass)
+		//			continue;
+
+		//		const auto jstrname = static_cast<jstring>(g_env->CallObjectMethod(klass, mId));
+		//		if (!jstrname)
+		//		{
+		//			LOGERROR("jstrname = nit shjicyed");
+		//			continue;
+		//		}
+		//				
+		//		//jfieldID* fields = nullptr;
+		//		//jint field_count = -1;
+		//		jmethodID* methods = nullptr;
+		//		jint method_count = -1;
+		//		//jint modifiers = -1;
+		//		//g_jvmti_env->GetClassModifiers(klass, &modifiers);
+		//		g_jvmti_env->GetClassMethods(klass, &method_count, &methods);
+		//		//g_jvmti_env->GetClassFields(klass, &method_count, &fields);
+
+		//		bool f = false;
+		//		if (methods)
+		//		{
+		//			for (jint j = 0; j < method_count; j++)
+		//			{
+		//				char* name = nullptr;
+		//				char* signature = nullptr;
+		//				char* generic = nullptr;
+
+		//				auto method = methods[j];
+		//				if (!method)
+		//					continue;
+
+		//				auto err = g_jvmti_env->GetMethodName(method, &name, &signature, &generic);
+		//				if (err != JVMTI_ERROR_NONE)
+		//					continue;
+
+		//				std::string name_str;
+		//				if (name)
+		//					name_str = name;
+
+		//				if (name_str == "getMinecraft")
+		//				{
+		//					/*jboolean is_obselete = false;
+		//					jint access_flags = -1;
+
+		//					auto err1 = g_jvmti_env->IsMethodObsolete(methods[j], &is_obselete);
+		//					auto err2 = g_jvmti_env->GetMethodModifiers(methods[j], &access_flags);
+		//					bool is_static = false;
+
+		//					if (err2 == JVMTI_ERROR_NONE)
+		//					{
+		//						is_static = access_flags & 0x0008;
+		//					}
+		//					*/
+		//					LOGDEBUG("Found getmc: name: {} | sig: {} | generic: {} | count {}",
+		//						name_str,
+		//						signature ? signature : "None",
+		//						generic ? generic : "None",
+		//						(int)method_count
+		//					);
+		//					f = true;
+		//					break;
+		//				}
+
+		//				g_jvmti_env->Deallocate((unsigned char*)name);
+		//				g_jvmti_env->Deallocate((unsigned char*)signature);
+		//				g_jvmti_env->Deallocate((unsigned char*)generic);
+		//			}
+		//		}
+
+		//		if (auto err = g_jvmti_env->Deallocate((unsigned char*)methods); err != JVMTI_ERROR_NONE)
+		//		{
+		//			LOGERROR("Failed to deallocate methods array: {}", (int)err);
+		//		}
+		//	/*	if (auto err = g_jvmti_env->Deallocate((unsigned char*)fields); err != JVMTI_ERROR_NONE)
+		//		{
+		//			LOGERROR("Failed to deallocate fields array: {}", (int)err);
+		//		}*/
+
+		//		/*LOGDEBUG("{} | fields: {} methods: {} modifiers: {}", jstring2string(jstrname, g_env).c_str(), field_count, method_count, modifiers);*/
+
+		//		if (f)
+		//			break;
+		//	}
+
+		//} while (false);
+
+		//g_jvmti_env->Deallocate((unsigned char*)classes);
+		//g_env->DeleteLocalRef(cls);
 	}
 	else
 	{
-		log_Debug("NOOO");
-	}*/
+		LOGDEBUG("N");
+	}
+
+
 	if (!g_env)
 	{
 		clean_up(2);
@@ -175,40 +273,46 @@ void clean_up(int exitcode, std::string_view msg)
 	static std::once_flag flag;
 
 	std::call_once(flag, [&]
-		{
-			g_is_running = false;
-
-	if (!msg.empty())
-		LOGDEBUG("closing: {}, {}", exitcode, msg.data());
-	else
-		LOGDEBUG("closing: {}", exitcode);
-
-	LOGDEBUG("hooks");
-	Hook::CleanAllHooks();
-
-	LOGDEBUG("jvm");
-	if (g_jvm != nullptr)
 	{
-		g_jvm->DetachCurrentThread();
-	}
+		g_is_running = false;
 
-	LOGDEBUG("threads");
-	if (Tupdate_settings.joinable()) Tupdate_settings.join();
+		if (!msg.empty())
+			LOGDEBUG("closing: {}, {}", exitcode, msg.data());
+		else
+			LOGDEBUG("closing: {}", exitcode);
 
-	for (auto& ModuleThread : cmodule_threads)
-		if (ModuleThread.joinable()) ModuleThread.join();
+		LOGDEBUG("hooks");
+		Hook::CleanAllHooks();
 
-	g_env = nullptr;
-	g_jvm = nullptr;
+		LOGDEBUG("jvm");
+		if (g_jvm)
+		{
+			g_jvm->DetachCurrentThread();
+		}
+
+		if (g_jvmti_env)
+		{
+			g_jvmti_env->DisposeEnvironment();
+		}
+
+		LOGDEBUG("threads");
+		if (Tupdate_settings.joinable()) Tupdate_settings.join();
+
+		for (auto& ModuleThread : cmodule_threads)
+			if (ModuleThread.joinable()) ModuleThread.join();
+
+		g_env = nullptr;
+		g_jvm = nullptr;
+		g_jvmti_env = nullptr;
 
 #ifdef ENABLE_LOGGING
-	LOGDEBUG("console");
-	Logger::GetInstance()->DisposeLogger();
+		LOGDEBUG("console");
+		Logger::GetInstance()->DisposeLogger();
 #endif
 
-	FreeLibraryAndExitThread(g_hMod, 0);
+		FreeLibraryAndExitThread(g_hMod, 0);
 
-		});
+	});
 }
 
 bool UpdateSettings()

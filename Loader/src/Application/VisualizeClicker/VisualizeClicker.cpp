@@ -159,7 +159,7 @@ void VisualizeClicker::update_rand()
 {
 	static toadll::Timer timer;
 	timer.Start();
-	m_rand.inconsistency_delay = std::lerp(m_rand.inconsistency_delay, 0, 0.3f);
+	m_rand.inconsistency_delay = std::clamp(std::lerp(m_rand.inconsistency_delay, 0, 0.3f), (double)m_rand.inconsistency_delay, 0.0);
 
 	const int rand_100 = toadll::rand_int(0, 100);
 

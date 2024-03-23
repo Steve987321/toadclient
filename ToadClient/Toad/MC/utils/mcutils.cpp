@@ -9,7 +9,7 @@ namespace toadll
     jclass findclass(const char* clsName, JNIEnv* env)
     {
         jclass thread_clazz = env->FindClass("java/lang/Thread");
-        jmethodID curthread_mid = env->GetStaticMethodID(thread_clazz, "currentThread", "()Ljava/lang/Thread;");
+        static jmethodID curthread_mid = env->GetStaticMethodID(thread_clazz, "currentThread", "()Ljava/lang/Thread;");
         jobject thread = env->CallStaticObjectMethod(thread_clazz, curthread_mid);
         jmethodID threadgroup_mid = env->GetMethodID(thread_clazz, "getThreadGroup", "()Ljava/lang/ThreadGroup;");
         jclass threadgroup_clazz = env->FindClass("java/lang/ThreadGroup");
@@ -27,12 +27,16 @@ namespace toadll
         {
             auto class_loader = env->CallObjectMethod(array_elements, threadclassloader);
             jclass launch_clazz = env->FindClass("net/minecraft/launchwrapper/Launch");
-
-            auto find_class_id = env->GetMethodID(env->GetObjectClass(class_loader), "findClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+            jclass class_loader_class = env->GetObjectClass(class_loader);
+            jmethodID find_class_id = env->GetMethodID(class_loader_class, "findClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 
             env->DeleteLocalRef(launch_clazz);
             jstring name = env->NewStringUTF(clsName);
 
+            jclass res = (jclass)env->CallObjectMethod(class_loader, find_class_id, name);
+
+            env->DeleteLocalRef(name);
+            env->DeleteLocalRef(class_loader_class);
             env->DeleteLocalRef(array_elements);
             env->DeleteLocalRef(thread_clazz);
             env->DeleteLocalRef(thread);
@@ -40,7 +44,7 @@ namespace toadll
             env->DeleteLocalRef(threadgroup_obj);
             env->DeleteLocalRef(arrayD);
 
-            return jclass(env->CallObjectMethod(class_loader, find_class_id, name));
+            return res;
         }
 
         env->DeleteLocalRef(array_elements);
@@ -260,5 +264,34 @@ namespace toadll
             LOGDEBUG("name: {}, sig: {} args size: {}", jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxArgsSize(env, klass, i));
 		}
 
+        if (g_jvmti_env)
+        {
+            LOGDEBUG("======== fields ========");
+            jint n = 0;
+            jfieldID* ids = nullptr;
+            auto err = g_jvmti_env->GetClassFields(klass, &n, &ids);
+            if (err != JVMTI_ERROR_NONE)
+                return; 
+
+            for (jint i = 0; i < n; i++)
+            {
+                auto fid = ids[i];
+
+                char* name = nullptr;
+                char* sig = nullptr;
+                char* g = nullptr; 
+                if (g_jvmti_env->GetFieldName(klass, fid, &name, &sig, &g) != JVMTI_ERROR_NONE)
+                    continue;
+
+                LOGDEBUG("name: {}, sig: {}", name, sig);
+
+				g_jvmti_env->Deallocate((unsigned char*)name);
+				g_jvmti_env->Deallocate((unsigned char*)sig);
+				g_jvmti_env->Deallocate((unsigned char*)g);
+
+            }
+
+            g_jvmti_env->Deallocate((unsigned char*)ids);
+        }
     }
 }
