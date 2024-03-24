@@ -291,15 +291,14 @@ namespace toad
 
 		auto io = &ImGui::GetIO();
 
-#ifdef TOAD_LOADER
-		constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoDocking;
-#else
 		constexpr auto window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
-#endif
 		auto cbox_col = ImGui::GetColorU32(ImGuiCol_PopupBg);
 
+#ifdef TOAD_LOADER
 		auto mid = get_middle_point();
-
+#else
+		ImVec2 mid(io->DisplaySize.x / 2.f, io->DisplaySize.y / 2.f);
+#endif 
 		const ImVec2 kbox_size_real = { mid.x + 120, mid.y + 120 };
 		static ImVec2 box_size_smooth = { mid.x + 15, mid.y + 15 };
 		const static float kbox_pos_X = mid.x - box_size_smooth.x / 2;
@@ -331,17 +330,12 @@ namespace toad
 
 		// darker bg
 
-#ifdef TOAD_LOADER
 		ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
-#else
-		ImGui::SetNextWindowPos({ 0,0 });
-#endif
-
 		ImGui::SetNextWindowSize(io->DisplaySize);
 
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.1f,0.1f,0.1f, bg_alpha_smooth });
 		ImGui::Begin("overlay", nullptr, window_flags);
-
+		
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.f);
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, cbox_col);
 		ImGui::SetCursorPos({ box_pos_X_smooth, mid.y - box_size_smooth.y / 2 });
@@ -397,7 +391,6 @@ namespace toad
 					extra_options_components();
 				}
 				ImGui::EndChild();
-
 				ImGui::PopStyleColor();
 			}
 		}
@@ -442,6 +435,7 @@ namespace toad
 			opened = false;
 		}
 
+		// overlay
 		ImGui::End();
 		ImGui::PopStyleColor();
 	}
