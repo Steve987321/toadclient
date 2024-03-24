@@ -4,7 +4,7 @@
 
 #include <array>
 
-#include "../Loader/src/Application/Fonts/Icons.h"
+#include "../Loader/src/Application/Fonts/icons.h"
 #include "../Loader/src/Application/Fonts/fa-solid-900Font.h"
 
 #include "imgui/imgui_impl_opengl2.h"

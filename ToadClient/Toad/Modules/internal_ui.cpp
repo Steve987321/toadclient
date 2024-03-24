@@ -6,7 +6,7 @@
 #include "../Loader/src/utils/helpers.cpp"
 #include "../Loader/src/utils/block_map.h"
 
-#include "../Loader/src/Application/Fonts/Icons.h"
+#include "../Loader/src/Application/Fonts/icons.h"
 #include "../Loader/src/Application/ui.h"
 #include "../Loader/src/Application/ui.cpp"
 
