@@ -41,7 +41,7 @@ public:
 
 public:
 	/// Executes in a loop or 100ms(when not in game) even when player is null
-	///	Calls sleep method of 5ms
+	///	Calls sleep for 5ms
 	virtual void PreUpdate();
 
 	/// Executes in a loop when player is not null

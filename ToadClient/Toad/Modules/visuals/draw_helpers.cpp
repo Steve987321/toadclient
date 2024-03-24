@@ -6,7 +6,7 @@ namespace toadll
 {
 	void draw3d_bbox_lines(const BBox& bbox, const Vec4& col)
 	{
-		glBegin(3);
+		glBegin(GL_LINE_LOOP);
 		glColor4f(col.x, col.y, col.z, col.w);
 		glVertex3f(bbox.min.x, bbox.min.y, bbox.min.z);
 		glVertex3f(bbox.max.x, bbox.min.y, bbox.min.z);
@@ -15,7 +15,7 @@ namespace toadll
 		glVertex3f(bbox.min.x, bbox.min.y, bbox.min.z);
 		glEnd();
 
-		glBegin(3);
+		glBegin(GL_LINE_LOOP);
 		glColor4f(col.x, col.y, col.z, col.w);
 		glVertex3f(bbox.min.x, bbox.max.y, bbox.min.z);
 		glVertex3f(bbox.max.x, bbox.max.y, bbox.min.z);
@@ -24,7 +24,7 @@ namespace toadll
 		glVertex3f(bbox.min.x, bbox.max.y, bbox.min.z);
 		glEnd();
 
-		glBegin(1);
+		glBegin(GL_LINES);
 		glColor4f(col.x, col.y, col.z, col.w);
 		glVertex3f(bbox.min.x, bbox.min.y, bbox.min.z);
 		glVertex3f(bbox.min.x, bbox.max.y, bbox.min.z);
@@ -37,7 +37,7 @@ namespace toadll
 		glEnd();
 	}
 
-	Vec2 world_to_screen(const Vec3& worldPos, const Vec3& cameraPos)
+	Vec2 world_to_screen(const Vec3& world_pos, const Vec3& cam_pos)
 	{
 		GLdouble modelview[16];
 		GLdouble projection[16];
@@ -50,16 +50,16 @@ namespace toadll
 		}
 
 		double screenX, screenY, screenZ;
-		gluProject(worldPos.x, worldPos.y, worldPos.z,
+		gluProject(world_pos.x, world_pos.y, world_pos.z,
 			modelview, projection, CVarsUpdater::Viewport.data(),
 			&screenX, &screenY, &screenZ);
 
-		Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
-		Vec3 cameraToProjected = worldPos - cameraPos;
-		float dotProduct = cameraToProjected.dot(Vec3::normalize(cameraForward));
+		Vec3 cam_forward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
+		Vec3 cam_pos_relative = world_pos - cam_pos;
+		float dot = cam_pos_relative.dot(Vec3::normalize(cam_forward));
 		
 		// check if worldPos is in front of the camera
-		if (dotProduct < 0) {
+		if (dot < 0) {
 			return { static_cast<float>(screenX), static_cast<float>(CVarsUpdater::Viewport[3] - screenY) };
 		}
 
@@ -69,7 +69,7 @@ namespace toadll
 		//return { static_cast<float>(screenX), static_cast<float>(viewport[3] - screenY) };
 	}
 
-	Vec2 world_to_screen_no_behind_check(const Vec3& worldPos, const Vec3& cameraPos)
+	Vec2 world_to_screen_no_behind_test(const Vec3& world_pos, const Vec3& camera_pos)
 	{
 		GLdouble modelview[16];
 		GLdouble projection[16];
@@ -82,16 +82,16 @@ namespace toadll
 		}
 
 		double screenX, screenY, screenZ;
-		gluProject(worldPos.x, worldPos.y, worldPos.z,
+		gluProject(world_pos.x, world_pos.y, world_pos.z,
 			modelview, projection, CVarsUpdater::Viewport.data(),
 			&screenX, &screenY, &screenZ);
 
-		Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
-		Vec3 cameraToProjected = worldPos - cameraPos;
-		float dotProduct = cameraToProjected.dot(Vec3::normalize(cameraForward));
-		std::cout << dotProduct << std::endl;
+		Vec3 cam_forward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
+		Vec3 cam_pos_relative = world_pos - camera_pos;
+		float dot = cam_pos_relative.dot(Vec3::normalize(cam_forward));
+		//std::cout << dotProduct << std::endl;
 		// check if worldPos is in front of the camera
-		if (dotProduct > 0)
+		if (dot > 0)
 		{
 			return { static_cast<float>(screenX), static_cast<float>(CVarsUpdater::Viewport[3] - screenY) };
 		}
@@ -138,36 +138,36 @@ namespace toadll
 
 	void draw2d_bbox(const BBox& bbox, const Vec4& col_fill, const Vec4& col_line)
 	{
-		Vec3 cameraForward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
-		Vec3 cameraUp = { CVarsUpdater::ModelView[1], CVarsUpdater::ModelView[5], CVarsUpdater::ModelView[9] };
-		Vec3 cameraRight = cameraForward.cross(cameraUp);
+		Vec3 cam_forward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
+		Vec3 cam_up = { CVarsUpdater::ModelView[1], CVarsUpdater::ModelView[5], CVarsUpdater::ModelView[9] };
+		Vec3 cam_right = cam_forward.cross(cam_up);
 
 		Vec3 center = (bbox.min + bbox.max) * 0.5f;
 		Vec3 extents = (bbox.max - bbox.min) * 0.5f;
 		extents.x += toad::esp::static_esp_width;
 
 		Vec3 vertices[4] = {
-				center + cameraRight * extents.x - cameraUp * extents.y,
-				center - cameraRight * extents.x - cameraUp * extents.y,
-				center - cameraRight * extents.x + cameraUp * extents.y,
-				center + cameraRight * extents.x + cameraUp * extents.y
+				center + cam_right * extents.x - cam_up * extents.y,
+				center - cam_right * extents.x - cam_up * extents.y,
+				center - cam_right * extents.x + cam_up * extents.y,
+				center + cam_right * extents.x + cam_up * extents.y
 		};
 
 		// fill
 		glColor4f(col_fill.x, col_fill.y, col_fill.z, col_fill.w);
 		glBegin(GL_QUADS);
-		for (const auto& vertice : vertices)
+		for (const auto& v : vertices)
 		{
-			glVertex3f(vertice.x, vertice.y, vertice.z);
+			glVertex3f(v.x, v.y, v.z);
 		}
 		glEnd();
 
 		// outlines
 		glColor4f(col_line.x, col_line.y, col_line.z, col_line.w);
 		glBegin(GL_LINE_LOOP);
-		for (const auto& vertice : vertices)
+		for (const auto& v : vertices)
 		{
-			glVertex3f(vertice.x, vertice.y, vertice.z);
+			glVertex3f(v.x, v.y, v.z);
 		}
 		glEnd();
 	}

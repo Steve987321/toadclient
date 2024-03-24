@@ -209,6 +209,14 @@ namespace toadll
         {
 #ifdef ENABLE_LOGGING
             LOGERROR("getting object class for fieldid returned null with mapping name: {}, and index: {}", mappings::findNameField(name), static_cast<int>(name));
+
+			/*static bool once = false;
+			 if (!once)
+			 {
+				 loop_through_class(objKlass, env);
+				 once = true;
+			 }*/
+
             SLEEP(300);
 #endif
         	return nullptr;

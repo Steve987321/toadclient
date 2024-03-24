@@ -10,7 +10,7 @@
 namespace config
 {
 
-	using json = nlohmann::json;
+using json = nlohmann::json;
 
 void LoadSettings(std::string_view jsonSettings)
 {

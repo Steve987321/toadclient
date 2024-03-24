@@ -11,7 +11,7 @@ namespace toadll
 	/// Transforms world coordinates to screen coordinates
 	Vec2 world_to_screen(const Vec3& worldPos, const Vec3& cameraPos);
 	
-	Vec2 world_to_screen_no_behind_check(const Vec3& worldPos, const Vec3& cameraPos);
+	Vec2 world_to_screen_no_behind_test(const Vec3& worldPos, const Vec3& cameraPos);
 
 	/// Draws a static 2d box
 	void draw2d_bbox(const BBox& bbox, const Vec4& col_fill, const Vec4& col_line);
