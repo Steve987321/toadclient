@@ -43,7 +43,7 @@ private:
 	std::atomic_bool m_thread_running = false;
 
 private:
-	// ~same as clicker 
+	// same as left clicker 
 	toadll::Randomization m_rand = toad::left_clicker::rand;
 };
 

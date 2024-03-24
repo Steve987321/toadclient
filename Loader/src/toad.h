@@ -18,9 +18,9 @@
 #include "global_settings.h"
 #include "utils/helpers.h"
 #include "utils/block_map.h"
-#include "Application/Application.h"
+#include "Application/application.h"
 #include "Application/ui.h"
-#include "Application/VisualizeClicker/VisualizeClicker.h"
+#include "Application/VisualizeClicker/visualize_clicker.h"
 
 // use this when precision isn't required but the CPU should be saved
 #define SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))

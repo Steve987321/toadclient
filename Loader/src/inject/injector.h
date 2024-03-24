@@ -1,3 +1,5 @@
+// Manual map injector from: https://github.com/TheCruZ/Simple-Manual-Map-Injector
+
 #pragma once
 
 #include <Windows.h>

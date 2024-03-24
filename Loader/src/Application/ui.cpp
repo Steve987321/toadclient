@@ -1,6 +1,6 @@
 #ifdef TOAD_LOADER
 #include "toad.h"
-#include "Application.h"
+#include "application.h"
 #include "inject/injector.h"
 #endif
 

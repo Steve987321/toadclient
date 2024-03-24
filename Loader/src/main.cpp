@@ -1,5 +1,5 @@
 #include "toad.h"
-#include "Application/Application.h"
+#include "Application/application.h"
 
 using namespace toad;
 

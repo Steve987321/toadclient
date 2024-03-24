@@ -2,7 +2,7 @@
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
-#include "Fonts/Icons.h"
+#include "Fonts/icons.h"
 
 #include "imgui_window.h"
 

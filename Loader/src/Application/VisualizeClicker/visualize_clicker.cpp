@@ -4,7 +4,7 @@
 #include <thread>
 #include <queue>
 
-#include "VisualizeClicker.h"
+#include "visualize_clicker.h"
 
 #include <iostream>
 #endif

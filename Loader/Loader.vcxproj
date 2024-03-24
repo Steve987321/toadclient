@@ -90,9 +90,9 @@
     <ClInclude Include="src\Application\config.h" />
     <ClInclude Include="src\Application\ui.h" />
     <ClInclude Include="src\inject\injector.h" />
-    <ClInclude Include="src\Application\Application.h" />
+    <ClInclude Include="src\Application\application.h" />
     <ClInclude Include="src\Application\Fonts\fa-solid-900Font.h" />
-    <ClInclude Include="src\Application\Fonts\Icons.h" />
+    <ClInclude Include="src\Application\Fonts\icons.h" />
     <ClInclude Include="src\toad.h" />
     <ClInclude Include="src\utils\block_map.h" />
     <ClInclude Include="src\utils\helpers.h" />
@@ -106,13 +106,13 @@
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Application\imgui_window.h" />
-    <ClInclude Include="src\Application\VisualizeClicker\VisualizeClicker.h" />
+    <ClInclude Include="src\Application\VisualizeClicker\visualize_clicker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application\config.cpp" />
     <ClCompile Include="src\global_settings.h" />
     <ClCompile Include="src\inject\injector.cpp" />
-    <ClCompile Include="src\Application\Application.cpp" />
+    <ClCompile Include="src\Application\application.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\toad.cpp" />
     <ClCompile Include="src\Application\ui.cpp" />
@@ -124,7 +124,7 @@
     <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Application\imgui_window.cpp" />
-    <ClCompile Include="src\Application\VisualizeClicker\VisualizeClicker.cpp" />
+    <ClCompile Include="src\Application\VisualizeClicker\visualize_clicker.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,7 +9,7 @@
 #include "imgui/backends/imgui_impl_dx9.h"
 #include "imgui/backends/imgui_impl_win32.h"
 
-#include "Application.h"
+#include "application.h"
 
 #include "Fonts/fa-solid-900Font.h"
 

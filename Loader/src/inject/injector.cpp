@@ -1,4 +1,6 @@
 #include "toad.h"
+// Manual map injector from: https://github.com/TheCruZ/Simple-Manual-Map-Injector
+
 
 #include "injector.h"
 
@@ -305,8 +307,6 @@ void __stdcall Shellcode(MANUAL_MAPPING_DATA* pData) {
 
 	bool ExceptionSupportFailed = false;
 
-#ifdef _WIN64
-
 	if (pData->SEHSupport) {
 		auto excep = pOpt->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXCEPTION];
 		if (excep.Size) {
@@ -317,8 +317,6 @@ void __stdcall Shellcode(MANUAL_MAPPING_DATA* pData) {
 			}
 		}
 	}
-
-#endif
 
 	_DllMain(pBase, pData->fdwReasonParam, pData->reservedParam);
 

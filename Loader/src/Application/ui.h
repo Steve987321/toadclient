@@ -1,12 +1,12 @@
 #pragma once
 
 #ifdef TOAD_LOADER
-#include "VisualizeClicker/VisualizeClicker.h"
+#include "VisualizeClicker/visualize_clicker.h"
 #include "utils/imfilebrowser.h"
 #include "config.h"
 #else
-#include "../../Loader/src/Application/VisualizeClicker/VisualizeClicker.h"
-#include "../../Loader/src/Application/VisualizeClicker/VisualizeClicker.cpp"
+#include "../../Loader/src/Application/VisualizeClicker/visualize_clicker.h"
+#include "../../Loader/src/Application/VisualizeClicker/visualize_clicker.cpp"
 #include "../../Loader/src/Application/config.h"
 #include "../../Loader/src/utils/imfilebrowser.h"
 #endif

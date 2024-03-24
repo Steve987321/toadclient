@@ -9,9 +9,9 @@
 #include "imgui/imgui_internal.h"
 
 #ifndef TOAD_LOADER
-#include "../Loader/src/Application/Fonts/Icons.h"
+#include "../Loader/src/Application/Fonts/icons.h"
 #else
-#include "Application/Fonts/Icons.h"
+#include "Application/Fonts/icons.h"
 #endif
 
 
