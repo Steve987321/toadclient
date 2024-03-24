@@ -165,11 +165,21 @@ namespace toad::ui
             const int n_inconsistencies2 = left_clicker::rand.inconsistencies2.size();
             const int n_boosts = left_clicker::rand.boosts.size();
 
+            // prevent closing when adding/removing nodes
+            static bool open_boost_node = false;
+            static bool open_inconsistencies_node = false;
+            static bool open_inconsistencies2_node = false;
+
             // stores the index
             static std::queue<int> remove_inconsistency_queue = {};
             static std::queue<int> remove_inconsistency2_queue = {};
             static std::queue<int> remove_boost_queue = {};
 
+            if (open_inconsistencies_node)
+            {
+				ImGui::SetNextItemOpen(true);
+                open_inconsistencies_node = false;
+            }
             if (ImGui::TreeNode(("Inconsistencies (mouse down) " + std::to_string(n_inconsistencies)).c_str()))
             {
                 for (int i = 0; i < n_inconsistencies; i++)
@@ -179,7 +189,6 @@ namespace toad::ui
                     {
                         remove_inconsistency_queue.push(i);
                     }
-                    ImGui::PopID();
 
                     ImGui::SameLine();
 
@@ -190,18 +199,16 @@ namespace toad::ui
 
                     if (ImGui::TreeNode(("inconsistency" + std::to_string(i)).c_str(), "inconsistency (%.1f, %.1f)", in.min_amount_ms, in.max_amount_ms))
                     {
-                        ImGui::PushID(i);
-
                         ImGui::SliderFloat("min delay", &in.min_amount_ms, -left_clicker::rand.min_delay + 1.0f, 500.f, "%.3fms");
                         ImGui::SliderFloat("max delay", &in.max_amount_ms, -left_clicker::rand.min_delay + 1.0f, 500.f, "%.3fms");
 
                         ImGui::SliderInt("chance", &in.chance, 0, 100, "%d%%");
                         ImGui::SliderInt("frequency", &in.frequency, 1, 150, "every %d clicks");
 
-                        ImGui::PopID();
-
                         ImGui::TreePop();
                     }
+
+					ImGui::PopID();
                 }
 
                 while (!remove_inconsistency_queue.empty())
@@ -209,13 +216,21 @@ namespace toad::ui
                     const auto index = remove_inconsistency_queue.front();
                     left_clicker::rand.inconsistencies.erase(left_clicker::rand.inconsistencies.begin() + index);
                     remove_inconsistency_queue.pop();
+                    open_inconsistencies_node = true;
                 }
 
                 if (ImGui::Button("+"))
                 {
                     left_clicker::rand.inconsistencies.emplace_back(0, 0, 50, 20);
+                    open_inconsistencies_node = true;
                 }
                 ImGui::TreePop();
+            }
+
+			if (open_inconsistencies2_node)
+            {
+				ImGui::SetNextItemOpen(true);
+                open_inconsistencies2_node = false;
             }
             if (ImGui::TreeNode(("Inconsistencies (mouse up) " + std::to_string(n_inconsistencies2)).c_str()))
             {
@@ -226,7 +241,6 @@ namespace toad::ui
                     {
                         remove_inconsistency2_queue.push(i);
                     }
-                    ImGui::PopID();
 
                     ImGui::SameLine();
 
@@ -237,18 +251,15 @@ namespace toad::ui
 
                     if (ImGui::TreeNode(("inconsistency" + std::to_string(i)).c_str(), "inconsistency (%.1f, %.1f)", in.min_amount_ms, in.max_amount_ms))
                     {
-                        ImGui::PushID(i);
-
                         ImGui::SliderFloat("min delay", &in.min_amount_ms, -left_clicker::rand.min_delay + 1.0f, 500.f, "%.3fms");
                         ImGui::SliderFloat("max delay", &in.max_amount_ms, -left_clicker::rand.min_delay + 1.0f, 500.f, "%.3fms");
 
                         ImGui::SliderInt("chance", &in.chance, 0, 100, "%d%%");
                         ImGui::SliderInt("frequency", &in.frequency, 1, 150, "every %d clicks");
 
-                        ImGui::PopID();
-
                         ImGui::TreePop();
                     }
+					ImGui::PopID();
                 }
 
                 while (!remove_inconsistency2_queue.empty())
@@ -256,13 +267,21 @@ namespace toad::ui
                     const auto index = remove_inconsistency2_queue.front();
                     left_clicker::rand.inconsistencies2.erase(left_clicker::rand.inconsistencies2.begin() + index);
                     remove_inconsistency2_queue.pop();
+                    open_inconsistencies2_node = true;
                 }
 
                 if (ImGui::Button("+"))
                 {
                     left_clicker::rand.inconsistencies2.emplace_back(0, 0, 50, 20);
+                    open_inconsistencies2_node = true;
                 }
                 ImGui::TreePop();
+            }
+
+            if (open_boost_node)
+            {
+                ImGui::SetNextItemOpen(true);
+                open_boost_node = false;
             }
             if (ImGui::TreeNode(("Boosts/Drops " + std::to_string(n_boosts)).c_str()))
             {
@@ -273,7 +292,6 @@ namespace toad::ui
                     {
                         remove_boost_queue.push(i);
                     }
-                    ImGui::PopID();
 
                     ImGui::SameLine();
 
@@ -282,20 +300,18 @@ namespace toad::ui
                     b.freq_min = std::clamp(b.freq_min, 5, b.freq_max);
                     b.freq_max = std::clamp(b.freq_max, b.freq_min, 200);
 
-                    if (ImGui::TreeNode(("boost" + std::to_string(b.id)).c_str(), "boost (%.1f)", b.amount_ms))
+                    const char* name = b.amount_ms < 0 ? "drop" : "boost";
+                    if (ImGui::TreeNode((std::to_string(b.id)).c_str(), "%s (%.1f)", name, b.amount_ms))
                     {
-                        ImGui::PushID(i);
-
-                        ImGui::SliderFloat("amount", &b.amount_ms, 0.1f, 500.f, "%.3f");
+                        ImGui::SliderFloat("amount", &b.amount_ms, -100.f, 100.f, "%.3f ms");
                         ImGui::SliderInt("duration", &b.duration, 5, 100, "%d clicks");
                         ImGui::SliderInt("transition duration", &b.transition_duration, 5, 100, "%d clicks");
                         ImGui::SliderInt("freq min", &b.freq_min, 5, 200, "%d%%");
                         ImGui::SliderInt("freq max", &b.freq_max, 5, 200, "%d%%");
 
-                        ImGui::PopID();
-
                         ImGui::TreePop();
                     }
+					ImGui::PopID();
                 }
 
                 while (!remove_boost_queue.empty())
@@ -303,11 +319,13 @@ namespace toad::ui
                     const auto index = remove_boost_queue.front();
                     left_clicker::rand.boosts.erase(left_clicker::rand.boosts.begin() + index);
                     remove_boost_queue.pop();
+                    open_boost_node = true;
                 }
 
                 if (ImGui::Button("+"))
                 {
                     left_clicker::rand.boosts.emplace_back(0.5f, 5, 50, 20, 50, n_boosts);
+					open_boost_node = true;
                 }
                 ImGui::TreePop();
             }

@@ -86,7 +86,7 @@ namespace toad
             return false;
 
 #ifndef _DEBUG
-        ShowWindow(GetConsoleWindow(), SW_HIDE);
+        //ShowWindow(GetConsoleWindow(), SW_HIDE);
 #endif
         return true;
     }
