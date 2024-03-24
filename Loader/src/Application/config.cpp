@@ -58,6 +58,46 @@ void LoadSettings(std::string_view jsonSettings)
 		right_clicker::blocks_only = data["rc_blocks_only"];
 		right_clicker::start_delayms = data["rc_start_delay"];
 
+		// rand 
+		json lcRandBoosts = data["lc_randb"];
+		json lcRandInconsistencies = data["lc_randi"];
+		json lcRandInconsistencies2 = data["lc_randi2"];
+
+		left_clicker::rand.boosts.clear();
+		left_clicker::rand.inconsistencies.clear();
+		left_clicker::rand.inconsistencies2.clear();
+
+		for (auto& item : lcRandBoosts.items())
+		{
+			int id = std::stoi(item.key());
+			float amount_ms = item.value()["n"];
+			float duration = item.value()["dur"];
+			float transition_duration = item.value()["tdur"];
+			float freq_min = item.value()["fqmin"];
+			float freq_max = item.value()["fqmax"];
+			left_clicker::rand.boosts.emplace_back(amount_ms, duration, transition_duration, freq_min, freq_max, id);
+		}
+
+		for (auto& item : lcRandInconsistencies.items())
+		{
+			float min_amount_ms = item.value()["nmin"];
+			float max_amount_ms = item.value()["nmax"];
+			float chance = item.value()["c"];
+			float frequency = item.value()["f"];
+			left_clicker::rand.inconsistencies.emplace_back(min_amount_ms, max_amount_ms, chance, frequency);
+		}
+
+		for (auto& item : lcRandInconsistencies2.items())
+		{
+			float min_amount_ms = item.value()["nmin"];
+			float max_amount_ms = item.value()["nmax"];
+			float chance = item.value()["c"];
+			float frequency = item.value()["f"];
+			left_clicker::rand.inconsistencies2.emplace_back(min_amount_ms, max_amount_ms, chance, frequency);
+		}
+
+		left_clicker::update_rand_flag = true;
+
 		// aim assist
 		aa::enabled = data["aa_enabled"];
 		aa::distance = data["aa_distance"];
@@ -186,8 +226,8 @@ json SettingsToJson()
 	json data;
 
 	// rand
-	json lcRandInconsistenties = json::object();
-	json lcRandInconsistenties2 = json::object();
+	json lcRandInconsistencies = json::object();
+	json lcRandInconsistencies2 = json::object();
 	json lcRandBoosts = json::object();
 
 	using namespace toad;
@@ -210,7 +250,7 @@ json SettingsToJson()
 	for (int i = 0; i < left_clicker::rand.inconsistencies.size(); i++)
 	{
 		const auto& in = left_clicker::rand.inconsistencies[i];
-		lcRandInconsistenties[std::to_string(i)] =
+		lcRandInconsistencies[std::to_string(i)] =
 		{
 			//float min, float max, int chance, int frequency)
 			{"nmin", in.min_amount_ms},
@@ -224,7 +264,7 @@ json SettingsToJson()
 	{
 		const auto& in = left_clicker::rand.inconsistencies2[i];
 
-		lcRandInconsistenties2[std::to_string(i)] =
+		lcRandInconsistencies2[std::to_string(i)] =
 		{
 			//float min, float max, int chance, int frequency)
 			{"nmin", in.min_amount_ms},
@@ -237,8 +277,8 @@ json SettingsToJson()
 	data["ui_internal"] = g_is_ui_internal;
 
 	data["lc_randb"] = lcRandBoosts;
-	data["lc_randi"] = lcRandInconsistenties;
-	data["lc_randi2"] = lcRandInconsistenties2;
+	data["lc_randi"] = lcRandInconsistencies;
+	data["lc_randi2"] = lcRandInconsistencies2;
 
 	// left auto clicker
 	data["lc_enabled"] = left_clicker::enabled;
