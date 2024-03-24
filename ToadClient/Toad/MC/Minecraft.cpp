@@ -416,7 +416,7 @@ jobject Minecraft::getMouseOverObject()
     return res;
 }
 
-int Minecraft::getBlockIdAt(const Vec3& pos)
+int Minecraft::getBlockIdAt(const Vec3i& pos)
 {
     auto world = getWorld();
     if (!world)
@@ -428,10 +428,9 @@ int Minecraft::getBlockIdAt(const Vec3& pos)
         return 0;
     }
 
-    auto blockatObj = env->CallObjectMethod(world, mId, pos.x, pos.y, pos.z);
+	auto blockatObj = env->CallObjectMethod(world, mId, pos.x, pos.y, pos.z);
     auto blockatkClass = env->GetObjectClass(blockatObj);
     auto id = env->CallStaticIntMethod(blockatkClass, get_static_mid(blockatkClass, mapping::getIdFromBlockStatic, env), blockatObj);
-
     env->DeleteLocalRef(world);
     env->DeleteLocalRef(blockatObj);
     env->DeleteLocalRef(blockatkClass);

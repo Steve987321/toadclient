@@ -35,11 +35,12 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			{
 				if (!CVarsUpdater::IsVerified)
 					break;
-				const int id = MC->getBlockIdAt({ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) });
+				const int id = MC->getBlockIdAt({ x, y, z });
 				if (id == 0) continue; // airblock
 
 				if (block_esp::block_list.contains(id))
 				{
+
 					blockPositions.emplace_back(
 						BBox{
 								Vec3
@@ -65,6 +66,7 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 					);
 				}
 			}
+
 	m_blocks = blockPositions;
 	SLEEP(100);
 }

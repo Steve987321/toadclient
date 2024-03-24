@@ -100,6 +100,58 @@ struct Vec3 {
     }
 };
 
+struct Vec3i {
+	Vec3i(int x, int y, int z) : x(x), y(y), z(z) {}
+	Vec3i() : x(0), y(0), z(0) {}
+
+	int x, y, z;
+
+	Vec3i operator+(const Vec3i& v) const {
+		return { x + v.x, y + v.y, z + v.z };
+	}
+
+	Vec3i operator-(const Vec3i& v) const {
+		return { x - v.x, y - v.y, z - v.z };
+	}
+
+	Vec3i operator*(int s) const {
+		return { x * s, y * s, z * s };
+	}
+
+	Vec3i operator/(int s) const {
+		return { x / s, y / s, z / s };
+	}
+
+	bool operator==(const Vec3i& v) const {
+        return x == v.x && y == v.y;
+	}
+
+	_NODISCARD int dist(const Vec3i& v) const {
+		return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
+	}
+
+	_NODISCARD int dot(const Vec3i& v) const {
+		return x * v.x + y * v.y + z * v.z;
+	}
+
+	_NODISCARD Vec3i cross(const Vec3i& v) const {
+		return
+		{
+				y * v.z - z * v.y,
+				z * v.x - x * v.z,
+				x * v.y - y * v.x
+		};
+	}
+
+	int length() const {
+		return std::sqrt(x * x + y * y + z * z);
+	}
+
+	int lengthSquared() const {
+		return x * x + y * y + z * z;
+	}
+};
+
 struct Vec4 {
     Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
     Vec4() = default;

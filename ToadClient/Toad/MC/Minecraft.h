@@ -52,7 +52,7 @@ public:
 	_NODISCARD jobject getWorld();
 	_NODISCARD jobject getGameSettings();
 	_NODISCARD jobject getMouseOverObject();
-	_NODISCARD int getBlockIdAt(const Vec3& pos);
+	_NODISCARD int getBlockIdAt(const Vec3i& pos);
 
 	_NODISCARD bool isInGui();
 
