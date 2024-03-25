@@ -8,7 +8,7 @@ This project is primarily for my personal learning and experimentation purposes.
 ## How to setup in Visual Studio 
 *It is recommended to use Visual Studio 2022 to build this project.*
 
-Logging is enabled by default, go to `ToadClient/Toad.h`. At the top comment out: 
+Logging is enabled by default, go to the top of `ToadClient/Toad.h` and comment out: 
 ```c++
 #define ENABLE_LOGGING
 ```
@@ -105,6 +105,8 @@ Logging is enabled by default, go to `ToadClient/Toad.h`. At the top comment out
         -   font 
 
 **Block ESP**  
+
+
 -   search (search bar for blocks, is very limited to types of blocks. This will write the correct value to block ID)
 -   block id (value that is being read when press the **Add** button)
 -   List of blocks
@@ -137,9 +139,12 @@ Array List (draws enabled features, no customization settings were added for thi
 
 
 ## GUI 
-(combat tab, menu also wasn't fully finished)
+(menu also wasn't fully finished)
 
 ![image](https://github.com/Steve987321/toadclient/assets/88980055/69bcf48c-4964-4bed-b8aa-cc6ec37d422a)
 
+![image](https://github.com/Steve987321/toadclient/assets/88980055/659884ba-f57b-4eba-9248-a4de5ba39821)
+
 ## Disclaimer 
+
 This project is provided as-is, without any warranty or support. I make no guarantees about its correctness or suitability for any purpose. Use at your own risk.
