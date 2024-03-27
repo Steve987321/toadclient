@@ -12,6 +12,7 @@ Logging is enabled by default, go to the top of `ToadClient/Toad.h` and comment 
 ```c++
 #define ENABLE_LOGGING
 ```
+When logging is enabled it will enable the console for log messages and create a log file named `Toad.log` in the documents folder.
 
 1.  Clone the repository or download the zip and extract it.
 
