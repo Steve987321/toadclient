@@ -599,7 +599,7 @@ void init_modules()
 	// Instantiate all cheat modules
 	CVarsUpdater::GetInstance()->Name = "Vars updater";
 	CLeftAutoClicker::GetInstance()->Name = "Left autoclicker";
-	CRightAutoClicker::GetInstance()->Name = "Left autoclicker";
+	CRightAutoClicker::GetInstance()->Name = "Right autoclicker";
 	CAimAssist::GetInstance()->Name = "Aim assist";
 	CEsp::GetInstance()->Name = "Esp";
 	CBlockEsp::GetInstance()->Name = "Block esp";
