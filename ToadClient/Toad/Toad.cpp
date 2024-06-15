@@ -27,18 +27,17 @@ extern void init_modules();
 
 DWORD WINAPI toadll::init()
 {
+#ifdef ENABLE_LOGGING
+	Logger::GetInstance();
+	SetConsoleCtrlHandler(NULL, true);
+#endif
+	LOGDEBUG("[init] Start");
+
 	if (!UpdateSettings())
 	{
 		clean_up(1, "Failed to open settings");
 		return 1;
 	}
-
-#ifdef ENABLE_LOGGING
-	Logger::GetInstance();
-	SetConsoleCtrlHandler(NULL, true);
-#endif
-
-	LOGDEBUG("[init] Start");
 
 	// get functions from jvm.dll
 	auto jvm_handle = GetModuleHandleA("jvm.dll");
