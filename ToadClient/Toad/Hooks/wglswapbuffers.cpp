@@ -64,14 +64,28 @@ namespace toadll
 		static HGLRC ctx = nullptr;
 		static int init_stage = 0;
 
-		GLint viewport[4] {};
 		glGetIntegerv(GL_VIEWPORT, CVarsUpdater::Viewport.data());
 
 		// check for viewport dimensions change
 		if (g_screen_width != CVarsUpdater::Viewport[2] || g_screen_height != CVarsUpdater::Viewport[3])
 		{
-			// update window handle 
-			// window handle gets lost when switching between fullscreen and windowed
+			RECT r;
+			GetWindowRect(GetDesktopWindow(), &r);
+
+			if (init_stage != 0)
+			{
+				if ((CVarsUpdater::Viewport[2] == r.right && CVarsUpdater::Viewport[3] == r.bottom)
+					||
+					(g_screen_width == r.right && g_screen_height == r.bottom))
+				{
+					LOGDEBUG("[HSwapBuffers] Switching fullscreen");
+
+					ImGui_ImplWin32_Init(m_hwnd);
+					ImGui_ImplOpenGL2_Init();
+				}
+			}
+			
+
 			g_hWnd = m_hwnd;
 		}
 
