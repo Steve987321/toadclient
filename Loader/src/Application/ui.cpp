@@ -17,7 +17,8 @@ namespace toad::ui
     {
         if (static bool once = false; !once)
         {
-            if (init_thread.joinable()) init_thread.join();
+            if (init_thread.joinable()) 
+                init_thread.join();
 			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
             ImGui::SetNextWindowSize(io->DisplaySize);
 			once = true;
@@ -373,11 +374,6 @@ namespace toad::ui
             {
                 is_playing = !is_playing;
                 is_playing ? visual_clicker.Start() : visual_clicker.Stop();
-            }
-
-            if (is_playing)
-            {
-
             }
 
             ImGui::Text("CPS: %d", visual_clicker.GetCPS());

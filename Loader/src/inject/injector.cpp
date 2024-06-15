@@ -1,7 +1,6 @@
 #include "toad.h"
 // Manual map injector from: https://github.com/TheCruZ/Simple-Manual-Map-Injector
 
-
 #include "injector.h"
 
 #if defined(DISABLE_OUTPUT)

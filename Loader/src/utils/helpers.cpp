@@ -149,7 +149,7 @@ namespace toad
 
 		static constexpr auto defCol = ImVec4(0.1f, 0.1f, 0.1f, 1.f);
 
-		const auto defBorderCol = ImGui::GetStyleColorVec4(ImGuiCol_Border);
+		const auto& defBorderCol = ImGui::GetStyleColorVec4(ImGuiCol_Border);
 
 		static ImVec2 m_boxSize = { mid.x + 15, mid.y + 15 };
 
@@ -287,7 +287,8 @@ namespace toad
 
 	void setting_menu(const char* name, bool& opened, const std::function<void()>& components, bool use_extra_options, const std::function<void()>& extra_options_components)
 	{
-		if (!opened) return;
+		if (!opened) 
+			return;
 
 		auto io = &ImGui::GetIO();
 
@@ -316,7 +317,7 @@ namespace toad
 		static float eoptions_box_size_X_smooth = box_size_smooth.x / 2 + 10;
 
 		// update box sizes and positions using anim_speed
-		const auto anim_speed = std::clamp(20.f * io->DeltaTime, 0.f, 1.f);
+		const float anim_speed = std::clamp(20.f * io->DeltaTime, 0.f, 1.f);
 
 		static float box_size_drag_offset = 0;
 		auto box_size_target = is_eoptions_open ? ImVec2{ mid.x + 100 + box_size_drag_offset, mid.y + 120 } : kbox_size_real;

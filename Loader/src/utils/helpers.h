@@ -148,7 +148,7 @@ void center_text(const ImVec4& col = {1,1,1,1}, const char* frmt = "sample text"
 ///
 /// Simple wrapper for centering a multiline text inside a box on the X-axis
 ///
-/// @param txt string separated by '\n'
+/// @param txt string separated by newline characters \n
 /// @param col text color
 /// @param flags specify the position of the text
 ///

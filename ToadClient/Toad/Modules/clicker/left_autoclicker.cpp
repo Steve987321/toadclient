@@ -25,7 +25,6 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static Timer trade_assist_timer;
 
 	/// a delay before breaking a block after aiming at one
-
 	Enabled = left_clicker::enabled; 
 	if (!Enabled)
 	{

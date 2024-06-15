@@ -28,10 +28,10 @@
 namespace toad
 {
 	// before init
-	_NODISCARD bool pre_init();
+	bool pre_init();
 
 	// Sets up ipc and threads and returns false if failed
-	_NODISCARD bool init();
+	bool init();
 
 	// stop all threads that are currently running 
 	void stop_all_threads();

@@ -45,7 +45,6 @@ protected:
 	/// Should be called before using sleep and after setting the default value of delay
 	///
 	///	@param inconsistencies Resets the inconsistency after applied to rand
-	///
 	void apply_rand(std::vector<Inconsistency>& inconsistencies);
 };
 

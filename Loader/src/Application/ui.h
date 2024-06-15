@@ -30,6 +30,7 @@ namespace toad::ui
     inline void UI(const ImGuiIO* io)
     {
         // ui settings
+        // #TODO: implement
         static bool tooltips = false;
 
         // clicker extra option rand edit
@@ -372,7 +373,8 @@ namespace toad::ui
                     {
                         setting_menu("Array List", is_ArrayList, []
                             {
-                                
+                                // #TODO: add array list options
+                                center_text_multi({1,1,1,1}, "WIP. \n customisation options will be \n added here later");
                             });
                     }
                 }
@@ -472,7 +474,7 @@ namespace toad::ui
                         {
                             config::LoadConfigFromClipBoard();
                         }
-                        if (ImGui::Button("Save to ClipBoard"))
+                        if (ImGui::Button("Save to Clipboard"))
                         {
                             config::SaveConfigToClipBoard();
                         }

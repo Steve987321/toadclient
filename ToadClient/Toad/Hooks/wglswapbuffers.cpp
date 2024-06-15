@@ -54,6 +54,7 @@ namespace toadll
 	BOOL HSwapBuffers::Hook(HDC hDc)
 	{
 		m_hwnd = WindowFromDC(hDc);
+
 		if (!oWndProc)
 		{
 			oWndProc = reinterpret_cast<tWndProc>(SetWindowLongPtr(m_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WndProcHook)));
@@ -146,7 +147,7 @@ namespace toadll
 				m_esp_font = io.Fonts->AddFontFromFileTTF(toad::esp::font_path.c_str(), 30.f);
 				if (!m_esp_font)
 				{
-					LOGERROR("font was 0");
+					LOGERROR("font was invalid");
 					m_esp_font = io.Fonts->Fonts[0];
 				}
 			

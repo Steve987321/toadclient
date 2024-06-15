@@ -38,7 +38,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	}
 
 	// left: dist, right: enitity, position
-	std::vector < std::pair<float, std::pair<std::shared_ptr<c_Entity>, Vec3>>> distances = {};
+	std::vector<std::pair<float, std::pair<std::shared_ptr<c_Entity>, Vec3>>> distances = {};
 
 	// our (locked) target
 	static std::shared_ptr<c_Entity> target = nullptr;
@@ -50,6 +50,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// for getting closest to crosshair
 	float minimal_angle_diff = aa::fov / 2.f;
 
+	// whether we should look for a target
 	bool skip_get_target = false;
 
 	if (aa::lock_aim && target != nullptr)
@@ -57,11 +58,9 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		target_pos = target->getPosition();
 
 		// check if the target is still inside bounds and valid 
-		if (
-			abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first))) <= aa::fov
+		if (abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first))) <= aa::fov
 			&&
-			target_pos.dist(lPlayer->Pos) <= aa::distance
-			)
+			target_pos.dist(lPlayer->Pos) <= aa::distance)
 
 			skip_get_target = true;
 	}
