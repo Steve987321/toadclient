@@ -27,7 +27,13 @@ void VisualizeClicker::Start()
 void VisualizeClicker::Stop()
 {
 	m_thread_running = false;
-	if (m_clicking_thread.joinable()) m_clicking_thread.join();
+	if (m_clicking_thread.joinable())
+		m_clicking_thread.join();
+}
+
+bool VisualizeClicker::IsStarted() const
+{
+	return m_thread_running;
 }
 
 int VisualizeClicker::GetCPS() const

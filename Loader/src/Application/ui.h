@@ -587,6 +587,11 @@ namespace toad::ui
         {
             clicker_rand_visualizer(&clicker_rand_visualize);
         }
+        else
+        {
+            if (visual_clicker.IsStarted())
+                visual_clicker.Stop();
+        }
 
         if (esp_visuals_menu)
         {

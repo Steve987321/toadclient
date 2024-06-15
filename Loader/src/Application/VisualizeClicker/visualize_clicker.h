@@ -13,6 +13,8 @@ public:
 	void Start();
 	void Stop();
 
+	bool IsStarted() const;
+
 public:
 	int GetCPS() const;
 	toadll::Randomization GetRand();

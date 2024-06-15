@@ -368,7 +368,7 @@ namespace toad::ui
                 ImGui::EndMenuBar();
             }
 
-            static bool is_playing = false;
+            bool is_playing = visual_clicker.IsStarted();
             if (ImGui::Button(is_playing ? "pause" : "play"))
             {
                 is_playing = !is_playing;
