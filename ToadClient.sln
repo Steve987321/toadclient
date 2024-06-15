@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToadClient", "ToadClient\ToadClient.vcxproj", "{3A854E09-05E7-4B2F-BE40-BA9E21497298}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Loader", "Loader\Loader.vcxproj", "{14160B19-81F2-46C1-A1A1-E04A8FCD8F91}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A854E09-05E7-4B2F-BE40-BA9E21497298} = {3A854E09-05E7-4B2F-BE40-BA9E21497298}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
