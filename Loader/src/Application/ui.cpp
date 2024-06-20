@@ -91,6 +91,9 @@ namespace toad::ui
                             std::cout << "currclient type: " << (int)g_curr_client << std::endl;
                             if (g_curr_client != MC_CLIENT::NOT_SUPPORTED)
                             {
+                                if (init_thread.joinable())
+                                    init_thread.join();
+
                                 init_thread = std::thread([&]
                                     {
                                         inject_status = "init #1";
@@ -104,6 +107,8 @@ namespace toad::ui
 
 		                                if (!failed_shared_mem && !failed_inject)
 		                                    g_is_verified = true;
+
+                                        g_injected_window = window;
 
 										loading = false;
                                     });
@@ -125,19 +130,22 @@ namespace toad::ui
                 }
                 else if (failed_shared_mem)
                 {
-                    if (init_thread.joinable()) init_thread.join();
+                    if (init_thread.joinable())
+                        init_thread.join();
                     loading = false;
                     show_message_box("failed to initialize", "failed setting up ipc", failed_shared_mem, true, mboxType::ERR);
                 }
                 else if (failed_inject)
                 {
-                    if (init_thread.joinable()) init_thread.join();
+                    if (init_thread.joinable()) 
+                        init_thread.join();
                     loading = false;
                     show_message_box("failed to inject", inject_status.c_str(), failed_inject, true, mboxType::ERR);
                 }
                 else if (invalid_client_type)
                 {
-                    if (init_thread.joinable()) init_thread.join();
+                    if (init_thread.joinable()) 
+                        init_thread.join();
                     loading = false;
                     show_message_box("failed", "client is not supported", invalid_client_type, true, mboxType::ERR);
                 }

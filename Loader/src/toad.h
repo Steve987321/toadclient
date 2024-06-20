@@ -45,6 +45,8 @@ namespace toad
 	// contains the list of all minecraft windows that user can inject to  
 	inline std::vector<window> g_mc_window_list = {};
 
+	inline window g_injected_window{ {}, 0, {} };
+
 	// will be true when injection was succesfull
 	// will remain false if we haven't injected 
 	inline bool g_is_verified = false;
