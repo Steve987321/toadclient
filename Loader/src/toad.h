@@ -27,11 +27,11 @@
 
 namespace toad
 {
-	// before init
-	bool pre_init();
-
 	// Sets up ipc and threads and returns false if failed
 	bool init();
+
+	// scans for windows and updates window list
+	void scan_windows();
 
 	// stop all threads that are currently running 
 	void stop_all_threads();

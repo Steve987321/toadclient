@@ -13,23 +13,12 @@ std::once_flag init_once_flag;
 
 // threads for loader 
 inline std::thread updateSettingsThread;
-inline std::thread windowScannerThread;
 
 // updates settings for dll 
 extern void update_settings();
 
-// scan for minecraft instances 
-extern void window_scanner();
-
 extern bool is_proc_mc(DWORD dwPID);
 extern BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam);
-
-bool toad::pre_init()
-{
-	std::cout << "Starting window scanner thread\n";
-	windowScannerThread = std::thread(window_scanner);
-	return true;
-}
 
 bool toad::init()
 {
@@ -212,8 +201,8 @@ void update_settings()
 
 void toad::stop_all_threads()
 {
-	if (windowScannerThread.joinable()) windowScannerThread.join();
-	if (updateSettingsThread.joinable()) updateSettingsThread.join();
+	if (updateSettingsThread.joinable()) 
+		updateSettingsThread.join();
 }
 
 void toad::clean_up()
@@ -302,23 +291,18 @@ BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam)
 	return TRUE;
 }
 
-void window_scanner()
+void toad::scan_windows()
 {
-	while (toad::g_is_running)
+	g_mc_window_list.clear();
+
+	static uint8_t checks = 0;
+	bool found_injected_window = false;
+	EnumWindows(enumWindowCallback, (LPARAM)&found_injected_window);
+
+	if (g_injected_window.pid != 0 && !found_injected_window && checks++ >= 2)
 	{
+		g_is_verified = false;
+		checks = 0;
 		g_mc_window_list.clear();
-
-		static uint8_t checks = 0;
-		bool found_injected_window = false;
-		EnumWindows(enumWindowCallback, (LPARAM)&found_injected_window);
-
-		if (g_injected_window.pid != 0 && !found_injected_window && checks++ >= 2)
-		{
-			g_is_verified = false;
-			checks = 0;
-			g_mc_window_list.clear();
-		}
-
-		SLEEP(1000);
 	}
 }

@@ -48,7 +48,8 @@ void ImGuiWindow::DestroyWindow()
 {
     std::lock_guard lock(m_destroy_window_mutex);
 
-    if (!m_running) return;
+    if (!m_running) 
+        return;
 
     std::cout << "Closing window: " << m_window_name << std::endl;
 

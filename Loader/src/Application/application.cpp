@@ -79,10 +79,6 @@ namespace toad
         m_window->SetUI(render_UI);
         m_window->StartWindow();
 
-        //if (!SetupMenu()) return false;
-        if (!pre_init())
-            return false;
-
 #ifndef _DEBUG
         //ShowWindow(GetConsoleWindow(), SW_HIDE);
 #endif
@@ -93,9 +89,7 @@ namespace toad
     {
         while (m_window->IsActive())
         {
-            //m_window->UpdateMenu();
-            //MenuLoop();
-
+            scan_windows();
 			SLEEP(1500);
         }
     }
