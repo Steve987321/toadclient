@@ -257,34 +257,46 @@ bool is_proc_mc(DWORD dwPID)
 	return false;
 }
 
-BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam) {
-	constexpr DWORD TITLE_SIZE = 1024;
+BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam)
+{
 	DWORD PID = 0;
+	GetWindowThreadProcessId(hwnd, &PID);
 
-	CHAR windowTitle[TITLE_SIZE];
-
-	GetWindowTextA(hwnd, windowTitle, TITLE_SIZE);
-
-	const int win_name_length = ::GetWindowTextLength(hwnd);
-
-	if (IsWindowVisible(hwnd) && win_name_length != 0) {
-		// convert window title to std::string
-		auto title = std::string(windowTitle);
-
-		// title to lower case 
-		std::ranges::transform(title, title.begin(), tolower);
-
-		// check if window title contains minecraft client names
-		if (title.find("lunar client") != std::string::npos || title.find("minecraft") != std::string::npos)
+	// check if minecraft was closed 
+	if (g_injected_window.pid != 0)
+	{
+		if (g_injected_window.pid == PID)
 		{
-			// check if important modules exist in the process
-			// before we add to the list 
-			GetWindowThreadProcessId(hwnd, &PID);
-			if (is_proc_mc(PID))
-				g_mc_window_list.emplace_back(title, PID, hwnd);
+			*(bool*)lparam = true;
+			return TRUE;
 		}
+	}
 
-		return TRUE;
+	const static DWORD TITLE_SIZE = 1024;
+	CHAR windowTitle[TITLE_SIZE];
+	GetWindowTextA(hwnd, windowTitle, TITLE_SIZE);
+	const int win_name_length = GetWindowTextLength(hwnd);
+
+	if (!toad::g_is_verified) // we haven't injected yet
+	{
+		if (IsWindowVisible(hwnd) && win_name_length != 0) {
+			// convert window title to std::string
+			auto title = std::string(windowTitle);
+
+			// title to lower case 
+			std::ranges::transform(title, title.begin(), tolower);
+
+			// check if window title contains minecraft client names
+			if (title.find("lunar client") != std::string::npos || title.find("minecraft") != std::string::npos)
+			{
+				// check if important modules exist in the process
+				// before we add to the list 
+				if (is_proc_mc(PID))
+					g_mc_window_list.emplace_back(title, PID, hwnd);
+			}
+
+			return TRUE;
+		}
 	}
 
 	return TRUE;
@@ -294,11 +306,19 @@ void window_scanner()
 {
 	while (toad::g_is_running)
 	{
-		if (!toad::g_is_verified) // we haven't injected yet
+		g_mc_window_list.clear();
+
+		static uint8_t checks = 0;
+		bool found_injected_window = false;
+		EnumWindows(enumWindowCallback, (LPARAM)&found_injected_window);
+
+		if (g_injected_window.pid != 0 && !found_injected_window && checks++ >= 2)
 		{
+			g_is_verified = false;
+			checks = 0;
 			g_mc_window_list.clear();
-			EnumWindows(enumWindowCallback, 0);
 		}
+
 		SLEEP(1000);
 	}
 }

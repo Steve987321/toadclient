@@ -96,23 +96,6 @@ namespace toad
             //m_window->UpdateMenu();
             //MenuLoop();
 
-            static uint8_t checks = 0;
-            if (g_injected_window.pid != 0)
-            {
-                if (g_injected_window.hwnd != FindWindowA(NULL, g_injected_window.title.c_str()))
-                {
-                    if (checks++ == 2)
-                    {
-						g_is_verified = false;
-						g_mc_window_list.clear();
-                    }
-                }
-                else
-                {
-                    checks = 0;
-                    g_is_verified = true;
-                }
-            }
 			SLEEP(1500);
         }
     }
