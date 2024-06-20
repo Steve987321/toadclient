@@ -71,9 +71,7 @@ namespace toad
 
     bool Application::Init()
     {
-#ifdef _DEBUG
         InitConsole();
-#endif
 
         g_is_running = true;
 
