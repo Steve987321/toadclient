@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 namespace toadll
 {
     // helper functions 
@@ -74,6 +76,18 @@ inline void send_key(WORD vk_key, bool send_down = true)
     ip.ki.dwFlags = send_down ? 0 : KEYEVENTF_KEYUP;
 
     SendInput(1, &ip, sizeof(INPUT));
+}
+
+inline Vec3 get_closest_point(const BBox& bb, const Vec3& from)
+{
+	Vec3 closestPoint;
+
+	// calculate the closest point on each axis
+	closestPoint.x = std::clamp(from.x, bb.min.x, bb.max.x);
+	closestPoint.y = std::clamp(from.y, bb.min.y, bb.max.y);
+	closestPoint.z = std::clamp(from.z, bb.min.z, bb.max.z);
+
+	return closestPoint;
 }
 
 }
