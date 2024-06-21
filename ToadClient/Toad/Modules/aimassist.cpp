@@ -14,6 +14,19 @@ void CAimAssist::PreUpdate()
 
 void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
+	// destination aiming point 
+	Vec3 aim_point;
+
+	// our (locked) target
+	static std::shared_ptr<c_Entity> target = nullptr;
+	static Vec3 target_pos = { 0, 0, 0 };
+
+	// horizontal and vertical speed
+	float speed = aa::speed * 3;
+
+	// whether we should look for a target
+	bool get_target = true;
+
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
 	Enabled = aa::enabled;
 	if (!Enabled || CVarsUpdater::IsInGui)
@@ -37,101 +50,23 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		}
 	}
 
-	// left: dist, right: enitity, position
-	std::vector<std::pair<float, std::pair<std::shared_ptr<c_Entity>, Vec3>>> distances = {};
-
-	// our (locked) target
-	static std::shared_ptr<c_Entity> target = nullptr;
-	static Vec3 target_pos = {0, 0, 0};
-
-	// horizontal and vertical speed
-	float speed = aa::speed * 3;
-
-	// for getting closest to crosshair
-	float minimal_angle_diff = aa::fov / 2.f;
-
-	// whether we should look for a target
-	bool skip_get_target = false;
-
+	// check if target is still a valid target (in fov and in distance)
 	if (aa::lock_aim && target != nullptr)
 	{
 		target_pos = target->getPosition();
 
-		// check if the target is still inside bounds and valid 
+		// check if the target is still inside fov and distance bounds
 		if (abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first))) <= aa::fov
 			&&
 			target_pos.dist(lPlayer->Pos) <= aa::distance)
-
-			skip_get_target = true;
+		{
+			get_target = false;
+		}
 	}
 	
-	if (!skip_get_target)
+	if (get_target)
 	{
-		float lowestHealth = FLT_MAX;
-		target = nullptr;
-
-		// get a target
-		for (const auto& e : MC->getPlayerList())
-		{
-			auto entityPos = e->getPosition();
-			auto entityHealth = e->getHealth();
-
-			auto distance = MC->getLocalPlayer()->getPosition().dist(entityPos);
-			if (distance > aa::distance || distance < 0.2f) continue;
-			if (e->isInvisible() && !aa::invisibles) continue;
-
-			float yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, entityPos).first)));
-			if (yaw_diff > aa::fov / 2)
-				continue;
-
-			distances.emplace_back(distance, std::make_pair(e, entityPos));
-			if (aa::target_mode == AA_TARGET::FOV)
-			{
-				if (yaw_diff < minimal_angle_diff)
-				{
-					minimal_angle_diff = yaw_diff;
-					target_pos = entityPos;
-					target = e;
-				}
-			}
-			else if (aa::target_mode == AA_TARGET::HEALTH)
-			{
-				if (entityHealth < lowestHealth)
-				{
-					lowestHealth = entityHealth;
-					target_pos = entityPos;
-					target = e;
-				}
-			}
-		}
-		// atleast one other player
-		if (distances.empty())
-		{
-			SLEEP(10);
-			return;
-		} 
-
-		// getting target by distance
-		if (aa::target_mode == AA_TARGET::DISTANCE)
-		{
-			auto t = std::ranges::min_element(distances, [&](const auto& l, const auto& r)
-			{
-				const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, l.second.second).first)));
-				return l.first < r.first && l_yaw_diff < minimal_angle_diff;
-			});
-
-			target = t->second.first;
-			target_pos = t->second.first->getPosition();
-		}
-		else if (aa::target_mode == AA_TARGET::HEALTH)
-		{
-			const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first)));
-			if (l_yaw_diff > minimal_angle_diff) // target out of fov range
-			{
-				SLEEP(10);
-				return;
-			}
-		}
+		GetTarget(target, target_pos, lPlayer);
 	}
 
 	if (target == nullptr)
@@ -140,73 +75,103 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
-	auto lplayer_pos = lPlayer->Pos;
-	Vec3 aim_point;
+	if (g_curr_client == MC_CLIENT::Lunar_171)
+		target_pos.y += 1.6f;
 
-	if (aa::aim_at_closest_point) // aims at the closest point of target
+	bool success = true;
+	aim_point = GetAimPoint(lPlayer, target_pos, success);
+	if (!success)
 	{
-		auto playerbb =
-			g_curr_client == MC_CLIENT::Lunar_189
-			? BBox({ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z + 0.3f })
-			: BBox({ target_pos.x - 0.3f, target_pos.y, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 1.8f, target_pos.z + 0.3f });
-		auto closest_corner = getClosesetPoint(playerbb, lplayer_pos);
-		aim_point = closest_corner;
+		SLEEP(10);
+		return;
 	}
-	else // aims to target if players aim is not inside hitbox 
+ 
+	const auto [yawtarget, pitchtarget] = get_angles(lPlayer->Pos, aim_point);
+
+	float yaw_diff = wrap_to_180(-(lPlayer->Yaw - yawtarget));
+	float pitch_diff = wrap_to_180(-(lPlayer->Pitch - pitchtarget));
+
+	ApplyAimRand(yaw_diff, pitch_diff, speed);
+}
+
+void CAimAssist::GetTarget(std::shared_ptr<c_Entity>& target, Vec3& target_pos, const std::shared_ptr<LocalPlayer>& lPlayer)
+{
+	// left: dist, right: enitity, position
+	std::vector<std::pair<float, std::pair<std::shared_ptr<c_Entity>, Vec3>>> distances = {};
+
+	float lowestHealth = FLT_MAX;
+	// for getting closest to crosshair
+	float minimal_angle_diff = aa::fov / 2.f;
+
+	target = nullptr;
+
+	// get a target
+	for (const auto& e : MC->getPlayerList())
 	{
-		// hitbox vertices
-		if (g_curr_client == MC_CLIENT::Lunar_171)
-			target_pos.y += 1.6f;
+		auto entityPos = e->getPosition();
+		auto entityHealth = e->getHealth();
 
-		const std::vector<Vec3> bbox_corners
+		auto distance = MC->getLocalPlayer()->getPosition().dist(entityPos);
+		if (distance > aa::distance || distance < 0.2f) continue;
+		if (e->isInvisible() && !aa::invisibles) continue;
+
+		float yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, entityPos).first)));
+		if (yaw_diff > aa::fov / 2)
+			continue;
+
+		distances.emplace_back(distance, std::make_pair(e, entityPos));
+		if (aa::target_mode == AA_TARGET::FOV)
 		{
-			{ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z + 0.3f },
-			{ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z - 0.3f },
-			{ target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z - 0.3f },
-			{ target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z + 0.3f },
-		};
-
-		auto lplayer_yaw = lPlayer->Yaw;
-		auto yawdiff_to_pos = wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, target_pos).first));
-
-		const std::vector<float> yawdiffs = {
-			wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, bbox_corners.at(0)).first)),
-			wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, bbox_corners.at(1)).first)),
-			wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, bbox_corners.at(2)).first)),
-			wrap_to_180(-(lplayer_yaw - get_angles(lplayer_pos, bbox_corners.at(3)).first)),
-		};
-
-		
-		if (yawdiff_to_pos < 0)
-		{
-			if (*std::ranges::max_element(yawdiffs) > 0)
+			if (yaw_diff < minimal_angle_diff)
 			{
-				SLEEP(10);
-				return;
+				minimal_angle_diff = yaw_diff;
+				target_pos = entityPos;
+				target = e;
 			}
 		}
-		else
+		else if (aa::target_mode == AA_TARGET::HEALTH)
 		{
-			if (*std::ranges::min_element(yawdiffs) < 0)
+			if (entityHealth < lowestHealth)
 			{
-				SLEEP(10);
-				return;
+				lowestHealth = entityHealth;
+				target_pos = entityPos;
+				target = e;
 			}
-		}		
-
-		aim_point = target_pos;
+		}
 	}
 
-	auto [yawtarget, pitchtarget] = get_angles(lPlayer->Pos, aim_point/*target->get_position()*/);
+	// atleast one other player
+	if (distances.empty())
+	{
+		SLEEP(10);
+		return;
+	}
 
-	auto lyaw = lPlayer->Yaw;
-	auto lpitch = lPlayer->Pitch;
+	// getting target by distance
+	if (aa::target_mode == AA_TARGET::DISTANCE)
+	{
+		auto t = std::ranges::min_element(distances, [&](const auto& l, const auto& r)
+			{
+				const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, l.second.second).first)));
+				return l.first < r.first && l_yaw_diff < minimal_angle_diff;
+			});
 
-	// the horizontal distance to aim to aim at target
-	float yaw_diff = wrap_to_180(-(lyaw - yawtarget));
+		target = t->second.first;
+		target_pos = t->second.first->getPosition();
+	}
+	else if (aa::target_mode == AA_TARGET::HEALTH)
+	{
+		const float l_yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first)));
+		if (l_yaw_diff > minimal_angle_diff) // target out of fov range
+		{
+			SLEEP(10);
+			return;
+		}
+	}
+}
 
-	float pitch_diff = wrap_to_180(-(lpitch - pitchtarget));
-
+void CAimAssist::ApplyAimRand(float yaw_diff, float pitch_diff, float speed)
+{
 	yaw_diff += rand_float(-2.f, 2.f);
 	pitch_diff += rand_float(-2.f, 2.f);
 
@@ -255,7 +220,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static Timer pitch_ms_rand_timer;
 	static float pitchrand = rand_float(-0.0100f, 0.0100f);
 
-	static const Vec2 pitch_update_ms = {500, 800};
+	static const Vec2 pitch_update_ms = { 500, 800 };
 	static float pitch_update_ms_min = pitch_update_ms.x;
 	static float pitch_update_ms_max = pitch_update_ms.y;
 	static float pitch_update_ms_min_smooth = pitch_update_ms.x;
@@ -292,6 +257,57 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		auto updatedPitch = editable_local_player->getRotationPitch();
 		editable_local_player->setRotationPitch(updatedPitch + pitch_diff / (15000.f / speed));
 		editable_local_player->setPrevRotationPitch(updatedPitch + pitch_diff / (15000.f / speed));
+	}
+}
+
+Vec3 CAimAssist::GetAimPoint(const std::shared_ptr<LocalPlayer>& lPlayer, const Vec3& target_pos, bool& success)
+{
+	if (aa::aim_at_closest_point) // aims at the closest point of target
+	{
+		BBox playerbb =
+			g_curr_client == MC_CLIENT::Lunar_189
+			? BBox({ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z + 0.3f })
+			: BBox({ target_pos.x - 0.3f, target_pos.y, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 1.8f, target_pos.z + 0.3f });
+		Vec3 closest_corner = get_closest_point(playerbb, lPlayer->Pos);
+		return closest_corner;
+	}
+	else // aims to target if players aim is not inside hitbox 
+	{
+		const std::array<Vec3, 4> bbox_corners
+		{
+			Vec3{ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z + 0.3f },
+			Vec3{ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z - 0.3f },
+			Vec3{ target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z - 0.3f },
+			Vec3{ target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z + 0.3f },
+		};
+
+		const std::array<float, 4> yawdiffs = {
+			wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, bbox_corners.at(0)).first)),
+			wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, bbox_corners.at(1)).first)),
+			wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, bbox_corners.at(2)).first)),
+			wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, bbox_corners.at(3)).first)),
+		};
+
+		float yawdiff_to_pos = wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, target_pos).first));
+
+		if (yawdiff_to_pos < 0)
+		{
+			if (*std::ranges::max_element(yawdiffs) > 0)
+			{
+				success = false;
+				return {};
+			}
+		}
+		else
+		{
+			if (*std::ranges::min_element(yawdiffs) < 0)
+			{
+				success = false;
+				return {};
+			}
+		}
+
+		return target_pos;
 	}
 }
 

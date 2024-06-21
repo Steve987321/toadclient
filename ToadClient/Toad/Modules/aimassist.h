@@ -11,17 +11,14 @@ public:
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 
 private:
-	Vec3 getClosesetPoint(const BBox& bb, const Vec3& from) const
-	{
-		Vec3 closestPoint;
+	// finds a target and if found, sets the given target and target_position.
+	void GetTarget(std::shared_ptr<c_Entity>& target, Vec3& target_position, const std::shared_ptr<LocalPlayer>&lPlayer);
 
-		// calculate the closest point on each axis
-		closestPoint.x = std::clamp(from.x, bb.min.x, bb.max.x);
-		closestPoint.y = std::clamp(from.y, bb.min.y, bb.max.y);
-		closestPoint.z = std::clamp(from.z, bb.min.z, bb.max.z);
+	void ApplyAimRand(float yaw_diff, float pitch_diff, float speed);
 
-		return closestPoint;
-	}
+	// sets success to false if not succeeded
+	Vec3 GetAimPoint(const std::shared_ptr<LocalPlayer>& lPlayer, const Vec3& target_pos, bool& success);
+
 };
 
 }
