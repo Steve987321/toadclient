@@ -76,138 +76,141 @@ DWORD WINAPI toadll::init()
 		return 1;
 	}
 
-	if (g_jvm->GetEnv((void**)&g_jvmti_env, JVMTI_VERSION_1) == JNI_OK)
-	{
+	//if (g_jvm->GetEnv((void**)&g_jvmti_env, JVMTI_VERSION_1) == JNI_OK)
+	//{
 
-		// check capabilities first 
-		//jvmtiCapabilities capa;
-		//if (g_jvmti_env->GetCapabilities(&capa) == JVMTI_ERROR_NONE)
-		//{
-		//	LOGDEBUG("can_get_bytecodes {}", capa.can_get_bytecodes);
-		//	LOGDEBUG("can_tag_objects {}", capa.can_tag_objects);
-		//	//LOGDEBUG("can_maintain_original_method_order {}", capa.can_maintain_original_method_order);
+	//	 //check capabilities first 
+	//	jvmtiCapabilities capa;
+	//	/*jvmtiCapabilities added_capa;
+	//	added_capa
+	//	g_jvmti_env->AddCapabilities()*/
+	//	if (g_jvmti_env->GetCapabilities(&capa) == JVMTI_ERROR_NONE)
+	//	{
+	//		LOGDEBUG("can_get_bytecodes {}", capa.can_get_bytecodes);
+	//		LOGDEBUG("can_tag_objects {}", capa.can_tag_objects);
+	//		//LOGDEBUG("can_maintain_original_method_order {}", capa.can_maintain_original_method_order);
 
-		//	//if (!capa.can_get_bytecodes || !capa.can_tag_objects)
-		//		//clean_up(6, "no good jvm capabilities");
-		//}
+	//		//if (!capa.can_get_bytecodes || !capa.can_tag_objects)
+	//		//	clean_up(6, "no good jvm capabilities");
+	//	}
 
-		//jint n = 0;
-		//jclass* classes = nullptr;
-		//g_jvmti_env->GetLoadedClasses(&n, &classes);
-		//LOGDEBUG("classes count {}", n);
+	//	jint n = 0;
+	//	jclass* classes = nullptr;
+	//	g_jvmti_env->GetLoadedClasses(&n, &classes);
+	//	LOGDEBUG("classes count {}", n);
 
-		//auto cls = findclass("java/lang/Class", g_env);
-		//auto mId = g_env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-		//
-		//do 
-		//{
-		//	if (!cls)
-		//		break;
+	//	auto cls = findclass("java/lang/Class", g_env);
+	//	auto mId = g_env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
+	//	
+	//	do 
+	//	{
+	//		if (!cls)
+	//			break;
 
-		//	if (!mId)
-		//	{
-		//		g_env->DeleteLocalRef(cls);
-		//		break;
-		//	}
+	//		if (!mId)
+	//		{
+	//			g_env->DeleteLocalRef(cls);
+	//			break;
+	//		}
 
-		//	for (jint i = 0; i < n; i++)
-		//	{
-		//		auto klass = classes[i];
+	//		for (jint i = 0; i < n; i++)
+	//		{
+	//			auto klass = classes[i];
 
-		//		if (!klass)
-		//			continue;
+	//			if (!klass)
+	//				continue;
 
-		//		const auto jstrname = static_cast<jstring>(g_env->CallObjectMethod(klass, mId));
-		//		if (!jstrname)
-		//		{
-		//			LOGERROR("jstrname = nit shjicyed");
-		//			continue;
-		//		}
-		//				
-		//		//jfieldID* fields = nullptr;
-		//		//jint field_count = -1;
-		//		jmethodID* methods = nullptr;
-		//		jint method_count = -1;
-		//		//jint modifiers = -1;
-		//		//g_jvmti_env->GetClassModifiers(klass, &modifiers);
-		//		g_jvmti_env->GetClassMethods(klass, &method_count, &methods);
-		//		//g_jvmti_env->GetClassFields(klass, &method_count, &fields);
+	//			const auto jstrname = static_cast<jstring>(g_env->CallObjectMethod(klass, mId));
+	//			if (!jstrname)
+	//			{
+	//				LOGERROR("jstrname = nit shjicyed");
+	//				continue;
+	//			}
+	//					
+	//			//jfieldID* fields = nullptr;
+	//			//jint field_count = -1;
+	//			jmethodID* methods = nullptr;
+	//			jint method_count = -1;
+	//			//jint modifiers = -1;
+	//			//g_jvmti_env->GetClassModifiers(klass, &modifiers);
+	//			g_jvmti_env->GetClassMethods(klass, &method_count, &methods);
+	//			//g_jvmti_env->GetClassFields(klass, &method_count, &fields);
 
-		//		bool f = false;
-		//		if (methods)
-		//		{
-		//			for (jint j = 0; j < method_count; j++)
-		//			{
-		//				char* name = nullptr;
-		//				char* signature = nullptr;
-		//				char* generic = nullptr;
+	//			bool f = false;
+	//			if (methods)
+	//			{
+	//				for (jint j = 0; j < method_count; j++)
+	//				{
+	//					char* name = nullptr;
+	//					char* signature = nullptr;
+	//					char* generic = nullptr;
 
-		//				auto method = methods[j];
-		//				if (!method)
-		//					continue;
+	//					auto method = methods[j];
+	//					if (!method)
+	//						continue;
 
-		//				auto err = g_jvmti_env->GetMethodName(method, &name, &signature, &generic);
-		//				if (err != JVMTI_ERROR_NONE)
-		//					continue;
+	//					auto err = g_jvmti_env->GetMethodName(method, &name, &signature, &generic);
+	//					if (err != JVMTI_ERROR_NONE)
+	//						continue;
 
-		//				std::string name_str;
-		//				if (name)
-		//					name_str = name;
+	//					std::string name_str;
+	//					if (name)
+	//						name_str = name;
 
-		//				if (name_str == "getMinecraft")
-		//				{
-		//					/*jboolean is_obselete = false;
-		//					jint access_flags = -1;
+	//					if (name_str == "getMinecraft")
+	//					{
+	//						/*jboolean is_obselete = false;
+	//						jint access_flags = -1;
 
-		//					auto err1 = g_jvmti_env->IsMethodObsolete(methods[j], &is_obselete);
-		//					auto err2 = g_jvmti_env->GetMethodModifiers(methods[j], &access_flags);
-		//					bool is_static = false;
+	//						auto err1 = g_jvmti_env->IsMethodObsolete(methods[j], &is_obselete);
+	//						auto err2 = g_jvmti_env->GetMethodModifiers(methods[j], &access_flags);
+	//						bool is_static = false;
 
-		//					if (err2 == JVMTI_ERROR_NONE)
-		//					{
-		//						is_static = access_flags & 0x0008;
-		//					}
-		//					*/
-		//					LOGDEBUG("Found getmc: name: {} | sig: {} | generic: {} | count {}",
-		//						name_str,
-		//						signature ? signature : "None",
-		//						generic ? generic : "None",
-		//						(int)method_count
-		//					);
-		//					f = true;
-		//					break;
-		//				}
+	//						if (err2 == JVMTI_ERROR_NONE)
+	//						{
+	//							is_static = access_flags & 0x0008;
+	//						}
+	//						*/
+	//						LOGDEBUG("Found getmc: name: {} | sig: {} | generic: {} | count {}",
+	//							name_str,
+	//							signature ? signature : "None",
+	//							generic ? generic : "None",
+	//							(int)method_count
+	//						);
+	//						f = true;
+	//						break;
+	//					}
 
-		//				g_jvmti_env->Deallocate((unsigned char*)name);
-		//				g_jvmti_env->Deallocate((unsigned char*)signature);
-		//				g_jvmti_env->Deallocate((unsigned char*)generic);
-		//			}
-		//		}
+	//					g_jvmti_env->Deallocate((unsigned char*)name);
+	//					g_jvmti_env->Deallocate((unsigned char*)signature);
+	//					g_jvmti_env->Deallocate((unsigned char*)generic);
+	//				}
+	//			}
 
-		//		if (auto err = g_jvmti_env->Deallocate((unsigned char*)methods); err != JVMTI_ERROR_NONE)
-		//		{
-		//			LOGERROR("Failed to deallocate methods array: {}", (int)err);
-		//		}
-		//	/*	if (auto err = g_jvmti_env->Deallocate((unsigned char*)fields); err != JVMTI_ERROR_NONE)
-		//		{
-		//			LOGERROR("Failed to deallocate fields array: {}", (int)err);
-		//		}*/
+	//			//if (auto err = g_jvmti_env->Deallocate((unsigned char*)methods); err != JVMTI_ERROR_NONE)
+	//			//{
+	//			//	LOGERROR("Failed to deallocate methods array: {}", (int)err);
+	//			//}
+	//			//if (auto err = g_jvmti_env->Deallocate((unsigned char*)fields); err != JVMTI_ERROR_NONE)
+	//			//{
+	//			//	LOGERROR("Failed to deallocate fields array: {}", (int)err);
+	//			//}
 
-		//		/*LOGDEBUG("{} | fields: {} methods: {} modifiers: {}", jstring2string(jstrname, g_env).c_str(), field_count, method_count, modifiers);*/
+	//			//LOGDEBUG("{} | fields: {} methods: {} modifiers: {}", jstring2string(jstrname, g_env).c_str(), field_count, method_count, modifiers);
 
-		//		if (f)
-		//			break;
-		//	}
+	//			if (f)
+	//				break;
+	//		}
 
-		//} while (false);
+	//	} while (false);
 
-		//g_jvmti_env->Deallocate((unsigned char*)classes);
-		//g_env->DeleteLocalRef(cls);
-	}
-	else
-	{
-		LOGDEBUG("N");
-	}
+	//	//g_jvmti_env->Deallocate((unsigned char*)classes);
+	//	//g_env->DeleteLocalRef(cls);
+	//}
+	//else
+	//{
+	//	LOGDEBUG("N");
+	//}
 
 	if (!g_env)
 	{
