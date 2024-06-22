@@ -150,7 +150,7 @@ private:
 #define LOGERROR(msg, ...) toadll::Logger::GetInstance()->LogError(msg, __VA_ARGS__) 
 #define LOGWARN(msg, ...)  toadll::Logger::GetInstance()->LogWarning(msg, __VA_ARGS__)
 #else
-#define LOGDEBUG(msg, ...)
-#define LOGERROR(msg, ...)
-#define LOGWARN(msg, ...)
+#define LOGDEBUG(msg, ...) (void)0
+#define LOGERROR(msg, ...) (void)0
+#define LOGWARN(msg, ...) (void)0
 #endif

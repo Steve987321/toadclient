@@ -45,7 +45,7 @@ namespace toadll
 				m_rand.edited_max = m_rand.max_delay;
 
 				Timer start_delay_timer;
-				while (start_delay_timer.Elapsed<>() < right_clicker::start_delayms)
+				while ((int)start_delay_timer.Elapsed<>() < right_clicker::start_delayms)
 				{
 					if (!GetAsyncKeyState(VK_RBUTTON))
 						return;

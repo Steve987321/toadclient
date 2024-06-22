@@ -50,17 +50,17 @@ namespace toadll
 
         std::ranges::sort(enabledModules, [&font](CModule* a, CModule* b)
         {
-	        auto sizea = font->CalcTextSizeA(ui::array_list_size, 500, 0, a->Name.c_str());
-	        auto sizeb = font->CalcTextSizeA(ui::array_list_size, 500, 0, b->Name.c_str());
+	        auto sizea = font->CalcTextSizeA((float)ui::array_list_size, 500, 0, a->Name.c_str());
+	        auto sizeb = font->CalcTextSizeA((float)ui::array_list_size, 500, 0, b->Name.c_str());
 	        return sizea.x > sizeb.x;
         });
 
         float sizeY = 0;
         for (const auto& m : enabledModules)
         {
-            auto size = font->CalcTextSizeA(ui::array_list_size, 500, 0, m->Name.c_str());
+            auto size = font->CalcTextSizeA((float)ui::array_list_size, 500, 0, m->Name.c_str());
             size.x += 1;
-            ImGui::GetForegroundDrawList()->AddText(font, ui::array_list_size, { g_screen_width - size.x, sizeY }, IM_COL32_WHITE, m->Name.c_str());
+            ImGui::GetForegroundDrawList()->AddText(font, (float)ui::array_list_size, { g_screen_width - size.x, sizeY }, IM_COL32_WHITE, m->Name.c_str());
             sizeY += size.y + 1;
             ImGui::GetForegroundDrawList()->AddRect({ g_screen_width - size.x - 2, sizeY - size.y }, { (float)g_screen_width + 2, sizeY + 1 }, IM_COL32(50, 50, 50, 255));
             ImGui::GetForegroundDrawList()->AddRectFilled({ g_screen_width - size.x - 1, sizeY - size.y }, {(float)g_screen_width + 1, sizeY}, IM_COL32(50, 50, 50, 150));

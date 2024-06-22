@@ -168,11 +168,11 @@ namespace toad
 		inline bool lock_aim = false; // locks the aim to a target until mouse is released for a short time
 
 		inline AA_TARGET target_mode = AA_TARGET::DISTANCE;
-		inline int fov = 180.f;
+		inline int fov = 180;
 
 		inline float distance = 5.f;
 		inline float speed = 50.f;
-		inline float reaction_time = 50; // ms
+		inline int reaction_time = 50; // ms
 	}
 
 	namespace reach

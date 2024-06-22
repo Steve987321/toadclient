@@ -29,7 +29,7 @@ struct Vec2 {
         return x == v.x && y == v.y;
     }
 
-    _NODISCARD float dist(const Vec2& v) const {
+    float dist(const Vec2& v) const {
         return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
     }
 };
@@ -60,15 +60,15 @@ struct Vec3 {
         return fabs(x - v.x) < FLT_EPSILON && fabs(y - v.y) < FLT_EPSILON && fabs(z - v.z) < FLT_EPSILON;
     }
 
-    _NODISCARD float dist(const Vec3& v) const {
+    float dist(const Vec3& v) const {
         return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
     }
 
-    _NODISCARD float dot(const Vec3& v) const {
+    float dot(const Vec3& v) const {
         return x * v.x + y * v.y + z * v.z;
     }
 
-    _NODISCARD Vec3 cross(const Vec3& v) const{
+    Vec3 cross(const Vec3& v) const{
         return
         {
                 y * v.z - z * v.y,
@@ -83,11 +83,11 @@ struct Vec3 {
         if (length > 0.0f)
         {
             float invLength = 1.0f / length;
-            return Vec3(v.x * invLength, v.y * invLength, v.z * invLength);
+            return {v.x * invLength, v.y * invLength, v.z * invLength};
         }
         else
         {
-            return Vec3(0.0f, 0.0f, 0.0f);
+            return { 0.0f, 0.0f, 0.0f };
         }
     }
 
@@ -95,7 +95,7 @@ struct Vec3 {
         return std::sqrt(x * x + y * y + z * z);
     }
 
-    float lengthSquared() const {
+    float length_squared() const {
         return x * x + y * y + z * z;
     }
 };
@@ -126,15 +126,15 @@ struct Vec3i {
         return x == v.x && y == v.y;
 	}
 
-	_NODISCARD int dist(const Vec3i& v) const {
-		return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
+	float dist(const Vec3i& v) const {
+		return (float)sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
 	}
 
-	_NODISCARD int dot(const Vec3i& v) const {
+	int dot(const Vec3i& v) const {
 		return x * v.x + y * v.y + z * v.z;
 	}
 
-	_NODISCARD Vec3i cross(const Vec3i& v) const {
+	Vec3i cross(const Vec3i& v) const {
 		return
 		{
 				y * v.z - z * v.y,
@@ -143,11 +143,11 @@ struct Vec3i {
 		};
 	}
 
-	int length() const {
-		return std::sqrt(x * x + y * y + z * z);
+	float length() const {
+		return (float)std::sqrt(x * x + y * y + z * z);
 	}
 
-	int lengthSquared() const {
+	int length_squared() const {
 		return x * x + y * y + z * z;
 	}
 };

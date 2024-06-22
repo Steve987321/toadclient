@@ -23,7 +23,7 @@ namespace toadll::math
 
 	float wrap_to_180(float value)
 	{
-		float res = std::fmod(value + 180, 360);
+		float res = std::fmodf(value + 180, 360);
 		if (res < 0)
 			res += 360;
 		return res - 180;

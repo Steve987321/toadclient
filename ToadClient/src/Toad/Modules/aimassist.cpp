@@ -230,26 +230,25 @@ void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float
 	static Timer pitch_ms_rand_timer;
 	static int pitchrand = rand_int(-2, 3);
 
-	static const Vec2 pitch_update_ms = { 500, 800 };
-	static int pitch_update_ms_min = pitch_update_ms.x;
-	static int pitch_update_ms_max = pitch_update_ms.y;
-	static int pitch_update_ms_min_smooth = pitch_update_ms.x;
-	static int pitch_update_ms_max_smooth = pitch_update_ms.y;
+	static int pitch_update_ms_min = 500;
+	static int pitch_update_ms_max = 800;
+	static int pitch_update_ms_min_smooth = 500;
+	static int pitch_update_ms_max_smooth = 800;
 
 	static int pitchupdatems = rand_int(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
-	static int pitchrandsmooth = 0;
+	static float pitchrandsmooth = 0;
 	static int pitchrandbegin = 0;
 	if (pitch_rand_timer.Elapsed<>() > pitchupdatems)
 	{
 		pitchrandbegin = pitchrand;
-		pitchupdatems = rand_float(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
-		pitchrand = rand_float(-2, 3);
+		pitchupdatems = rand_int(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
+		pitchrand = rand_int(-2, 3);
 		pitch_rand_timer.Start();
 	}
 
-	pitchrandsmooth = slerp(pitchrandbegin, pitchrand, pitch_rand_timer.Elapsed<>() / pitchupdatems);
-	pitch_update_ms_min_smooth = std::lerp(pitch_update_ms_min, pitch_update_ms.x, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
-	pitch_update_ms_max_smooth = std::lerp(pitch_update_ms_max, pitch_update_ms.y, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
+	pitchrandsmooth = slerp((float)pitchrandbegin, (float)pitchrand, pitch_rand_timer.Elapsed<>() / pitchupdatems);
+	pitch_update_ms_min_smooth = (int)std::lerp(pitch_update_ms_min, 500, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
+	pitch_update_ms_max_smooth = (int)std::lerp(pitch_update_ms_max, 800, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
 	if (rand_100 < 5)
 	{
 		const int rand_f = rand_int(250, 400);
@@ -259,7 +258,7 @@ void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float
 	}
 
 	GetCursorPos(&pt);
-	SetCursorPos(pt.x + yawdiff_speed, pt.y + (pitchdiff_speed + pitchrandsmooth));
+	SetCursorPos(pt.x + (int)yawdiff_speed, pt.y + (int)(pitchdiff_speed + pitchrandsmooth));
 }
 
 Vec3 CAimAssist::GetAimPoint(const std::shared_ptr<LocalPlayer>& lPlayer, const Vec3& target_pos, bool& success)

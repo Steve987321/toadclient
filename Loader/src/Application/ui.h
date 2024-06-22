@@ -497,12 +497,12 @@ namespace toad::ui
             if (is_settings_open)
             {
                 setting_bar_posXsmooth = std::lerp(window_right.x - 40, setting_bar_posX, setting_bar_t);
-                setting_bar_alpha = std::lerp(0, 1, setting_bar_t);
+                setting_bar_alpha = std::lerp(0.f, 1.f, setting_bar_t);
             }
             else
             {
                 setting_bar_posXsmooth = std::lerp(window_right.x - 150, setting_bar_posX, setting_bar_t);
-                setting_bar_alpha = std::lerp(1, 0, setting_bar_t);
+                setting_bar_alpha = std::lerp(1.f, 0.f, setting_bar_t);
             }
             ImGui::SetCursorPosX(setting_bar_posXsmooth);
             ImGui::SetCursorPosY(5);

@@ -495,7 +495,7 @@ void SaveConfigToClipBoard()
 	std::stringstream ss;
 	ss << SettingsToJson().dump();
 
-	int n = ss.str().length() + 1;
+	size_t n = ss.str().length() + 1;
 
 	// must be called with GMEM_MOVABLE as stated in the docs
 	void* pData = GlobalAlloc(GMEM_MOVEABLE, n);

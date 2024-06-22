@@ -170,9 +170,9 @@ namespace toad::ui
 
         ImGui::Begin("clicker rand edit", enabled, ImGuiWindowFlags_NoSavedSettings);
         {
-            const int n_inconsistencies = left_clicker::rand.inconsistencies.size();
-            const int n_inconsistencies2 = left_clicker::rand.inconsistencies2.size();
-            const int n_boosts = left_clicker::rand.boosts.size();
+            const size_t n_inconsistencies = left_clicker::rand.inconsistencies.size();
+            const size_t n_inconsistencies2 = left_clicker::rand.inconsistencies2.size();
+            const size_t n_boosts = left_clicker::rand.boosts.size();
 
             // prevent closing when adding/removing nodes
             static bool open_boost_node = false;
@@ -191,12 +191,12 @@ namespace toad::ui
             }
             if (ImGui::TreeNode(("Inconsistencies (mouse down) " + std::to_string(n_inconsistencies)).c_str()))
             {
-                for (int i = 0; i < n_inconsistencies; i++)
+                for (size_t i = 0; i < n_inconsistencies; i++)
                 {
-                    ImGui::PushID(i);
+                    ImGui::PushID((int)i);
                     if (ImGui::Button("X"))
                     {
-                        remove_inconsistency_queue.push(i);
+                        remove_inconsistency_queue.push((int)i);
                     }
 
                     ImGui::SameLine();
@@ -243,12 +243,12 @@ namespace toad::ui
             }
             if (ImGui::TreeNode(("Inconsistencies (mouse up) " + std::to_string(n_inconsistencies2)).c_str()))
             {
-                for (int i = 0; i < n_inconsistencies2; i++)
+                for (size_t i = 0; i < n_inconsistencies2; i++)
                 {
-                    ImGui::PushID(i);
+                    ImGui::PushID((int)i);
                     if (ImGui::Button("X"))
                     {
-                        remove_inconsistency2_queue.push(i);
+                        remove_inconsistency2_queue.push((int)i);
                     }
 
                     ImGui::SameLine();
@@ -294,12 +294,12 @@ namespace toad::ui
             }
             if (ImGui::TreeNode(("Boosts/Drops " + std::to_string(n_boosts)).c_str()))
             {
-                for (int i = 0; i < n_boosts; i++)
+                for (size_t i = 0; i < n_boosts; i++)
                 {
-                    ImGui::PushID(i);
+                    ImGui::PushID((int)i);
                     if (ImGui::Button("X"))
                     {
-                        remove_boost_queue.push(i);
+                        remove_boost_queue.push((int)i);
                     }
 
                     ImGui::SameLine();

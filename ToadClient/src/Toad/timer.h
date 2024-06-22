@@ -30,7 +30,7 @@ public:
 	template<typename DurationT = std::chrono::milliseconds>
 	_NODISCARD float Elapsed() const
 	{
-		return std::chrono::duration_cast<DurationT>(std::chrono::high_resolution_clock::now() - m_start).count();
+		return (float)std::chrono::duration_cast<DurationT>(std::chrono::high_resolution_clock::now() - m_start).count();
 	}
 };
 

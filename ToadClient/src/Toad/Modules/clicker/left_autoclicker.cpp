@@ -51,7 +51,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// also checking outside of autoclicking
 	if (block_hit_timer_started)
 	{
-		if (static_cast<int>(block_hit_timer.Elapsed<>()) >= block_hit_mdown_rand_ms)
+		if ((int)block_hit_timer.Elapsed<>() >= block_hit_mdown_rand_ms)
 		{
 			right_mouse_up();
 			block_hit_timer_started = false;
@@ -265,7 +265,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 					auto reactionms = left_clicker::start_break_blocks_reaction;
 
 					// reaction time in ms
-					if (start_break_blocks_timer.Elapsed<>() > rand_float(reactionms - 10, reactionms + 30))
+					if ((int)start_break_blocks_timer.Elapsed<>() > rand_int(reactionms - 10, reactionms + 30))
 					{
 						break_blocks_flag = true;
 					}
@@ -282,11 +282,11 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				{
 					Timer stop_break_blocks_timer;
 
-					auto reactionms = left_clicker::stop_break_blocks_reaction;
-					auto randreaction = rand_float(reactionms - 10, reactionms + 30);
+					const int reactionms = left_clicker::stop_break_blocks_reaction;
+					int randreaction = rand_int(reactionms - 10, reactionms + 30);
 
 					// spinlock the reaction exit time
-					while (stop_break_blocks_timer.Elapsed<>() < randreaction)
+					while ((int)stop_break_blocks_timer.Elapsed<>() < randreaction)
 					{
 						SLEEP(1);
 					}

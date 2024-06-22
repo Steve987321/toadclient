@@ -158,7 +158,7 @@ int toadll::c_Entity::getHurtTime() const
 	auto fId = get_fid(elclass, mappingFields::hurtTimeI, env);
 	if (!fId)
 		return 0;
-	auto res = env->GetIntField(obj, fId);
+	int res = env->GetIntField(obj, fId);
 
 	return res;
 }
@@ -177,7 +177,7 @@ float toadll::c_Entity::getMotionX() const
 	auto fId = get_fid(obj, mappingFields::motionXField, env);
 	if (!fId)
 		return 0;
-	return env->GetDoubleField(obj, fId);
+	return (float)env->GetDoubleField(obj, fId);
 }
 
 float toadll::c_Entity::getMotionY() const
@@ -186,7 +186,7 @@ float toadll::c_Entity::getMotionY() const
 	auto fId = get_fid(obj, mappingFields::motionYField, env);
 	if (!fId)
 		return 0;
-	return env->GetDoubleField(obj, fId);
+	return (float)env->GetDoubleField(obj, fId);
 }
 
 float toadll::c_Entity::getMotionZ() const
@@ -195,7 +195,7 @@ float toadll::c_Entity::getMotionZ() const
 	auto fId = get_fid(obj, mappingFields::motionZField, env);
 	if (!fId)
 		return 0;
-	return env->GetDoubleField(obj, fId);
+	return (float)env->GetDoubleField(obj, fId);
 }
 
 bool toadll::c_Entity::isInvisible() const
@@ -216,12 +216,12 @@ toadll::BBox toadll::c_Entity::get_BBox() const
 {
 	auto bboxobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getBBox, env));
 
-	float minX = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinX, env));
-	float minY = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinY, env));
-	float minZ = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinZ, env));
-	float maxX = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxX, env));
-	float maxY = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxY, env));
-	float maxZ = env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxZ, env));
+	float minX = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinX, env));
+	float minY = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinY, env));
+	float minZ = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinZ, env));
+	float maxX = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxX, env));
+	float maxY = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxY, env));
+	float maxZ = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxZ, env));
 
 	env->DeleteLocalRef(bboxobj);
 

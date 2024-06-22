@@ -38,7 +38,7 @@ bool VisualizeClicker::IsStarted() const
 
 int VisualizeClicker::GetCPS() const
 {
-	return m_click_queue.size();
+	return (int)m_click_queue.size();
 }
 
 toadll::Randomization VisualizeClicker::GetRand()
@@ -165,7 +165,7 @@ void VisualizeClicker::update_rand()
 {
 	static toadll::Timer timer;
 	timer.Start();
-	m_rand.inconsistency_delay = std::clamp(std::lerp(m_rand.inconsistency_delay, 0, 0.3f), (double)m_rand.inconsistency_delay, 0.0);
+	m_rand.inconsistency_delay = std::clamp(std::lerp(m_rand.inconsistency_delay, 0.f, 0.3f), m_rand.inconsistency_delay, 0.f);
 
 	const int rand_100 = toadll::rand_int(0, 100);
 
@@ -175,7 +175,7 @@ void VisualizeClicker::update_rand()
 			if (i.chance >= rand_100)
 				i.start = true;
 			else
-				i.frequency_counter -= static_cast<float>(i.frequency_counter) * (static_cast<float>(i.frequency_counter) / static_cast<float>(i.frequency) * 0.75f);
+				i.frequency_counter -= i.frequency_counter * (int)((float)i.frequency_counter / (float)i.frequency * 0.75f);
 		}
 
 	for (auto& i2 : m_rand.inconsistencies2)
@@ -184,7 +184,7 @@ void VisualizeClicker::update_rand()
 			if (i2.chance <= rand_100)
 				i2.start = true;
 			else
-				i2.frequency_counter -= static_cast<float>(i2.frequency_counter) * (static_cast<float>(i2.frequency_counter) / static_cast<float>(i2.frequency) * 0.75f);
+				i2.frequency_counter -= i2.frequency_counter * (int)((float)i2.frequency_counter / (float)i2.frequency * 0.75f);
 		}
 
 	for (auto& b : m_rand.boosts)
@@ -202,7 +202,7 @@ void VisualizeClicker::update_rand()
 			{
 				if (b_other.id == b.id)
 					continue;
-				b_other.frequency_counter -= static_cast<float>(b_other.frequency_counter) * (static_cast<float>(b_other.frequency_counter) / static_cast<float>(b_other.frequency) * 0.75f);
+				b_other.frequency_counter -= b_other.frequency_counter * (int)((float)b_other.frequency_counter / (float)b_other.frequency * 0.75f);
 				b_other.paused = true;
 			}
 		}
