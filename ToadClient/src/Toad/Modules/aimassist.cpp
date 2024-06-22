@@ -175,13 +175,13 @@ void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float
 {
 	float abs_yaw_diff = abs(yaw_diff);
 	float abs_pitch_diff = abs(pitch_diff);
-	if (abs_yaw_diff < 1.5f && abs_pitch_diff < 1.5f)
+	if (abs_yaw_diff < 1.f && abs_pitch_diff < 1.f)
 	{
 		return;
 	}
 
-	yaw_diff += rand_float(-0.3f, 0.3f);
-	pitch_diff += rand_float(-0.3f, 0.3f);
+	yaw_diff += rand_float(-0.2f, 0.2f);
+	pitch_diff += rand_float(-0.2f, 0.2f);
 
 	const int rand_100 = rand_int(0, 100);
 
@@ -189,7 +189,7 @@ void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float
 	static AimBoost yaw_boost2(1.0f, 1.3f, { 800, 1000 }, false);
 
 	static AimBoost pitch_boost(0.8f, 1.2f, { 450, 600 }, true);
-	static AimBoost pitch_boost2(0.9f, 1.1f, { 600, 900 }, false);
+	static AimBoost pitch_boost2(0.7f, 1.3f, { 600, 900 }, false);
 
 	static float pitchdiff_speed = 0.f;
 	static float yawdiff_speed = 0.f;
@@ -227,34 +227,49 @@ void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float
 	}
 
 	static Timer pitch_rand_timer;
-	static Timer pitch_ms_rand_timer;
-	static int pitchrand = rand_int(-2, 3);
+	static int pitchrand = rand_int(-1, 1);
 
-	static int pitch_update_ms_min = 500;
-	static int pitch_update_ms_max = 800;
-	static int pitch_update_ms_min_smooth = 500;
-	static int pitch_update_ms_max_smooth = 800;
+	const int pitch_update_ms_min_low = 100;
+	const int pitch_update_ms_max_low = 300;
+	const int pitch_update_ms_min_high = 400;
+	const int pitch_update_ms_max_high = 600;
+	static int pitch_update_ms_min = 100;
+	static int pitch_update_ms_max = 600;
 
-	static int pitchupdatems = rand_int(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
+	static int pitchupdatems = rand_int(pitch_update_ms_min, pitch_update_ms_max);
 	static float pitchrandsmooth = 0;
 	static int pitchrandbegin = 0;
-	if (pitch_rand_timer.Elapsed<>() > pitchupdatems)
-	{
-		pitchrandbegin = pitchrand;
-		pitchupdatems = rand_int(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
-		pitchrand = rand_int(-2, 3);
-		pitch_rand_timer.Start();
-	}
 
-	pitchrandsmooth = slerp((float)pitchrandbegin, (float)pitchrand, pitch_rand_timer.Elapsed<>() / pitchupdatems);
-	pitch_update_ms_min_smooth = (int)std::lerp(pitch_update_ms_min, 500, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
-	pitch_update_ms_max_smooth = (int)std::lerp(pitch_update_ms_max, 800, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
-	if (rand_100 < 5)
+	if (abs_yaw_diff > abs_pitch_diff && abs_yaw_diff > 5.f)
 	{
-		const int rand_f = rand_int(250, 400);
-		pitch_update_ms_min = std::clamp(rand_f - 10, 250, 400);
-		pitch_update_ms_max = std::clamp(rand_f + 10, 250, 400);
-		pitch_ms_rand_timer.Start();
+		if ((int)pitch_rand_timer.Elapsed<>() > pitchupdatems)
+		{
+			pitchrandbegin = pitchrand;
+
+			float t = (std::clamp(abs_yaw_diff, 10.f, 50.f) - 9.99f) / 40.f;
+			pitch_update_ms_min = (int)std::lerp(pitch_update_ms_min_low, pitch_update_ms_min_high, t);
+			pitch_update_ms_max = (int)std::lerp(pitch_update_ms_max_low, pitch_update_ms_max_high, t);
+			int travel_distance = 2;
+			pitchupdatems = rand_int(pitch_update_ms_min, pitch_update_ms_max);
+
+			if (abs_yaw_diff > 30.f)
+				travel_distance = 2;
+			else
+				travel_distance = 1;
+
+			if (pitch_diff > 0)
+				pitchrand = rand_int(1, travel_distance);
+			else
+				pitchrand = rand_int(-travel_distance, -1);
+
+			pitch_rand_timer.Start();
+		}
+
+		pitchrandsmooth = slerp((float)pitchrandbegin, (float)pitchrand, pitch_rand_timer.Elapsed<>() / pitchupdatems);
+	}
+	else
+	{
+		pitchrandsmooth = std::lerp((float)pitchrandsmooth, 0.f, std::clamp(CVarsUpdater::PartialTick * 0.1f, 0.f, 1.f));
 	}
 
 	GetCursorPos(&pt);
