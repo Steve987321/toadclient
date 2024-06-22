@@ -15,243 +15,213 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="src\Toad\Hooks\Hooks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\MC\Minecraft.h">
+    <ClInclude Include="src\Toad\Hooks\wglswapbuffers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\MC\utils\mcutils.h">
+    <ClInclude Include="src\Toad\Hooks\ws2_32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Toad.h">
+    <ClInclude Include="src\Toad\Logger\logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Types.h">
+    <ClInclude Include="src\Toad\MC\active_render_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\MC\Entity\Entity.h">
+    <ClInclude Include="src\Toad\MC\entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\MC\mappings.h">
+    <ClInclude Include="src\Toad\MC\mcutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Logger\logger.h">
+    <ClInclude Include="src\Toad\MC\mappings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Hooks\Hooks.h">
+    <ClInclude Include="src\Toad\MC\minecraft.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imconfig.h">
+    <ClInclude Include="src\Toad\Modules\clicker\clicker_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imgui.h">
+    <ClInclude Include="src\Toad\Modules\clicker\left_autoclicker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imgui_impl_opengl2.h">
+    <ClInclude Include="src\Toad\Modules\clicker\rand_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imgui_impl_win32.h">
+    <ClInclude Include="src\Toad\Modules\clicker\right_autoclicker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imgui_internal.h">
+    <ClInclude Include="src\Toad\Modules\visuals\block_esp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imstb_rectpack.h">
+    <ClInclude Include="src\Toad\Modules\visuals\draw_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imstb_textedit.h">
+    <ClInclude Include="src\Toad\Modules\visuals\esp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imstb_truetype.h">
+    <ClInclude Include="src\Toad\Modules\visuals\of_screen_arrows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\nlohmann\json.hpp">
+    <ClInclude Include="src\Toad\Modules\aimassist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\helpers.h">
+    <ClInclude Include="src\Toad\Modules\autopot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.h">
+    <ClInclude Include="src\Toad\Modules\blink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\visuals\esp.h">
+    <ClInclude Include="src\Toad\Modules\bridge_assist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\module.h">
+    <ClInclude Include="src\Toad\Modules\internal_ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\singleton.h">
+    <ClInclude Include="src\Toad\Modules\no_click_delay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\aimassist.h">
+    <ClInclude Include="src\Toad\Modules\reach.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\velocity.h">
+    <ClInclude Include="src\Toad\Modules\vars_updater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Hooks\wglswapbuffers.h">
+    <ClInclude Include="src\Toad\Modules\velocity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Hooks\ws2_32.h">
+    <ClInclude Include="src\Toad\helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\timer.h">
+    <ClInclude Include="src\Toad\math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\clicker\left_autoclicker.h">
+    <ClInclude Include="src\Toad\module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\clicker\rand_types.h">
+    <ClInclude Include="src\Toad\singleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\clicker\right_autoclicker.h">
+    <ClInclude Include="src\Toad\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\clicker\clicker_base.h">
+    <ClInclude Include="src\Toad\Toad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\vars_updater.h">
+    <ClInclude Include="src\Toad\Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Toad\Modules\visuals\block_esp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\Modules\autopot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\Modules\blink.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\Modules\internal_ui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\Modules\visuals\of_screen_arrows.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\Modules\visuals\draw_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\Modules\bridge_assist.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\Modules\reach.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\Modules\no_click_delay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Toad\math.h">
+    <ClInclude Include="src\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
+    <ClCompile Include="src\Toad\Hooks\wglswapbuffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="src\Toad\Hooks\ws2_32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\MC\Minecraft.cpp">
+    <ClCompile Include="src\Toad\Logger\logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\MC\utils\mcutils.cpp">
+    <ClCompile Include="src\Toad\MC\active_render_info.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Toad.cpp">
+    <ClCompile Include="src\Toad\MC\entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\MC\Entity\Entity.cpp">
+    <ClCompile Include="src\Toad\MC\mcutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui.cpp">
+    <ClCompile Include="src\Toad\MC\mappings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_demo.cpp">
+    <ClCompile Include="src\Toad\MC\minecraft.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_draw.cpp">
+    <ClCompile Include="src\Toad\Modules\clicker\clicker_base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_impl_opengl2.cpp">
+    <ClCompile Include="src\Toad\Modules\clicker\left_autoclicker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_impl_win32.cpp">
+    <ClCompile Include="src\Toad\Modules\clicker\right_autoclicker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_tables.cpp">
+    <ClCompile Include="src\Toad\Modules\visuals\block_esp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_widgets.cpp">
+    <ClCompile Include="src\Toad\Modules\visuals\draw_helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\MC\mappings.cpp">
+    <ClCompile Include="src\Toad\Modules\visuals\esp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\MC\ActiveRenderInfo\ActiveRenderInfo.cpp">
+    <ClCompile Include="src\Toad\Modules\visuals\of_screen_arrows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\visuals\esp.cpp">
+    <ClCompile Include="src\Toad\Modules\aimassist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\aimassist.cpp">
+    <ClCompile Include="src\Toad\Modules\autopot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\velocity.cpp">
+    <ClCompile Include="src\Toad\Modules\blink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Hooks\wglswapbuffers.cpp">
+    <ClCompile Include="src\Toad\Modules\bridge_assist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Hooks\ws2_32.cpp">
+    <ClCompile Include="src\Toad\Modules\internal_ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\clicker\left_autoclicker.cpp">
+    <ClCompile Include="src\Toad\Modules\no_click_delay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\clicker\right_autoclicker.cpp">
+    <ClCompile Include="src\Toad\Modules\reach.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\vars_updater.cpp">
+    <ClCompile Include="src\Toad\Modules\vars_updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\visuals\block_esp.cpp">
+    <ClCompile Include="src\Toad\Modules\velocity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\autopot.cpp">
+    <ClCompile Include="src\Toad\math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\blink.cpp">
+    <ClCompile Include="src\Toad\module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\internal_ui.cpp">
+    <ClCompile Include="src\Toad\Toad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\clicker\clicker_base.cpp">
+    <ClCompile Include="src\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Logger\logger.cpp">
+    <ClCompile Include="src\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\visuals\of_screen_arrows.cpp">
+    <ClCompile Include="..\vendor\imgui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\module.cpp">
+    <ClCompile Include="..\vendor\imgui\imgui_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\visuals\draw_helpers.cpp">
+    <ClCompile Include="..\vendor\imgui\imgui_impl_opengl2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\bridge_assist.cpp">
+    <ClCompile Include="..\vendor\imgui\imgui_impl_win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\reach.cpp">
+    <ClCompile Include="..\vendor\imgui\imgui_tables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Toad\Modules\no_click_delay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Toad\math.cpp">
+    <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

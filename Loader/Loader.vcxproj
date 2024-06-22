@@ -45,13 +45,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)bin-inter\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)src\;$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)bin-Inter\$(ProjectName)-$(Platform)-$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)vendor\;$(ProjectDir)src\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)bin-inter\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)src\;$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)bin-Inter\$(ProjectName)-$(Platform)-$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)vendor\;$(ProjectDir)src\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -60,7 +60,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TOAD_LOADER</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -76,7 +76,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);TOAD_LOADER</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -97,18 +97,16 @@
     <ClInclude Include="src\utils\block_map.h" />
     <ClInclude Include="src\utils\helpers.h" />
     <ClInclude Include="src\utils\imfilebrowser.h" />
-    <ClInclude Include="vendor\imgui\backends\imgui_impl_dx9.h" />
-    <ClInclude Include="vendor\imgui\backends\imgui_impl_win32.h" />
-    <ClInclude Include="vendor\imgui\imconfig.h" />
-    <ClInclude Include="vendor\imgui\imgui.h" />
-    <ClInclude Include="vendor\imgui\imgui_internal.h" />
-    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
-    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
-    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Application\imgui_window.h" />
     <ClInclude Include="src\Application\VisualizeClicker\visualize_clicker.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\vendor\imgui\imgui.cpp" />
+    <ClCompile Include="..\vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\vendor\imgui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="..\vendor\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\vendor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Application\config.cpp" />
     <ClCompile Include="src\global_settings.h" />
     <ClCompile Include="src\inject\injector.cpp" />
@@ -117,12 +115,6 @@
     <ClCompile Include="src\toad.cpp" />
     <ClCompile Include="src\Application\ui.cpp" />
     <ClCompile Include="src\utils\helpers.cpp" />
-    <ClCompile Include="vendor\imgui\backends\imgui_impl_dx9.cpp" />
-    <ClCompile Include="vendor\imgui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="vendor\imgui\imgui.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
-    <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Application\imgui_window.cpp" />
     <ClCompile Include="src\Application\VisualizeClicker\visualize_clicker.cpp" />
   </ItemGroup>

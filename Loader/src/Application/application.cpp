@@ -6,8 +6,8 @@
 #include <d3d9types.h>
 #pragma comment(lib, "d3d9.lib")
 
-#include "imgui/backends/imgui_impl_dx9.h"
-#include "imgui/backends/imgui_impl_win32.h"
+#include "imgui/imgui_impl_dx9.h"
+#include "imgui/imgui_impl_win32.h"
 
 #include "application.h"
 

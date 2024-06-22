@@ -1,4 +1,6 @@
-// Manual map injector from: https://github.com/TheCruZ/Simple-Manual-Map-Injector
+///
+/// Manual map injector from: https://github.com/TheCruZ/Simple-Manual-Map-Injector
+/// 
 
 #pragma once
 
