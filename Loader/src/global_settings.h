@@ -172,7 +172,7 @@ namespace toad
 
 		inline float distance = 5.f;
 		inline float speed = 50.f;
-		inline float reaction_time = 10; //ms
+		inline float reaction_time = 50; // ms
 	}
 
 	namespace reach

@@ -15,7 +15,7 @@ void CAimAssist::PreUpdate()
 void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	// destination aiming point 
-	Vec3 aim_point;
+	static Vec3 aim_point;
 
 	// our (locked) target
 	static std::shared_ptr<c_Entity> target = nullptr;
@@ -91,7 +91,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	float yaw_diff = wrap_to_180(-(lPlayer->Yaw - yawtarget));
 	float pitch_diff = wrap_to_180(-(lPlayer->Pitch - pitchtarget));
 
-	ApplyAimRand(yaw_diff, pitch_diff, speed);
+	ApplyAimRand(lPlayer, yaw_diff, pitch_diff, speed);
 }
 
 void CAimAssist::GetTarget(std::shared_ptr<c_Entity>& target, Vec3& target_pos, const std::shared_ptr<LocalPlayer>& lPlayer)
@@ -170,39 +170,54 @@ void CAimAssist::GetTarget(std::shared_ptr<c_Entity>& target, Vec3& target_pos, 
 	}
 }
 
-void CAimAssist::ApplyAimRand(float yaw_diff, float pitch_diff, float speed)
+void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float yaw_diff, float pitch_diff, float speed)
 {
-	yaw_diff += rand_float(-2.f, 2.f);
-	pitch_diff += rand_float(-2.f, 2.f);
+	float abs_yaw_diff = abs(yaw_diff);
+	float abs_pitch_diff = abs(pitch_diff);
+	if (abs_yaw_diff < 1.5f && abs_pitch_diff < 1.5f)
+	{
+		return;
+	}
+
+	yaw_diff += rand_float(-0.3f, 0.3f);
+	pitch_diff += rand_float(-0.3f, 0.3f);
 
 	const int rand_100 = rand_int(0, 100);
 
-	static Timer speed_rand_timer;
+	static AimBoost yaw_boost(0.9f, 1.1f, { 450, 600 }, true);
+	static AimBoost yaw_boost2(1.0f, 1.3f, { 800, 1000 }, false);
+
+	static AimBoost pitch_boost(0.8f, 1.2f, { 450, 600 }, true);
+	static AimBoost pitch_boost2(0.9f, 1.1f, { 600, 900 }, false);
+
+	static float pitchdiff_speed = 0.f;
+	static float yawdiff_speed = 0.f;
+
 	static Timer reaction_time_timer;
-	static float long_speed_modifier = 1;
-	static float prev_long_speed_modifier = 1;
-	static float long_speed_modifier_smooth = 1;
 
-	if (speed_rand_timer.Elapsed<>() >= 400)
-	{
-		prev_long_speed_modifier = long_speed_modifier;
-		long_speed_modifier = rand_float(0.5f, 1.5f);
-		speed_rand_timer.Start();
-		//std::cout << "reset :" << long_speed_modifier << std::endl;
-	}
-
-	long_speed_modifier_smooth = slerp(prev_long_speed_modifier, long_speed_modifier, speed_rand_timer.Elapsed<>() / 400);
-	static float yawdiff_speed = 0;
+	POINT pt;
 
 	if (static bool once = false; !once || reaction_time_timer.Elapsed<>() > aa::reaction_time)
 	{
-		yawdiff_speed = yaw_diff / (15000.f / speed * long_speed_modifier_smooth);
+		float pitch_boosts = pitch_boost.Delay() * pitch_boost2.Delay();
+		float yaw_boosts = yaw_boost.Delay() * yaw_boost2.Delay();
+
+		if (!aa::horizontal_only)
+		{
+			pitchdiff_speed = pitch_diff / (1000.f / (speed * pitch_boosts));
+
+			if (abs(pitchdiff_speed) < 0.03f)
+				pitchdiff_speed = pitchdiff_speed < 0 ? -0.03f : 0.03f;
+		}
+		yawdiff_speed = yaw_diff / (1000.f / (speed * yaw_boosts));
+
+		if (abs(yawdiff_speed) < 0.03f)
+			yawdiff_speed = yawdiff_speed < 0 ? -0.03f : 0.03f;
+
 		once = true;
 		reaction_time_timer.Start();
 	}
 
-	// get updated local player properties
-	// This will prevent flickering while moving the mouse and is smoother
 	auto editable_local_player = MC->getLocalPlayer();
 	if (!editable_local_player)
 	{
@@ -210,31 +225,24 @@ void CAimAssist::ApplyAimRand(float yaw_diff, float pitch_diff, float speed)
 		return;
 	}
 
-	// update yaw for aim assistance 
-	auto updated_yaw = editable_local_player->getRotationYaw();
-	editable_local_player->setRotationYaw(updated_yaw + yawdiff_speed);
-	editable_local_player->setPrevRotationYaw(updated_yaw + yawdiff_speed);
-
-	// pitch randomization
 	static Timer pitch_rand_timer;
 	static Timer pitch_ms_rand_timer;
-	static float pitchrand = rand_float(-0.0100f, 0.0100f);
+	static int pitchrand = rand_int(-2, 3);
 
 	static const Vec2 pitch_update_ms = { 500, 800 };
-	static float pitch_update_ms_min = pitch_update_ms.x;
-	static float pitch_update_ms_max = pitch_update_ms.y;
-	static float pitch_update_ms_min_smooth = pitch_update_ms.x;
-	static float pitch_update_ms_max_smooth = pitch_update_ms.y;
+	static int pitch_update_ms_min = pitch_update_ms.x;
+	static int pitch_update_ms_max = pitch_update_ms.y;
+	static int pitch_update_ms_min_smooth = pitch_update_ms.x;
+	static int pitch_update_ms_max_smooth = pitch_update_ms.y;
 
-	static float pitchupdatems = rand_float(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
-	static float pitchrandsmooth = 0;
-	static float pitchrandbegin = 0;
-	auto updated_pitch = editable_local_player->getRotationPitch();
+	static int pitchupdatems = rand_int(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
+	static int pitchrandsmooth = 0;
+	static int pitchrandbegin = 0;
 	if (pitch_rand_timer.Elapsed<>() > pitchupdatems)
 	{
 		pitchrandbegin = pitchrand;
 		pitchupdatems = rand_float(pitch_update_ms_min_smooth, pitch_update_ms_max_smooth);
-		pitchrand = rand_float(-0.0080f, 0.0080f);
+		pitchrand = rand_float(-2, 3);
 		pitch_rand_timer.Start();
 	}
 
@@ -243,21 +251,14 @@ void CAimAssist::ApplyAimRand(float yaw_diff, float pitch_diff, float speed)
 	pitch_update_ms_max_smooth = std::lerp(pitch_update_ms_max, pitch_update_ms.y, std::clamp(pitch_ms_rand_timer.Elapsed<>() / 200.f, 0.f, 1.f));
 	if (rand_100 < 5)
 	{
-		const auto rand_f = rand_float(250.f, 400.f);
-		pitch_update_ms_min = std::clamp(rand_f - 10, 250.f, 400.f);
-		pitch_update_ms_max = std::clamp(rand_f + 10, 250.f, 400.f);
+		const int rand_f = rand_int(250, 400);
+		pitch_update_ms_min = std::clamp(rand_f - 10, 250, 400);
+		pitch_update_ms_max = std::clamp(rand_f + 10, 250, 400);
 		pitch_ms_rand_timer.Start();
 	}
 
-	editable_local_player->setRotationPitch(updated_pitch + pitchrandsmooth);
-	editable_local_player->setPrevRotationPitch(updated_pitch + pitchrandsmooth);
-
-	if (!aa::horizontal_only)
-	{
-		auto updatedPitch = editable_local_player->getRotationPitch();
-		editable_local_player->setRotationPitch(updatedPitch + pitch_diff / (15000.f / speed));
-		editable_local_player->setPrevRotationPitch(updatedPitch + pitch_diff / (15000.f / speed));
-	}
+	GetCursorPos(&pt);
+	SetCursorPos(pt.x + yawdiff_speed, pt.y + (pitchdiff_speed + pitchrandsmooth));
 }
 
 Vec3 CAimAssist::GetAimPoint(const std::shared_ptr<LocalPlayer>& lPlayer, const Vec3& target_pos, bool& success)
@@ -309,6 +310,36 @@ Vec3 CAimAssist::GetAimPoint(const std::shared_ptr<LocalPlayer>& lPlayer, const 
 
 		return target_pos;
 	}
+}
+
+AimBoost::AimBoost(float speed_mult_min, float speed_mult_max, const Vec2& frequency_range, bool continuous)
+	: speed_mult_min(speed_mult_min), speed_mult_max(speed_mult_max),
+	frequency_min_ms((uint32_t)frequency_range.x), frequency_max_ms((uint32_t)frequency_range.y),
+	continuous(continuous)
+{
+	speed_mult = (speed_mult_min + speed_mult_max) / 2;
+	prev_speed_mult = speed_mult;
+}
+
+float AimBoost::Delay()
+{
+	if (timer.Elapsed<>() >= frequency_ms)
+	{
+		if (continuous)
+		{
+			prev_speed_mult = rand_float(speed_mult_min, speed_mult_max);
+		}
+		else
+		{
+			prev_speed_mult = speed_mult;
+			speed_mult = rand_float(speed_mult_min, speed_mult_max);
+		}
+
+		frequency_ms = rand_int(frequency_min_ms, frequency_max_ms);
+		timer.Start();
+	}
+
+	return slerp(prev_speed_mult, continuous ? speed_mult : 1.f, timer.Elapsed<>() / frequency_ms);
 }
 
 }
