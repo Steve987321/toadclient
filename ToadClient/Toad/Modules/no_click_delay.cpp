@@ -4,6 +4,7 @@
 
 void toadll::CNoClickDelay::PreUpdate()
 {
+	WaitIsVerified();
 	Enabled = toad::no_click_delay::enabled;
 	SLEEP(100);
 }

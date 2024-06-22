@@ -7,6 +7,11 @@ using namespace toadll::math;
 
 namespace toadll {
 
+void CLeftAutoClicker::PreUpdate()
+{
+	WaitIsVerified();
+}
+
 void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	/// True when first click
@@ -324,10 +329,6 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		SLEEP(50);
 	}
 
-}
-
-void CLeftAutoClicker::PreUpdate()
-{
 }
 
 Randomization& CLeftAutoClicker::GetRand()

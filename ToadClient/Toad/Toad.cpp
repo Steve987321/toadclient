@@ -530,20 +530,13 @@ void init_modules()
 				Module->SetMC(mc);
 
 				Module->Initialized = true;
+				static std::mutex mutex;
 
 				while (g_is_running)
 				{
 					Module->PreUpdate();
-			
-					if (!CVarsUpdater::IsVerified)
-					{
-						SLEEP(100);
-					}
-					else
-					{
-						const auto& lPlayer = CVarsUpdater::theLocalPlayer;
-						Module->Update(lPlayer);
-					}
+
+					Module->Update(CVarsUpdater::theLocalPlayer);
 				}
 
 				LOGDEBUG("Closing cheat module: {}", Module->Name);

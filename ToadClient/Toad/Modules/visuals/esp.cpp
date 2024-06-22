@@ -11,6 +11,7 @@ namespace toadll {
 
 void CEsp::PreUpdate()
 {
+	WaitIsVerified();
 	SLEEP(5);
 }
 

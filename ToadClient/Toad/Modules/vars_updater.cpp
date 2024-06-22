@@ -50,7 +50,13 @@ void toadll::CVarsUpdater::PreUpdate()
 	theLocalPlayer->Motion = { localPlayer->getMotionX(), localPlayer->getMotionY(), localPlayer->getMotionZ() };
 
 	joiningWorld = false;
-	IsVerified = true;
+
+	if (!IsVerified)
+	{
+		LOGDEBUG("[VarsUpdater] Notify verified to modules");
+		IsVerified = true;
+		IsVerifiedCV.notify_all();
+	}
 	SLEEP(1);
 }
 

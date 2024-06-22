@@ -8,6 +8,7 @@ using namespace toad;
 
 void toadll::CBlockEsp::PreUpdate()
 {
+	WaitIsVerified();
 	SLEEP(10);
 }
 

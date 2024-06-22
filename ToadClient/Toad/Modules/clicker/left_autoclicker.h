@@ -6,8 +6,8 @@ namespace toadll
 class CLeftAutoClicker SET_MODULE_CLASS(CLeftAutoClicker), public CClickerBase
 {
 public:
-	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 	void PreUpdate() override;
+	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 
 public:
 	// returns a reference to current randomization values

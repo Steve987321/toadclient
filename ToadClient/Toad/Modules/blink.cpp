@@ -13,6 +13,7 @@ void toadll::CBlink::DisableBlink()
 
 void toadll::CBlink::PreUpdate()
 {
+	WaitIsVerified();
 	SLEEP(10);
 }
 

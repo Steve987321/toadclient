@@ -46,4 +46,10 @@ void CModule::OnImGuiRender(ImDrawList* draw)
 	// don't sleep 
 }
 
+void CModule::WaitIsVerified()
+{
+	std::unique_lock lock(mutex);
+	CVarsUpdater::IsVerifiedCV.wait(lock, [&] { return CVarsUpdater::IsVerified.load(); });
+}
+
 }

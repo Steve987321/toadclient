@@ -6,6 +6,11 @@ using namespace toad;
 
 namespace toadll
 {
+	void CRightAutoClicker::PreUpdate()
+	{
+		WaitIsVerified();
+	}
+
 	void CRightAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		static bool is_starting_click = false;
@@ -71,10 +76,6 @@ namespace toadll
 
 			SLEEP(50);
 		}
-	}
-
-	void CRightAutoClicker::PreUpdate()
-	{
 	}
 
 	Randomization& CRightAutoClicker::GetRand()

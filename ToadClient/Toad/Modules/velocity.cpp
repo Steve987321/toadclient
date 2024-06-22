@@ -9,6 +9,7 @@ namespace toadll
 {
 	void CVelocity::PreUpdate()
 	{
+		WaitIsVerified();
 		CModule::PreUpdate();
 	}
 

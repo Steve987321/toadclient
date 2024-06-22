@@ -9,6 +9,7 @@ namespace toadll {
 
 void CAimAssist::PreUpdate()
 {
+	WaitIsVerified();
 	SLEEP(5);
 }
 

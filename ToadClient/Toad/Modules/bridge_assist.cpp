@@ -8,6 +8,7 @@ namespace toadll
 {
 void CBridgeAssist::PreUpdate()
 {
+	WaitIsVerified();
 	SLEEP(10);
 }
 
