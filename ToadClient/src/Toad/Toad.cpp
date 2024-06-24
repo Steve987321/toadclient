@@ -76,8 +76,12 @@ DWORD WINAPI toadll::init()
 		return 1;
 	}
 
-	//if (g_jvm->GetEnv((void**)&g_jvmti_env, JVMTI_VERSION_1) == JNI_OK)
-	//{
+#ifdef ENABLE_LOGGING
+	if (g_jvm->GetEnv((void**)&g_jvmti_env, JVMTI_VERSION_1) == JNI_OK)
+	{
+		LOGDEBUG("[init] jvmti ok");
+	}
+#endif 
 
 	//	 //check capabilities first 
 	//	jvmtiCapabilities capa;

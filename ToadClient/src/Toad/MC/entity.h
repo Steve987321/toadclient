@@ -16,31 +16,31 @@ namespace toadll
 		~c_Entity();
 
 	public:
-		_NODISCARD Vec3 getPosition() const;
-		_NODISCARD Vec3 getLastTickPosition() const;
+		Vec3 getPosition() const;
+		Vec3 getLastTickPosition() const;
 
-		_NODISCARD float getRotationYaw() const;
-		_NODISCARD float getRotationPitch() const;
+		float getRotationYaw() const;
+		float getRotationPitch() const;
 
-		_NODISCARD jobject getNameObj() const;
-		_NODISCARD std::string getName() const;
-		_NODISCARD std::string getHeldItemStr() const;
-		_NODISCARD jobject getHeldItem() const;
+		jobject getNameObj() const;
+		std::string getName() const;
+		std::string getHeldItemStr() const;
+		jobject getHeldItem() const;
 
-		_NODISCARD std::string getSlotStr(int slot) const;
+		std::string getSlotStr(int slot) const;
 
-		_NODISCARD int getHurtTime() const;
-		_NODISCARD float getHealth() const;
+		int getHurtTime() const;
+		float getHealth() const;
 
-		_NODISCARD float getMotionX() const;
-		_NODISCARD float getMotionY() const;
-		_NODISCARD float getMotionZ() const;
+		float getMotionX() const;
+		float getMotionY() const;
+		float getMotionZ() const;
 
-		_NODISCARD bool isInvisible() const;
+		bool isInvisible() const;
 		bool isSneaking() const;
 
 		//[[nodiscard]] jobject get_open_container() const;
-		_NODISCARD BBox get_BBox() const;
+		BBox get_BBox() const;
 
 		std::array<std::string, 4> getArmor();
 

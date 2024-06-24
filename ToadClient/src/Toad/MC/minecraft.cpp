@@ -333,7 +333,20 @@ bool Minecraft::isInGui()
         return false;
     }
     auto obj = env->GetObjectField(mc, fId);
+    
+    static bool res_old = false;
     auto res = obj != nullptr;
+
+    if (res != res_old)
+    {
+        if (obj) {
+			jclass klass = env->GetObjectClass(obj);
+			loop_through_class(klass, env);
+			env->DeleteLocalRef(klass);
+		}
+    }
+
+    res_old = res;
 
     env->DeleteLocalRef(obj);
     env->DeleteLocalRef(mc);
@@ -412,6 +425,7 @@ jobject Minecraft::getMouseOverObject()
     if (fid != nullptr)
         res = env->GetObjectField(mc, fid);
     //auto obj = env->CallObjectMethod(mc, mId);
+
     env->DeleteLocalRef(mc);
     return res;
 }
@@ -429,6 +443,23 @@ int Minecraft::getBlockIdAt(const Vec3i& pos)
     }
 
 	auto blockatObj = env->CallObjectMethod(world, mId, pos.x, pos.y, pos.z);
+
+	//if (static bool once = true; once)
+	//{
+	//	auto klass = env->GetObjectClass(blockatObj);
+	//	auto super = env->GetSuperclass(klass);
+	//	auto super2 = env->GetSuperclass(super);
+ //       if (super2)
+ //       {
+	//		loop_through_class(super2, env);
+	//		env->DeleteLocalRef(super2);
+ //       }
+	//	//loop_through_class(klass, env);
+	//	env->DeleteLocalRef(super);
+	//	env->DeleteLocalRef(klass);
+	//	once = false;
+	//}
+
     auto blockatkClass = env->GetObjectClass(blockatObj);
     auto id = env->CallStaticIntMethod(blockatkClass, get_static_mid(blockatkClass, mapping::getIdFromBlockStatic, env), blockatObj);
     env->DeleteLocalRef(world);

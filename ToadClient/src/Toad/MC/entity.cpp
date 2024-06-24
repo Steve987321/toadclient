@@ -113,7 +113,7 @@ std::string toadll::c_Entity::getHeldItemStr() const
 jobject toadll::c_Entity::getHeldItem() const
 {
 	auto mId = get_mid(obj, mapping::getHeldItem, env);
-	if (!mId) // no item held 
+	if (!mId) 
 		return nullptr;
 	return env->CallObjectMethod(obj, mId);
 }
@@ -132,20 +132,29 @@ std::string toadll::c_Entity::getSlotStr(int slot) const
 		return "NONE";
 	}
 
-	auto mainInv = env->CallObjectMethod(inventory, mId, slot);
-	env->DeleteLocalRef(inventory);
+	auto item_at_slot = env->CallObjectMethod(inventory, mId, slot);
 
-	if (!mainInv) // no item held
+	if (!item_at_slot) // no item held
 	{
 		return "NONE";
 	}
 
-	auto juice = env->GetObjectClass(mainInv);
-	loop_through_class(juice, env);
-	env->DeleteLocalRef(juice);
+	if (static bool once = true; once)
+	{
+		auto klass = env->GetObjectClass(inventory);
+		loop_through_class(klass, env);
+		env->DeleteLocalRef(klass);
+		once = false;
+	}
 
-	env->DeleteLocalRef(mainInv);
-	return "";
+	auto item_to_string_mid = get_mid(inventory, mapping::toString, env);
+	jstring str_obj = (jstring)env->CallObjectMethod(inventory, item_to_string_mid);
+	std::string res = jstring2string(str_obj, env);
+
+	env->DeleteLocalRef(str_obj);
+	env->DeleteLocalRef(item_at_slot);
+	env->DeleteLocalRef(inventory);
+	return res;
 }
 
 int toadll::c_Entity::getHurtTime() const

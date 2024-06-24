@@ -93,6 +93,23 @@ namespace toadll
 		g_screen_width = CVarsUpdater::Viewport[2];
 		g_screen_height = CVarsUpdater::Viewport[3];
 
+		//static bool once = false;
+		//if (!once)
+		//{
+		//	unsigned char* data = new unsigned char[g_screen_width * g_screen_height * 3];
+		//	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		//	glReadPixels(0, 0, g_screen_width, g_screen_height, GL_RGB, GL_UNSIGNED_BYTE, data);
+		//	for (uint32_t i = 0; i < g_screen_width * g_screen_height * 3; i += 3)
+		//	{
+		//		std::cout << "R: " << static_cast<int>(data[i]) << " ";
+		//		std::cout << "G: " << static_cast<int>(data[i + 1]) << " ";
+		//		std::cout << "B: " << static_cast<int>(data[i + 2]) << "\n";
+		//	}
+
+		//	delete[] data;
+		//	once = true;
+		//}
+
 		for (const auto& Module : CModule::moduleInstances)
 			Module->OnRender();
 

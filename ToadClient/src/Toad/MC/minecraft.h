@@ -36,41 +36,41 @@ public:
 	};
 
 public:
-	_NODISCARD static jclass findMcClass(JNIEnv* env);
+	static jclass findMcClass(JNIEnv* env);
 
-	_NODISCARD jclass getMcClass();
-	_NODISCARD jclass getEntityLivingClass();
-	_NODISCARD jclass getVec3Class();
-	_NODISCARD jclass getVec3iClass();
-	_NODISCARD jclass getMovingObjPosClass();
+	jclass getMcClass();
+	jclass getEntityLivingClass();
+	jclass getVec3Class();
+	jclass getVec3iClass();
+	jclass getMovingObjPosClass();
 
-	_NODISCARD std::unique_ptr<ActiveRenderInfo> getActiveRenderInfo();
-	//_NODISCARD std::unique_ptr<RenderManager> getRenderManager();
+	std::unique_ptr<ActiveRenderInfo> getActiveRenderInfo();
+	//std::unique_ptr<RenderManager> getRenderManager();
 
-	_NODISCARD jobject getMc();
-	_NODISCARD jobject getLocalPlayerObject();
-	_NODISCARD jobject getWorld();
-	_NODISCARD jobject getGameSettings();
-	_NODISCARD jobject getMouseOverObject();
-	_NODISCARD int getBlockIdAt(const Vec3i& pos);
+	jobject getMc();
+	jobject getLocalPlayerObject();
+	jobject getWorld();
+	jobject getGameSettings();
+	jobject getMouseOverObject();
+	int getBlockIdAt(const Vec3i& pos);
 
-	_NODISCARD bool isInGui();
+	bool isInGui();
 
-	_NODISCARD float getPartialTick();
-	_NODISCARD float getRenderPartialTick();
-	_NODISCARD float getFov();
+	float getPartialTick();
+	float getRenderPartialTick();
+	float getFov();
 
-	_NODISCARD std::string getMouseOverStr();
+	std::string getMouseOverStr();
 
-	_NODISCARD bool isAirBlock(jobject blockobj);
+	bool isAirBlock(jobject blockobj);
 
-	_NODISCARD std::vector<std::shared_ptr<c_Entity>> getPlayerList();
+	std::vector<std::shared_ptr<c_Entity>> getPlayerList();
 
-	_NODISCARD std::shared_ptr<c_Entity> getMouseOverPlayer();
-	_NODISCARD std::shared_ptr<c_Entity> getLocalPlayer();
+	std::shared_ptr<c_Entity> getMouseOverPlayer();
+	std::shared_ptr<c_Entity> getLocalPlayer();
 
 	// TODO: instead of returning a string return an enum of object types
-	_NODISCARD std::string getMouseOverTypeStr();
+	std::string getMouseOverTypeStr();
 
 	int getLeftClickCounter();
 
