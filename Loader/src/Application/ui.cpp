@@ -406,7 +406,7 @@ namespace toad::ui
         }
     }
 
-    ImGui::FileBrowser espFontDialog;
+    static ImGui::FileBrowser espFontDialog;
 
     void esp_visualizer(bool* enabled)
     {

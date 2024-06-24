@@ -234,10 +234,13 @@ namespace toad::ui
                     static bool is_BlockEsp = false;
                     static bool is_Blink = false;
                     static bool is_ArrayList = false;
+                    static bool is_ChestStealer = false;
                     if (checkbox_button("Auto Bridge", ICON_FA_CUBE, &bridge_assist::enabled)) is_Bridge = true;
 					ImGui::SameLine(0, 80);
 					if (checkbox_button("Array List", ICON_FA_BARS, &ui::show_array_list)) is_ArrayList = true;
                     if (checkbox_button("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
+                    ImGui::SameLine(0, 80);
+					if (checkbox_button("Chest Stealer", ICON_FA_JOINT, &chest_stealer::enabled)) is_ChestStealer = true;
                     if (checkbox_button("Block ESP", ICON_FA_CUBES, &block_esp::enabled)) is_BlockEsp = true;
                     if (checkbox_button("Blink", ICON_FA_GHOST, &blink::enabled)) is_Blink = true;
 
@@ -376,6 +379,14 @@ namespace toad::ui
                                 // #TODO: add array list options
                                 center_text_multi({1,1,1,1}, "WIP. \n customisation options will be \n added here later");
                             });
+                    }
+
+                    else if (is_ChestStealer)
+                    {
+						setting_menu("Chest Stealer", is_ChestStealer, []
+							{
+                                ImGui::Checkbox("show grid", &chest_stealer::show_grid);
+							});
                     }
                 }
                 else if (tab == 2)

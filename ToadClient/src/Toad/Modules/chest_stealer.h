@@ -9,6 +9,7 @@ public:
 	CChestStealer();
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
+	void OnImGuiRender(ImDrawList * draw) override;
 
 private:
 	POINT get_middle_of_screen() const;
