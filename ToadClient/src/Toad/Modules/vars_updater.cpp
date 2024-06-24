@@ -35,11 +35,7 @@ void toadll::CVarsUpdater::PreUpdate()
 			return;
 		}
 	}
-	if (static bool once = false; !once)
-	{
-		LOGDEBUG("BLOKKA: {}", MC->getBlockIdAt({-51, 84, -138}));
-		once = true;
-	}
+
 	//static auto lPlayerName = localPlayer->getName();
 	//theLocalPlayer->Name = lPlayerName;
 	//theLocalPlayer->obj = localPlayer->obj;

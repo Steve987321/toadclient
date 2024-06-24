@@ -1,30 +1,26 @@
 #pragma once
-#include "Toad/Types.h"
 
-// TODO: rewrite mapping handling
+#include "Toad/types.h"
 
 namespace toadll::mappings
 {
 	struct MCMap
 	{
-		const char* name;
-		const char* sig;
+		MCMap(std::string_view name, std::string_view signature) 
+			: name(name), sig(signature)
+		{
+		}
+
+		MCMap() = default;
+
+		std::string name;
+		std::string sig;
 	};
 
-	inline std::unordered_map<mapping, MCMap*> methods;
-	inline std::unordered_map<mapping, const char*> methodnames;
-	inline std::unordered_map<mapping, const char*> methodsigs;
+	inline std::unordered_map<mapping, MCMap> methods;
+	inline std::unordered_map<mappingFields, MCMap> fields;
 
-	inline std::unordered_map<mappingFields, const char*> fieldnames;
-	inline std::unordered_map<mappingFields, const char*> fieldsigs;
-
-	bool getsig(mapping map, const char* name, const jclass klass, JNIEnv* env);
-
-	const char* findName(mapping name);
-	const char* findSig(mapping name);
-
-	const char* findNameField(mappingFields name);
-	const char* findSigField(mappingFields name);
+	bool getsig(mapping map, std::string_view name, const jclass klass, JNIEnv* env);
 
 	void init_map(JNIEnv* env, jclass mcclass, jclass eclass, toad::MC_CLIENT client);
 }

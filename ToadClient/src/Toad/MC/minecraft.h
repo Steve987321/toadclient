@@ -56,6 +56,8 @@ public:
 
 	bool isInGui();
 
+	std::array<std::string, 27> GetChestContents();
+
 	float getPartialTick();
 	float getRenderPartialTick();
 	float getFov();

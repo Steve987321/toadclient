@@ -325,30 +325,81 @@ bool Minecraft::isInGui()
     if (toad::g_is_ui_internal && CInternalUI::MenuIsOpen)
         return true;
 
-    auto mc = getMc();
-    auto fId = get_fid(mc, mappingFields::currentScreenField, env);
+    jobject mc = getMc();
+    jfieldID fId = get_fid(mc, mappingFields::currentScreenField, env);
     if (!fId)
     {
         env->DeleteLocalRef(mc);
         return false;
     }
-    auto obj = env->GetObjectField(mc, fId);
-    
-    static bool res_old = false;
-    auto res = obj != nullptr;
+    jobject obj = env->GetObjectField(mc, fId);
 
-    if (res != res_old)
+	env->DeleteLocalRef(obj);
+	env->DeleteLocalRef(mc);
+
+    return obj != nullptr;
+}
+
+std::array<std::string, 27> Minecraft::GetChestContents()
+{
+    std::array<std::string, 27> res;
+
+	jobject mc = getMc();
+	jfieldID current_screen_fid = get_fid(mc, mappingFields::currentScreenField, env);
+
+	if (!current_screen_fid)
+	{
+		env->DeleteLocalRef(mc);
+		return res;
+	}
+
+	jobject current_screen_obj = env->GetObjectField(mc, current_screen_fid);
+
+    if (!current_screen_obj)
     {
-        if (obj) {
-			jclass klass = env->GetObjectClass(obj);
-			loop_through_class(klass, env);
-			env->DeleteLocalRef(klass);
-		}
+        env->DeleteLocalRef(mc);
+        return res;
+	}
+
+	jclass current_screen_class = env->GetObjectClass(current_screen_obj);
+	jfieldID lower_chest_fid = get_fid(current_screen_class, mappingFields::lowerChestInventory, env);
+
+    if (lower_chest_fid)
+    {
+        jobject invobj = env->GetObjectField(current_screen_obj, lower_chest_fid);
+        jclass invobjklass = env->GetObjectClass(invobj);
+		jmethodID get_stack_in_slot = get_mid(invobjklass, mapping::getStackInSlot, env);
+
+        if (!get_stack_in_slot)
+        {
+            env->DeleteLocalRef(invobj);
+            env->DeleteLocalRef(invobjklass);
+            env->DeleteLocalRef(current_screen_class);
+            env->DeleteLocalRef(mc);
+            return res;
+        }
+
+        for (int i = 0; i < 26; i++)
+        {
+            jobject item_stack_obj = env->CallObjectMethod(invobj, get_stack_in_slot, i);
+
+            if (item_stack_obj)
+            {
+                jstring item_str_obj = (jstring)env->CallObjectMethod(item_stack_obj, get_mid(item_stack_obj, mapping::getDisplayName, env));
+                res[i] = jstring2string(item_str_obj, env);
+                env->DeleteLocalRef(item_str_obj);
+            }
+
+            env->DeleteLocalRef(item_stack_obj);
+        }
+
+        env->DeleteLocalRef(invobj);
+        env->DeleteLocalRef(invobjklass);
     }
 
-    res_old = res;
+    env->DeleteLocalRef(current_screen_class);
+	env->DeleteLocalRef(current_screen_obj);
 
-    env->DeleteLocalRef(obj);
     env->DeleteLocalRef(mc);
     return res;
 }
@@ -492,7 +543,8 @@ std::string Minecraft::getMouseOverStr()
 std::shared_ptr<c_Entity> Minecraft::getMouseOverPlayer()
 {
     auto str = getMouseOverStr();
-    if (str.find("ENTITY") == std::string::npos) return nullptr;
+    if (str.find("ENTITY") == std::string::npos)
+        return nullptr;
 
     auto obj = getMouseOverObject();
     // TODO: ...
@@ -504,7 +556,7 @@ std::shared_ptr<c_Entity> Minecraft::getMouseOverPlayer()
             env->DeleteLocalRef(obj);
             return nullptr;
         }
-        mappings::methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
+        mappings::methods[mapping::getEntityHit] = { "bridge$getEntityHit", "SIGNATURE NOT FOUND"};
         if (!mappings::getsig(mapping::getEntityHit, "bridge$getEntityHit", klass, env))
             LOGERROR("can't find getEntityHit");
         env->DeleteLocalRef(klass);

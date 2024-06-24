@@ -2,7 +2,7 @@
 
 #include <glm/vec2.hpp>
 
-#include "Toad/Types.h"
+#include "Toad/types.h"
 
 namespace toadll::math
 {

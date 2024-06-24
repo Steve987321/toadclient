@@ -2,7 +2,7 @@
 
 #include <gl/GL.h>
 
-#include "Toad/Types.h"
+#include "Toad/types.h"
 
 namespace toadll
 {

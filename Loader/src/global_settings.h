@@ -259,6 +259,11 @@ namespace toad
 		inline bool show_trail = false; // renders a trail from the position when enabled to current position
 	}
 
+	namespace chest_stealer
+	{
+		inline bool enabled = true;
+	}
+
 	namespace ui
 	{
 		inline bool show_array_list = false;

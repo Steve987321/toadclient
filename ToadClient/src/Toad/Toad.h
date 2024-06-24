@@ -18,7 +18,7 @@
 // Settings/config variables for modules are stored in the Loader project
 #include "../../Loader/src/global_settings.h"
 
-#include "Toad/Types.h"
+#include "Toad/types.h"
 #include "Toad/Logger/logger.h"
 
 #include "helpers.h"
@@ -49,12 +49,13 @@
 #include "Modules/blink.h"
 #include "Modules/reach.h"
 #include "Modules/velocity.h"
+#include "Modules/chest_stealer.h"
 #include "Modules/internal_ui.h"
 
 #include "MinHook/include/MinHook.h"
 #pragma comment(lib, "minhook.x64.lib")
 
-#include "Hooks/Hooks.h"
+#include "Hooks/hook.h"
 #include "Hooks/wglswapbuffers.h"
 #include "Hooks/ws2_32.h"
 

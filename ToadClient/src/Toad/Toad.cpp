@@ -504,6 +504,8 @@ void init_modules()
 	CInternalUI::GetInstance()->Name = "Internal ui";
 	CBridgeAssist::GetInstance()->Name = "Auto bridge";
 	CNoClickDelay::GetInstance()->Name = "No Click Delay";
+	CChestStealer::GetInstance()->Name = "Chest Stealer";
+
 	//CReach::GetInstance()->name = "Reach";
 	//COfScreenArrows::GetInstance()->name = "Off Screen Arrow ESP";
 

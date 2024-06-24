@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Toad\Hooks\Hooks.h">
+    <ClInclude Include="src\Toad\Hooks\hook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Toad\Hooks\wglswapbuffers.h">
@@ -111,10 +111,13 @@
     <ClInclude Include="src\Toad\Toad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\Types.h">
+    <ClInclude Include="src\Toad\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Modules\chest_stealer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -222,6 +225,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Modules\chest_stealer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

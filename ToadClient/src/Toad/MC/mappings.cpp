@@ -4,26 +4,6 @@
 
 namespace toadll::mappings
 {
-	const char* findName(mapping name)
-	{
-		return methodnames.find(name)->second;
-	}
-
-	const char* findSig(mapping name)
-	{
-		return methodsigs.find(name)->second;
-	}
-
-	const char* findNameField( mappingFields name)
-	{
-		return fieldnames.find(name)->second;
-	}
-
-	const char* findSigField(mappingFields name)
-	{
-		return fieldsigs.find(name)->second;
-	}
-
 	void init_map(JNIEnv* env, jclass mcclass, jclass entity_class, toad::MC_CLIENT client)
 	{
 		if (client == toad::MC_CLIENT::Vanilla)
@@ -36,550 +16,352 @@ namespace toadll::mappings
 		}
 		else if (client == toad::MC_CLIENT::Lunar_189)
 		{
-			methodnames.insert({ mapping::getMinecraft, "getMinecraft" });
-			methodsigs.insert({ mapping::getMinecraft, "()Lnet/minecraft/client/Minecraft;" });
-			
-			methodnames.insert({ mapping::getWorld, "bridge$getWorld" });
+			methods[mapping::getMinecraft] = { "getMinecraft", "()Lnet/minecraft/client/Minecraft;" };
+
+			methods[mapping::getWorld] = { "bridge$getWorld", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
-				LOGERROR("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
+				LOGERROR("[mappings] Can't find getworld method signature"); 
 
-			fieldnames.insert({ mappingFields::theWorldField , "theWorld" });
-			fieldsigs.insert({ mappingFields::theWorldField , "Lnet/minecraft/client/multiplayer/WorldClient;" });
-
-			fieldnames.insert({ mappingFields::objMouseOver, "objectMouseOver" });
-			fieldsigs.insert({ mappingFields::objMouseOver, "Lnet/minecraft/util/MovingObjectPosition;" });
-			// get world class (temp)
-			auto worldclass = findclass("net.minecraft.world.World", env);
+			fields[mappingFields::theWorldField] = { "theWorld", "Lnet/minecraft/client/multiplayer/WorldClient;" };
+			fields[mappingFields::objMouseOver] = { "objectMouseOver", "Lnet/minecraft/util/MovingObjectPosition;" };
 			
-			methodnames.insert({ mapping::getBlockAt, "bridge$getBlockAt" });
+			jclass worldclass = findclass("net.minecraft.world.World", env);
+			if (!worldclass)
+			{
+				LOGERROR("[mappings] World class is null");
+				return;
+			}
+
+			methods[mapping::getBlockAt] = { "bridge$getBlockAt", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getBlockAt, "bridge$getBlockAt", worldclass, env))
-				LOGERROR("can't find getBlockAt");
+				LOGERROR("[mappings] Can't find getBlockAt");
 
-			env->DeleteLocalRef(worldclass);
+			//env->DeleteLocalRef(worldclass);
 
-			methodnames.insert({ mapping::getPlayer, "bridge$getPlayer" });
+			methods[mapping::getPlayer] = { "bridge$getPlayer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
-				LOGERROR("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
+				LOGERROR("[mapping] Can't find getPlayer");
 
-			fieldnames.insert({mappingFields::thePlayerField, "thePlayer"});
-			fieldsigs.insert({mappingFields::thePlayerField, "Lnet/minecraft/client/entity/EntityPlayerSP;"});
+			fields[mappingFields::thePlayerField] = { "thePlayer", "Lnet/minecraft/client/entity/EntityPlayerSP;"};
 
-			methodnames.insert({ mapping::getGameSettings, "bridge$getGameSettings" });
+			methods[mapping::getGameSettings] = { "bridge$getGameSettings", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass, env))
-				LOGERROR("can't find gamesettings");
+				LOGERROR("[mappings] Can't find gamesettings");
 
-			methodnames.insert({ mapping::getObjectMouseOver, "bridge$getObjectMouseOver" });
+			methods[mapping::getObjectMouseOver] = { "bridge$getObjectMouseOver", "SIGNATURE NOT FOUND"};
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
-				LOGERROR("can't find getobjectmouseover");// methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
+				LOGERROR("[mappings] Can't find getObjectMouseOver");
 
-			methodnames.insert({ mapping::getEntityRenderer, "bridge$getEntityRenderer" });
+			methods[mapping::getEntityRenderer] = { "bridge$getEntityRenderer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass, env))
-				LOGERROR("can't find entityRenderer");// methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
+				LOGERROR("can't find entityRenderer");
 
-			methodnames.insert({ mapping::getTimer, "bridge$getTimer" });
+			methods[mapping::getTimer] = {"bridge$getTimer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
 				LOGERROR("can't find timer");
 
-			fieldnames.insert({mappingFields::currentScreenField, "currentScreen"});
-			fieldsigs.insert({mappingFields::currentScreenField, "Lnet/minecraft/client/gui/GuiScreen;"});
+			fields[mappingFields::currentScreenField] = { "currentScreen", "Lnet/minecraft/client/gui/GuiScreen;" };
+			fields[mappingFields::leftClickCounterField] = { "leftClickCounter" , "I"};
 
-			fieldnames.insert({ mappingFields::leftClickCounterField, "leftClickCounter" });
-			fieldsigs.insert({ mappingFields::leftClickCounterField, "I" });
-
-			methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
+			methods[mapping::getEntityHit] = {"bridge$getEntityHit", "SIGNATURE NOT FOUND" };
 			// methodsig is in minecraft.cpp
 
 			// General
-			methodnames.insert({ mapping::toString, "toString" });
-			methodsigs.insert({ mapping::toString, "()Ljava/lang/String;" });
+			methods[mapping::toString] = { "toString", "()Ljava/lang/String;" };
+			methods[mapping::getDisplayName] = { "getDisplayName", "()Ljava/lang/String;" };
 
 			// WORLD
-			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
-			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });
+			methods[mapping::getPlayerEntities] = { "bridge$getPlayerEntities", "()Ljava/util/List;" };
+			methods[mapping::getRenderManager] = { "getRenderManager", "()Lnet/minecraft/client/renderer/entity/RenderManager;" };
+			methods[mapping::isAirBlock] = { "isAirBlock", "(Lnet/minecraft/util/BlockPos;)Z" };
+			methods[mapping::rayTraceBlocks] = { "rayTraceBlocks", "(Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;Z)Lnet/minecraft/util/MovingObjectPosition;" };
+			methods[mapping::getBlockFromBlockState] = { "getBlock", "()Lnet/minecraft/block/Block;" };
+			methods[mapping::getIdFromBlockStatic] = { "getIdFromBlock", "(Lnet/minecraft/block/Block;)I" };
 
-			fieldnames.insert({ mappingFields::playerEntitiesField, "playerEntities" });
-			fieldsigs.insert({ mappingFields::playerEntitiesField, "Ljava/util/List;" });
-
-			methodnames.insert({ mapping::getRenderManager, "getRenderManager" });
-			methodsigs.insert({ mapping::getRenderManager, "()Lnet/minecraft/client/renderer/entity/RenderManager;" });
-
-			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
-			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
-
-			methodnames.insert({ mapping::rayTraceBlocks, "rayTraceBlocks" });
-			methodsigs.insert({ mapping::rayTraceBlocks, "(Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;Z)Lnet/minecraft/util/MovingObjectPosition;" });
-
-			// .Block
-			methodnames.insert({ mapping::getBlockFromBlockState, "getBlock" });
-			methodsigs.insert({ mapping::getBlockFromBlockState, "()Lnet/minecraft/block/Block;" });
-
-			methodnames.insert({ mapping::getIdFromBlockStatic, "getIdFromBlock" });
-			methodsigs.insert({ mapping::getIdFromBlockStatic, "(Lnet/minecraft/block/Block;)I" });
-
-
-			// Player
-			//auto mcobj = env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));
-			//auto player = env->CallObjectMethod(mcobj, get_mid(mcobj, mapping::getPlayer));
-			//auto playerclass = env->GetObjectClass(player);
-
-			//methodnames.insert({ mapping::getOpenContainer, "bridge$getOpenContainer" });
-			//if (!getsig(mapping::getOpenContainer, "bridge$getOpenContainer", playerclass))
-			//	log_Error("can't find getinventory"); // methodsigs.insert(mapping::getOpenContainer, "bridge$getOpenContainer");
-
-			//env->DeleteLocalRef(mcobj);
-			//env->DeleteLocalRef(player);
-			//env->DeleteLocalRef(playerclass);
+			fields[mappingFields::playerEntitiesField] = { "playerEntities", "Ljava/util/List;" };
 
 			// .GameSettings
-			methodnames.insert({ mapping::setGamma, "bridge$setGamma" });
-			methodsigs.insert({ mapping::setGamma, "(F)V" });
+			methods[mapping::setGamma] = { "bridge$setGamma", "(F)V" };
 
-			fieldnames.insert({ mappingFields::fovField, "fovSetting" });
-			fieldsigs.insert({ mappingFields::fovField, "F" });
+			fields[mappingFields::fovField] = { "fovSetting", "F" };
 
 			// ENTITY
-			fieldnames.insert({ mappingFields::rotationYawField, "rotationYaw" });
-			fieldsigs.insert({ mappingFields::rotationYawField, "F" });
-			
-			fieldnames.insert({ mappingFields::rotationPitchField, "rotationPitch" });
-			fieldsigs.insert({ mappingFields::rotationPitchField, "F" });
+			fields[mappingFields::rotationYawField] = { "rotationYaw", "F" };
+			fields[mappingFields::rotationPitchField] = { "rotationPitch", "F" };
+			fields[mappingFields::prevRotationYawField] = { "prevRotationYaw", "F" };
+			fields[mappingFields::prevRotationPitchField] = { "prevRotationPitch", "F" };
 
-			fieldnames.insert({ mappingFields::prevRotationYawField, "prevRotationYaw" });
-			fieldsigs.insert({ mappingFields::prevRotationYawField, "F" });
+			fields[mappingFields::motionXField] = { "motionX", "D" };
+			fields[mappingFields::motionYField] = {"motionY", "D"};
+			fields[mappingFields::motionZField] = {"motionZ", "D"};
 
-			fieldnames.insert({ mappingFields::prevRotationPitchField, "prevRotationPitch" });
-			fieldsigs.insert({ mappingFields::prevRotationPitchField, "F" });
+			fields[mappingFields::EntityPosX] = { "posX", "D" };
+			fields[mappingFields::EntityPosY] = { "posY", "D" };
+			fields[mappingFields::EntityPosZ] = { "posZ", "D" };
 
-			fieldnames.insert({ mappingFields::motionXField, "motionX" });
-			fieldnames.insert({ mappingFields::motionYField, "motionY" });
-			fieldnames.insert({ mappingFields::motionZField, "motionZ" });
-			fieldsigs.insert({ mappingFields::motionXField, "D" });
-			fieldsigs.insert({ mappingFields::motionYField, "D" });
-			fieldsigs.insert({ mappingFields::motionZField, "D" });
+			fields[mappingFields::hurtTimeI] = { "hurtTime" , "I" };
 
-			fieldnames.insert({ mappingFields::EntityPosX, "posX" });
-			fieldnames.insert({ mappingFields::EntityPosY, "posY" });
-			fieldnames.insert({ mappingFields::EntityPosZ, "posZ" });
-			fieldsigs.insert({ mappingFields::EntityPosX, "D" });
-			fieldsigs.insert({ mappingFields::EntityPosY, "D" });
-			fieldsigs.insert({ mappingFields::EntityPosZ, "D" });
+			fields[mappingFields::lastTickPosXField] = { "lastTickPosX", "D" };
+			fields[mappingFields::lastTickPosYField] = {"lastTickPosY", "D"};
+			fields[mappingFields::lastTickPosZField] = {"lastTickPosZ", "D"};
 
-			fieldnames.insert({ mappingFields::hurtTimeI, "hurtTime" });
-			fieldsigs.insert({ mappingFields::hurtTimeI, "I" });
+			fields[mappingFields::renderPartialTickField] = { "renderPartialTicks", "F" };
 
-			fieldnames.insert({ mappingFields::lastTickPosXField, "lastTickPosX" });
-			fieldsigs.insert({ mappingFields::lastTickPosXField, "D" });
-			fieldnames.insert({ mappingFields::lastTickPosYField, "lastTickPosY" });
-			fieldsigs.insert({ mappingFields::lastTickPosYField, "D" });
-			fieldnames.insert({ mappingFields::lastTickPosZField, "lastTickPosZ" });
-			fieldsigs.insert({ mappingFields::lastTickPosZField, "D" });
+			methods[mapping::getPos] = {"getPositionVector", "()Lnet/minecraft/util/Vec3;"};
+			methods[mapping::getBlockPosition] = {"getPosition", "()Lnet/minecraft/util/BlockPos;" };
+			methods[mapping::isSneaking] = {"isSneaking", "()Z" };
 
-			fieldnames.insert({ mappingFields::renderPartialTickField, "renderPartialTicks" });
-			fieldsigs.insert({ mappingFields::renderPartialTickField, "F" });
-
-			methodnames.insert({ mapping::getPos, "getPositionVector" });
-			methodsigs.insert({ mapping::getPos, "()Lnet/minecraft/util/Vec3;" });
-
-			methodnames.insert({ mapping::getBlockPosition, "getPosition" });
-			methodsigs.insert({ mapping::getBlockPosition, "()Lnet/minecraft/util/BlockPos;" });
-
-			methodnames.insert({ mapping::isSneaking, "isSneaking" });
-			methodsigs.insert({ mapping::isSneaking, "()Z" });
-
-			auto movingblockklass = findclass("net.minecraft.util.MovingObjectPosition", env);
-			methodnames.insert({ mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition" });
+			jclass movingblockklass = findclass("net.minecraft.util.MovingObjectPosition", env);
+			methods[mapping::getBlockPositionFromMovingBlock] = {"bridge$getBlockPosition", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition", movingblockklass, env))
 				LOGERROR("can't find bridge$getBlockPosition from moving block class");
 
 			env->DeleteLocalRef(movingblockklass);
 
-			std::cout << methodsigs[mapping::getBlockPositionFromMovingBlock] << std::endl;
+			fields[mappingFields::inventoryField] = { "inventory", "Lnet/minecraft/entity/player/InventoryPlayer;" };
+			fields[mappingFields::lowerChestInventory] = { "lowerChestInventory", "Lnet/minecraft/inventory/IInventory;" };
+			fields[mappingFields::upperChestInventory] = { "upperChestInventory", "Lnet/minecraft/inventory/IInventory;" };
+			fields[mappingFields::itemDamage] = { "itemDamage", "I" };
 
-			fieldnames.insert({ mappingFields::inventoryField, "inventory" });
-			fieldsigs.insert({ mappingFields::inventoryField, "Lnet/minecraft/entity/player/InventoryPlayer;" });
+			methods[mapping::getStackInSlot] = { "getStackInSlot", "(I)Lnet/minecraft/item/ItemStack;" };
+			methods[mapping::getItem] = { "getItem", "()Lnet/minecraft/item/Item;" };
+			methods[mapping::getInventory] = { "getInventory", "()[Lnet/minecraft/item/ItemStack;" };
+			methods[mapping::getBlockPos] = { "getBlockPos", "()Lnet/minecraft/util/BlockPos;" };
 
-			/*fieldnames.insert({ mappingFields::mainInventoryField, "mainInventory" });
-			fieldsigs.insert({ mappingFields::mainInventoryField, "Ljava/util/List;" });*/
-			methodnames.insert({ mapping::getStackInSlot, "getStackInSlot" });
-			methodsigs.insert({ mapping::getStackInSlot, "(I)Lnet/minecraft/item/ItemStack;" });
+			methods[mapping::getRotationYaw] = { "bridge$getRotationYaw", "()D" };
+			methods[mapping::getRotationPitch] = { "bridge$getRotationPitch", "()D" };
 
-			methodnames.insert({ mapping::getInventory, "getInventory" });
-			methodsigs.insert({ mapping::getInventory, "()[Lnet/minecraft/item/ItemStack;" });
-
-			methodnames.insert({ mapping::getBlockPos, "getBlockPos" });
-			methodsigs.insert({ mapping::getBlockPos, "()Lnet/minecraft/util/BlockPos;" });
-
-			fieldnames.insert({ mappingFields::blockPos, "blockPos" });
-			fieldnames.insert({ mappingFields::blockPos, "Lnet/minecraft/util/BlockPos;" });
-
-			methodnames.insert({ mapping::getRotationYaw, "bridge$getRotationYaw" });
-			methodnames.insert({ mapping::getRotationPitch, "bridge$getRotationPitch" });
-			methodsigs.insert({ mapping::getRotationYaw, "()D" });
-			methodsigs.insert({ mapping::getRotationPitch, "()D" });
-
-			methodnames.insert({ mapping::getBBox, "bridge$getBoundingBox" });
+			methods[mapping::getBBox] = { "bridge$getBoundingBox", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
 				LOGERROR("can't find bbox");
 
-			methodnames.insert({ mapping::getName, "getName" });
-			methodsigs.insert({ mapping::getName, "()Ljava/lang/String;" });
+			methods[mapping::getName] = { "getName", "()Ljava/lang/String;" };
 
-			methodnames.insert({ mapping::getMotionX, "bridge$getMotionX" });
-			methodnames.insert({ mapping::getMotionY, "bridge$getMotionY" });
-			methodnames.insert({ mapping::getMotionZ, "bridge$getMotionZ" });
-			methodsigs.insert({ mapping::getMotionX, "()D" });
-			methodsigs.insert({ mapping::getMotionY, "()D" });
-			methodsigs.insert({ mapping::getMotionZ, "()D" });
+			methods[mapping::getMotionX] = { "bridge$getMotionX", "()D" };
+			methods[mapping::getMotionY] = { "bridge$getMotionY", "()D" };
+			methods[mapping::getMotionZ] = { "bridge$getMotionZ", "()D" };
 
-			methodnames.insert({ mapping::setRotationYaw, "bridge$setRotationPitch" });
-			methodsigs.insert({ mapping::setRotationYaw, "(D)V" });
-			methodnames.insert({ mapping::setRotationPitch, "bridge$setRotationYaw" });
-			methodsigs.insert({ mapping::setRotationPitch, "(D)V" });
-			methodnames.insert({ mapping::setRotation, "setRotation" });
-			methodsigs.insert({ mapping::setRotation, "(FF)V" });
+			methods[mapping::setRotationYaw] = { "bridge$setRotationPitch", "(D)V" };
+			methods[mapping::setRotationPitch] = { "bridge$setRotationYaw", "(D)V" };
+			methods[mapping::setRotation] = { "setRotation", "(FF)V" };
 			
-			methodnames.insert({ mapping::isInvisible, "isInvisible" });
-			methodsigs.insert({ mapping::isInvisible, "()Z" });
+			methods[mapping::isInvisible] = { "isInvisible", "()Z" };
 
 			// .EntityBaseLiving
-			methodnames.insert({ mapping::getHeldItem, "getHeldItem" });
-			methodsigs.insert({ mapping::getHeldItem, "()Lnet/minecraft/item/ItemStack;" });
-
-			methodnames.insert({ mapping::getHurtTime, "bridge$getHurtTime" });
-			methodsigs.insert({ mapping::getHurtTime, "()I" });
-
-			methodnames.insert({ mapping::getHealth, "getHealth" });
-			methodsigs.insert({ mapping::getHealth, "()F" });
+			methods[mapping::getHeldItem] = { "getHeldItem", "()Lnet/minecraft/item/ItemStack;" };
+			methods[mapping::getHurtTime] = { "bridge$getHurtTime", "()I" };
+			methods[mapping::getHealth] = { "getHealth", "()F" };
 
 			// .ActiveRenderInfo
-			methodnames.insert({ mapping::getRenderPos, "getPosition" });
-			methodsigs.insert({ mapping::getRenderPos, "()Lnet/minecraft/util/Vec3;" });
+			methods[mapping::getRenderPos] = { "getPosition", "()Lnet/minecraft/util/Vec3;" };
 
-			fieldnames.insert({ mappingFields::modelviewField, "MODELVIEW" });
-			fieldsigs.insert({ mappingFields::modelviewField, "Ljava/nio/FloatBuffer;" });
-			fieldnames.insert({ mappingFields::viewportField, "VIEWPORT" });
-			fieldsigs.insert({ mappingFields::viewportField, "Ljava/nio/IntBuffer;" });
-			fieldnames.insert({ mappingFields::projectionField, "PROJECTION" });
-			fieldsigs.insert({ mappingFields::projectionField, "Ljava/nio/FloatBuffer;" });
-
-			//// .RenderManager
-			//methodnames.insert({ mapping::renderManGetRenderPosX, "bridge$viewerPosX" });
-			//methodsigs.insert({ mapping::renderManGetRenderPosY, "()D" });
-			//methodnames.insert({ mapping::renderManGetRenderPosZ, "bridge$viewerPosY" });
-			//methodsigs.insert({ mapping::renderManGetRenderPosX, "()D" });
-			//methodnames.insert({ mapping::renderManGetRenderPosY, "bridge$viewerPosZ" });
-			//methodsigs.insert({ mapping::renderManGetRenderPosZ, "()D" });
+			fields[mappingFields::modelviewField] = { "MODELVIEW", "Ljava/nio/FloatBuffer;" };
+			fields[mappingFields::viewportField] = { "VIEWPORT", "Ljava/nio/IntBuffer;" };
+			fields[mappingFields::projectionField] = { "PROJECTION", "Ljava/nio/FloatBuffer;" };
 
 			// ENTITY RENDERER
-			methodnames.insert({ mapping::enableLightmap, "enableLightmap" });
-			methodsigs.insert({ mapping::enableLightmap, "()V" });
-			methodnames.insert({ mapping::disableLightmap, "disableLightmap" });
-			methodsigs.insert({ mapping::disableLightmap, "()V" });
+			methods[mapping::enableLightmap] = { "enableLightmap", "()V" };
+			methods[mapping::disableLightmap] = { "disableLightmap", "()V" };
 
 			// Vec3 class
-			methodnames.insert({ mapping::Vec3Init, "<init>" });
-			methodsigs.insert({ mapping::Vec3Init, "(DDD)V" });
-			methodnames.insert({ mapping::Vec3X, "bridge$xCoord" });
-			methodsigs.insert({ mapping::Vec3X, "()D" });
-			methodnames.insert({ mapping::Vec3Y, "bridge$yCoord" });
-			methodsigs.insert({ mapping::Vec3Y, "()D" });
-			methodnames.insert({ mapping::Vec3Z, "bridge$zCoord" });
-			methodsigs.insert({ mapping::Vec3Z, "()D" });
+			methods[mapping::Vec3Init] = { "<init>", "(DDD)V" };
+			methods[mapping::Vec3X] = { "bridge$xCoord", "()D" };
+			methods[mapping::Vec3Y] = { "bridge$yCoord", "()D" };
+			methods[mapping::Vec3Z] = { "bridge$zCoord", "()D" };
 
 			// Vec3I class
-			methodnames.insert({ mapping::Vec3IInit, "<init>" });
-			methodsigs.insert({ mapping::Vec3IInit, "(III)V" });
-			methodnames.insert({ mapping::Vec3IX, "getX" });
-			methodsigs.insert({ mapping::Vec3IX, "()I" });
-			methodnames.insert({ mapping::Vec3IY, "getY" });
-			methodsigs.insert({ mapping::Vec3IY, "()I" });
-			methodnames.insert({ mapping::Vec3IZ, "getZ" });
-			methodsigs.insert({ mapping::Vec3IZ, "()I" });
+			methods[mapping::Vec3IInit] = { "<init>", "(III)V" };
+			methods[mapping::Vec3IX] = { "getX", "()I" };
+			methods[mapping::Vec3IY] = { "getY", "()I" };
+			methods[mapping::Vec3IZ] = { "getZ", "()I" };
 
 			// bounding box
-			methodnames.insert({mapping::bboxMinX, "bridge$getMinX"});
-			methodnames.insert({mapping::bboxMinY, "bridge$getMinY"});
-			methodnames.insert({mapping::bboxMinZ, "bridge$getMinZ"});
-			methodnames.insert({mapping::bboxMaxX, "bridge$getMaxX"});
-			methodnames.insert({mapping::bboxMaxY, "bridge$getMaxY"});
-			methodnames.insert({mapping::bboxMaxZ, "bridge$getMaxZ"});
-
-			methodsigs.insert({ mapping::bboxMinX, "()D" });
-			methodsigs.insert({ mapping::bboxMinY, "()D" });
-			methodsigs.insert({ mapping::bboxMinZ, "()D" });
-			methodsigs.insert({ mapping::bboxMaxX, "()D" });
-			methodsigs.insert({ mapping::bboxMaxY, "()D" });
-			methodsigs.insert({ mapping::bboxMaxZ, "()D" });
+			methods[mapping::bboxMinX] = { "bridge$getMinX", "()D"};
+			methods[mapping::bboxMinY] = { "bridge$getMinY", "()D"};
+			methods[mapping::bboxMinZ] = { "bridge$getMinZ", "()D"};
+			methods[mapping::bboxMaxX] = { "bridge$getMaxX", "()D"};
+			methods[mapping::bboxMaxY] = { "bridge$getMaxY", "()D"};
+			methods[mapping::bboxMaxZ] = { "bridge$getMaxZ", "()D"};
 
 			// Timer
-			methodnames.insert({ mapping::partialTick, "bridge$partialTick" });
-			methodsigs.insert({ mapping::partialTick, "()F" });
+			methods[mapping::partialTick] = { "bridge$partialTick", "()F" };
 		}
 		else if (client == toad::MC_CLIENT::Lunar_171)
 		{
-			methodnames.insert({ mapping::getMinecraft, "getMinecraft" });
-			methodsigs.insert({ mapping::getMinecraft, "()Lnet/minecraft/client/Minecraft;" });
+			methods[mapping::getMinecraft] = { "getMinecraft", "()Lnet/minecraft/client/Minecraft;" };
 
-			methodnames.insert({ mapping::getWorld, "bridge$getWorld" });
+			methods[mapping::getWorld] = { "bridge$getWorld", "SIGNATURE NOT FOUND"};
 			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
-				LOGERROR("can't find world"); //methodsigs.insert({ mapping::getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
+				LOGERROR("can't find world"); //getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
 
-			fieldnames.insert({ mappingFields::theWorldField , "theWorld" });
-			fieldsigs.insert({ mappingFields::theWorldField , "Lnet/minecraft/client/multiplayer/WorldClient;" });
-
-			fieldnames.insert({ mappingFields::objMouseOver, "objectMouseOver" });
-			fieldsigs.insert({ mappingFields::objMouseOver, "Lnet/minecraft/util/MovingObjectPosition;" });
+			fields[mappingFields::theWorldField ] = { "theWorld", "Lnet/minecraft/client/multiplayer/WorldClient;" };
+			fields[mappingFields::objMouseOver] = { "objectMouseOver", "Lnet/minecraft/util/MovingObjectPosition;" };
 
 			// get world class (temp)
 			auto worldclass = findclass("net.minecraft.world.World", env);
 
-			methodnames.insert({ mapping::getBlockAt, "bridge$getBlockAt" });
+			methods[mapping::getBlockAt] = { "bridge$getBlockAt", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getBlockAt, "bridge$getBlockAt", worldclass, env))
 				LOGERROR("can't find getBlockAt");
 
 			env->DeleteLocalRef(worldclass);
 
-			methodnames.insert({ mapping::getPlayer, "bridge$getPlayer" });
+			methods[mapping::getPlayer] = { "bridge$getPlayer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
-				LOGERROR("can't find player");// methodsigs.insert({ mapping::getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
+				LOGERROR("[mappings] Can't find player");// getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
-			fieldnames.insert({ mappingFields::thePlayerField, "thePlayer" });
-			fieldsigs.insert({ mappingFields::thePlayerField, "Lnet/minecraft/client/entity/EntityClientPlayerMP;" });
+			fields[mappingFields::thePlayerField] = { "thePlayer", "Lnet/minecraft/client/entity/EntityClientPlayerMP;" };
 
-			methodnames.insert({ mapping::getGameSettings, "bridge$getGameSettings" });
+			methods[mapping::getGameSettings] = { "bridge$getGameSettings", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass, env))
-				LOGERROR("can't find gamesettings");
+				LOGERROR("[mappings] Can't find gamesettings");
 
-			methodnames.insert({ mapping::getObjectMouseOver, "bridge$getObjectMouseOver" });
+			methods[mapping::getObjectMouseOver] = { "bridge$getObjectMouseOver", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
-				LOGERROR("can't find getobjectmouseover");// methodsigs.insert({ mapping::getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
+				LOGERROR("[mappings] Can't find getobjectmouseover");// getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
 
-			methodnames.insert({ mapping::getEntityRenderer, "bridge$getEntityRenderer" });
+			methods[mapping::getEntityRenderer] = { "bridge$getEntityRenderer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass, env))
-				LOGERROR("can't find entityRenderer");// methodsigs.insert({ mapping::getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
+				LOGERROR("[mappings] Can't find entityRenderer");// getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
 
-			methodnames.insert({ mapping::getTimer, "bridge$getTimer" });
+			methods[mapping::getTimer] = { "bridge$getTimer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
-				LOGERROR("can't find timer");
+				LOGERROR("[mappings] Can't find timer");
 
-			fieldnames.insert({ mappingFields::currentScreenField, "currentScreen" });
-			fieldsigs.insert({ mappingFields::currentScreenField, "Lnet/minecraft/client/gui/GuiScreen;" });
+			fields[mappingFields::currentScreenField] = { "currentScreen", "Lnet/minecraft/client/gui/GuiScreen;" };
+			fields[mappingFields::leftClickCounterField] = { "leftClickCounter", "I" };
 
-			fieldnames.insert({ mappingFields::leftClickCounterField, "leftClickCounter" });
-			fieldsigs.insert({ mappingFields::leftClickCounterField, "I" });
-
-			methodnames.insert({ mapping::getEntityHit, "bridge$getEntityHit" });
+			methods[mapping::getEntityHit] = { "bridge$getEntityHit", "" };
 			// methodsig is in minecraft.cpp
 
 			// General
-			methodnames.insert({ mapping::toString, "toString" });
-			methodsigs.insert({ mapping::toString, "()Ljava/lang/String;" });
+			methods[mapping::toString] = { "toString", "()Ljava/lang/String;" };
+			methods[mapping::getDisplayName] = { "getDisplayName", "()Ljava/lang/String;" };
 
 			// WORLD
-			methodnames.insert({ mapping::getPlayerEntities, "bridge$getPlayerEntities" });
-			methodsigs.insert({ mapping::getPlayerEntities, "()Ljava/util/List;" });
+			methods[mapping::getPlayerEntities] = { "bridge$getPlayerEntities", "()Ljava/util/List;" };
+			methods[mapping::isAirBlock] = { "isAirBlock", "(Lnet/minecraft/util/BlockPos;)Z" };
 
-			fieldnames.insert({ mappingFields::playerEntitiesField, "playerEntities" });
-			fieldsigs.insert({ mappingFields::playerEntitiesField, "Ljava/util/List;" });
-
-			methodnames.insert({ mapping::getRenderManager, "bridge$getRenderManager" });
+			methods[mapping::getRenderManager] = { "bridge$getRenderManager", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getRenderManager, "bridge$getRenderManager", mcclass, env))
-				LOGERROR("can't find render manager");
+				LOGERROR("[mappings] Can't find render manager");
 
-			methodnames.insert({ mapping::isAirBlock, "isAirBlock" });
-			methodsigs.insert({ mapping::isAirBlock, "(Lnet/minecraft/util/BlockPos;)Z" });
+			fields[mappingFields::playerEntitiesField] = { "playerEntities", "Ljava/util/List;" };
 
 			// .Block
-			methodnames.insert({ mapping::getBlockFromBlockState, "getBlock" });
-			methodsigs.insert({ mapping::getBlockFromBlockState, "()Lnet/minecraft/block/Block;" });
-
-			methodnames.insert({ mapping::getIdFromBlockStatic, "getIdFromBlock" });
-			methodsigs.insert({ mapping::getIdFromBlockStatic, "(Lnet/minecraft/block/Block;)I" });
-
-			// Player
-			//auto mcobj = env->CallStaticObjectMethod(mcclass, get_static_mid(mcclass, mapping::getMinecraft));
-			//auto player = env->CallObjectMethod(mcobj, get_mid(mcobj, mapping::getPlayer));
-			//auto playerclass = env->GetObjectClass(player);
-
-			//methodnames.insert({ mapping::getOpenContainer, "bridge$getOpenContainer" });
-			//if (!getsig(mapping::getOpenContainer, "bridge$getOpenContainer", playerclass))
-			//	log_Error("can't find getinventory"); // methodsigs.insert(mapping::getOpenContainer, "bridge$getOpenContainer");
-
-			//env->DeleteLocalRef(mcobj);
-			//env->DeleteLocalRef(player);
-			//env->DeleteLocalRef(playerclass);
+			methods[mapping::getBlockFromBlockState] = { "getBlock", "()Lnet/minecraft/block/Block;" };
+			methods[mapping::getIdFromBlockStatic] = { "getIdFromBlock", "(Lnet/minecraft/block/Block;)I" };
 
 			// .GameSettings
-			methodnames.insert({ mapping::setGamma, "bridge$setGamma" });
-			methodsigs.insert({ mapping::setGamma, "(F)V" });
+			methods[mapping::setGamma] = { "bridge$setGamma", "(F)V" };
 
-			fieldnames.insert({ mappingFields::fovField, "fovSetting" });
-			fieldsigs.insert({ mappingFields::fovField, "F" });
+			fields[mappingFields::fovField] = { "fovSetting", "F" };
 
 			// ENTITY
-			fieldnames.insert({ mappingFields::rotationYawField, "rotationYaw" });
-			fieldsigs.insert({ mappingFields::rotationYawField, "F" });
+			fields[mappingFields::rotationYawField] = { "rotationYaw", "F" };
+			fields[mappingFields::rotationPitchField] = { "rotationPitch", "F" };
+			fields[mappingFields::prevRotationYawField] = { "prevRotationYaw", "F" };
+			fields[mappingFields::prevRotationPitchField] = { "prevRotationPitch", "F" };
 
-			fieldnames.insert({ mappingFields::rotationPitchField, "rotationPitch" });
-			fieldsigs.insert({ mappingFields::rotationPitchField, "F" });
+			fields[mappingFields::motionXField] = { "motionX", "D" };
+			fields[mappingFields::motionYField] = { "motionY", "D" };
+			fields[mappingFields::motionZField] = { "motionZ", "D" };
 
-			fieldnames.insert({ mappingFields::prevRotationYawField, "prevRotationYaw" });
-			fieldsigs.insert({ mappingFields::prevRotationYawField, "F" });
+			fields[mappingFields::EntityPosX] = { "posX", "D" };
+			fields[mappingFields::EntityPosY] = { "posY", "D" };
+			fields[mappingFields::EntityPosZ] = { "posZ", "D" };
 
-			fieldnames.insert({ mappingFields::prevRotationPitchField, "prevRotationPitch" });
-			fieldsigs.insert({ mappingFields::prevRotationPitchField, "F" });
+			fields[mappingFields::hurtTimeI] = { "hurtTime", "I" };
 
-			fieldnames.insert({ mappingFields::motionXField, "motionX" });
-			fieldnames.insert({ mappingFields::motionYField, "motionY" });
-			fieldnames.insert({ mappingFields::motionZField, "motionZ" });
-			fieldsigs.insert({ mappingFields::motionXField, "D" });
-			fieldsigs.insert({ mappingFields::motionYField, "D" });
-			fieldsigs.insert({ mappingFields::motionZField, "D" });
+			fields[mappingFields::lastTickPosXField] = { "lastTickPosX", "D" };
+			fields[mappingFields::lastTickPosYField] = { "lastTickPosY", "D" };
+			fields[mappingFields::lastTickPosZField] = { "lastTickPosZ", "D" };
 
-			fieldnames.insert({ mappingFields::EntityPosX, "posX" });
-			fieldnames.insert({ mappingFields::EntityPosY, "posY" });
-			fieldnames.insert({ mappingFields::EntityPosZ, "posZ" });
-			fieldsigs.insert({ mappingFields::EntityPosX, "D" });
-			fieldsigs.insert({ mappingFields::EntityPosY, "D" });
-			fieldsigs.insert({ mappingFields::EntityPosZ, "D" });
+			fields[mappingFields::renderPartialTickField] = { "renderPartialTicks", "F" };
 
-			fieldnames.insert({ mappingFields::hurtTimeI, "hurtTime" });
-			fieldsigs.insert({ mappingFields::hurtTimeI, "I" });
+			methods[mapping::getPos] = { "getPosition", "(F)Lnet/minecraft/util/Vec3;" };
+			methods[mapping::getBlockPosition] = { "getPosition", "()Lnet/minecraft/util/BlockPos;" };
+			methods[mapping::isSneaking] = { "isSneaking", "()Z" };
 
-			fieldnames.insert({ mappingFields::lastTickPosXField, "lastTickPosX" });
-			fieldsigs.insert({ mappingFields::lastTickPosXField, "D" });
-			fieldnames.insert({ mappingFields::lastTickPosYField, "lastTickPosY" });
-			fieldsigs.insert({ mappingFields::lastTickPosYField, "D" });
-			fieldnames.insert({ mappingFields::lastTickPosZField, "lastTickPosZ" });
-			fieldsigs.insert({ mappingFields::lastTickPosZField, "D" });
+			fields[mappingFields::inventoryField] = { "inventory", "Lnet/minecraft/entity/player/InventoryPlayer;" };
+			fields[mappingFields::lowerChestInventory] = { "lowerChestInventory", "Lnet/minecraft/inventory/IInventory;" };
+			fields[mappingFields::upperChestInventory] = { "upperChestInventory", "Lnet/minecraft/inventory/IInventory;" };
+			fields[mappingFields::itemDamage] = { "itemDamage", "I" };
 
-			fieldnames.insert({ mappingFields::renderPartialTickField, "renderPartialTicks" });
-			fieldsigs.insert({ mappingFields::renderPartialTickField, "F" });
+			methods[mapping::getInventory] = { "getInventory", "()[Lnet/minecraft/item/ItemStack;" };
+			methods[mapping::getStackInSlot] = { "getStackInSlot", "(I)Lnet/minecraft/item/ItemStack;" };
+			methods[mapping::getItem] = { "getItem", "()Lnet/minecraft/item/Item;" };
 
-			methodnames.insert({ mapping::getPos, "getPosition" });
-			methodsigs.insert({ mapping::getPos, "(F)Lnet/minecraft/util/Vec3;" });
+			methods[mapping::getBlockPos] = { "getBlockPos", "()Lnet/minecraft/util/BlockPos;" };
 
-			methodnames.insert({ mapping::getBlockPosition, "getPosition" });
-			methodsigs.insert({ mapping::getBlockPosition, "()Lnet/minecraft/util/BlockPos;" });
+			methods[mapping::getRotationYaw] = { "bridge$getRotationYaw", "()D" };
+			methods[mapping::getRotationPitch] = { "bridge$getRotationPitch", "()D" };
 
-			methodnames.insert({ mapping::isSneaking, "isSneaking" });
-			methodsigs.insert({ mapping::isSneaking, "()Z" });
-
-			fieldnames.insert({ mappingFields::inventoryField, "inventory" });
-			fieldsigs.insert({ mappingFields::inventoryField, "Lnet/minecraft/entity/player/InventoryPlayer;" });
-
-			methodnames.insert({ mapping::getInventory, "getInventory" });
-			methodsigs.insert({ mapping::getInventory, "()[Lnet/minecraft/item/ItemStack;" });
-			/*fieldnames.insert({ mappingFields::mainInventoryField, "mainInventory" });
-			fieldsigs.insert({ mappingFields::mainInventoryField, "Ljava/util/List;" });*/
-			methodnames.insert({ mapping::getStackInSlot, "getStackInSlot" });
-			methodsigs.insert({ mapping::getStackInSlot, "(I)Lnet/minecraft/item/ItemStack;" });
-
-
-			methodnames.insert({ mapping::getBlockPos, "getBlockPos" });
-			methodsigs.insert({ mapping::getBlockPos, "()Lnet/minecraft/util/BlockPos;" });
-
-			methodnames.insert({ mapping::getRotationYaw, "bridge$getRotationYaw" });
-			methodnames.insert({ mapping::getRotationPitch, "bridge$getRotationPitch" });
-			methodsigs.insert({ mapping::getRotationYaw, "()D" });
-			methodsigs.insert({ mapping::getRotationPitch, "()D" });
-
-			methodnames.insert({ mapping::getBBox, "bridge$getBoundingBox" });
+			methods[mapping::getBBox] = { "bridge$getBoundingBox", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
-				LOGERROR("can't find bbox");
+				LOGERROR("[mappings] can't find bbox");
 
-			methodnames.insert({ mapping::getName, "bridge$getDisplayName" });
-			methodsigs.insert({ mapping::getName, "()Ljava/lang/String;" });
+			methods[mapping::getName] = { "bridge$getDisplayName", "()Ljava/lang/String;" };
 
-			methodnames.insert({ mapping::getMotionX, "bridge$getMotionX" });
-			methodnames.insert({ mapping::getMotionY, "bridge$getMotionY" });
-			methodnames.insert({ mapping::getMotionZ, "bridge$getMotionZ" });
-			methodsigs.insert({ mapping::getMotionX, "()D" });
-			methodsigs.insert({ mapping::getMotionY, "()D" });
-			methodsigs.insert({ mapping::getMotionZ, "()D" });
+			methods[mapping::getMotionX] = { "bridge$getMotionX", "()D" };
+			methods[mapping::getMotionY] = { "bridge$getMotionY", "()D" };
+			methods[mapping::getMotionZ] = { "bridge$getMotionZ", "()D" };
 
-			methodnames.insert({ mapping::setRotationYaw, "bridge$setRotationPitch" });
-			methodsigs.insert({ mapping::setRotationYaw, "(D)V" });
-			methodnames.insert({ mapping::setRotationPitch, "bridge$setRotationYaw" });
-			methodsigs.insert({ mapping::setRotationPitch, "(D)V" });
-			methodnames.insert({ mapping::setRotation, "setRotation" });
-			methodsigs.insert({ mapping::setRotation, "(FF)V" });
+			methods[mapping::setRotationYaw] = { "bridge$setRotationPitch", "(D)V" };
+			methods[mapping::setRotationPitch] = { "bridge$setRotationYaw", "(D)V" };
+			methods[mapping::setRotation] = { "setRotation", "(FF)V" };
 
-			methodnames.insert({ mapping::isInvisible, "isInvisible" });
-			methodsigs.insert({ mapping::isInvisible, "()Z" });
+			methods[mapping::isInvisible] = { "isInvisible", "()Z" };
 
 			// .EntityBaseLiving
-			methodnames.insert({ mapping::getHeldItem, "getHeldItem" });
-			methodsigs.insert({ mapping::getHeldItem, "()Lnet/minecraft/item/ItemStack;" });
-
-			methodnames.insert({ mapping::getHurtTime, "bridge$getHurtTime" });
-			methodsigs.insert({ mapping::getHurtTime, "()I" });
-
-			methodnames.insert({ mapping::getHealth, "getHealth" });
-			methodsigs.insert({ mapping::getHealth, "()F" });
+			methods[mapping::getHeldItem] = { "getHeldItem", "()Lnet/minecraft/item/ItemStack;" };
+			methods[mapping::getHurtTime] = { "bridge$getHurtTime", "()I" };
+			methods[mapping::getHealth] = { "getHealth", "()F" };
 
 			// .ActiveRenderInfo
-			methodnames.insert({ mapping::getRenderPos, "getPosition" });
-			methodsigs.insert({ mapping::getRenderPos, "()Lnet/minecraft/util/Vec3;" });
+			methods[mapping::getRenderPos] = { "getPosition", "()Lnet/minecraft/util/Vec3;" };
 
-			fieldnames.insert({ mappingFields::modelviewField, "modelview" });
-			fieldsigs.insert({ mappingFields::modelviewField, "Ljava/nio/FloatBuffer;" });
-			fieldnames.insert({ mappingFields::viewportField, "viewport" });
-			fieldsigs.insert({ mappingFields::viewportField, "Ljava/nio/IntBuffer;" });
-			fieldnames.insert({ mappingFields::projectionField, "projection" });
-			fieldsigs.insert({ mappingFields::projectionField, "Ljava/nio/FloatBuffer;" });
+			fields[mappingFields::modelviewField] = { "modelview", "Ljava/nio/FloatBuffer;" };
+			fields[mappingFields::viewportField] = { "viewport", "Ljava/nio/IntBuffer;" };
+			fields[mappingFields::projectionField] = { "projection", "Ljava/nio/FloatBuffer;" };
 
 			// ENTITY RENDERER
-			methodnames.insert({ mapping::enableLightmap, "enableLightmap" });
-			methodsigs.insert({ mapping::enableLightmap, "()V" });
-			methodnames.insert({ mapping::disableLightmap, "disableLightmap" });
-			methodsigs.insert({ mapping::disableLightmap, "()V" });
+			methods[mapping::enableLightmap] = { "enableLightmap", "()V" };
+			methods[mapping::disableLightmap] = { "disableLightmap", "()V" };
 
 			// Vec3 class
-			methodnames.insert({ mapping::Vec3X, "bridge$xCoord" });
-			methodsigs.insert({ mapping::Vec3X, "()D" });
-			methodnames.insert({ mapping::Vec3Y, "bridge$yCoord" });
-			methodsigs.insert({ mapping::Vec3Y, "()D" });
-			methodnames.insert({ mapping::Vec3Z, "bridge$zCoord" });
-			methodsigs.insert({ mapping::Vec3Z, "()D" });
+			methods[mapping::Vec3X] = { "bridge$xCoord", "()D" };
+			methods[mapping::Vec3Y] = { "bridge$yCoord", "()D" };
+			methods[mapping::Vec3Z] = { "bridge$zCoord", "()D" };
 
 			// Vec3I class
-			methodnames.insert({ mapping::Vec3IX, "getX" });
-			methodsigs.insert({ mapping::Vec3IX, "()I" });
-			methodnames.insert({ mapping::Vec3IY, "getY" });
-			methodsigs.insert({ mapping::Vec3IY, "()I" });
-			methodnames.insert({ mapping::Vec3IZ, "getZ" });
-			methodsigs.insert({ mapping::Vec3IZ, "()I" });
+			methods[mapping::Vec3IX] = { "getX", "()I" };
+			methods[mapping::Vec3IY] = { "getY", "()I" };
+			methods[mapping::Vec3IZ] = { "getZ", "()I" };
 
 			// bounding box
-			methodnames.insert({ mapping::bboxMinX, "bridge$getMinX" });
-			methodnames.insert({ mapping::bboxMinY, "bridge$getMinY" });
-			methodnames.insert({ mapping::bboxMinZ, "bridge$getMinZ" });
-			methodnames.insert({ mapping::bboxMaxX, "bridge$getMaxX" });
-			methodnames.insert({ mapping::bboxMaxY, "bridge$getMaxY" });
-			methodnames.insert({ mapping::bboxMaxZ, "bridge$getMaxZ" });
-
-			methodsigs.insert({ mapping::bboxMinX, "()D" });
-			methodsigs.insert({ mapping::bboxMinY, "()D" });
-			methodsigs.insert({ mapping::bboxMinZ, "()D" });
-			methodsigs.insert({ mapping::bboxMaxX, "()D" });
-			methodsigs.insert({ mapping::bboxMaxY, "()D" });
-			methodsigs.insert({ mapping::bboxMaxZ, "()D" });
+			methods[mapping::bboxMinX] = { "bridge$getMinX", "()D" };
+			methods[mapping::bboxMinY] = { "bridge$getMinY", "()D" };
+			methods[mapping::bboxMinZ] = { "bridge$getMinZ", "()D" };
+			methods[mapping::bboxMaxX] = { "bridge$getMaxX", "()D" };
+			methods[mapping::bboxMaxY] = { "bridge$getMaxY", "()D" };
+			methods[mapping::bboxMaxZ] = { "bridge$getMaxZ", "()D" };
 
 			// Timer
-			methodnames.insert({ mapping::partialTick, "bridge$partialTick" });
-			methodsigs.insert({ mapping::partialTick, "()F" });
+			methods[mapping::partialTick] = { "bridge$partialTick", "()F" };
 		}
 	}
 
-	bool getsig(mapping map, const char* name, const jclass klass, JNIEnv* env)
+	bool getsig(mapping map, std::string_view name, const jclass klass, JNIEnv* env)
 	{
 		for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
 		{
-			if (std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i)) == name)
+			if (strcmp(jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i), name.data()) == 0)
 			{
+				methods[map].sig = jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i);
+
 				//std::cout << name << " = " << std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, mcclass, i)) << " sig: " << jvmfunc::oJVM_GetMethodIxSignatureUTF(env, mcclass, i) << std::endl;
-				methodsigs.insert({ map, jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i) });
+				//methodsigs.insert({ map, jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i) });
 				return true;
 			}
 		}
