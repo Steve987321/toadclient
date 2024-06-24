@@ -84,7 +84,7 @@ namespace toadll
 		{
 			if (begin_hurt_time < hurttime) begin_hurt_time = hurttime;
 
-			if (hurttime != begin_hurt_time - (int)velocity::delay)
+			if (hurttime != begin_hurt_time - velocity::delay)
 			{
 				SLEEP(1);
 				return;

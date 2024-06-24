@@ -223,7 +223,7 @@ namespace toad::ui
 		                        ImGui::SliderFloat("Horizontal", &velocity::horizontal, 0, 100.f, "%.1f%%");
 		                        ImGui::SliderFloat("Vertical", &velocity::vertical, 0.f, 100.f, "%.1f%%");
 		                        ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");
-		                        ImGui::SliderFloat("Delay", &velocity::delay, 0, 100, "%.0f%");
+		                        ImGui::SliderInt("Delay", &velocity::delay, 0, 10);
 		                    }
                         });
                 }

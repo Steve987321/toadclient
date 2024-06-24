@@ -196,7 +196,7 @@ namespace toad
 		inline bool kite = false; // don't decrease velocity when hit from behind
 
 		inline int chance = 100;
-		inline float delay = 0;
+		inline int delay = 0;
 
 		// in % the lower the less vel
 		inline float horizontal = 100;
