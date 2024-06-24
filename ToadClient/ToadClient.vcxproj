@@ -92,7 +92,7 @@
     <ClInclude Include="src\Toad\singleton.h" />
     <ClInclude Include="src\Toad\timer.h" />
     <ClInclude Include="src\Toad\Toad.h" />
-    <ClInclude Include="src\Toad\Types.h" />
+    <ClInclude Include="src\Toad\types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\imgui\imgui.cpp">

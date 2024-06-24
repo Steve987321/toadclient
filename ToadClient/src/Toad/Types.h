@@ -280,12 +280,10 @@ enum class mappingFields
     // Timer
     renderPartialTickField,
 
-    blockPos
-};
-
-enum class static_mapping
-{
-    
+	// inventory.GuiChest
+    lowerChestInventory, // Lnet/minecraft/inventory/IInventory;
+    upperChestInventory, // Lnet/minecraft/inventory/IInventory;
+    itemDamage, // I
 };
 
 enum class mapping
@@ -305,6 +303,7 @@ enum class mapping
 
     // General
     toString,
+    getDisplayName,
 
     // .World
     getPlayerEntities,
@@ -348,7 +347,8 @@ enum class mapping
 
     // inv
     getInventory, // ()[Lnet/minecraft/item/ItemStack;
-    getStackInSlot,
+    getStackInSlot, // (I)Lnet/minecraft/item/ItemStack;
+    getItem, // ()Lnet/minecraft/item/Item;
 
     // .EntityRenderer
     disableLightmap,
