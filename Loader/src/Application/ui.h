@@ -385,7 +385,80 @@ namespace toad::ui
                     {
 						setting_menu("Chest Stealer", is_ChestStealer, []
 							{
-                                ImGui::Checkbox("show grid", &chest_stealer::show_grid);
+                                //ImGui::Checkbox("show grid", &chest_stealer::show_slot_positions);
+                                ImGui::SliderInt("delay ms", &chest_stealer::average_slowness_ms, 10, 200);
+
+								static char buf[64];
+								static char rename_buf[64];
+								static int selected_item_index = -1;
+								static bool rename_item = false;
+                                static ImGuiID cs_items_popup = ImHashStr("POPUP_CS_ITEMS");
+
+                                if (ImGui::InputText("item", buf, 64, ImGuiInputTextFlags_EnterReturnsTrue))
+                                {
+                                    chest_stealer::items_to_grab.emplace_back(buf);
+                                }
+                                ImGui::SameLine();
+                                ImGui::BeginDisabled(strlen(buf) == 0);
+                                if (ImGui::Button("Add"))
+                                {
+									chest_stealer::items_to_grab.emplace_back(buf);
+                                }
+                                ImGui::EndDisabled();
+
+                                ImGui::BeginChild("Items", {0, 0}, ImGuiChildFlags_Border);
+                                {
+                                    for (size_t i = 0; i < chest_stealer::items_to_grab.size(); i++)
+                                    {
+                                        std::string& item = chest_stealer::items_to_grab[i];
+
+                                        if (i == selected_item_index && rename_item)
+                                        {
+											if (ImGui::InputText("item", rename_buf, 64, ImGuiInputTextFlags_EnterReturnsTrue))
+											{
+                                                item = rename_buf;
+                                                memset(rename_buf, '\0', 64);
+                                                rename_item = false;
+											}
+                                        }
+                                        else
+                                        {
+											ImGui::Selectable(item.c_str());
+                                        }
+                                        if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                                        {
+											ImGui::PushOverrideID(cs_items_popup);
+                                            ImGui::OpenPopup("POPUP_CS_ITEMS");
+											ImGui::PopID();
+                                            selected_item_index = (int)i;
+                                            strcpy_s(rename_buf, item.c_str());
+                                        }
+                                        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                                        {
+											selected_item_index = (int)i;
+											strcpy_s(rename_buf, item.c_str());
+                                            rename_item = true;
+                                        }
+                                    }
+                                }
+                                ImGui::EndChild();
+
+                                ImGui::PushOverrideID(cs_items_popup);
+								if (ImGui::BeginPopup("POPUP_CS_ITEMS"))
+								{
+									if (ImGui::MenuItem("Delete"))
+									{
+										chest_stealer::items_to_grab.erase(chest_stealer::items_to_grab.begin() + selected_item_index);
+									}
+									if (ImGui::MenuItem("Rename"))
+									{
+										rename_item = true;
+									}
+									ImGui::EndPopup();
+								}
+                                ImGui::PopID();
+
+                                center_text_multi({ 1, 1, 0, 1 }, "This feature is WIP. \n only works on small chests. \n Or not at all.");
 							});
                     }
                 }

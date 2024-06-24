@@ -120,6 +120,16 @@ void LoadSettings(std::string_view jsonSettings)
 		bridge_assist::block_check = data["ba_block_check"];
 		bridge_assist::only_initiate_when_sneaking = data["ba_sneak"];
 
+		// chest stealer
+		chest_stealer::enabled = data["cs_enabled"];
+		chest_stealer::average_slowness_ms = data["cs_delay"];
+
+		json items_to_grab = data["cs_items"].items();
+		for (const auto& item : items_to_grab)
+		{
+			chest_stealer::items_to_grab.emplace_back(item);
+		}
+
 		// blink
 		blink::enabled = data["bl_enabled"];
 		blink::key = data["bl_key"];
@@ -322,6 +332,17 @@ json SettingsToJson()
 	data["ba_pitch_check"] = bridge_assist::pitch_check;
 	data["ba_block_check"] = bridge_assist::block_check;
 	data["ba_sneak"] = bridge_assist::only_initiate_when_sneaking;
+
+	// chest stealer
+	data["cs_enabled"] = chest_stealer::enabled;
+	data["cs_delay"] = chest_stealer::average_slowness_ms;
+
+	json items_to_grab;
+	for (const auto& item : chest_stealer::items_to_grab)
+	{
+		items_to_grab.emplace_back(item);
+	}
+	data["cs_items"] = items_to_grab;
 
 	// blink
 	data["bl_enabled"] = blink::enabled;

@@ -160,6 +160,11 @@ void CChestStealer::SetupPath()
 			continue;
 		}
 
+		if (!chest_stealer::items_to_grab.empty() && std::ranges::find(chest_stealer::items_to_grab, name) == chest_stealer::items_to_grab.end())
+		{
+			continue;
+		}
+
 		m_indexPath.emplace_back(i);
 	}
 

@@ -261,9 +261,13 @@ namespace toad
 
 	namespace chest_stealer
 	{
-		inline bool enabled = true;
+		inline bool enabled = false;
 
-		inline bool show_grid = true; // shows helper grid for setting the offsets
+		inline bool show_slot_positions = false; // shows helper grid for setting the offsets
+		inline bool show_info = false;
+
+		inline std::vector<std::string> items_to_grab; // list of items we should grab
+
 
 		inline int begin_x = -135;
 		inline int begin_y = -70;
@@ -271,7 +275,7 @@ namespace toad
 		inline int space_x = 35;
 		inline int space_y = 35;
 
-		inline int average_slowness_ms = 50; // average speed between pickup
+		inline int average_slowness_ms = 80; // average speed between pickup
 
 		inline int missclick_chance = 50; // chance of missing the item (will still go back and pick it up)
 	}
