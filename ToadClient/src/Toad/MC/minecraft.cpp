@@ -379,7 +379,7 @@ std::array<std::string, 27> Minecraft::GetChestContents()
             return res;
         }
 
-        for (int i = 0; i < 26; i++)
+        for (int i = 0; i < 27; i++)
         {
             jobject item_stack_obj = env->CallObjectMethod(invobj, get_stack_in_slot, i);
 
