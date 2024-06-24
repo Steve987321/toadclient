@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Toad/Types.h"
+#include "Toad/types.h"
 #include "Toad/MC/mcutils.h"
 
 namespace toadll

@@ -61,7 +61,7 @@
   <ItemGroup>
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Toad\helpers.h" />
-    <ClInclude Include="src\Toad\Hooks\Hooks.h" />
+    <ClInclude Include="src\Toad\Hooks\hook.h" />
     <ClInclude Include="src\Toad\Hooks\wglswapbuffers.h" />
     <ClInclude Include="src\Toad\Hooks\ws2_32.h" />
     <ClInclude Include="src\Toad\Logger\logger.h" />
