@@ -99,6 +99,7 @@
     <ClInclude Include="src\utils\imfilebrowser.h" />
     <ClInclude Include="src\Application\imgui_window.h" />
     <ClInclude Include="src\Application\VisualizeClicker\visualize_clicker.h" />
+    <ClInclude Include="src\utils\keys.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\imgui\imgui.cpp" />

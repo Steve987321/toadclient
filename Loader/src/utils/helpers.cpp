@@ -2,6 +2,7 @@
 #include "toad.h"
 #endif
 #include "helpers.h"
+#include "keys.h"
 
 namespace toad
 {
@@ -98,6 +99,50 @@ namespace toad
 		ImGui::PopStyleColor(3);
 
 		return res;
+	}
+
+	void keybind_button(int& key)
+	{
+		int keys_size = IM_ARRAYSIZE(keys);
+		const char* no_key_label = "[none]";
+		static std::string name = keys[std::clamp(key, 0, keys_size)];
+		static bool binding = false;
+
+		if (binding)
+		{
+			ImGui::Button("[...]");
+
+			for (uint32_t i = 0; i < keys_size; i++)
+			{
+				if (GetAsyncKeyState(i) & 0x8000)
+				{
+					if (i == VK_ESCAPE)
+					{
+						key = -1;
+					}
+					else
+					{
+						key = i;
+					}
+
+					name = keys[std::clamp(key, 0, keys_size)];
+
+					binding = false;
+
+					break;
+				}
+			}
+		}
+		else
+		{
+			const char* label = key == -1 ? no_key_label : name.c_str();
+
+			if (ImGui::Button(label))
+			{
+				binding = true;
+			}
+		}
+	
 	}
 
 	void center_text_multi(const ImVec4& col, std::string_view txt, center_text_flags flags)

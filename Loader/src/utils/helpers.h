@@ -130,6 +130,8 @@ std::vector<std::pair<T, std::string>> get_filtered_suggestions(const std::strin
 
 bool icon_button(const char* icon);
 
+void keybind_button(int& key);
+
 // simple wrapper for centering a single line of text inside a box on the X axis
 template<typename ...Args>
 void center_textX(const ImVec4& col = {1,1,1,1}, const char* txt = "sample text", Args&& ...args)
