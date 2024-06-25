@@ -284,7 +284,6 @@ namespace toad::ui
                     {
                         setting_menu("Block ESP", is_BlockEsp, []
                         {
-
 	                        static std::set<std::string> ignoreSuggestions = {};
 
 	                        static int blockIdInput = 54;
@@ -385,7 +384,9 @@ namespace toad::ui
                     {
 						setting_menu("Chest Stealer", is_ChestStealer, []
 							{
-                                //ImGui::Checkbox("show grid", &chest_stealer::show_slot_positions);
+                                ImGui::Text("steal button");
+                                ImGui::SameLine();
+                                keybind_button(chest_stealer::steal_key);
                                 ImGui::SliderInt("delay ms", &chest_stealer::average_slowness_ms, 10, 200);
 
 								static char buf[64];

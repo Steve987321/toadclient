@@ -123,8 +123,8 @@ void LoadSettings(std::string_view jsonSettings)
 		// chest stealer
 		chest_stealer::enabled = data["cs_enabled"];
 		chest_stealer::average_slowness_ms = data["cs_delay"];
-
 		chest_stealer::items_to_grab = data["cs_items"];
+		chest_stealer::steal_key = data["cs_key"];
 
 		// blink
 		blink::enabled = data["bl_enabled"];
@@ -333,6 +333,7 @@ json SettingsToJson()
 	data["cs_enabled"] = chest_stealer::enabled;
 	data["cs_delay"] = chest_stealer::average_slowness_ms;
 	data["cs_items"] = chest_stealer::items_to_grab;
+	data["cs_key"] = chest_stealer::steal_key;
 
 	// blink
 	data["bl_enabled"] = blink::enabled;

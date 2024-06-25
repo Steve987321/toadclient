@@ -262,6 +262,7 @@ namespace toad
 	namespace chest_stealer
 	{
 		inline bool enabled = false;
+		inline int steal_key = -1;
 
 		inline bool show_slot_positions = false; // shows helper grid for setting the offsets
 		inline bool show_info = false;

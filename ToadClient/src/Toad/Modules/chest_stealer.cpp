@@ -39,7 +39,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static Timer aim_timer;
 	static POINT current_pos{};
 
-	if (CVarsUpdater::IsInGui && GetAsyncKeyState(82) & 1 || looting /*(GetAsyncKeyState(VK_RBUTTON) & 1) && !GetAsyncKeyState(VK_SHIFT) && !chest_open*/)
+	if ((GetAsyncKeyState(chest_stealer::steal_key) & 1 && CVarsUpdater::IsInGui) || looting /*(GetAsyncKeyState(VK_RBUTTON) & 1) && !GetAsyncKeyState(VK_SHIFT) && !chest_open*/)
 	{		
 		if (!looting)
 		{
@@ -75,7 +75,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (index != -1)
 		{
-			if (GetAsyncKeyState(0x45 /*E*/) || GetAsyncKeyState(VK_ESCAPE))
+			if (GetAsyncKeyState(chest_stealer::steal_key) & 0x8000 || GetAsyncKeyState(0x45 /*E*/) || GetAsyncKeyState(VK_ESCAPE))
 			{
 				index = -1;
 				return;
