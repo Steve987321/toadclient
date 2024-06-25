@@ -20,6 +20,19 @@ namespace toad
 		return "invalid";
 	}
 
+	std::vector<std::string> split_string(const std::string& str, char splitter)
+	{
+		std::stringstream ss(str);
+		std::string split;
+		std::vector<std::string> res; 
+		while (std::getline(ss, split, splitter))
+		{
+			res.emplace_back(std::move(split));
+		}
+
+		return res;
+	}
+
 	MC_CLIENT get_client_type(std::string_view window_title)
 	{
 		if (window_title.find("lunar client") == std::string::npos)

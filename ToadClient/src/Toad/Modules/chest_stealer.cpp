@@ -160,7 +160,7 @@ void CChestStealer::SetupPath()
 			continue;
 		}
 
-		if (!chest_stealer::items_to_grab.empty() && std::ranges::find(chest_stealer::items_to_grab, name) == chest_stealer::items_to_grab.end())
+		if (!chest_stealer::items_to_grab.empty() && chest_stealer::items_to_grab.find(name) == std::string::npos)
 		{
 			continue;
 		}

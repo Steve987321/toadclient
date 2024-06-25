@@ -240,7 +240,7 @@ namespace toad::ui
 					if (checkbox_button("Array List", ICON_FA_BARS, &ui::show_array_list)) is_ArrayList = true;
                     if (checkbox_button("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
                     ImGui::SameLine(0, 80);
-					if (checkbox_button("Chest Stealer", ICON_FA_JOINT, &chest_stealer::enabled)) is_ChestStealer = true;
+					if (checkbox_button("Chest Stealer", ICON_FA_BOX_OPEN, &chest_stealer::enabled)) is_ChestStealer = true;
                     if (checkbox_button("Block ESP", ICON_FA_CUBES, &block_esp::enabled)) is_BlockEsp = true;
                     if (checkbox_button("Blink", ICON_FA_GHOST, &blink::enabled)) is_Blink = true;
 
@@ -392,25 +392,49 @@ namespace toad::ui
 								static char rename_buf[64];
 								static int selected_item_index = -1;
 								static bool rename_item = false;
+                                static std::vector<std::string> items{};
                                 static ImGuiID cs_items_popup = ImHashStr("POPUP_CS_ITEMS");
+
+                                const auto add_item = [&](std::string_view str)
+                                    {
+                                        if (chest_stealer::items_to_grab.empty())
+                                            chest_stealer::items_to_grab += str;
+                                        else
+                                        {
+                                            chest_stealer::items_to_grab += ',';
+                                            chest_stealer::items_to_grab += str;
+                                        }
+
+                                        items = split_string(chest_stealer::items_to_grab, ',');
+                                    };
+
+                                // apply items vec to string comma separated option
+                                const auto items_to_str = [&]
+                                    {
+                                        chest_stealer::items_to_grab.clear();
+                                        for (const std::string& item : items)
+                                        {
+                                            add_item(item);
+                                        }
+                                    };
 
                                 if (ImGui::InputText("item", buf, 64, ImGuiInputTextFlags_EnterReturnsTrue))
                                 {
-                                    chest_stealer::items_to_grab.emplace_back(buf);
+                                    add_item(buf);
                                 }
                                 ImGui::SameLine();
                                 ImGui::BeginDisabled(strlen(buf) == 0);
                                 if (ImGui::Button("Add"))
                                 {
-									chest_stealer::items_to_grab.emplace_back(buf);
+                                    add_item(buf);
                                 }
                                 ImGui::EndDisabled();
 
                                 ImGui::BeginChild("Items", {0, 0}, ImGuiChildFlags_Border);
                                 {
-                                    for (size_t i = 0; i < chest_stealer::items_to_grab.size(); i++)
+                                    for (size_t i = 0; i < items.size(); i++)
                                     {
-                                        std::string& item = chest_stealer::items_to_grab[i];
+                                        std::string& item = items[i];
 
                                         if (i == selected_item_index && rename_item)
                                         {
@@ -419,6 +443,7 @@ namespace toad::ui
                                                 item = rename_buf;
                                                 memset(rename_buf, '\0', 64);
                                                 rename_item = false;
+                                                items_to_str();
 											}
                                         }
                                         else
@@ -448,7 +473,8 @@ namespace toad::ui
 								{
 									if (ImGui::MenuItem("Delete"))
 									{
-										chest_stealer::items_to_grab.erase(chest_stealer::items_to_grab.begin() + selected_item_index);
+										items.erase(items.begin() + selected_item_index);
+										items_to_str();
 									}
 									if (ImGui::MenuItem("Rename"))
 									{

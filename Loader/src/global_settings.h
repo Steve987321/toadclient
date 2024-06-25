@@ -266,8 +266,7 @@ namespace toad
 		inline bool show_slot_positions = false; // shows helper grid for setting the offsets
 		inline bool show_info = false;
 
-		inline std::vector<std::string> items_to_grab; // list of items we should grab
-
+		inline std::string items_to_grab; // string to check for items to check, comma seperated
 
 		inline int begin_x = -135;
 		inline int begin_y = -70;
