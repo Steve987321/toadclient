@@ -33,6 +33,9 @@ DWORD WINAPI toadll::init()
 #endif
 	LOGDEBUG("[init] Start");
 
+	toad::g_is_ui_internal = false;
+	CInternalUI::ShouldClose = true;
+
 	if (!UpdateSettings())
 	{
 		clean_up(1, "Failed to open settings");
