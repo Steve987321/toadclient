@@ -75,7 +75,15 @@ void update_settings()
 	{
 		auto endof = s.find("END");
 		std::string settings = s.substr(0, endof);
-		d_in = json::parse(settings);
+
+		try {
+			d_in = json::parse(settings);
+		}
+		catch (json::parse_error& e)
+		{
+			std::cout << "Json parse error: " << e.what() << std::endl;
+			return;
+		}
 	}
 
 	json d_out;
