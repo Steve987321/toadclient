@@ -57,6 +57,7 @@ void toadll::CVarsUpdater::PreUpdate()
 		IsVerified = true;
 		IsVerifiedCV.notify_all();
 	}
+
 	SLEEP(1);
 }
 

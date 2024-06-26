@@ -2,11 +2,15 @@
 #include "Toad/Toad.h"
 #include "no_click_delay.h"
 
+toadll::CNoClickDelay::CNoClickDelay()
+{
+	Enabled = &toad::no_click_delay::enabled;
+}
+
 void toadll::CNoClickDelay::PreUpdate()
 {
+	WaitIsEnabled();
 	WaitIsVerified();
-	Enabled = toad::no_click_delay::enabled;
-	SLEEP(100);
 }
 
 void toadll::CNoClickDelay::Update(const std::shared_ptr<LocalPlayer>& lPlayer)

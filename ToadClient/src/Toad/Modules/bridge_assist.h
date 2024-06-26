@@ -5,6 +5,9 @@ namespace toadll
 class CBridgeAssist SET_MODULE_CLASS(CBridgeAssist)
 {
 public:
+	CBridgeAssist();
+
+public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>&lPlayer) override;
 

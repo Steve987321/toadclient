@@ -9,16 +9,21 @@ using namespace toadll::math;
 
 namespace toadll {
 
+CEsp::CEsp()
+{
+	Enabled = &esp::enabled;
+}
+
 void CEsp::PreUpdate()
 {
+	WaitIsEnabled();
 	WaitIsVerified();
 	SLEEP(5);
 }
 
 void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	Enabled = esp::enabled;
-	if (!Enabled || !CVarsUpdater::IsVerified)
+	if (!*Enabled || !CVarsUpdater::IsVerified)
 	{
 		SLEEP(250);
 		return;
@@ -351,4 +356,5 @@ std::vector<Vec3> CEsp::GetBBoxVertices(const Vec3& min, const Vec3& max)
 
 	return res;
 }
+
 }

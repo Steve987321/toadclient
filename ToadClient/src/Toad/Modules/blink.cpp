@@ -4,24 +4,21 @@
 
 using namespace toad;
 
-void toadll::CBlink::DisableBlink()
+toadll::CBlink::CBlink()
 {
-	HWSASend::StopSends = false;
-	if (HWSARecv::StopRecvs)
-		HWSARecv::StopRecvs = false;
+	Enabled = &blink::enabled;
 }
 
 void toadll::CBlink::PreUpdate()
 {
+	WaitIsEnabled();
 	WaitIsVerified();
 	SLEEP(10);
 }
 
 void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	Enabled = blink::enabled;
-
-	if (!Enabled)
+	if (!*Enabled)
 	{
 		SLEEP(250);
 		return;
@@ -150,5 +147,11 @@ void toadll::CBlink::OnRender()
 	glPopMatrix();
 
 	glPopMatrix();
+}
 
+void toadll::CBlink::DisableBlink()
+{
+	HWSASend::StopSends = false;
+	if (HWSARecv::StopRecvs)
+		HWSARecv::StopRecvs = false;
 }

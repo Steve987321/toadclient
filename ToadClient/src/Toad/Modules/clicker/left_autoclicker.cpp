@@ -7,8 +7,14 @@ using namespace toadll::math;
 
 namespace toadll {
 
+CLeftAutoClicker::CLeftAutoClicker()
+{
+	Enabled = &left_clicker::enabled;
+}
+
 void CLeftAutoClicker::PreUpdate()
 {
+	WaitIsEnabled();
 	WaitIsVerified();
 }
 
@@ -29,9 +35,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// TODO: test trade assist 
 	static Timer trade_assist_timer;
 
-	/// a delay before breaking a block after aiming at one
-	Enabled = left_clicker::enabled; 
-	if (!Enabled)
+	if (!*Enabled)
 	{
 		SLEEP(250);
 		return;

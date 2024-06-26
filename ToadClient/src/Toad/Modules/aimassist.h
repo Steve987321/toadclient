@@ -32,6 +32,9 @@ private:
 class CAimAssist SET_MODULE_CLASS(CAimAssist)
 {
 public:
+	CAimAssist();
+
+public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 

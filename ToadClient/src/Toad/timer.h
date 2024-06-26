@@ -28,7 +28,7 @@ public:
 	///
 	/// DurationT specifies the time metric 
 	template<typename DurationT = std::chrono::milliseconds>
-	_NODISCARD float Elapsed() const
+	float Elapsed() const
 	{
 		return (float)std::chrono::duration_cast<DurationT>(std::chrono::high_resolution_clock::now() - m_start).count();
 	}

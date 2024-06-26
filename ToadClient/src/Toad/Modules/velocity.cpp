@@ -7,16 +7,21 @@ using namespace toadll::math;
 
 namespace toadll
 {
+	CVelocity::CVelocity()
+	{
+		Enabled = &velocity::enabled;
+	}
+
 	void CVelocity::PreUpdate()
 	{
+		WaitIsEnabled();
 		WaitIsVerified();
 		CModule::PreUpdate();
 	}
 
 	void CVelocity::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
-		Enabled = velocity::enabled;
-		if (!Enabled)
+		if (!*Enabled)
 		{
 			SLEEP(250);
 			return;
@@ -150,5 +155,4 @@ namespace toadll
 
 		return forwardX * hdirx + forwardZ * hdirz < threshold;
 	}
-
 }

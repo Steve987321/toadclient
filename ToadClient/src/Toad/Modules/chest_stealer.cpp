@@ -9,25 +9,20 @@ namespace toadll
 
 CChestStealer::CChestStealer()
 {
-	int index = 0;
-	for (int j = chest_stealer::begin_y, sloty = 0; sloty < 3; j += 35, sloty++)
-		for (int i = chest_stealer::begin_x, slotx = 0; slotx < 9; i += 35, slotx++)
-		{
-			m_slotToMousePosOffset[index++] = { i, j };
-		}
+	Enabled = &chest_stealer::enabled;
+	UpdateSlotPosOffsets();
 }
 
 void CChestStealer::PreUpdate()
 {
+	WaitIsEnabled();
 	WaitIsVerified();
 	CModule::PreUpdate();
 }
 
 void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	Enabled = chest_stealer::enabled;
-
-	if (!Enabled)
+	if (!*Enabled)
 	{
 		SLEEP(100);
 		return;
@@ -39,7 +34,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static Timer aim_timer;
 	static POINT current_pos{};
 
-	if ((GetAsyncKeyState(chest_stealer::steal_key) & 1 && CVarsUpdater::IsInGui) || looting /*(GetAsyncKeyState(VK_RBUTTON) & 1) && !GetAsyncKeyState(VK_SHIFT) && !chest_open*/)
+	if ((GetAsyncKeyState(chest_stealer::steal_key) & 0x8000 && CVarsUpdater::IsInGui) || looting /*(GetAsyncKeyState(VK_RBUTTON) & 1) && !GetAsyncKeyState(VK_SHIFT) && !chest_open*/)
 	{		
 		if (!looting)
 		{
@@ -49,6 +44,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 				if (m_chestContents.empty())
 				{
+					LOGDEBUG("[chest stealer] Empty chest");
 					SLEEP(100);
 					return;
 				}
@@ -57,6 +53,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 			// setup mouse path
 			SetupPath();
+			LOGDEBUG("[chest stealer] Looting {} items", m_indexPath.size());
 
 			// get the first index from the path
 			index = m_indexPath.front();
@@ -70,12 +67,11 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			// start timer and set starting mouse position
 			aim_timer.Start();
 			GetCursorPos(&current_pos);
-			looting = true;
 		}
 
 		if (index != -1)
 		{
-			if (GetAsyncKeyState(chest_stealer::steal_key) & 0x8000 || GetAsyncKeyState(0x45 /*E*/) || GetAsyncKeyState(VK_ESCAPE))
+			if (looting && (GetAsyncKeyState(chest_stealer::steal_key) & 0x8000 || GetAsyncKeyState(0x45 /*E*/) || GetAsyncKeyState(VK_ESCAPE)))
 			{
 				index = -1;
 				return;
@@ -111,8 +107,8 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			else
 			{
 				float t = std::clamp(aim_timer.Elapsed() / chest_stealer::average_slowness_ms, 0.f, 1.f);
-				int x_lerp = (int)slerp(current_pos.x, pos.x, t);
-				int y_lerp = (int)slerp(current_pos.y, pos.y, t);
+				int x_lerp = (int)slerp((float)current_pos.x, (float)pos.x, t);
+				int y_lerp = (int)slerp((float)current_pos.y, (float)pos.y, t);
 				SetCursorPos(x_lerp, y_lerp);
 			}
 		}
@@ -126,6 +122,9 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 			looting = false;
 		}
+
+		// do it here so we don't check toggle key press at same time for disabling
+		looting = true;
 	}
 	else
 	{
@@ -199,56 +198,59 @@ void CChestStealer::right_mouse_up(const POINT& pt)
 	PostMessage(g_hWnd, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 }
 
-//void CChestStealer::OnImGuiRender(ImDrawList* draw)
-//{
-//	if (chest_stealer::show_slot_positions)
-//	{
-//		ImVec2 middle = ImGui::GetMainViewport()->Size;
-//		middle.x /= 2;
-//		middle.y /= 2;
-//		middle.x -= 10;
-//		middle.y -= 50;
-//
-//		for (int i = 0; i < 27; i++)
-//		{
-//			POINT pos = m_slotToMousePosOffset[i];
-//
-//			pos.x += (int)middle.x;
-//			pos.y += (int)middle.y;
-//
-//			draw->AddText({(float)pos.x, (float)pos.y}, IM_COL32(255, 0, 0, 255), std::to_string(i).c_str());
-//		}
-//	}
-//
-//	else if (chest_stealer::show_info)
-//	{
-//		ImVec2 middle = ImGui::GetMainViewport()->Size;
-//
-//		middle.x /= 2;
-//		middle.y /= 2;
-//		middle.x -= 10;
-//		middle.y -= 50;
-//
-//		for (int i = 0; i < 27; i++)
-//		{
-//			const char* name;
-//			{
-//				std::lock_guard lock(m_mutex);
-//				name = m_chestContents[i].data();
-//			}
-//
-//			if (strlen(name) == 0)
-//				continue;
-//
-//			POINT pos = m_slotToMousePosOffset[i];
-//
-//			pos.x += (int)middle.x;
-//			pos.y += (int)middle.y;
-//
-//			draw->AddText({ (float)pos.x, (float)pos.y }, IM_COL32(255, 0, 0, 255), name);
-//		}
-//
-//	}
-//}
+void CChestStealer::UpdateSlotPosOffsets()
+{
+	int index = 0;
+	
+	ChestStealerSlotLocationInfo* info = nullptr;
+
+	for (auto& i : chest_stealer::slot_info)
+	{
+		if (i.res_x == -1 || i.res_y == -1)
+		{
+			info = &i;
+			break;
+		}
+
+		if (i.res_x == g_screen_width && i.res_y == g_screen_height)
+		{
+			info = &i;
+			break;
+		}
+	}
+
+	if (!info)
+		return;
+
+	for (int j = info->begin_y, sloty = 0; sloty < 3; j += info->space_y, sloty++)
+		for (int i = info->begin_x, slotx = 0; slotx < 9; i += info->space_x, slotx++)
+		{
+			m_slotToMousePosOffset[index++] = { i, j };
+		}
+}
+
+void CChestStealer::OnImGuiRender(ImDrawList* draw)
+{
+	if (CVarsUpdater::IsInGui && chest_stealer::show_slot_positions)
+	{
+		UpdateSlotPosOffsets();
+
+		ImVec2 middle = ImGui::GetMainViewport()->Size;
+		middle.x /= 2;
+		middle.y /= 2;
+		middle.x -= 10;
+		middle.y -= 50;
+
+		for (int i = 0; i < 27; i++)
+		{
+			POINT pos = m_slotToMousePosOffset[i];
+
+			pos.x += (int)middle.x;
+			pos.y += (int)middle.y;
+
+			draw->AddText({ (float)pos.x, (float)pos.y }, IM_COL32(255, 0, 0, 255), std::to_string(i).c_str());
+		}
+	}
+}
 
 }

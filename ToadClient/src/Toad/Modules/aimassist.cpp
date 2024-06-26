@@ -5,10 +5,48 @@
 using namespace toad;
 using namespace toadll::math;
 
-namespace toadll {
+namespace toadll 
+{
+
+AimBoost::AimBoost(float speed_mult_min, float speed_mult_max, const Vec2& frequency_range, bool continuous)
+	: speed_mult_min(speed_mult_min), speed_mult_max(speed_mult_max),
+	frequency_min_ms((uint32_t)frequency_range.x), frequency_max_ms((uint32_t)frequency_range.y),
+	continuous(continuous)
+{
+	speed_mult = (speed_mult_min + speed_mult_max) / 2;
+	prev_speed_mult = speed_mult;
+}
+
+
+float AimBoost::Delay()
+{
+	if (timer.Elapsed<>() >= frequency_ms)
+	{
+		if (continuous)
+		{
+			prev_speed_mult = rand_float(speed_mult_min, speed_mult_max);
+		}
+		else
+		{
+			prev_speed_mult = speed_mult;
+			speed_mult = rand_float(speed_mult_min, speed_mult_max);
+		}
+
+		frequency_ms = rand_int(frequency_min_ms, frequency_max_ms);
+		timer.Start();
+	}
+
+	return slerp(prev_speed_mult, continuous ? speed_mult : 1.f, timer.Elapsed<>() / frequency_ms);
+}
+
+CAimAssist::CAimAssist()
+{
+	Enabled = &aa::enabled;
+}
 
 void CAimAssist::PreUpdate()
 {
+	WaitIsEnabled();
 	WaitIsVerified();
 	SLEEP(5);
 }
@@ -29,8 +67,7 @@ void CAimAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	bool get_target = true;
 
 	//std::cout << "AA, enabled, cursor shown, alwasy aim , mdown :" << aa::enabled << " " << is_cursor_shown << " " << aa::always_aim << " " << static_cast<bool>(GetAsyncKeyState(VK_LBUTTON)) << std::endl;
-	Enabled = aa::enabled;
-	if (!Enabled || CVarsUpdater::IsInGui)
+	if (!*Enabled || CVarsUpdater::IsInGui)
 	{
 		SLEEP(250);
 		return;
@@ -325,36 +362,6 @@ Vec3 CAimAssist::GetAimPoint(const std::shared_ptr<LocalPlayer>& lPlayer, const 
 
 		return target_pos;
 	}
-}
-
-AimBoost::AimBoost(float speed_mult_min, float speed_mult_max, const Vec2& frequency_range, bool continuous)
-	: speed_mult_min(speed_mult_min), speed_mult_max(speed_mult_max),
-	frequency_min_ms((uint32_t)frequency_range.x), frequency_max_ms((uint32_t)frequency_range.y),
-	continuous(continuous)
-{
-	speed_mult = (speed_mult_min + speed_mult_max) / 2;
-	prev_speed_mult = speed_mult;
-}
-
-float AimBoost::Delay()
-{
-	if (timer.Elapsed<>() >= frequency_ms)
-	{
-		if (continuous)
-		{
-			prev_speed_mult = rand_float(speed_mult_min, speed_mult_max);
-		}
-		else
-		{
-			prev_speed_mult = speed_mult;
-			speed_mult = rand_float(speed_mult_min, speed_mult_max);
-		}
-
-		frequency_ms = rand_int(frequency_min_ms, frequency_max_ms);
-		timer.Start();
-	}
-
-	return slerp(prev_speed_mult, continuous ? speed_mult : 1.f, timer.Elapsed<>() / frequency_ms);
 }
 
 }

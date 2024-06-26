@@ -11,7 +11,9 @@ public:
 public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
-	//void OnImGuiRender(ImDrawList * draw) override;
+	void OnImGuiRender(ImDrawList * draw) override;
+
+	void UpdateSlotPosOffsets();
 
 private:
 	// sets up the path the mouse takes to grab items
@@ -21,7 +23,7 @@ private:
 	POINT get_middle_of_screen() const;
 
 private:
-	// offset is from the middle of the window
+	// offset is from the middle of the window, these are for small chests
 	static inline std::array<POINT, 27> m_slotToMousePosOffset{};
 
 	// chest contents

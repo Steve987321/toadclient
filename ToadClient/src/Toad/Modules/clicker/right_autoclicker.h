@@ -6,6 +6,9 @@ namespace toadll
 class CRightAutoClicker SET_MODULE_CLASS(CRightAutoClicker), public CClickerBase
 {
 public:
+	CRightAutoClicker();
+
+public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 

@@ -6,6 +6,9 @@ namespace toadll
 class CLeftAutoClicker SET_MODULE_CLASS(CLeftAutoClicker), public CClickerBase
 {
 public:
+	CLeftAutoClicker();
+
+public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 

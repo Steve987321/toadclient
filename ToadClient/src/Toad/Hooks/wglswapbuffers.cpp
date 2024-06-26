@@ -110,7 +110,7 @@ namespace toadll
 		//	once = true;
 		//}
 
-		for (const auto& Module : CModule::moduleInstances)
+		for (const auto& Module : CModule::ModuleInstances)
 			Module->OnRender();
 
 		if (init_stage == 0)
@@ -178,7 +178,7 @@ namespace toadll
 		}
 
 		const auto draw = ImGui::GetForegroundDrawList();
-		for (const auto& Module : CModule::moduleInstances)
+		for (const auto& Module : CModule::ModuleInstances)
 			Module->OnImGuiRender(draw);
 
 		ImGui::EndFrame();

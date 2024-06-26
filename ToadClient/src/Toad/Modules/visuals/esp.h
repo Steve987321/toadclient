@@ -6,7 +6,10 @@ namespace toadll
 
 class CEsp SET_MODULE_CLASS(CEsp)
 {
-private:
+public:
+	CEsp();
+
+public:
 	// for visuals 
 	struct VisualEntity
 	{

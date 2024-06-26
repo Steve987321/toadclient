@@ -6,6 +6,11 @@ using namespace toad;
 
 namespace toadll
 {
+	CRightAutoClicker::CRightAutoClicker()
+	{
+		Enabled = &right_clicker::enabled;
+	}
+
 	void CRightAutoClicker::PreUpdate()
 	{
 		WaitIsVerified();
@@ -15,8 +20,7 @@ namespace toadll
 	{
 		static bool is_starting_click = false;
 
-		Enabled = right_clicker::enabled;
-		if (!Enabled)
+		if (!*Enabled)
 		{
 			SLEEP(250);
 			return;

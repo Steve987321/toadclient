@@ -6,8 +6,15 @@ using namespace toad;
 
 namespace toadll
 {
+
+CBridgeAssist::CBridgeAssist()
+{
+	Enabled = &bridge_assist::enabled;
+}
+
 void CBridgeAssist::PreUpdate()
 {
+	WaitIsEnabled();
 	WaitIsVerified();
 	SLEEP(10);
 }
@@ -18,9 +25,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// will help against being stuck on sneaking
 	bool isSneaking = (bool)GetAsyncKeyState(VK_SHIFT);
 
-	Enabled = bridge_assist::enabled;
-
-	if (!Enabled)
+	if (!*Enabled)
 	{
 		// when disabling this cheat module, make sure we aren't sneaking anymore
 		if (isSneaking)

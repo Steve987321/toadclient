@@ -6,6 +6,9 @@ namespace toadll
 class CNoClickDelay SET_MODULE_CLASS(CNoClickDelay)
 {
 public:
+	CNoClickDelay();
+
+public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 

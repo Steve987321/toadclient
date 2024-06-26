@@ -10,7 +10,7 @@ class CInternalUI SET_MODULE_CLASS(CInternalUI)
 {
 public:
 	/// used in CSwapBuffers::WndProcHook
-	inline static int ShowMenuKey = VK_INSERT;
+	inline static int& ShowMenuKey = toad::ui::show_menu_key;
 
 	inline static bool MenuIsOpen = true;
 

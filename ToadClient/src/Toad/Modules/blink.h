@@ -4,6 +4,14 @@ namespace toadll
 
 class CBlink SET_MODULE_CLASS(CBlink)
 {
+public:
+	CBlink();
+
+public:
+	void PreUpdate() override;
+	void Update(const std::shared_ptr<LocalPlayer>&lPlayer) override;
+	void OnRender() override;
+
 private:
 	Timer m_timer;
 
@@ -17,12 +25,8 @@ private:
 	std::vector<Vec3> m_positions = {}; 
 
 private:
-	static void DisableBlink();
+	void DisableBlink();
 
-public:
-	void PreUpdate() override;
-	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
-	void OnRender() override;
 };
 
 }

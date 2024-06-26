@@ -12,7 +12,7 @@ public:
 
 public:
 	/// True when player is in a world and the local player is valid.
-	static inline std::atomic_bool IsVerified = false;
+	static inline bool IsVerified = false;
 
 	static inline std::condition_variable IsVerifiedCV;
 

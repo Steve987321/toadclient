@@ -13,20 +13,19 @@ namespace toadll {
 class CModule
 {
 public:
-	CModule()
-	{
-		moduleInstances.emplace_back(this);
-	}
+	CModule();
 
 public:
-	inline static std::vector<CModule*> moduleInstances = {};
+	inline static std::vector<CModule*> ModuleInstances = {};
+	std::condition_variable EnabledCV;
 
 	std::string Name; 
 
 	// will skip creating a thread for this module on initialization
 	bool IsOnlyRendering = false;
 	bool Initialized = false;
-	bool Enabled = false;
+	bool* Enabled = nullptr;
+	bool EnabledPrev = false;
 
 public:
 	static std::vector<CModule*> GetEnabledModules();
@@ -35,6 +34,8 @@ public:
 
 	/// Moves a newly made unique instance of Minecraft to this Cheat Module
 	void SetMC(std::unique_ptr<Minecraft>& mc);
+
+	void UpdateEnabledState();
 
 public:
 	/// Executes in a loop or 100ms(when not in game) even when player is null
@@ -56,9 +57,13 @@ public:
 
 protected:
 	void WaitIsVerified();
+	void WaitIsEnabled();
 
 protected:
-	std::mutex mutex;
+	std::mutex verified_mutex;
+	std::mutex enabled_mutex;
+	std::mutex enabled_update_mutex;
+
 	JNIEnv* env = nullptr;
 	std::shared_ptr<Minecraft> MC = nullptr;
 };

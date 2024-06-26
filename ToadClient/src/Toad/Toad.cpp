@@ -12,7 +12,7 @@ using namespace toadll;
 constexpr static size_t bufsize = 3000;
 std::thread Tupdate_settings;
 
-inline std::vector<std::thread> cmodule_threads;
+inline std::vector<std::pair<std::thread, std::string&>> cmodule_threads;
 
 /// called when wanting to un-inject and cleans up
 extern void clean_up(int exitcode = 0, std::string_view msg = "");
@@ -292,6 +292,12 @@ void clean_up(int exitcode, std::string_view msg)
 	std::call_once(flag, [&]
 	{
 		g_is_running = false;
+		
+		CVarsUpdater::IsVerifiedCV.notify_all();
+		for (auto& m : CModule::ModuleInstances)
+		{
+			m->EnabledCV.notify_one();
+		}
 
 		if (!msg.empty())
 			LOGDEBUG("closing: {}, {}", exitcode, msg.data());
@@ -313,11 +319,18 @@ void clean_up(int exitcode, std::string_view msg)
 		}
 
 		LOGDEBUG("threads");
-		if (Tupdate_settings.joinable()) Tupdate_settings.join();
+		if (Tupdate_settings.joinable()) 
+			Tupdate_settings.join();
 
-		for (auto& ModuleThread : cmodule_threads)
-			if (ModuleThread.joinable()) ModuleThread.join();
-
+		for (auto& [module_thread, name] : cmodule_threads)
+		{
+			LOGDEBUG("thread: {}", name);
+			if (module_thread.joinable())
+			{
+				module_thread.join();
+			}
+		}
+			
 		g_env = nullptr;
 		g_jvm = nullptr;
 		g_jvmti_env = nullptr;
@@ -481,8 +494,20 @@ bool UpdateSettings()
 
 	config::LoadSettings(data.dump());
 
+	CLeftAutoClicker::GetInstance()->UpdateEnabledState();
+	CRightAutoClicker::GetInstance()->UpdateEnabledState();
+	CVelocity::GetInstance()->UpdateEnabledState();
+	CBridgeAssist::GetInstance()->UpdateEnabledState();
+	CAimAssist::GetInstance()->UpdateEnabledState();
+	CChestStealer::GetInstance()->UpdateEnabledState();
+	CNoClickDelay::GetInstance()->UpdateEnabledState();
+	CBlockEsp::GetInstance()->UpdateEnabledState();
+	CEsp::GetInstance()->UpdateEnabledState();
+
 	CLeftAutoClicker::SetDelays(left_clicker::min_cps, left_clicker::max_cps);
 	CRightAutoClicker::SetDelays(right_clicker::cps);
+
+	// notify a module when toggled
 
 	UnmapViewOfFile(pMem);
 	CloseHandle(hMapFile);
@@ -512,7 +537,7 @@ void init_modules()
 	// don't create threads for these modules
 	CInternalUI::GetInstance()->IsOnlyRendering = true;
 
-	for (const auto& Module : CModule::moduleInstances)
+	for (const auto& Module : CModule::ModuleInstances)
 	{
 		if (Module->IsOnlyRendering)
 		{
@@ -521,7 +546,7 @@ void init_modules()
 
 		LOGDEBUG("Starting cheat module: {}", Module->Name);
 
-		cmodule_threads.emplace_back([&]()
+		cmodule_threads.emplace_back([&]
 			{
 				JNIEnv* env = nullptr;
 
@@ -536,7 +561,6 @@ void init_modules()
 				Module->SetMC(mc);
 
 				Module->Initialized = true;
-				static std::mutex mutex;
 
 				while (g_is_running)
 				{
@@ -547,15 +571,16 @@ void init_modules()
 
 				LOGDEBUG("Closing cheat module: {}", Module->Name);
 				g_jvm->DetachCurrentThread();
-			});
+			}, 
+			Module->Name);
 	}
 
 	// wait for all modules to be initalized before updating 
 	std::ranges::borrowed_iterator_t<std::vector<CModule*>&> it;
 	do
 	{
-		it = std::ranges::find_if(CModule::moduleInstances, [](const auto& mod) { return !mod->Initialized; });
+		it = std::ranges::find_if(CModule::ModuleInstances, [](const auto& mod) { return !mod->Initialized; });
 
-	} while (it != CModule::moduleInstances.end());
+	} while (it != CModule::ModuleInstances.end());
 
 }
