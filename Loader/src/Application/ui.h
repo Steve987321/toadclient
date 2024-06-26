@@ -490,7 +490,7 @@ namespace toad::ui
 								}
                                 ImGui::PopID();
 
-                                center_text_multi({ 1, 1, 0, 1 }, "This feature is WIP. \n only works on small chests. \n Or not at all.");
+                                center_text_multi({ 1, 1, 0, 0.5f }, "This feature is WIP. \n only works on small chests. \n Or not at all.");
 							});
                     }
                 }

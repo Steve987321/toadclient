@@ -280,6 +280,7 @@ namespace toad
 		inline bool show_info = false;
 
 		inline std::string items_to_grab; // string to check for items to check, comma seperated
+		inline std::vector<std::string> items_to_grab_split{};
 
 		inline std::vector<ChestStealerSlotLocationInfo> slot_info{};
 

@@ -159,9 +159,22 @@ void CChestStealer::SetupPath()
 			continue;
 		}
 
-		if (!chest_stealer::items_to_grab.empty() && chest_stealer::items_to_grab.find(name) == std::string::npos)
+		if (!chest_stealer::items_to_grab_split.empty())
 		{
-			continue;
+			bool found = false;
+			for (const auto& item : chest_stealer::items_to_grab_split)
+			{
+				if (name.find(item) != std::string::npos)
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				continue;
+			}
 		}
 
 		m_indexPath.emplace_back(i);
