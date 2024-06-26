@@ -6,7 +6,6 @@
 #include <fstream>
 
 
-
 namespace config
 {
 
@@ -125,6 +124,27 @@ void LoadSettings(std::string_view jsonSettings)
 		chest_stealer::average_slowness_ms = data["cs_delay"];
 		chest_stealer::items_to_grab = data["cs_items"];
 		chest_stealer::steal_key = data["cs_key"];
+		chest_stealer::show_slot_positions = data["cs_show_slot_pos"];
+
+		json& slot_info = data["cs_slot_info"];
+		if (slot_info.size() != chest_stealer::slot_info.size())
+		{
+			std::cout << "Resize slot info to " << slot_info.size() << std::endl;
+			chest_stealer::slot_info.resize(slot_info.size());
+		}
+
+		int index = 0;
+		for (const auto& item : slot_info) {
+			ChestStealerSlotLocationInfo info;
+			info.begin_x = item["beginx"];
+			info.begin_y = item["beginy"];
+			info.space_x = item["spacex"];
+			info.space_y = item["spacey"];
+			info.res_x = item["resx"];
+			info.res_y = item["resy"];
+
+			chest_stealer::slot_info[index++] = std::move(info);
+		}
 
 		// blink
 		blink::enabled = data["bl_enabled"];
@@ -334,6 +354,24 @@ json SettingsToJson()
 	data["cs_delay"] = chest_stealer::average_slowness_ms;
 	data["cs_items"] = chest_stealer::items_to_grab;
 	data["cs_key"] = chest_stealer::steal_key;
+	data["cs_show_slot_pos"] = chest_stealer::show_slot_positions;
+
+	json chest_stealer_info;
+
+	for (const auto& i : chest_stealer::slot_info)
+	{
+		json info;
+		info["beginx"] = i.begin_x;
+		info["beginy"] = i.begin_y;
+		info["spacex"] = i.space_x;
+		info["spacey"] = i.space_y;
+		info["resx"] = i.res_x;
+		info["resy"] = i.res_y;
+
+		chest_stealer_info.emplace_back(info);
+	}
+
+	data["cs_slot_info"] = chest_stealer_info;
 
 	// blink
 	data["bl_enabled"] = blink::enabled;

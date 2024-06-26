@@ -24,6 +24,7 @@ namespace toad::ui
     extern void clicker_rand_editor(bool* enabled);
     extern void clicker_rand_visualizer(bool* enabled);
     extern void esp_visualizer(bool* enabled);
+    extern void chest_stealer_slotpos_setter(bool* enabled);
 
     // UI for toad when injected
     // function is defined here because it will also get called inside toadll for the internal ui
@@ -39,6 +40,8 @@ namespace toad::ui
 
         // esp visuals visualization
         static bool esp_visuals_menu = false;
+
+        static bool chest_stealer_slot_info_edit = false;
 
         // config
         static std::vector<config::ConfigFile> available_configs = {};
@@ -387,6 +390,8 @@ namespace toad::ui
                                 ImGui::Text("steal button");
                                 ImGui::SameLine();
                                 keybind_button(chest_stealer::steal_key);
+
+                                ImGui::Checkbox("set slot positions", &chest_stealer_slot_info_edit);
                                 ImGui::SliderInt("delay ms", &chest_stealer::average_slowness_ms, 10, 200);
 
 								static char buf[64];
@@ -709,6 +714,11 @@ namespace toad::ui
         if (esp_visuals_menu)
         {
             esp_visualizer(&esp_visuals_menu);
+        }
+
+        if (chest_stealer_slot_info_edit)
+        {
+            chest_stealer_slotpos_setter(&chest_stealer_slot_info_edit);
         }
 
         ImGui::End();

@@ -17,11 +17,11 @@ namespace toad::ui
     {
         if (static bool once = false; !once)
         {
-            if (init_thread.joinable()) 
+            if (init_thread.joinable())
                 init_thread.join();
-			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
+            ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
             ImGui::SetNextWindowSize(io->DisplaySize);
-			once = true;
+            once = true;
         }
 
         UI(io);
@@ -33,7 +33,7 @@ namespace toad::ui
     // ui when not injected 
     void ui_init(const ImGuiIO* io)
     {
-	    if (static bool once = false; !once)
+        if (static bool once = false; !once)
         {
             ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
             ImGui::SetNextWindowSize(io->DisplaySize);
@@ -42,7 +42,7 @@ namespace toad::ui
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 
-    	ImGui::Begin("select minecraft", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
+        ImGui::Begin("select minecraft", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
         {
             center_textX(ImVec4(0.3f, 0.3f, 0.3f, 1), "please select the minecraft window");
             ImGui::BeginChild("mc windows", ImVec2(0, 0), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
@@ -70,12 +70,12 @@ namespace toad::ui
                     count = true;
                 }
 
-	            if (shownWindowList.empty())
-	            {
+                if (shownWindowList.empty())
+                {
                     center_text_multi(ImVec4(0.2f, 0.2f, 0.2f, 1), "make sure minecraft is opened. \n Supported clients: Lunar Client (1.8.9 & 1.7.10)");
-	            }
-	            else
-	            {
+                }
+                else
+                {
                     for (const auto& window : shownWindowList)
                     {
                         auto btn_name = std::string(window.title + " [" + std::to_string(window.pid) + ']');
@@ -99,18 +99,18 @@ namespace toad::ui
                                         inject_status = "init #1";
 
                                         if (!init())
-											failed_shared_mem = true;
-											
-		                                if (!failed_shared_mem)
-		                                    if (!inject(window.pid))
-		                                        failed_inject = true;
+                                            failed_shared_mem = true;
 
-		                                if (!failed_shared_mem && !failed_inject)
-		                                    g_is_verified = true;
+                                        if (!failed_shared_mem)
+                                            if (!inject(window.pid))
+                                                failed_inject = true;
+
+                                        if (!failed_shared_mem && !failed_inject)
+                                            g_is_verified = true;
 
                                         g_injected_window = window;
 
-										loading = false;
+                                        loading = false;
                                     });
                             }
                             else
@@ -137,14 +137,14 @@ namespace toad::ui
                 }
                 else if (failed_inject)
                 {
-                    if (init_thread.joinable()) 
+                    if (init_thread.joinable())
                         init_thread.join();
                     loading = false;
                     show_message_box("failed to inject", inject_status.c_str(), failed_inject, true, mboxType::ERR);
                 }
                 else if (invalid_client_type)
                 {
-                    if (init_thread.joinable()) 
+                    if (init_thread.joinable())
                         init_thread.join();
                     loading = false;
                     show_message_box("failed", "client is not supported", invalid_client_type, true, mboxType::ERR);
@@ -186,7 +186,7 @@ namespace toad::ui
 
             if (open_inconsistencies_node)
             {
-				ImGui::SetNextItemOpen(true);
+                ImGui::SetNextItemOpen(true);
                 open_inconsistencies_node = false;
             }
             if (ImGui::TreeNode(("Inconsistencies (mouse down) " + std::to_string(n_inconsistencies)).c_str()))
@@ -217,7 +217,7 @@ namespace toad::ui
                         ImGui::TreePop();
                     }
 
-					ImGui::PopID();
+                    ImGui::PopID();
                 }
 
                 while (!remove_inconsistency_queue.empty())
@@ -236,9 +236,9 @@ namespace toad::ui
                 ImGui::TreePop();
             }
 
-			if (open_inconsistencies2_node)
+            if (open_inconsistencies2_node)
             {
-				ImGui::SetNextItemOpen(true);
+                ImGui::SetNextItemOpen(true);
                 open_inconsistencies2_node = false;
             }
             if (ImGui::TreeNode(("Inconsistencies (mouse up) " + std::to_string(n_inconsistencies2)).c_str()))
@@ -268,7 +268,7 @@ namespace toad::ui
 
                         ImGui::TreePop();
                     }
-					ImGui::PopID();
+                    ImGui::PopID();
                 }
 
                 while (!remove_inconsistency2_queue.empty())
@@ -320,7 +320,7 @@ namespace toad::ui
 
                         ImGui::TreePop();
                     }
-					ImGui::PopID();
+                    ImGui::PopID();
                 }
 
                 while (!remove_boost_queue.empty())
@@ -334,7 +334,7 @@ namespace toad::ui
                 if (ImGui::Button("+"))
                 {
                     left_clicker::rand.boosts.emplace_back(0.5f, 5, 50, 20, 50, n_boosts);
-					open_boost_node = true;
+                    open_boost_node = true;
                 }
                 ImGui::TreePop();
             }
@@ -357,7 +357,7 @@ namespace toad::ui
     {
         ImGui::Begin("clicker rand visualize", enabled, ImGuiWindowFlags_NoSavedSettings);
         {
-        	static bool
+            static bool
                 show_rand = false,
                 show_graph = false,
                 show_playback = false;
@@ -390,17 +390,17 @@ namespace toad::ui
             ImGui::Text("range(%f - %f) | delay: %f", rand.edited_min, rand.edited_max, rand.delay);
             ImGui::Text("inconsistency delay: %f", rand.inconsistency_delay);
 
-           /* static bool show_cps_bounds = false;
-            ImGui::Checkbox("show cps bounds", &show_cps_bounds);
+            /* static bool show_cps_bounds = false;
+             ImGui::Checkbox("show cps bounds", &show_cps_bounds);
 
-            if (show_cps_bounds) 
-            {
-                const auto draw = ImGui::GetWindowDrawList();
-                for (const auto& b : rand.boosts)
-                {
-                    b.amount_ms* b.transition_duration;
-                }
-            }*/
+             if (show_cps_bounds)
+             {
+                 const auto draw = ImGui::GetWindowDrawList();
+                 for (const auto& b : rand.boosts)
+                 {
+                     b.amount_ms* b.transition_duration;
+                 }
+             }*/
 
             ImGui::End();
         }
@@ -415,6 +415,8 @@ namespace toad::ui
         {
             espFontDialog.SetTitle("select a TrueType Font");
             espFontDialog.SetTypeFilters({ ".ttf" });
+
+            ImGui::SetNextWindowSize({ 400, 700 });
             once = true;
         }
 
@@ -437,16 +439,16 @@ namespace toad::ui
 
             ImVec2 min = { window_pos.x + window_spacing + 20 , window_pos.y + window_spacing + 20 };
             ImVec2 max = { window_pos.x + child_size.x - window_spacing - 20,  window_pos.y + child_size.y - window_spacing - 20 };
-            
-            // esp box
-            ImGui::GetWindowDrawList()->AddRectFilled({min.x - 1, min.y - 1}, {max.x + 1, max.y + 1}, ImGui::GetColorU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] }));
 
-            ImGui::GetWindowDrawList()->AddRect(min, max, ImGui::GetColorU32({ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3]}));
+            // esp box
+            ImGui::GetWindowDrawList()->AddRectFilled({ min.x - 1, min.y - 1 }, { max.x + 1, max.y + 1 }, ImGui::GetColorU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] }));
+
+            ImGui::GetWindowDrawList()->AddRect(min, max, ImGui::GetColorU32({ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] }));
 
             if (esp::show_border)
             {
-                ImGui::GetWindowDrawList()->AddRect({ min.x - 1, min.y - 1}, {max.x + 1, max.y + 1}, IM_COL32_BLACK);
-                ImGui::GetWindowDrawList()->AddRect({ min.x + 1, min.y + 1}, {max.x - 1, max.y - 1}, IM_COL32_BLACK);
+                ImGui::GetWindowDrawList()->AddRect({ min.x - 1, min.y - 1 }, { max.x + 1, max.y + 1 }, IM_COL32_BLACK);
+                ImGui::GetWindowDrawList()->AddRect({ min.x + 1, min.y + 1 }, { max.x - 1, max.y - 1 }, IM_COL32_BLACK);
             }
 
             char text[30] = {};
@@ -506,7 +508,7 @@ namespace toad::ui
 
                 if (esp::show_border)
                 {
-                    ImGui::GetWindowDrawList()->AddRectFilled({ max.x + 3, std::lerp(max.y, min.y - 1, t) }, { max.x + 7, max.y + 1}, IM_COL32_BLACK);
+                    ImGui::GetWindowDrawList()->AddRectFilled({ max.x + 3, std::lerp(max.y, min.y - 1, t) }, { max.x + 7, max.y + 1 }, IM_COL32_BLACK);
                 }
 
                 // health bar
@@ -545,7 +547,7 @@ namespace toad::ui
                 ImGui::TreePop();
             }
 
-        	if (ImGui::TreeNode("text/font"))
+            if (ImGui::TreeNode("text/font"))
             {
                 ImGui::ColorEdit4("text color", esp::text_col, color_edit_flags);
                 ImGui::Checkbox("text shadow", &esp::text_shadow);
@@ -592,11 +594,11 @@ namespace toad::ui
                 // update preview font
                 if (esp::update_font_flag)
                 {
-	                if (Application::Get()->GetWindow()->IsFontUpdated())
-	                {
-		                // get newly added font
+                    if (Application::Get()->GetWindow()->IsFontUpdated())
+                    {
+                        // get newly added font
                         preview_font = io->Fonts->Fonts.back();
-	                }
+                    }
                 }
 
                 if (esp::update_font_flag && !Application::Get()->GetWindow()->IsFontUpdated())
@@ -609,7 +611,7 @@ namespace toad::ui
                     load_spinner("update font spinner", 10, 2, IM_COL32_WHITE);
                 }
 #endif
-               
+
 
                 ImGui::TreePop();
             }
@@ -621,4 +623,100 @@ namespace toad::ui
 
         espFontDialog.Display();
     }
+
+    void chest_stealer_slotpos_setter(bool* enabled)
+    {
+        const static ImGuiID popup_cheststealer_slot = ImHashStr("POPUP_CHESTSTEALER_SLOT");
+        ImGui::Begin("Chest Stealer Slot Settings", enabled, ImGuiWindowFlags_NoSavedSettings);
+        {
+			ImGui::Checkbox("show slot positions", &chest_stealer::show_slot_positions);
+            if (ImGui::Button("Add"))
+            {
+                chest_stealer::slot_info.emplace_back();
+            }
+
+            uint32_t id = 0;
+            static uint32_t selected_slot_for_popup = 0;
+
+            const auto open_popup = [&]
+                {
+                    ImGui::PushOverrideID(popup_cheststealer_slot);
+                    selected_slot_for_popup = id;
+                    ImGui::OpenPopup("POPUP_CHESTSTEALER_SLOT");
+                    ImGui::PopID();
+                };
+            for (auto& setting : chest_stealer::slot_info)
+            {
+                std::string lable = std::to_string(setting.res_x) + 'x' + std::to_string(setting.res_y);
+
+                ImGui::PushID(id);
+                if (ImGui::TreeNode("###item", "%dx%d", setting.res_x, setting.res_y))
+                {
+					if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+					{
+                        open_popup();
+					}
+
+                    ImGui::DragInt("space x", &setting.space_x);
+                    ImGui::DragInt("space y", &setting.space_y);
+                    ImGui::DragInt("pos x", &setting.begin_x);
+                    ImGui::DragInt("pos y", &setting.begin_y);
+
+                    bool bind_to_res = setting.res_x != -1 || setting.res_y != -1;
+                    if (ImGui::Checkbox("bind to resolution", &bind_to_res))
+                    {
+                        if (bind_to_res)
+                        {
+#ifdef TOAD_LOADER
+                            RECT r;
+                            GetWindowRect(toad::g_injected_window.hwnd, &r);
+
+                            setting.res_x = r.right - r.left - 16;
+                            setting.res_y = r.bottom - r.top - 39;
+#else
+                            setting.res_x = toadll::g_screen_width;
+                            setting.res_y = toadll::g_screen_height;
+#endif 
+                        }
+                        else
+                        {
+                            setting.res_x = -1;
+                            setting.res_y = -1;
+                        }
+                    }
+                    ImGui::BeginDisabled(setting.res_x == -1 || setting.res_y == -1);
+
+                    ImGui::DragInt("res x", &setting.res_x);
+                    ImGui::DragInt("res y", &setting.res_y);
+
+                    ImGui::EndDisabled();
+
+                    ImGui::TreePop();
+                }
+
+                if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                {
+                    open_popup();
+                }
+
+                id++;
+                ImGui::PopID();
+            }
+
+            ImGui::PushOverrideID(popup_cheststealer_slot);
+            if (ImGui::BeginPopup("POPUP_CHESTSTEALER_SLOT"))
+            {
+                if (ImGui::MenuItem("Delete"))
+                {
+                    chest_stealer::slot_info.erase(chest_stealer::slot_info.begin() + selected_slot_for_popup);
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+            ImGui::PopID();
+                
+        }
+		ImGui::End();
+    }
+
 }

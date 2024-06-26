@@ -206,16 +206,15 @@ void CChestStealer::UpdateSlotPosOffsets()
 
 	for (auto& i : chest_stealer::slot_info)
 	{
-		if (i.res_x == -1 || i.res_y == -1)
+		if (i.res_x == g_screen_width && i.res_y == g_screen_height)
 		{
 			info = &i;
 			break;
 		}
 
-		if (i.res_x == g_screen_width && i.res_y == g_screen_height)
+		if (i.res_x == -1 || i.res_y == -1)
 		{
 			info = &i;
-			break;
 		}
 	}
 
@@ -234,12 +233,27 @@ void CChestStealer::OnImGuiRender(ImDrawList* draw)
 	if (CVarsUpdater::IsInGui && chest_stealer::show_slot_positions)
 	{
 		UpdateSlotPosOffsets();
-
+		
 		ImVec2 middle = ImGui::GetMainViewport()->Size;
 		middle.x /= 2;
 		middle.y /= 2;
-		middle.x -= 10;
-		middle.y -= 50;
+
+		// imgui coordinates? 
+		middle.x -= 12;
+		middle.y -= 40;
+
+		RECT desktop;
+		GetWindowRect(GetDesktopWindow(), &desktop);
+		int horizontal = (int)desktop.right;
+		int vertical = (int)desktop.bottom;
+
+		if (g_screen_height == vertical && g_screen_width == horizontal)
+		{
+			// imgui coordinates? 
+
+			middle.y += 34;
+			middle.x += 9;
+		}
 
 		for (int i = 0; i < 27; i++)
 		{

@@ -80,6 +80,18 @@ namespace toad
 		{CLICK_CHECK::ALWAYS, "Always click"},
 	};
 
+	struct ChestStealerSlotLocationInfo
+	{
+		int res_x = -1; 
+		int res_y = -1;
+
+		int begin_x = -135;
+		int begin_y = -70;
+
+		int space_x = 35;
+		int space_y = 35;
+	};
+
 	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;
 	inline bool g_is_ui_internal = false;
 
@@ -269,11 +281,7 @@ namespace toad
 
 		inline std::string items_to_grab; // string to check for items to check, comma seperated
 
-		inline int begin_x = -135;
-		inline int begin_y = -70;
-
-		inline int space_x = 35;
-		inline int space_y = 35;
+		inline std::vector<ChestStealerSlotLocationInfo> slot_info{};
 
 		inline int average_slowness_ms = 80; // average speed between pickup
 
@@ -282,6 +290,9 @@ namespace toad
 
 	namespace ui
 	{
+		// for internal ui 
+		inline int show_menu_key = 0x2D; // INSERT
+
 		inline bool show_array_list = false;
 
 		inline int array_list_size = 20;
