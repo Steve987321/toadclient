@@ -125,6 +125,7 @@ void LoadSettings(std::string_view jsonSettings)
 		chest_stealer::items_to_grab = data["cs_items"];
 		chest_stealer::steal_key = data["cs_key"];
 		chest_stealer::show_slot_positions = data["cs_show_slot_pos"];
+		chest_stealer::items_to_grab_split = split_string(chest_stealer::items_to_grab, ',');
 
 		json& slot_info = data["cs_slot_info"];
 		if (slot_info.size() != chest_stealer::slot_info.size())

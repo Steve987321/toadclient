@@ -67,8 +67,6 @@ ENUM_FLAG(center_text_flags)
 
 std::string to_string(MCItem item);
 
-std::vector<std::string> split_string(const std::string& str, char splitter);
-
 MC_CLIENT get_client_type(std::string_view window_title);
 
 std::string time_to_str(const std::chrono::system_clock::time_point& t, std::string_view format = "%H:%M:%S");
