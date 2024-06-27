@@ -29,12 +29,14 @@ bool toad::init()
 		hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, bufSize, L"ToadClientMappingObj");
 		if (hMapFile == NULL)
 		{
+			std::cout << "CreateFileMapping returned null: " << GetLastError() << std::endl;
 			return false;
 		}
 
 		LPVOID pMem = MapViewOfFile(hMapFile, FILE_MAP_WRITE, 0, 0, 0);
 		if (pMem == NULL)
 		{
+			std::cout << "MapViewOfFile returned null: " << GetLastError() << std::endl;
 			CloseHandle(hMapFile);
 			return false;
 		}
@@ -63,7 +65,7 @@ void update_settings()
 	auto pmem = MapViewOfFile(hMapFile, FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0);
 	if (pmem == NULL)
 	{
-		std::cout << "[!] something went wrong calling MapViewOfFile\n";
+		std::cout << "MapViewOfFile returned null: " << GetLastError() << std::endl;
 		return;
 	}
 

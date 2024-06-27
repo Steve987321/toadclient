@@ -2,6 +2,8 @@
 
 #include <string_view>
 #include <vector>
+#include <set>
+#include <iostream>
 
 #ifdef TOAD_LOADER
 #include "../../ToadClient/vendor/nlohmann/json.hpp"
@@ -11,6 +13,51 @@
 
 namespace config
 {
+	inline std::set<std::string> logged_invalid_keys{};
+
+	template<typename T>
+	void get_json_element(T& val, const nlohmann::json& data, std::string_view key) noexcept
+	{
+		if (data.contains(key) && !data.at(key).is_null())
+		{
+			try
+			{
+				val = data.at(key).get<T>();
+
+				if (logged_invalid_keys.contains(key.data()))
+				{
+					logged_invalid_keys.erase(key.data());
+				}
+			}
+			catch (const nlohmann::json::exception& e)
+			{
+				if (logged_invalid_keys.contains(key.data()))
+				{
+					return;
+				}
+				logged_invalid_keys.emplace(key);
+#ifdef TOAD_LOADER
+				std::cout << "[config] Failed to load property " << key.data() << ' ' << e.what() << std::endl;
+#else
+				LOGERROR("[config] Failed to load property {}, {}", key.data(), e.what());
+#endif 
+			}
+		}
+		else
+		{
+			if (logged_invalid_keys.contains(key.data()))
+			{
+				return;
+		}
+			logged_invalid_keys.emplace(key);
+#ifdef TOAD_LOADER
+			std::cout << "[config] Failed to load property: " << key.data() << " doesn't exist" << std::endl;
+#else
+			LOGERROR("[config] Failed to load property: {}, doesn't exist", key.data());
+#endif 
+		}
+	}
+
 	struct ConfigFile
 	{
 		std::string FileNameStem;

@@ -374,12 +374,23 @@ bool UpdateSettings()
 	//log_Debug(s.c_str());
 	// parse buf as json and read them and set them and 
 
-	auto endof = s.find("END");
+	std::string::size_type endof = s.find("END");
+	if (endof == std::string::npos)
+	{
+		LOGERROR("Failed to find END, {}", endof);
+		return false;
+	}
 	std::string settings = s.substr(0, endof);
 	//log_Debug(settings.c_str());
-
-	json data = json::parse(settings);
-
+	json data;
+	try
+	{
+		data = json::parse(settings);
+	}
+	catch (json::parse_error& e)
+	{
+		LOGERROR("Json parse error: {} at: {}", e.what(), e.byte);
+	}
 	// flag that will make sure the menu will show when switching to internal ui
 	static bool open_menu_once_flag = true;
 
@@ -514,8 +525,6 @@ bool UpdateSettings()
 
 	CLeftAutoClicker::SetDelays(left_clicker::min_cps, left_clicker::max_cps);
 	CRightAutoClicker::SetDelays(right_clicker::cps);
-
-	// notify a module when toggled
 
 	UnmapViewOfFile(pMem);
 	CloseHandle(hMapFile);
