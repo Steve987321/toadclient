@@ -51,16 +51,3 @@ namespace config
 	///	@param path the directory we look in
 	std::vector<ConfigFile> GetAllConfigsInDirectory(std::string_view path);
 }
-
-inline std::vector<std::string> split_string(const std::string& str, char splitter)
-{
-	std::stringstream ss(str);
-	std::string split;
-	std::vector<std::string> res;
-	while (std::getline(ss, split, splitter))
-	{
-		res.emplace_back(std::move(split));
-	}
-
-	return res;
-}

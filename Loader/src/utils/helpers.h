@@ -66,6 +66,7 @@ enum center_text_flags
 ENUM_FLAG(center_text_flags)
 
 std::string to_string(MCItem item);
+std::vector<std::string> split_string(const std::string& str, char splitter);
 
 MC_CLIENT get_client_type(std::string_view window_title);
 
@@ -160,6 +161,7 @@ void show_message_box(const char* title, const char* msg, bool& condition, bool 
 
 bool toggle_button(const char* str_id, bool* v);
 
+// returns whether button is right clicked
 bool checkbox_button(const char* name, const char* icon, bool* v);
 
 /// used on modules
