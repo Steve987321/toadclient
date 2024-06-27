@@ -495,7 +495,12 @@ bool UpdateSettings()
 	g_curr_client = data["client_type"];
 	loaded_config = data["config"];
 
-	config::LoadSettings(data.dump());
+	std::string error_msg;
+	if (!config::LoadSettings(data.dump(), error_msg))
+	{
+		LOGERROR("Error loading settings: {}", error_msg);
+		return false;
+	}
 
 	CLeftAutoClicker::GetInstance()->UpdateEnabledState();
 	CRightAutoClicker::GetInstance()->UpdateEnabledState();

@@ -5,13 +5,12 @@
 #include <filesystem>
 #include <fstream>
 
-
 namespace config
 {
 
 using json = nlohmann::json;
 
-void LoadSettings(std::string_view jsonSettings)
+bool LoadSettings(std::string_view jsonSettings, std::string& error_msg)
 {
 	json data;
 
@@ -21,13 +20,13 @@ void LoadSettings(std::string_view jsonSettings)
 	}
 	catch (json::parse_error& e)
 	{
-		std::cout << "parse error at: " << e.byte << " (" << e.what() << ')' << std::endl;
-		return;
+		error_msg = "parse error at: " + std::to_string(e.byte) + " (" + e.what() + ')';
+		return false;
 	}
 	catch (...)
 	{
-		std::cout << "Unkown error while loading settings\n";
-		return;
+		error_msg = "Unkown error while loading settings";
+		return false;
 	}
 
 	using namespace toad;
@@ -470,7 +469,12 @@ void LoadConfig(std::string_view path, std::string_view file_name, std::string_v
 		ssbuf << f.rdbuf();
 		f.close();
 
-		LoadSettings(ssbuf.str());
+		std::string err;
+		if (!LoadSettings(ssbuf.str(), err))
+		{
+			std::cout << err << std::endl;
+		}
+		
 	}
 	else
 	{
@@ -535,7 +539,8 @@ bool LoadConfigFromClipBoard()
 
 	CloseClipboard();
 
-	LoadSettings(data);
+	std::string err;
+	LoadSettings(data, err);
 
 	return true;
 

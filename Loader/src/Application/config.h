@@ -18,7 +18,7 @@ namespace config
 	};
 
 	/// Sets the current settings of a json string 
-	void LoadSettings(std::string_view jsonSettings);
+	bool LoadSettings(std::string_view jsonSettings, std::string& error_msg);
 
 	/// Returns the combined data of a and b 
 	nlohmann::json MergeJson(const nlohmann::json& a, const nlohmann::json& b);
