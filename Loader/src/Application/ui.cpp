@@ -647,8 +647,6 @@ namespace toad::ui
                 };
             for (auto& setting : chest_stealer::slot_info)
             {
-                std::string lable = std::to_string(setting.res_x) + 'x' + std::to_string(setting.res_y);
-
                 ImGui::PushID(id);
                 if (ImGui::TreeNode("###item", "%dx%d", setting.res_x, setting.res_y))
                 {
@@ -668,6 +666,7 @@ namespace toad::ui
                         if (bind_to_res)
                         {
 #ifdef TOAD_LOADER
+                            // #TODO: thes give weird values when in fullscreen.
                             RECT r;
                             GetWindowRect(toad::g_injected_window.hwnd, &r);
 
