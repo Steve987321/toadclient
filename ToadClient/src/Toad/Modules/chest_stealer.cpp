@@ -30,12 +30,31 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	static bool looting = false;
 	static int index = -1;
+	static int loot_item_counter = 0;
+	static bool stopped = false;
+
+	if (stopped)
+	{
+		if (m_isShiftDown)
+		{
+			send_key(VK_SHIFT, false);
+			m_isShiftDown = false;
+		}
+
+		if (!GetAsyncKeyState(chest_stealer::steal_key))
+			stopped = false;
+
+		SLEEP(100);
+		return;
+	}
 
 	static Timer aim_timer;
 	static POINT current_pos{};
 
 	if ((GetAsyncKeyState(chest_stealer::steal_key) & 0x8000 && CVarsUpdater::IsInGui) || looting /*(GetAsyncKeyState(VK_RBUTTON) & 1) && !GetAsyncKeyState(VK_SHIFT) && !chest_open*/)
 	{		
+		UpdateSlotPosOffsets();
+
 		if (!looting)
 		{
 			{
@@ -53,12 +72,15 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 			// setup mouse path
 			SetupPath();
-			LOGDEBUG("[chest stealer] Looting {} items", m_indexPath.size());
+			LOGDEBUG("[chest stealer] Looting {} items", m_indexPath.size() - 2);
+
+			loot_item_counter = 0;
 
 			// get the first index from the path
 			index = m_indexPath.front();
 			m_indexPath.pop_front();
-		
+			loot_item_counter++;
+
 			// start holding shift and wait a bit
 			send_key(VK_SHIFT);
 			m_isShiftDown = true;
@@ -71,14 +93,19 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (index != -1)
 		{
-			if (looting && (GetAsyncKeyState(chest_stealer::steal_key) & 0x8000 || GetAsyncKeyState(0x45 /*E*/) || GetAsyncKeyState(VK_ESCAPE)))
+			if (loot_item_counter > 1 && ((GetAsyncKeyState(chest_stealer::steal_key) & 0x8000) || GetAsyncKeyState(0x45 /*E*/) & 0x8000 || GetAsyncKeyState(VK_ESCAPE) &0x8000))
 			{
+				loot_item_counter = 0;
 				index = -1;
+				looting = false;
+
+				stopped = true;
+
 				return;
 			}
 
 			const std::string& name = m_chestContents[index];
-
+			//LOGDEBUG("target: {}", name);
 			POINT pos = m_slotToMousePosOffset[index];
 			const POINT middle = get_middle_of_screen();
 
@@ -89,10 +116,10 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			{
 				// make sure mouse is on slot and right click
 				SetCursorPos(pos.x, pos.y);
-				SLEEP(rand_int(30, 70));
+				SLEEP(rand_int(50, 60));
 
 				right_mouse_down(pos);
-				SLEEP(rand_int(50, 100));
+				SLEEP(rand_int(35, 70));
 				right_mouse_up(pos);
 
 				current_pos = pos;
@@ -100,6 +127,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				// get next in the path
 				index = m_indexPath.front();
 				m_indexPath.pop_front();
+				loot_item_counter++;
 
 				// restart timer
 				aim_timer.Start();
@@ -123,6 +151,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			looting = false;
 		}
 
+		//LOGDEBUG("looting = true");
 		// do it here so we don't check toggle key press at same time for disabling
 		looting = true;
 	}
@@ -159,10 +188,10 @@ void CChestStealer::SetupPath()
 			continue;
 		}
 
-		if (!chest_stealer::items_to_grab_split.empty())
+		if (!chest_stealer::items_to_grab.empty())
 		{
 			bool found = false;
-			for (const auto& item : chest_stealer::items_to_grab_split)
+			for (const auto& item : chest_stealer::items_to_grab)
 			{
 				if (name.find(item) != std::string::npos)
 				{
@@ -274,8 +303,10 @@ void CChestStealer::OnImGuiRender(ImDrawList* draw)
 
 			pos.x += (int)middle.x;
 			pos.y += (int)middle.y;
-
-			draw->AddText({ (float)pos.x, (float)pos.y }, IM_COL32(255, 0, 0, 255), std::to_string(i).c_str());
+			
+			const std::string& name = m_chestContents[i];
+			const char* text = !name.empty() ? name.c_str() : std::to_string(i).c_str();
+			draw->AddText({ (float)pos.x, (float)pos.y }, IM_COL32(255, 0, 0, 255), text);
 		}
 	}
 }

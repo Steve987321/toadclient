@@ -398,58 +398,33 @@ namespace toad::ui
 								static char rename_buf[64];
 								static int selected_item_index = -1;
 								static bool rename_item = false;
-                                static std::vector<std::string> items{};
                                 static ImGuiID cs_items_popup = ImHashStr("POPUP_CS_ITEMS");
-
-                                const auto add_item = [&](std::string_view str)
-                                    {
-                                        if (chest_stealer::items_to_grab.empty())
-                                            chest_stealer::items_to_grab += str;
-                                        else
-                                        {
-                                            chest_stealer::items_to_grab += ',';
-                                            chest_stealer::items_to_grab += str;
-                                        }
-
-                                        items = split_string(chest_stealer::items_to_grab, ',');
-                                    };
-
-                                // apply items vec to string comma separated option
-                                const auto items_to_str = [&]
-                                    {
-                                        chest_stealer::items_to_grab.clear();
-                                        for (const std::string& item : items)
-                                        {
-                                            add_item(item);
-                                        }
-                                    };
 
                                 if (ImGui::InputText("item", buf, 64, ImGuiInputTextFlags_EnterReturnsTrue))
                                 {
-                                    add_item(buf);
+                                    chest_stealer::items_to_grab.emplace_back(buf);
                                 }
                                 ImGui::SameLine();
                                 ImGui::BeginDisabled(strlen(buf) == 0);
                                 if (ImGui::Button("Add"))
                                 {
-                                    add_item(buf);
+									chest_stealer::items_to_grab.emplace_back(buf);
                                 }
                                 ImGui::EndDisabled();
 
                                 ImGui::BeginChild("Items", {0, 0}, ImGuiChildFlags_Border);
                                 {
-                                    for (size_t i = 0; i < items.size(); i++)
+									for (size_t i = 0; i < chest_stealer::items_to_grab.size(); i++)
                                     {
-                                        std::string& item = items[i];
+                                        std::string& item = chest_stealer::items_to_grab[i];
 
                                         if (i == selected_item_index && rename_item)
                                         {
 											if (ImGui::InputText("item", rename_buf, 64, ImGuiInputTextFlags_EnterReturnsTrue))
 											{
                                                 item = rename_buf;
-                                                memset(rename_buf, '\0', 64);
-                                                rename_item = false;
-                                                items_to_str();
+												memset(rename_buf, '\0', 64);
+												rename_item = false;
 											}
                                         }
                                         else
@@ -479,8 +454,7 @@ namespace toad::ui
 								{
 									if (ImGui::MenuItem("Delete"))
 									{
-										items.erase(items.begin() + selected_item_index);
-										items_to_str();
+										chest_stealer::items_to_grab.erase(chest_stealer::items_to_grab.begin() + selected_item_index);
 									}
 									if (ImGui::MenuItem("Rename"))
 									{

@@ -279,8 +279,7 @@ namespace toad
 		inline bool show_slot_positions = false; // shows helper grid for setting the offsets
 		inline bool show_info = false;
 
-		inline std::string items_to_grab; // string to check for items to check, comma seperated
-		inline std::vector<std::string> items_to_grab_split{};
+		inline std::vector<std::string> items_to_grab{};
 
 		inline std::vector<ChestStealerSlotLocationInfo> slot_info{};
 
