@@ -3,7 +3,7 @@
 
 using namespace toad;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)
+int main(int argc, char** argv)
 {
 	Application app;
 	

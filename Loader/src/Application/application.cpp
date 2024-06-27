@@ -54,12 +54,6 @@ namespace toad
         Exit();
     }
 
-    void Application::InitConsole()
-    {
-        AllocConsole();
-        freopen_s((FILE**)stdout, "CONOUT$", "w", stdout);
-    }
-
     void Application::render_UI(ImGuiIO* io)
     {
 #ifdef _DEBUG
@@ -71,17 +65,12 @@ namespace toad
 
     bool Application::Init()
     {
-        InitConsole();
-
         g_is_running = true;
 
         m_window = std::make_shared<ImGuiWindow>("Toad", WINDOW_HEIGHT, WINDOW_WIDTH);
         m_window->SetUI(render_UI);
         m_window->StartWindow();
 
-#ifndef _DEBUG
-        //ShowWindow(GetConsoleWindow(), SW_HIDE);
-#endif
         return true;
     }
 
@@ -111,10 +100,6 @@ namespace toad
 
         clean_up();
         stop_all_threads();
-
-#ifdef _DEBUG
-        FreeConsole();
-#endif
     }
 
     Application* Application::Get()

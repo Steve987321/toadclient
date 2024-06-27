@@ -16,13 +16,13 @@ public:
 	~Application();
 
 public:
-	_NODISCARD bool Init();
+	bool Init();
 	void MainLoop();
 	void Exit() const;
 
 	static Application* Get();
 public:
-	_NODISCARD std::shared_ptr<ImGuiWindow> GetWindow() const
+	std::shared_ptr<ImGuiWindow> GetWindow() const
 	{
 		return m_window;
 	}
@@ -33,8 +33,6 @@ public:
 private:
 	inline static Application* s_instance = nullptr;
 	std::shared_ptr<ImGuiWindow> m_window = nullptr;
-
-	void InitConsole();
 
 private:
 	static void render_UI(ImGuiIO* io);
