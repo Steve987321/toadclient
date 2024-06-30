@@ -634,6 +634,14 @@ namespace toad::ui
                     ImGui::Checkbox("tooltips", &tooltips);
 
 #ifdef TOAD_LOADER
+                    static bool exclude_from_capture = false;
+                    if (ImGui::Checkbox("exclude from capture", &exclude_from_capture))
+                    {
+                        if (exclude_from_capture)
+                            SetWindowDisplayAffinity(Application::Get()->GetWindow()->GetHandle(), WDA_EXCLUDEFROMCAPTURE);
+                        else
+							SetWindowDisplayAffinity(Application::Get()->GetWindow()->GetHandle(), WDA_NONE);
+                    }
                     if (ImGui::Button("internal ui"))
 #else
                     if (ImGui::Button("external ui"))
@@ -647,6 +655,8 @@ namespace toad::ui
                         toadll::CInternalUI::ShouldClose = true;
 #endif
                     }
+                    //keybind_button(&)
+
                 }
                 ImGui::EndChild();
             }
