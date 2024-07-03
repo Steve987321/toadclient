@@ -16,7 +16,7 @@ namespace config
 	inline std::set<std::string> logged_invalid_keys{};
 
 	template<typename T>
-	void get_json_element(T& val, const nlohmann::json& data, std::string_view key) noexcept
+	bool get_json_element(T& val, const nlohmann::json& data, std::string_view key) noexcept
 	{
 		if (data.contains(key) && !data.at(key).is_null())
 		{
@@ -28,33 +28,39 @@ namespace config
 				{
 					logged_invalid_keys.erase(key.data());
 				}
+				return true;
 			}
 			catch (const nlohmann::json::exception& e)
 			{
 				if (logged_invalid_keys.contains(key.data()))
 				{
-					return;
+					return false;
 				}
+
 				logged_invalid_keys.emplace(key);
 #ifdef TOAD_LOADER
 				std::cout << "[config] Failed to load property " << key.data() << ' ' << e.what() << std::endl;
 #else
 				LOGERROR("[config] Failed to load property {}, {}", key.data(), e.what());
 #endif 
+				return false;
 			}
 		}
 		else
 		{
 			if (logged_invalid_keys.contains(key.data()))
 			{
-				return;
-		}
+				return false;
+			}
+
 			logged_invalid_keys.emplace(key);
 #ifdef TOAD_LOADER
 			std::cout << "[config] Failed to load property: " << key.data() << " doesn't exist" << std::endl;
 #else
 			LOGERROR("[config] Failed to load property: {}, doesn't exist", key.data());
 #endif 
+
+			return false;
 		}
 	}
 

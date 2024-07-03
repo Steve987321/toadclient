@@ -219,19 +219,22 @@ bool LoadSettings(std::string_view jsonSettings, std::string& error_msg)
 		json block_array;
 
 		get_json_element(block_esp::enabled, data, "blockesp_enabled");
-		get_json_element(block_array, data, "block_esp_array");
-		std::unordered_map<int, ImVec4> tmpList = {};
-		for (const auto& element : block_array.items())
+		if (get_json_element(block_array, data, "block_esp_array"))
 		{
-			int id = std::stoi(element.key());
-			float r = element.value().at("x");
-			float g = element.value().at("y");
-			float b = element.value().at("z");
-			float a = element.value().at("w");
-			tmpList[id] = { r,g,b,a };
-		}
+			std::unordered_map<int, ImVec4> tmpList = {};
+			for (const auto& element : block_array.items())
+			{
+				int id = 0;
+				id = std::stoi(element.key());
+				float r = element.value().at("x");
+				float g = element.value().at("y");
+				float b = element.value().at("z");
+				float a = element.value().at("w");
+				tmpList[id] = { r,g,b,a };
+			}
 
-		block_esp::block_list = tmpList;
+			block_esp::block_list = tmpList;
+		}
 	}
 	catch (json::out_of_range& e)
 	{
