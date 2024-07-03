@@ -9,20 +9,35 @@ namespace toadll
 {
 	Logger::Logger()
 	{
-		AllocConsole();
+#ifdef ALLOCATE_CONSOLE
+		bool failed_to_alloc_console = false;
+		DWORD alloc_console_res = 0;
+		if (!AllocConsole())
+		{
+			failed_to_alloc_console = true;
+			alloc_console_res = GetLastError();
+		}
 
 		freopen_s(reinterpret_cast<FILE**>(stdin), "CONIN$", "r", stdin);
 		freopen_s(reinterpret_cast<FILE**>(stdout), "CONOUT$", "w", stdout);
 		freopen_s(reinterpret_cast<FILE**>(stderr), "CONERR$", "w", stderr);
 
 		m_hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
-
+		m_isConsoleClosed = false;
+#endif 
 		// create log file in the documents folder
 		std::string logFileName = "Toad.log";
 		m_logFile.open(getDocumentsFolder() + "\\" + logFileName, std::fstream::out);
 
 		// log the date in the beginning
 		logToFile(getDateStr("%Y %d %b \n"));
+
+#ifdef ALLOCATE_CONSOLE
+		if (failed_to_alloc_console)
+		{
+			logToFile(formatStr("[Logger] Failed to allocate console: {}", alloc_console_res));
+		}
+#endif 
 	}
 
 	Logger::~Logger()
@@ -37,7 +52,10 @@ namespace toadll
 		if (m_logFile.is_open())
 			m_logFile.close();
 
-		if (m_isConsoleClosed) return;
+#ifdef ALLOCATE_CONSOLE
+
+		if (m_isConsoleClosed)
+			return;
 
 		fclose(stdin);
 		fclose(stdout);
@@ -49,6 +67,8 @@ namespace toadll
 		FreeConsole();
 
 		m_isConsoleClosed = true;
+#endif 
+
 	}
 
 	std::string Logger::getDateStr(const std::string_view format)

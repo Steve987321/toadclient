@@ -138,7 +138,7 @@ private:
 	std::mutex m_mutex{};
 	std::mutex m_closeMutex{};
 
-	std::atomic_bool m_isConsoleClosed = false;
+	std::atomic_bool m_isConsoleClosed = true;
 
 	std::ofstream m_logFile{};
 };
