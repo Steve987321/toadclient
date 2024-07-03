@@ -98,6 +98,9 @@ namespace toad
 	inline std::string loader_path;
 	inline std::string loaded_config;
 
+	inline uint32_t ipc_bufsize = 10000;
+	//inline MappingObject mapping_object;
+
 	namespace left_clicker
 	{
 		// if we want to update the rand to the internal clicker 

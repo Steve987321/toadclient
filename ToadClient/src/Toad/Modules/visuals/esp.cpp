@@ -18,7 +18,6 @@ void CEsp::PreUpdate()
 {
 	WaitIsEnabled();
 	WaitIsVerified();
-	SLEEP(5);
 }
 
 void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
@@ -28,20 +27,24 @@ void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		SLEEP(250);
 		return;
 	}
+
 	renderPos = get_cam_pos(CVarsUpdater::ModelView);
 	playerPos = lPlayer->Pos;
 
 	// Update our bounding boxes list
-	m_bboxes = GetBBoxes();
+	{
+		std::lock_guard lock(m_boxMutex);
+		m_bboxes = GetBBoxes();
+	}
 
-	SLEEP(1);
+	SLEEP(5);
 }
 
 void CEsp::OnRender()
 {
 	if (!esp::enabled || !CVarsUpdater::IsVerified)
 	{
-		//std::lock_guard lock(m_bboxesMutex);
+		std::lock_guard lock(m_boxMutex);
 		m_bboxes.clear();
 		return;
 	}
@@ -49,8 +52,11 @@ void CEsp::OnRender()
 	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
 		return;
 
+	std::unique_lock lock(m_boxMutex);
 	if (m_bboxes.empty())
 		return;
+
+	lock.unlock();
 
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
@@ -68,7 +74,7 @@ void CEsp::OnRender()
 
 	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
 
-	//m_bboxesMutex.lock();
+	lock.lock();
 	for (const auto& e : m_bboxes)
 	{
 		auto bb = BBox{e.bb.min - lPos, e.bb.max - lPos};
@@ -101,7 +107,7 @@ void CEsp::OnRender()
 			break ;
 		}
 	}
-	//m_bboxesMutex.unlock();
+	lock.unlock();
 
 	glDisable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
@@ -205,7 +211,8 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 			{
 				if (ve.sneaking)
 				{
-					strncat_s(text, "(sneaking)", strlen("(sneaking)"));
+					const size_t slen = strlen("(sneaking)");
+					strncat_s(text, "(sneaking)", slen);
 				}
 			}
 

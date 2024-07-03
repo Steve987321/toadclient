@@ -148,7 +148,7 @@ private:
 #ifdef ENABLE_LOGGING
 #define LOGDEBUG(msg, ...) toadll::Logger::GetInstance()->LogDebug(msg, __VA_ARGS__) 
 #define LOGERROR(msg, ...) toadll::Logger::GetInstance()->LogError(msg, __VA_ARGS__) 
-#define LOGWARN(msg, ...)  toadll::Logger::GetInstance()->LogWarning(msg, __VA_ARGS__)
+#define LOGWARN(msg, ...) toadll::Logger::GetInstance()->LogWarning(msg, __VA_ARGS__)
 #else
 #define LOGDEBUG(msg, ...) (void)0
 #define LOGERROR(msg, ...) (void)0

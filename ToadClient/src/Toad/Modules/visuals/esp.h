@@ -33,6 +33,7 @@ private:
 	Vec3 playerPos = {};
 
 private:
+	inline static std::mutex m_boxMutex;
 	inline static std::vector<VisualEntity> m_bboxes;
 
 private:

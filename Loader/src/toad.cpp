@@ -6,7 +6,6 @@ using namespace toad;
 
 // for ipc to dll 
 HANDLE hMapFile = nullptr;
-constexpr int bufSize = 3000;
 
 // flag used to call init once
 std::once_flag init_once_flag;
@@ -26,7 +25,7 @@ bool toad::init()
 	static bool once = false;
 	if (!once)
 	{
-		hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, bufSize, L"ToadClientMappingObj");
+		hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, ipc_bufsize, L"ToadClientMappingObj");
 		if (hMapFile == NULL)
 		{
 			std::cout << "CreateFileMapping returned null: " << GetLastError() << std::endl;
@@ -41,7 +40,7 @@ bool toad::init()
 			return false;
 		}
 
-		memset(pMem, L'\0', bufSize);
+		memset(pMem, L'\0', ipc_bufsize);
 
 		UnmapViewOfFile(pMem);
 
@@ -196,9 +195,10 @@ void update_settings()
 	{
 		auto n = ss.view().size();
 		std::cout << "setting size: " << n << std::endl;
-		if (n > bufSize)
+		if (n > ipc_bufsize)
 		{
 			std::cout << "not enough space for settings, increase buf size of mapped memory!\n";
+			ipc_bufsize = n;
 			return;
 		}
 		once = true;

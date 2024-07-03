@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\mapping_object.h" />
     <ClInclude Include="src\Application\config.h" />
     <ClInclude Include="src\Application\ui.h" />
     <ClInclude Include="src\inject\injector.h" />
@@ -108,6 +109,7 @@
     <ClCompile Include="..\vendor\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\mapping_object.cpp" />
     <ClCompile Include="src\Application\config.cpp" />
     <ClCompile Include="src\global_settings.h" />
     <ClCompile Include="src\inject\injector.cpp" />

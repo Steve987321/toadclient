@@ -25,6 +25,13 @@
 // use this when precision isn't required but the CPU should be saved
 #define SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
 
+// #TODO: loader logger
+#ifdef TOAD_LOADER
+#define LOGDEBUG(msg, ...) std::cout << msg << std::endl;
+#define LOGERROR(msg, ...) std::cout << msg << std::endl;
+#define LOGWARN(msg, ...) std::cout << msg << std::endl;
+#endif 
+
 namespace toad
 {
 	// Sets up ipc and threads and returns false if failed

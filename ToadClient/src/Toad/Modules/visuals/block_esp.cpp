@@ -6,25 +6,22 @@
 
 using namespace toad;
 
-toadll::CBlockEsp::CBlockEsp()
+namespace toadll
+{
+
+CBlockEsp::CBlockEsp()
 {
 	Enabled = &block_esp::enabled;
 }
 
 void toadll::CBlockEsp::PreUpdate()
 {
+	WaitIsEnabled();
 	WaitIsVerified();
-	SLEEP(10);
 }
 
 void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	if (!*Enabled)
-	{
-		SLEEP(250);
-		return;
-	}
-
 	std::vector<std::pair<BBox, Vec4>> blockPositions = {};
 
 	auto lastTickPos = lPlayer->LastTickPos;
@@ -34,32 +31,54 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	auto block_y_limit = static_cast<int>(lPos.y) + m_range * 2;
 	auto block_z_limit = static_cast<int>(lPos.z) + m_range * 2;
 
+	const jobject world = MC->getWorld();
+	if (!world)
+	{
+		SLEEP(100);
+		return;
+	}
+
+	const jmethodID blockatMID = get_mid(world, mapping::getBlockAt, env);
+	if (!blockatMID)
+	{
+		env->DeleteLocalRef(world);
+		SLEEP(100);
+		return;
+	}
+
 	for (int x = static_cast<int>(lPos.x) - m_range; x < block_x_limit; x++)
 		for (int y = static_cast<int>(lPos.y) - m_range; y < block_y_limit; y++)
 			for (int z = static_cast<int>(lPos.z) - m_range; z < block_z_limit; z++)
 			{
 				if (!CVarsUpdater::IsVerified)
 					break;
-				const int id = MC->getBlockIdAt({ x, y, z });
-				if (id == 0) continue; // airblock
+
+				jobject blockatObj = env->CallObjectMethod(world, blockatMID, x, y, z);
+				jclass blockatkClass = env->GetObjectClass(blockatObj);
+				int id = env->CallStaticIntMethod(blockatkClass, get_static_mid(blockatkClass, mapping::getIdFromBlockStatic, env), blockatObj);
+
+				env->DeleteLocalRef(blockatObj);
+				env->DeleteLocalRef(blockatkClass);
+
+				if (id == 0)
+					continue; // airblock
 
 				if (block_esp::block_list.contains(id))
 				{
-
 					blockPositions.emplace_back(
 						BBox{
 								Vec3
 								{
-								static_cast<float>(x),
-								static_cast<float>(y),
-								static_cast<float>(z)
+									(float)x,
+									(float)y,
+									(float)z
 								},
 
 								Vec3
 								{
-								x + 1.0f,
-								y + 1.0f,
-								z + 1.0f
+									x + 1.0f,
+									y + 1.0f,
+									z + 1.0f
 								}
 						},
 						Vec4{
@@ -72,6 +91,7 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				}
 			}
 
+	env->DeleteLocalRef(world);
 	m_blocks = blockPositions;
 	SLEEP(100);
 }
@@ -112,5 +132,7 @@ void toadll::CBlockEsp::OnRender()
 	glPopMatrix();
 
 	glPopMatrix();
+
+}
 
 }

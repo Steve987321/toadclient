@@ -9,7 +9,6 @@
 using namespace toadll;
 
 // for getting settings from loader
-constexpr static size_t bufsize = 3000;
 std::thread Tupdate_settings;
 
 inline std::vector<std::pair<std::thread, std::string&>> cmodule_threads;
@@ -83,6 +82,9 @@ DWORD WINAPI toadll::init()
 	if (g_jvm->GetEnv((void**)&g_jvmti_env, JVMTI_VERSION_1) == JNI_OK)
 	{
 		LOGDEBUG("[init] jvmti ok");
+		jvmtiCapabilities capabilities{};
+
+		jvmtiError res =  g_jvmti_env->AddCapabilities(&capabilities);
 	}
 #endif 
 
@@ -362,7 +364,7 @@ bool UpdateSettings()
 		return false;
 	}
 
-	const auto pMem = MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, bufsize);
+	const auto pMem = MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, ipc_bufsize);
 	if (pMem == NULL)
 	{
 		LOGWARN("Failed to map view of mapping file");

@@ -218,6 +218,9 @@ bool toadll::c_Entity::isInvisible() const
 bool toadll::c_Entity::isSneaking() const
 {
 	auto mid = get_mid(obj, mapping::isSneaking, env);
+	if (!mid)
+		return false;
+
 	return env->CallBooleanMethod(obj, mid);
 }
 
