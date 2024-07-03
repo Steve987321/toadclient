@@ -28,7 +28,6 @@ DWORD WINAPI toadll::init()
 {
 #ifdef ENABLE_LOGGING
 	Logger::GetInstance();
-	SetConsoleCtrlHandler(NULL, true);
 #endif
 	LOGDEBUG("[init] Start");
 
@@ -74,7 +73,7 @@ DWORD WINAPI toadll::init()
 
 	if (g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&g_env), nullptr) != JNI_OK)
 	{
-		clean_up(5, "failed to attach current thread");
+		clean_up(5, "Failed to attach current thread");
 		return 1;
 	}
 
@@ -83,8 +82,12 @@ DWORD WINAPI toadll::init()
 	{
 		LOGDEBUG("[init] jvmti ok");
 		jvmtiCapabilities capabilities{};
-
-		jvmtiError res =  g_jvmti_env->AddCapabilities(&capabilities);
+		capabilities.can_get_bytecodes = 1;
+		jvmtiError res = g_jvmti_env->AddCapabilities(&capabilities);
+		if (res != jvmtiError::JVMTI_ERROR_NONE)
+		{
+			LOGERROR("[init] AddCapabilities returned: {}", (int)res);
+		}
 	}
 #endif 
 

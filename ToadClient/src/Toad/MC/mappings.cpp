@@ -354,17 +354,31 @@ namespace toadll::mappings
 
 	bool getsig(mapping map, std::string_view name, const jclass klass, JNIEnv* env)
 	{
+#ifdef ENABLE_LOGGING
+		std::vector<std::pair<std::string, std::string>> methods_data;
+#endif 
+
 		for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
 		{
+#ifdef ENABLE_LOGGING
+			methods_data.emplace_back(jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i), jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i));
+#endif 
+
 			if (strcmp(jvmfunc::oJVM_GetMethodIxNameUTF(env, klass, i), name.data()) == 0)
 			{
 				methods[map].sig = jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i);
-
 				//std::cout << name << " = " << std::string(jvmfunc::oJVM_GetMethodIxNameUTF(env, mcclass, i)) << " sig: " << jvmfunc::oJVM_GetMethodIxSignatureUTF(env, mcclass, i) << std::endl;
 				//methodsigs.insert({ map, jvmfunc::oJVM_GetMethodIxSignatureUTF(env, klass, i) });
 				return true;
 			}
 		}
+
+#ifdef ENABLE_LOGGING
+		for (const auto& [name, sig] : methods_data)
+		{
+			LOGDEBUG("[getsig] {} {} ", name, sig);
+		}
+#endif 
 		return false;
 	}
 
