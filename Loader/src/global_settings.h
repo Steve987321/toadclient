@@ -24,11 +24,9 @@ namespace toad
 	enum class MC_CLIENT
 	{
 		NOT_UPDATED,
-		NOT_SUPPORTED,
 		Lunar_189,
 		Lunar_171,
-		Vanilla,
-		Forge
+		NOT_SUPPORTED,
 	};
 
 	enum class CLICK_CHECK

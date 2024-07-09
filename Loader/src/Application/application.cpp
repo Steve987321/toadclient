@@ -25,27 +25,6 @@ namespace toad
 {
     Application::Application()
     {
-        // Auto load configs
-        loader_path = std::filesystem::current_path().string();
-        auto configs = config::GetAllConfigsInDirectory(loader_path);
-        if (!configs.empty())
-        {
-            // load the only available config 
-            if (configs.size() == 1)
-            {
-                config::LoadConfig(loader_path, configs.begin()->FileNameStem);
-            }
-            else
-            {
-                auto it = std::ranges::min_element(configs, [](const config::ConfigFile& a, const config::ConfigFile& b) {return a.LastWrite > b.LastWrite; });
-
-                if (it != configs.end())
-                {
-                    config::LoadConfig(loader_path, it->FileNameStem);
-                }
-            }
-        }
-
         s_instance = this;
     }
 
@@ -65,6 +44,29 @@ namespace toad
 
     bool Application::Init()
     {
+        using json = nlohmann::json;
+
+		// Auto load configs
+		loader_path = std::filesystem::current_path().string();
+		auto configs = config::GetAllConfigsInDirectory(loader_path);
+		if (!configs.empty())
+		{
+			// load the only available config 
+			if (configs.size() == 1)
+			{
+				config::LoadConfig(loader_path, configs.begin()->FileNameStem);
+			}
+			else
+			{
+				auto it = std::ranges::min_element(configs, [](const config::ConfigFile& a, const config::ConfigFile& b) {return a.LastWrite > b.LastWrite; });
+
+				if (it != configs.end())
+				{
+					config::LoadConfig(loader_path, it->FileNameStem);
+				}
+			}
+		}
+
         g_is_running = true;
 
         m_window = std::make_shared<ImGuiWindow>("Toad", WINDOW_HEIGHT, WINDOW_WIDTH);

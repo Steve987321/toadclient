@@ -54,8 +54,9 @@ bool LoadSettings(std::string_view jsonSettings, std::string& error_msg)
 		// right auto clicker
 		get_json_element(right_clicker::enabled, data, "rc_enabled");
 		get_json_element(right_clicker::cps, data, "rc_cps");
-		get_json_element(right_clicker::blocks_only, data, "rc_blocks_only");
-		get_json_element(right_clicker::start_delayms, data, "rc_start_delay");
+		get_json_element(right_clicker::blocks_only, data, "rc_blocksonly");
+		get_json_element(right_clicker::start_delayms, data, "rc_startdelay");
+		get_json_element(right_clicker::click_check, data, "rc_check");
 
 		// rand 
 		json lcRandBoosts;
@@ -346,8 +347,9 @@ json SettingsToJson()
 	// right auto clicker
 	data["rc_enabled"] = right_clicker::enabled;
 	data["rc_cps"] = right_clicker::cps;
-	data["rc_blocks_only"] = right_clicker::blocks_only;
-	data["rc_start_delay"] = right_clicker::start_delayms;
+	data["rc_blocksonly"] = right_clicker::blocks_only;
+	data["rc_startdelay"] = right_clicker::start_delayms;
+	data["rc_check"] = right_clicker::click_check;
 
 	// aim assist
 	data["aa_enabled"] = aa::enabled;

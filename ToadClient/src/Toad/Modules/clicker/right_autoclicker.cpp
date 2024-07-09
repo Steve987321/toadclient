@@ -13,6 +13,7 @@ namespace toadll
 
 	void CRightAutoClicker::PreUpdate()
 	{
+		WaitIsEnabled();
 		WaitIsVerified();
 	}
 
@@ -37,7 +38,7 @@ namespace toadll
 			return;
 		}
 
-		if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_RBUTTON) && !CVarsUpdater::IsInGui)
+		if (GetForegroundWindow() == g_hWnd && GetAsyncKeyState(VK_RBUTTON))
 		{
 			m_start = std::chrono::high_resolution_clock::now();
 
