@@ -108,7 +108,7 @@
     <ClInclude Include="src\Toad\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\Toad.h">
+    <ClInclude Include="src\Toad\toadll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Toad\types.h">
@@ -118,6 +118,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Toad\Modules\chest_stealer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\MC\mapping_bytecodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Utils\hash_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\MC\mapping_generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -200,7 +209,7 @@
     <ClCompile Include="src\Toad\module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Toad\Toad.cpp">
+    <ClCompile Include="src\Toad\toadll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\dllmain.cpp">
@@ -228,6 +237,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Toad\Modules\chest_stealer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Utils\hash_map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\MC\mapping_generator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

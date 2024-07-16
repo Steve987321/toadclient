@@ -64,7 +64,6 @@ namespace toadll
         typedef jint
         (*hJVM_GetMethodIxArgsSize)(JNIEnv* env, jclass cb, int index);
         inline hJVM_GetMethodIxArgsSize oJVM_GetMethodIxArgsSize;
-
     }
 
     // function to find classes on (any) minecraft client

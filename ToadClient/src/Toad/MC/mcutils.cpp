@@ -1,12 +1,15 @@
 #include "pch.h"
 #include "mcutils.h"
 
-#include "Toad/Toad.h"
+#include "Toad/toadll.h"
 
 namespace toadll
 {
     jclass findclass(const char* clsName, JNIEnv* env)
     {
+        if (toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED)
+            return env->FindClass(clsName);
+
         jclass thread_clazz = env->FindClass("java/lang/Thread");
         static jmethodID curthread_mid = env->GetStaticMethodID(thread_clazz, "currentThread", "()Ljava/lang/Thread;");
         jobject thread = env->CallStaticObjectMethod(thread_clazz, curthread_mid);
@@ -290,10 +293,13 @@ namespace toadll
                 char* name = nullptr;
                 char* sig = nullptr;
                 char* g = nullptr; 
+                jint field_modifiers = 0;
+
+                g_jvmti_env->GetFieldModifiers(klass, fid, &field_modifiers);
                 if (g_jvmti_env->GetFieldName(klass, fid, &name, &sig, &g) != JVMTI_ERROR_NONE)
                     continue;
 
-                LOGDEBUG("name: {}, sig: {}", name, sig);
+                LOGDEBUG("name: {}, sig: {}, modifiers: {}", name, sig, field_modifiers);
 
 				g_jvmti_env->Deallocate((unsigned char*)name);
 				g_jvmti_env->Deallocate((unsigned char*)sig);

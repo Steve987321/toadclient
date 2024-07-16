@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Toad/Toad.h"
+#include "Toad/toadll.h"
 
 #include <shlobj_core.h>
 

@@ -279,6 +279,7 @@ enum class mappingFields
 
     // Timer
     renderPartialTickField,
+    elapsedPartialTicks,
 
 	// inventory.GuiChest
     lowerChestInventory, // Lnet/minecraft/inventory/IInventory;
@@ -294,7 +295,6 @@ enum class mapping
     getPlayer,
     getGameSettings,
     getObjectMouseOver,
-    getEntityRenderer,
     getTimer,
     getRenderManager,
 

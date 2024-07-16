@@ -74,6 +74,8 @@ namespace toadll
 	inline JavaVM* g_jvm = nullptr;
 	inline jvmtiEnv* g_jvmti_env = nullptr;
 
+	constexpr const char* version = "1.0.0 WIP";
+
 	/// called when dll has injected
 	DWORD WINAPI init();
 }

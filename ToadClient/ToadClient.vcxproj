@@ -59,6 +59,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Toad\MC\mapping_generator.h" />
+    <ClInclude Include="src\Toad\Utils\hash_map.h" />
+    <ClInclude Include="src\Toad\MC\mapping_bytecodes.h" />
     <ClInclude Include="src\Toad\Modules\chest_stealer.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Toad\helpers.h" />
@@ -92,7 +95,7 @@
     <ClInclude Include="src\Toad\Modules\visuals\of_screen_arrows.h" />
     <ClInclude Include="src\Toad\singleton.h" />
     <ClInclude Include="src\Toad\timer.h" />
-    <ClInclude Include="src\Toad\Toad.h" />
+    <ClInclude Include="src\Toad\toadll.h" />
     <ClInclude Include="src\Toad\types.h" />
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +117,8 @@
     <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Toad\MC\mapping_generator.cpp" />
+    <ClCompile Include="src\Toad\Utils\hash_map.cpp" />
     <ClCompile Include="src\Toad\Modules\chest_stealer.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\pch.cpp">
@@ -145,7 +150,7 @@
     <ClCompile Include="src\Toad\Modules\visuals\draw_helpers.cpp" />
     <ClCompile Include="src\Toad\Modules\visuals\esp.cpp" />
     <ClCompile Include="src\Toad\Modules\visuals\of_screen_arrows.cpp" />
-    <ClCompile Include="src\Toad\Toad.cpp" />
+    <ClCompile Include="src\Toad\toadll.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

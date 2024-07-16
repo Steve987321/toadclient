@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Toad/Toad.h"
+#include "Toad/toadll.h"
 #include "aimassist.h"
 
 using namespace toad;
@@ -320,7 +320,7 @@ Vec3 CAimAssist::GetAimPoint(const std::shared_ptr<LocalPlayer>& lPlayer, const 
 		BBox playerbb =
 			g_curr_client == MC_CLIENT::Lunar_189
 			? BBox({ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z + 0.3f })
-			: BBox({ target_pos.x - 0.3f, target_pos.y, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 1.8f, target_pos.z + 0.3f });
+			: BBox({ target_pos.x - 0.3f, target_pos.y - 1.6f, target_pos.z - 0.3f }, { target_pos.x + 0.3f, target_pos.y + 0.2f, target_pos.z + 0.3f });
 		Vec3 closest_corner = get_closest_point(playerbb, lPlayer->Pos);
 		return closest_corner;
 	}

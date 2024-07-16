@@ -36,14 +36,21 @@ namespace toad
 
 	MC_CLIENT get_client_type(std::string_view window_title)
 	{
-		if (window_title.find("lunar client") == std::string::npos)
-			return MC_CLIENT::NOT_SUPPORTED;
-		if (window_title.find("1.8.9") != std::string::npos)
-			return MC_CLIENT::Lunar_189;
-		if (window_title.find("1.7.10") != std::string::npos)
-			return MC_CLIENT::Lunar_171;
-
-		return MC_CLIENT::NOT_SUPPORTED;
+		bool lunar_client = window_title.find("lunar client") != std::string::npos;
+		if (!lunar_client)
+		{
+			if (window_title.find("1.8.9") != std::string::npos)
+				return MC_CLIENT::NOT_SUPPORTED;
+			if (window_title.find("1.7.10") != std::string::npos)
+				return MC_CLIENT::NOT_SUPPORTED;
+		}
+		else
+		{
+			if (window_title.find("1.8.9") != std::string::npos)
+				return MC_CLIENT::Lunar_189;
+			if (window_title.find("1.7.10") != std::string::npos)
+				return MC_CLIENT::Lunar_171;
+		}
 	}
 
 	std::string time_to_str(const std::chrono::system_clock::time_point& t, std::string_view format)

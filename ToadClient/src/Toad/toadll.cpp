@@ -1,10 +1,12 @@
 #include "pch.h"
-#include "Toad.h"
+#include "toadll.h"
 
 #include "nlohmann/json.hpp"
 
 #include "../../Loader/src/Application/config.h"
 #include "../../Loader/src/Application/config.cpp"
+
+#include "Toad/MC/mapping_generator.h"
 
 using namespace toadll;
 
@@ -81,8 +83,11 @@ DWORD WINAPI toadll::init()
 	if (g_jvm->GetEnv((void**)&g_jvmti_env, JVMTI_VERSION_1) == JNI_OK)
 	{
 		LOGDEBUG("[init] jvmti ok");
+
+		// add jvmti capabilities
 		jvmtiCapabilities capabilities{};
 		capabilities.can_get_bytecodes = 1;
+
 		jvmtiError res = g_jvmti_env->AddCapabilities(&capabilities);
 		if (res != jvmtiError::JVMTI_ERROR_NONE)
 		{
@@ -91,20 +96,6 @@ DWORD WINAPI toadll::init()
 	}
 #endif 
 
-	//	 //check capabilities first 
-	//	jvmtiCapabilities capa;
-	//	/*jvmtiCapabilities added_capa;
-	//	added_capa
-	//	g_jvmti_env->AddCapabilities()*/
-	//	if (g_jvmti_env->GetCapabilities(&capa) == JVMTI_ERROR_NONE)
-	//	{
-	//		LOGDEBUG("can_get_bytecodes {}", capa.can_get_bytecodes);
-	//		LOGDEBUG("can_tag_objects {}", capa.can_tag_objects);
-	//		//LOGDEBUG("can_maintain_original_method_order {}", capa.can_maintain_original_method_order);
-
-	//		//if (!capa.can_get_bytecodes || !capa.can_tag_objects)
-	//		//	clean_up(6, "no good jvm capabilities");
-	//	}
 
 	//	jint n = 0;
 	//	jclass* classes = nullptr;
@@ -252,7 +243,7 @@ DWORD WINAPI toadll::init()
 		return 0;
 	}
 
-	LOGDEBUG("client type {}", static_cast<int>(toad::g_curr_client));
+	LOGDEBUG("[init] Client type {}", static_cast<int>(toad::g_curr_client));
 
 	auto mcclass = Minecraft::findMcClass(g_env);
 	if (mcclass == nullptr)
@@ -260,6 +251,20 @@ DWORD WINAPI toadll::init()
 		clean_up(4);
 		return 0;
 	}
+	//auto mid = g_env->GetStaticMethodID(mcclass, "A", "()Lave;");
+	//static bool once = false;
+	//if (!once)
+	//{
+	//	jint count = 0;
+	//	unsigned char* bytes;
+	//	g_jvmti_env->GetBytecodes(mid, &count, &bytes);
+	//	for (int i = 0; i < count; i++)
+	//	{
+	//		LOGDEBUG("{} {}", i, bytes[i]);
+	//	}
+	//	g_jvmti_env->Deallocate(bytes);
+	//	once = true;
+	//}
 
 	auto eclasstemp = findclass("net.minecraft.entity.Entity", g_env);
 	if (eclasstemp == nullptr)
@@ -268,20 +273,25 @@ DWORD WINAPI toadll::init()
 		return 0;
 	}
 
+	LOGDEBUG("[init] mappings");
+	//toad::g_curr_client = toad::MC_CLIENT::Forge;
 	mappings::init_map(g_env, mcclass, eclasstemp, toad::g_curr_client);
 
 	g_env->DeleteLocalRef(eclasstemp);
 	g_env->DeleteLocalRef(mcclass);
 
+	//MappingGenerator::Generate(g_env, g_jvmti_env);
+
 	g_is_running = true;
 
-	LOGDEBUG("starting modules");
+	LOGDEBUG("[init] Starting modules");
 	init_modules();
 
-	LOGDEBUG("entering main loop");
+	LOGDEBUG("[init] Entering main loop");
 	while (g_is_running)
 	{
-		if (GetAsyncKeyState(VK_END)) break;
+		if (GetAsyncKeyState(VK_END)) 
+			break;
 
 		UpdateSettings();
 

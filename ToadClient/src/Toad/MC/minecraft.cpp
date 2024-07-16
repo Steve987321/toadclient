@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Toad/Toad.h"
+#include "Toad/toadll.h"
 #include "Toad/MC/mcutils.h"
 #include "minecraft.h"
 
@@ -17,14 +17,14 @@ Minecraft::~Minecraft()
 
 jclass Minecraft::findMcClass(JNIEnv* env)
 {
-    return findclass(toad::g_curr_client == toad::MC_CLIENT::Vanilla ? "ave" : "net.minecraft.client.Minecraft", env);
+    return findclass(toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? "ave" : "net.minecraft.client.Minecraft", env);
 }
 
 jclass Minecraft::getMcClass()
 {
     if (m_mcclass == nullptr)
     {
-        m_mcclass = findclass(toad::g_curr_client == toad::MC_CLIENT::Vanilla ? "ave" : "net.minecraft.client.Minecraft", env);
+        m_mcclass = findclass(toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? "ave" : "net.minecraft.client.Minecraft", env);
     }
     return m_mcclass;
 }
@@ -75,7 +75,6 @@ std::unique_ptr<ActiveRenderInfo> Minecraft::getActiveRenderInfo()
     return std::make_unique<ActiveRenderInfo>(m_ariclass, env);
 }
 
-
 //std::unique_ptr<RenderManager> Minecraft::getRenderManager()
 //{
 //    auto mc = getMc();
@@ -88,13 +87,23 @@ std::unique_ptr<ActiveRenderInfo> Minecraft::getActiveRenderInfo()
 
 jobject Minecraft::getMc()
 {
-    return env->CallStaticObjectMethod(getMcClass(), get_static_mid(getMcClass(), mapping::getMinecraft, env));
+    auto mid = get_static_mid(getMcClass(), mapping::getMinecraft, env);
+
+    if (!mid)
+    {
+        // this should not happen so also close
+        g_is_running = false;
+        return nullptr;
+    }
+
+    return env->CallStaticObjectMethod(getMcClass(), mid);
 }
 
 std::shared_ptr<c_Entity> Minecraft::getLocalPlayer()
 {
     auto mc = getMc();
     auto mId = get_mid(mc, mapping::getPlayer, env);
+
     if (!mId)
     {
         env->DeleteLocalRef(mc);
@@ -265,21 +274,6 @@ void Minecraft::setLeftClickCounter(int val)
     env->SetIntField(mc, fId, val);
 }
 
-//void c_Minecraft::disableLightMap() const
-//{
-//    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
-//    env->CallVoidMethod(EntityRenderer, get_mid(EntityRenderer, mapping::disableLightmap));
-//    env->DeleteLocalRef(EntityRenderer);
-//}
-//
-//void c_Minecraft::enableLightMap() const
-//{
-//    auto EntityRenderer = env->CallObjectMethod(get_mc(), get_mid(mcclass, mapping::getEntityRenderer));
-//    // void 
-//    env->CallVoidMethod(EntityRenderer, get_mid(EntityRenderer, mapping::enableLightmap));
-//    env->DeleteLocalRef(EntityRenderer);
-//}
-
 jobject Minecraft::getLocalPlayerObject()
 {
     auto playermid = get_mid(getMcClass(), mapping::getPlayer, env);
@@ -414,7 +408,12 @@ float Minecraft::getPartialTick()
     env->DeleteLocalRef(mc);
     if (!obj)
         return 1;
-    auto res = env->CallFloatMethod(obj, get_mid(obj, mapping::partialTick, env));
+
+    auto partialtick_fid = get_fid(obj, mappingFields::elapsedPartialTicks, env);
+    if (!partialtick_fid)
+		return 1;
+
+    auto res = env->GetFloatField(obj, partialtick_fid);
     env->DeleteLocalRef(obj);
     return res;
 }

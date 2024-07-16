@@ -1,20 +1,12 @@
 #include "pch.h"
-#include "Toad/Toad.h"
+#include "Toad/toadll.h"
 #include "mappings.h"
 
 namespace toadll::mappings
 {
 	void init_map(JNIEnv* env, jclass mcclass, jclass entity_class, toad::MC_CLIENT client)
 	{
-		if (client == toad::MC_CLIENT::Vanilla)
-		{
-			
-		}
-		else if (client == toad::MC_CLIENT::Forge)
-		{
-
-		}
-		else if (client == toad::MC_CLIENT::Lunar_189)
+		if (client == toad::MC_CLIENT::Lunar_189)
 		{
 			methods[mapping::getMinecraft] = { "getMinecraft", "()Lnet/minecraft/client/Minecraft;" };
 
@@ -51,10 +43,6 @@ namespace toadll::mappings
 			methods[mapping::getObjectMouseOver] = { "bridge$getObjectMouseOver", "SIGNATURE NOT FOUND"};
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
 				LOGERROR("[mappings] Can't find getObjectMouseOver");
-
-			methods[mapping::getEntityRenderer] = { "bridge$getEntityRenderer", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass, env))
-				LOGERROR("can't find entityRenderer");
 
 			methods[mapping::getTimer] = {"bridge$getTimer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
@@ -104,8 +92,6 @@ namespace toadll::mappings
 			fields[mappingFields::lastTickPosXField] = { "lastTickPosX", "D" };
 			fields[mappingFields::lastTickPosYField] = {"lastTickPosY", "D"};
 			fields[mappingFields::lastTickPosZField] = {"lastTickPosZ", "D"};
-
-			fields[mappingFields::renderPartialTickField] = { "renderPartialTicks", "F" };
 
 			methods[mapping::getPos] = {"getPositionVector", "()Lnet/minecraft/util/Vec3;"};
 			methods[mapping::getBlockPosition] = {"getPosition", "()Lnet/minecraft/util/BlockPos;" };
@@ -184,7 +170,8 @@ namespace toadll::mappings
 			methods[mapping::bboxMaxZ] = { "bridge$getMaxZ", "()D"};
 
 			// Timer
-			methods[mapping::partialTick] = { "bridge$partialTick", "()F" };
+			fields[mappingFields::renderPartialTickField] = { "renderPartialTicks", "F" };
+			fields[mappingFields::elapsedPartialTicks] = { "elapsedPartialTicks", "F" };
 		}
 		else if (client == toad::MC_CLIENT::Lunar_171)
 		{
@@ -219,10 +206,6 @@ namespace toadll::mappings
 			methods[mapping::getObjectMouseOver] = { "bridge$getObjectMouseOver", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
 				LOGERROR("[mappings] Can't find getobjectmouseover");// getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
-
-			methods[mapping::getEntityRenderer] = { "bridge$getEntityRenderer", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getEntityRenderer, "bridge$getEntityRenderer", mcclass, env))
-				LOGERROR("[mappings] Can't find entityRenderer");// getEntityRenderer, "()Lcom/moonsworth/lunar/IHORCOOHCIIHOHOOIHHRRHOCH/ORCIIICOHRRHCRCRRIRCCRIRR/IOHIIHOIORCROROCCHIHRCCHI/RHCOOOOHOIOCIHROHHCROHIOC/OOOCHCRHOCOCROIOOCHIRIOOR;" });
 
 			methods[mapping::getTimer] = { "bridge$getTimer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
@@ -350,12 +333,17 @@ namespace toadll::mappings
 			// Timer
 			methods[mapping::partialTick] = { "bridge$partialTick", "()F" };
 		}
+		else
+		{
+			// try to get mappings using the mapping generator output data 
+		}
 	}
 
 	bool getsig(mapping map, std::string_view name, const jclass klass, JNIEnv* env)
 	{
 #ifdef ENABLE_LOGGING
 		std::vector<std::pair<std::string, std::string>> methods_data;
+		static std::set<jclass> klasses;
 #endif 
 
 		for (int i = 0; i < jvmfunc::oJVM_GetClassMethodsCount(env, klass); i++)
@@ -374,12 +362,17 @@ namespace toadll::mappings
 		}
 
 #ifdef ENABLE_LOGGING
+		if (klasses.contains(klass))
+			return false;
+
+		LOGDEBUG("[getsig] methods data, {}", name);
+
 		for (const auto& [name, sig] : methods_data)
 		{
 			LOGDEBUG("[getsig] {} {} ", name, sig);
 		}
+		klasses.emplace(klass);
 #endif 
 		return false;
 	}
-
 }

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Toad/Toad.h"
+#include "Toad/toadll.h"
 #include "internal_ui.h"
 
 #include "../Loader/src/utils/helpers.h"

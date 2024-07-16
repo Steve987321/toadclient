@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Toad/Toad.h"
+#include "Toad/toadll.h"
 #include "entity.h"
 
 toadll::c_Entity::c_Entity(jobject jobj, JNIEnv* env, jclass elclass)

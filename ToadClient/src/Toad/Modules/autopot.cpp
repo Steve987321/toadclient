@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Toad/Toad.h"
+#include "Toad/toadll.h"
 #include "autopot.h"
 
 void toadll::CAutoPot::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
