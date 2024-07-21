@@ -26,8 +26,7 @@ namespace toadll
 		m_isConsoleClosed = false;
 #endif 
 		// create log file in the documents folder
-		std::string logFileName = "Toad.log";
-		m_logFile.open(getDocumentsFolder() + "\\" + logFileName, std::fstream::out);
+		m_logFile.open(getDocumentsFolder() + "\\" + "Toad.log", std::fstream::out);
 
 		// log the date in the beginning
 		logToFile(getDateStr("%Y %d %b \n"));

@@ -1,7 +1,35 @@
 #pragma once
 
+#include "nlohmann/json.hpp"
+
 namespace toadll
 {
+
+using json = nlohmann::json;
+
+struct MappingField
+{
+	std::string name;
+	std::string signature;
+	int modifiers;
+};
+struct MethodMapping
+{
+	std::string name;
+	std::string signature;
+	std::vector<uint8_t> bytecodes;
+	int modifiers;
+};
+
+class Mappings
+{
+public:
+	std::vector<MappingField> fields;
+	std::vector<MethodMapping> methods;
+
+	json Serialize();
+	static Mappings Deserialize(const nlohmann::json& data);
+};
 
 // generate mapping patterns based on a minecraft version where there is hardcoded mappings already correct
 // Use after intializing mappings 
@@ -17,6 +45,7 @@ public:
 	// apply mappings from file
 	static void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
 
+	static void FindMCClass(JNIEnv* env, jvmtiEnv* jvmti_env, const Mappings& mappings);
 private:
 
 };

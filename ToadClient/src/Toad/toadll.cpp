@@ -96,7 +96,6 @@ DWORD WINAPI toadll::init()
 	}
 #endif 
 
-
 	//	jint n = 0;
 	//	jclass* classes = nullptr;
 	//	g_jvmti_env->GetLoadedClasses(&n, &classes);
@@ -251,20 +250,6 @@ DWORD WINAPI toadll::init()
 		clean_up(4);
 		return 0;
 	}
-	//auto mid = g_env->GetStaticMethodID(mcclass, "A", "()Lave;");
-	//static bool once = false;
-	//if (!once)
-	//{
-	//	jint count = 0;
-	//	unsigned char* bytes;
-	//	g_jvmti_env->GetBytecodes(mid, &count, &bytes);
-	//	for (int i = 0; i < count; i++)
-	//	{
-	//		LOGDEBUG("{} {}", i, bytes[i]);
-	//	}
-	//	g_jvmti_env->Deallocate(bytes);
-	//	once = true;
-	//}
 
 	auto eclasstemp = findclass("net.minecraft.entity.Entity", g_env);
 	if (eclasstemp == nullptr)
@@ -273,14 +258,17 @@ DWORD WINAPI toadll::init()
 		return 0;
 	}
 
-	LOGDEBUG("[init] mappings");
-	//toad::g_curr_client = toad::MC_CLIENT::Forge;
+	LOGDEBUG("[init] Mappings");
 	mappings::init_map(g_env, mcclass, eclasstemp, toad::g_curr_client);
 
 	g_env->DeleteLocalRef(eclasstemp);
 	g_env->DeleteLocalRef(mcclass);
 
 	//MappingGenerator::Generate(g_env, g_jvmti_env);
+	//std::filesystem::path generated_mappings_file = Logger::getDocumentsFolder();
+	//generated_mappings_file /= "mapping_gen_out.txt";
+	//if (std::filesystem::exists(generated_mappings_file))
+	//	MappingGenerator::UpdateFile(g_env, g_jvmti_env, generated_mappings_file);
 
 	g_is_running = true;
 
@@ -386,7 +374,6 @@ bool UpdateSettings()
 	}
 
 	std::string s = (LPCSTR)pMem;
-	//log_Debug(s.c_str());
 	// parse buf as json and read them and set them and 
 
 	std::string::size_type endof = s.find("END");
@@ -406,6 +393,7 @@ bool UpdateSettings()
 	{
 		LOGERROR("Json parse error: {} at: {}", e.what(), e.byte);
 	}
+
 	// flag that will make sure the menu will show when switching to internal ui
 	static bool open_menu_once_flag = true;
 

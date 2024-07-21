@@ -19,8 +19,8 @@ public:
 
 	static T* GetInstance()
 	{
-		static auto instance = std::make_shared<T>();
-		return instance.get();
+		static T instance;
+		return &instance;
 	}
 };
 

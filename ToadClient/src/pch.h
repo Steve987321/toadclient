@@ -9,6 +9,7 @@
 
 // add headers that you want to pre-compile here
 
+#define _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #define _WINSOCKAPI_

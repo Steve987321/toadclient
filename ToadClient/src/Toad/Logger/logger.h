@@ -18,7 +18,6 @@ public:
 	Logger();
 	~Logger() override;
 
-public:
 	enum class CONSOLE_COLOR : WORD
 	{
 		GREY = 8,
@@ -40,17 +39,19 @@ public:
 
 	std::unordered_map<LOG_TYPE, const char*> logTypeAsStr
 	{
-	{LOG_TYPE::DEBUG, "DEBUG"},
-	{LOG_TYPE::ERROR, "ERROR"},
-	{LOG_TYPE::EXCEPTION, "EXCEPTION"},
-	{LOG_TYPE::WARNING, "WARNING"},
+		{LOG_TYPE::DEBUG, "DEBUG"},
+		{LOG_TYPE::ERROR, "ERROR"},
+		{LOG_TYPE::EXCEPTION, "EXCEPTION"},
+		{LOG_TYPE::WARNING, "WARNING"},
 	};
 
 public:
+	/// Returns the directory location to the Documents folder 
+	static std::string getDocumentsFolder();
+
 	/// Closes console and log file 
 	void DisposeLogger();
 
-public: 
 	template <typename ... Args>
 	void LogDebug(const char* frmt, Args... args)
 	{
@@ -78,9 +79,6 @@ public:
 private:
 	/// Returns the current time or date based on the format as a string
 	static std::string getDateStr(const std::string_view format);
-
-	/// Returns the directory location to the Documents folder 
-	static std::string getDocumentsFolder();
 
 	/// Writes to created log file
 	void logToFile(const std::string_view str);
@@ -125,11 +123,14 @@ private:
 	void Log(const std::string_view frmt, LOG_TYPE log_type, Args&& ... args)
 	{
 		std::lock_guard lock(m_mutex);
-
+		
 		auto formattedStr = formatStr(frmt, args...);
 
 		logToFile(getDateStr("[%T]") + ' ' + formattedStr);
+
+#ifdef ALLOCATE_CONSOLE
 		Print(formattedStr, log_type);
+#endif
 	}
 
 private:
