@@ -222,19 +222,6 @@ void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float
 
 	const int rand_100 = rand_int(0, 100);
 
-	static AimBoost yaw_boost(0.9f, 1.1f, { 450, 600 }, true);
-	static AimBoost yaw_boost2(1.0f, 1.3f, { 800, 1000 }, false);
-
-	static AimBoost pitch_boost(0.8f, 1.2f, { 450, 600 }, true);
-	static AimBoost pitch_boost2(0.7f, 1.3f, { 600, 900 }, false);
-
-	static float pitchdiff_speed = 0.f;
-	static float yawdiff_speed = 0.f;
-
-	static Timer reaction_time_timer;
-
-	POINT pt;
-
 	if (static bool once = false; !once || reaction_time_timer.Elapsed<>() > aa::reaction_time)
 	{
 		float pitch_boosts = pitch_boost.Delay() * pitch_boost2.Delay();

@@ -59,6 +59,7 @@
 #include "Hooks/hook.h"
 #include "Hooks/wglswapbuffers.h"
 #include "Hooks/ws2_32.h"
+#include "hooks/get_raw_input_data.h"
 
 // global vars and functions 
 namespace toadll

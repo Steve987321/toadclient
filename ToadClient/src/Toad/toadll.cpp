@@ -221,6 +221,7 @@ DWORD WINAPI toadll::init()
 	}
 
 	// Instantiate hooks 
+	//HGetRawInputData::GetInstance();
 	HSwapBuffers::GetInstance();
 	HWSASend::GetInstance();
 	HWSARecv::GetInstance();
@@ -265,10 +266,10 @@ DWORD WINAPI toadll::init()
 	g_env->DeleteLocalRef(mcclass);
 
 	//MappingGenerator::Generate(g_env, g_jvmti_env);
-	//std::filesystem::path generated_mappings_file = Logger::getDocumentsFolder();
-	//generated_mappings_file /= "mapping_gen_out.txt";
-	//if (std::filesystem::exists(generated_mappings_file))
-	//	MappingGenerator::UpdateFile(g_env, g_jvmti_env, generated_mappings_file);
+	std::filesystem::path generated_mappings_file = Logger::getDocumentsFolder();
+	generated_mappings_file /= "mapping_gen_out.txt";
+	if (std::filesystem::exists(generated_mappings_file))
+		MappingGenerator::UpdateFile(g_env, g_jvmti_env, generated_mappings_file);
 
 	g_is_running = true;
 

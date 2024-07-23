@@ -53,6 +53,17 @@ private:
 		PREDICT,
 		SMOOTH,
 	} style = AASTYLE::PREDICT;
+
+	AimBoost yaw_boost{ 0.9f, 1.1f, { 450, 600 }, true };
+	AimBoost yaw_boost2{ 1.0f, 1.3f, { 800, 1000 }, false };
+
+	AimBoost pitch_boost{ 0.8f, 1.2f, { 450, 600 }, true };
+	AimBoost pitch_boost2{ 0.7f, 1.3f, { 600, 900 }, false };
+
+	float pitchdiff_speed = 0.f;
+	float yawdiff_speed = 0.f;
+
+	Timer reaction_time_timer;
 };
 
 }

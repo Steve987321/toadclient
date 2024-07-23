@@ -119,7 +119,7 @@ namespace toad
 		{
 			ImGui::Button("[...]");
 
-			for (uint32_t i = 0; i < keys_size; i++)
+			for (int i = 0; i < keys_size; i++)
 			{
 				if (GetAsyncKeyState(i) & 0x8000)
 				{
