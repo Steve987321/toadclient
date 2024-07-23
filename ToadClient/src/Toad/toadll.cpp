@@ -232,16 +232,16 @@ DWORD WINAPI toadll::init()
 	LOGDEBUG("[init] Enabling hooks");
 	Hook::EnableAllHooks();
 
-	if (toad::g_curr_client == toad::MC_CLIENT::NOT_UPDATED)
-	{
-		clean_up(44);
-		return 0;
-	}
-	if (toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED)
-	{
-		clean_up(45, "Client is not supported");
-		return 0;
-	}
+	//if (toad::g_curr_client == toad::MC_CLIENT::NOT_UPDATED)
+	//{
+	//	clean_up(44);
+	//	return 0;
+	//}
+	//if (toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED)
+	//{
+	//	clean_up(45, "Client is not supported");
+	//	return 0;
+	//}
 
 	LOGDEBUG("[init] Client type {}", static_cast<int>(toad::g_curr_client));
 
@@ -266,10 +266,10 @@ DWORD WINAPI toadll::init()
 	g_env->DeleteLocalRef(mcclass);
 
 	//MappingGenerator::Generate(g_env, g_jvmti_env);
-	std::filesystem::path generated_mappings_file = Logger::getDocumentsFolder();
-	generated_mappings_file /= "mapping_gen_out.txt";
-	if (std::filesystem::exists(generated_mappings_file))
-		MappingGenerator::UpdateFile(g_env, g_jvmti_env, generated_mappings_file);
+	//std::filesystem::path generated_mappings_file = Logger::getDocumentsFolder();
+	//generated_mappings_file /= "mapping_gen_out.txt";
+	//if (std::filesystem::exists(generated_mappings_file))
+	//	MappingGenerator::UpdateFile(g_env, g_jvmti_env, generated_mappings_file);
 
 	g_is_running = true;
 

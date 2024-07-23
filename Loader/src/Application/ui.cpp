@@ -89,35 +89,27 @@ namespace toad::ui
 
                             g_curr_client = get_client_type(window.title);
                             std::cout << "currclient type: " << (int)g_curr_client << std::endl;
-                            if (g_curr_client != MC_CLIENT::NOT_SUPPORTED)
-                            {
-                                if (init_thread.joinable())
-                                    init_thread.join();
+							if (init_thread.joinable())
+								init_thread.join();
 
-                                init_thread = std::thread([&]
-                                    {
-                                        inject_status = "init #1";
+							init_thread = std::thread([&]
+								{
+									inject_status = "init #1";
 
-                                        if (!init())
-                                            failed_shared_mem = true;
+									if (!init())
+										failed_shared_mem = true;
 
-                                        if (!failed_shared_mem)
-                                            if (!inject(window.pid))
-                                                failed_inject = true;
+									if (!failed_shared_mem)
+										if (!inject(window.pid))
+											failed_inject = true;
 
-                                        if (!failed_shared_mem && !failed_inject)
-                                            g_is_verified = true;
+									if (!failed_shared_mem && !failed_inject)
+										g_is_verified = true;
 
-                                        g_injected_window = window;
+									g_injected_window = window;
 
-                                        loading = false;
-                                    });
-                            }
-                            else
-                            {
-                                invalid_client_type = true;
-                                loading = false;
-                            }
+									loading = false;
+								});
                         }
                     }
                 }
@@ -141,13 +133,6 @@ namespace toad::ui
                         init_thread.join();
                     loading = false;
                     show_message_box("failed to inject", inject_status.c_str(), failed_inject, true, mboxType::ERR);
-                }
-                else if (invalid_client_type)
-                {
-                    if (init_thread.joinable())
-                        init_thread.join();
-                    loading = false;
-                    show_message_box("failed", "client is not supported", invalid_client_type, true, mboxType::ERR);
                 }
             }
             ImGui::EndChild(); // mc windows

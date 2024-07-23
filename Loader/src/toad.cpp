@@ -286,13 +286,13 @@ BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam)
 			std::ranges::transform(title, title.begin(), tolower);
 
 			// check if window title contains minecraft client names
-			if (title.find("lunar client") != std::string::npos || title.find("minecraft") != std::string::npos)
-			{
+			//if (title.find("lunar client") != std::string::npos || title.find("minecraft") != std::string::npos || title.find("1.8.9") != std::string::npos || title.find("1.7.10")
+			//{
 				// check if important modules exist in the process
 				// before we add to the list 
 				if (is_proc_mc(PID))
 					g_mc_window_list.emplace_back(title, PID, hwnd);
-			}
+			//}
 
 			return TRUE;
 		}

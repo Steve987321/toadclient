@@ -23,7 +23,6 @@ namespace toad
 {
 	enum class MC_CLIENT
 	{
-		NOT_UPDATED,
 		Lunar_189,
 		Lunar_171,
 		NOT_SUPPORTED,
@@ -90,7 +89,7 @@ namespace toad
 		int space_y = 35;
 	};
 
-	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_UPDATED;
+	inline MC_CLIENT g_curr_client = MC_CLIENT::NOT_SUPPORTED;
 	inline bool g_is_ui_internal = false;
 
 	inline std::string loader_path;
