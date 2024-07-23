@@ -77,7 +77,7 @@ Mappings Mappings::Deserialize(const json& data)
 	for (int i = 0; i < fields_data.size(); i++)
 	{
 		MappingField field;
-		json method_data = methods_data[i];
+		json method_data = fields_data[i];
 		config::get_json_element(field.name, method_data, "name");
 		config::get_json_element(field.signature, method_data, "signature");
 		config::get_json_element(field.modifiers, method_data, "modifiers");
@@ -89,8 +89,6 @@ Mappings Mappings::Deserialize(const json& data)
 
 void MappingGenerator::Generate(JNIEnv* env, jvmtiEnv* jvmti_env)
 {
-	json data;
-
 	CHAR documents[MAX_PATH];
 	HRESULT get_folder_path_res = SHGetFolderPathA(nullptr, CSIDL_PERSONAL, nullptr, SHGFP_TYPE_CURRENT, documents);
 	if (get_folder_path_res != S_OK)
@@ -229,9 +227,11 @@ void MappingGenerator::Generate(JNIEnv* env, jvmtiEnv* jvmti_env)
 	jvmti_env->Deallocate((unsigned char*)classes);
 	env->DeleteLocalRef(mc);
 
+	json data;
 	json minecraft_data;
-	minecraft_data["mc_class_index"] = class_index;
+	//minecraft_data["mc_class_index"] = class_index;
 	data["mappings"] = mc_mappings.Serialize();
+	data["mc_class_index"] = class_index;
 	std::ofstream file(std::filesystem::path(documents) / "mapping_gen_out.txt");
 	if (!file)
 	{
@@ -266,7 +266,9 @@ void MappingGenerator::UpdateFile(JNIEnv* env, jvmtiEnv* jvmti_env, const std::f
 		return;
 	}
 
-	Mappings mc_mappings = Mappings::Deserialize(data);
+	json mappings_data;
+	config::get_json_element(mappings_data, data, "mappings");
+	Mappings mc_mappings = Mappings::Deserialize(mappings_data);
 	
 	FindMCClass(env, jvmti_env, mc_mappings);
 
@@ -375,56 +377,68 @@ void MappingGenerator::FindMCClass(JNIEnv* env, jvmtiEnv* jvmti_env, const Mappi
 
 	env->DeleteLocalRef(klass);
 
-	std::vector<std::vector<uint8_t>> method_bytecodes;
-	method_bytecodes.reserve(mappings.methods.size());
+	std::vector<std::vector<uint8_t>> mapping_method_bytecodes;
+	mapping_method_bytecodes.reserve(mappings.methods.size());
 	for (const MethodMapping& method : mappings.methods)
-		method_bytecodes.emplace_back(method.bytecodes);
-
+		mapping_method_bytecodes.emplace_back(method.bytecodes);
+	LOGDEBUG("[MappingGenerator] Mapping bytecodes size: {}", mapping_method_bytecodes.size());
 	const float threshold = 0.8f;
 	jint class_count = 0;
 	jclass* classes;
 	jvmti_env->GetLoadedClasses(&class_count, &classes);
 
+	LOGDEBUG("[MappingGenerator] Classes: {}", class_count);
 	std::vector<std::pair<std::string, float>> possible_mc_classes{};
 
 	for (int i = 0; i < class_count; i++)
 	{
+		// get methods
 		jint methods_count = 0;
-		jmethodID* methods;
-		jvmti_env->GetClassMethods(classes[i], &methods_count, &methods);
+		jmethodID* methods = nullptr;
+		jvmtiError err = jvmti_env->GetClassMethods(classes[i], &methods_count, &methods);
+		if (err != JVMTI_ERROR_NONE)
+			continue;
+
 		float similarity_score = 0;
 		int similar_counter = 0;
-		std::set<int> ignore_method_bytecodes{};
 
 		for (int j = 0; j < methods_count; j++)
 		{
 			uint8_t* bytecodes;
 			jint bytecode_count = 0;
-			jvmti_env->GetBytecodes(methods[j], &bytecode_count, &bytecodes);
+			err = jvmti_env->GetBytecodes(methods[j], &bytecode_count, &bytecodes);
+			if (err != JVMTI_ERROR_NONE)
+				continue;
 
 			std::vector<uint8_t> current_bytecodes(bytecodes, bytecodes + bytecode_count);
+			std::set<int> ignore_method_bytecodes{};
 
 			// match 
-			for (int k = 0; k < method_bytecodes.size(); k++)
+			for (int k = 0; k < mapping_method_bytecodes.size(); k++)
 			{
 				if (ignore_method_bytecodes.contains(k))
 					continue;
 
-				float similarity = math::jaccard_index(current_bytecodes, method_bytecodes[k]);
-				if (similarity > 0.8f)
+				float similarity = math::jaccard_index(current_bytecodes, mapping_method_bytecodes[k]);
+				if (similarity > 0.5f)
 				{
 					similar_counter++;
 					similarity_score += similarity;
 					ignore_method_bytecodes.emplace(k);
-					break;
+					k = 0;
 				}
 			}
 
 			jvmti_env->Deallocate(bytecodes);
 		}
 
-		if ((float)similar_counter / (float)methods_count > 0.7f)
+		if (methods)
+			jvmti_env->Deallocate((unsigned char*)methods);
+
+		//LOGDEBUG("[MappingGenerator] {} / {} = {}", similar_counter, methods_count, (float)similar_counter / ((float)methods_count + FLT_EPSILON));
+		if ((float)similar_counter / ((float)methods_count + FLT_EPSILON) > 0.7f)
 		{
+			LOGDEBUG("[MappingGenerator] Found a possibility with score {}", similarity_score);
 			jstring klass_name = (jstring)env->CallObjectMethod(classes[i], get_klass_name);
 
 			if (!klass_name)
@@ -435,9 +449,9 @@ void MappingGenerator::FindMCClass(JNIEnv* env, jvmtiEnv* jvmti_env, const Mappi
 
 			// add to possible minecraft class 
 			possible_mc_classes.emplace_back(jstring2string(klass_name, env), similarity_score);
-		}
 
-		jvmti_env->Deallocate((unsigned char*)methods);
+			env->DeleteLocalRef(klass_name);
+		}
 	}
 
 	jvmti_env->Deallocate((unsigned char*)classes);

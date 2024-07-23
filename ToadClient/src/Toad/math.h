@@ -18,15 +18,19 @@ namespace toadll::math
 	template<typename T>
 	float jaccard_index(const std::vector<T>& a, const std::vector<T>& b)
 	{
-		std::vector<uint8_t> intersection_vec;
-		std::vector<uint8_t> union_vec;
+		std::set<T> set_a(a.begin(), a.end());
+		std::set<T> set_b(b.begin(), b.end());
 
-		std::set_intersection(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(intersection_vec));
-		std::set_union(a.begin(), a.end(), b.begin(), b.end(), std::back_inserter(union_vec));
+		std::vector<T> intersection_vec;
+		std::vector<T> union_vec;
 
-		if (union_vec.empty()) 
-			return 1.f; 
+		std::set_intersection(set_a.begin(), set_a.end(), set_b.begin(), set_b.end(), std::back_inserter(intersection_vec));
+		std::set_union(set_a.begin(), set_a.end(), set_b.begin(), set_b.end(), std::back_inserter(union_vec));
+
+		if (union_vec.empty())
+			return 1.f;
 		
-		return (float)(intersection_vec.size() / union_vec.size());
+
+		return (float)intersection_vec.size() / union_vec.size();
 	}
 }
