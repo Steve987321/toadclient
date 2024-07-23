@@ -129,6 +129,9 @@
     <ClInclude Include="src\Toad\MC\mapping_generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Toad\Hooks\get_raw_input_data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Toad\Hooks\wglswapbuffers.cpp">
@@ -243,6 +246,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Toad\MC\mapping_generator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Hooks\get_raw_input_data.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Hooks\hook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

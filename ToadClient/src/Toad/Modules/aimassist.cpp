@@ -309,6 +309,27 @@ void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float
 		pitchrandsmooth = std::lerp((float)pitchrandsmooth, 0.f, std::clamp(CVarsUpdater::PartialTick * 0.1f, 0.f, 1.f));
 	}
 
+	//static POINT prev_pt{ 0, 0 };
+	//POINT pt{};
+
+	//if (static bool once = true; once)
+	//{
+	//	GetCursorPos(&prev_pt);
+	//	once = false;
+	//}
+
+	//GetCursorPos(&pt);
+
+	//POINT pt_delta{ prev_pt.x - pt.x, prev_pt.y - pt.y };
+
+	//GetCursorPos(&prev_pt);
+	//std::cout << pt_delta.x << ' ' << pt_delta.y << std::endl;
+
+	//HGetRawInputData::x = (int)yawdiff_speed + (int)pt_delta.x;
+	//HGetRawInputData::y = (int)(pitchdiff_speed + pitchrandsmooth) + (int)pt_delta.y;
+	//HGetRawInputData::move_mouse = true;
+
+	POINT pt; 
 	GetCursorPos(&pt);
 	SetCursorPos(pt.x + (int)yawdiff_speed, pt.y + (int)(pitchdiff_speed + pitchrandsmooth));
 }

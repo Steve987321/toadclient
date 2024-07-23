@@ -59,6 +59,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Toad\Hooks\get_raw_input_data.h" />
     <ClInclude Include="src\Toad\MC\mapping_generator.h" />
     <ClInclude Include="src\Toad\Utils\hash_map.h" />
     <ClInclude Include="src\Toad\MC\mapping_bytecodes.h" />
@@ -117,6 +118,8 @@
     <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Toad\Hooks\get_raw_input_data.cpp" />
+    <ClCompile Include="src\Toad\Hooks\hook.cpp" />
     <ClCompile Include="src\Toad\MC\mapping_generator.cpp" />
     <ClCompile Include="src\Toad\Utils\hash_map.cpp" />
     <ClCompile Include="src\Toad\Modules\chest_stealer.cpp" />
