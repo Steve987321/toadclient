@@ -32,21 +32,24 @@ public:
 };
 
 // generate mapping patterns based on a minecraft version where there is hardcoded mappings already correct
-// Use after intializing mappings 
+// Use Generate after intializing mappings 
 class MappingGenerator
 {
 public:
-	// create a mapping file (no wildcards or antyhing else)
+	// create a mapping file 
 	static void Generate(JNIEnv* jni_env, jvmtiEnv* jvmti_env);
 
+	// #TODO: maybe not needed because just use similarity check
 	// use a different client with known mappings and check differences between them, will add wildcards 
-	static void UpdateFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
-
-	// apply mappings from file
 	static void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
 
-	static void FindMCClass(JNIEnv* env, jvmtiEnv* jvmti_env, const Mappings& mappings);
+	// apply mappings from file
+	//static void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
+
+	static std::string FindClassTypes(JNIEnv * env, jvmtiEnv * jvmti_env, const Mappings & mappings);
 private:
+
+	static Mappings GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env, jclass klass, int& class_index);
 
 };
 

@@ -15,7 +15,7 @@ Minecraft::~Minecraft()
     if (m_mopclass != nullptr) env->DeleteGlobalRef(m_mopclass);
 }
 
-jclass Minecraft::findMcClass(JNIEnv* env)
+jclass Minecraft::getMcClass(JNIEnv* env)
 {
     return findclass(toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? "ave" : "net.minecraft.client.Minecraft", env);
 }
@@ -87,16 +87,16 @@ std::unique_ptr<ActiveRenderInfo> Minecraft::getActiveRenderInfo()
 
 jobject Minecraft::getMc()
 {
-    auto mid = get_static_mid(getMcClass(), mapping::getMinecraft, env);
+    auto fid = get_static_fid(getMcClass(), mappingFields::theMcField, env);
 
-    if (!mid)
+    if (!fid)
     {
         // this should not happen so also close
         g_is_running = false;
         return nullptr;
     }
 
-    return env->CallStaticObjectMethod(getMcClass(), mid);
+    return env->GetStaticObjectField(getMcClass(), fid);
 }
 
 std::shared_ptr<c_Entity> Minecraft::getLocalPlayer()

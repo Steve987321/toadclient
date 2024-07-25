@@ -8,13 +8,9 @@ namespace toadll::mappings
 	{
 		if (client == toad::MC_CLIENT::Lunar_189)
 		{
-			methods[mapping::getMinecraft] = { "getMinecraft", "()Lnet/minecraft/client/Minecraft;" };
-
-			methods[mapping::getWorld] = { "bridge$getWorld", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
-				LOGERROR("[mappings] Can't find getworld method signature"); 
-
+			fields[mappingFields::theMcField] = { "theMinecraft", "Lnet/minecraft/client/Minecraft;" };
 			fields[mappingFields::theWorldField] = { "theWorld", "Lnet/minecraft/client/multiplayer/WorldClient;" };
+			
 			fields[mappingFields::objMouseOver] = { "objectMouseOver", "Lnet/minecraft/util/MovingObjectPosition;" };
 			
 			jclass worldclass = findclass("net.minecraft.world.World", env);
@@ -175,11 +171,7 @@ namespace toadll::mappings
 		}
 		else if (client == toad::MC_CLIENT::Lunar_171)
 		{
-			methods[mapping::getMinecraft] = { "getMinecraft", "()Lnet/minecraft/client/Minecraft;" };
-
-			methods[mapping::getWorld] = { "bridge$getWorld", "SIGNATURE NOT FOUND"};
-			if (!getsig(mapping::getWorld, "bridge$getWorld", mcclass, env))
-				LOGERROR("can't find world"); //getWorld, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/HRRCROCRCIIHIOORRIIORRHCC/HORIRCRCHHRHIORIHRRRIHIIH;" });
+			fields[mappingFields::theMcField] = { "theMinecraft", "Lnet/minecraft/client/Minecraft;" };
 
 			fields[mappingFields::theWorldField ] = { "theWorld", "Lnet/minecraft/client/multiplayer/WorldClient;" };
 			fields[mappingFields::objMouseOver] = { "objectMouseOver", "Lnet/minecraft/util/MovingObjectPosition;" };

@@ -230,10 +230,11 @@ struct LocalPlayer : Entity
 
 struct MCMap
 {
-    MCMap(const char* n, const char* s) : Name(n), Sig(s) {}
+	MCMap(std::string_view n, std::string_view s) : Name(n), Sig(s) {}
+    MCMap() = default;
 
-    const char* Name;
-    const char* Sig;
+	std::string Name;
+    std::string Sig;
 };
 
 enum class mappingFields
@@ -290,8 +291,6 @@ enum class mappingFields
 enum class mapping
 {
     // .Minecraft
-    getMinecraft,
-    getWorld,
     getPlayer,
     getGameSettings,
     getObjectMouseOver,

@@ -36,7 +36,7 @@ public:
 	};
 
 public:
-	static jclass findMcClass(JNIEnv* env);
+	static jclass getMcClass(JNIEnv* env);
 
 	jclass getMcClass();
 	jclass getEntityLivingClass();
