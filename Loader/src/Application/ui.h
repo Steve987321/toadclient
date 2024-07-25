@@ -188,7 +188,7 @@ namespace toad::ui
                     else if (menu_aa)
                         setting_menu("Aim Assist", menu_aa, []
                         {
-                            ImGui::SliderFloat("Speed", &aa::speed, 0, 100);
+                            ImGui::SliderFloat("Speed", &aa::speed, 0, 200);
 		                    ImGui::SliderInt("Fov Check", &aa::fov, 0, 360);
 		                    ImGui::SliderFloat("Distance", &aa::distance, 0, 10);
 		                    ImGui::Checkbox("Horizontal Only", &aa::horizontal_only);
