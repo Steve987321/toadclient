@@ -46,9 +46,9 @@ namespace toad
 		}
 		else
 		{
-			if (window_title.find("1.8.9") != std::string::npos)
+			if (window_title.find("lunar client 1.8.9") != std::string::npos)
 				return MC_CLIENT::Lunar_189;
-			if (window_title.find("1.7.10") != std::string::npos)
+			if (window_title.find("lunar client 1.7.10") != std::string::npos)
 				return MC_CLIENT::Lunar_171;
 		}
 	}

@@ -295,7 +295,7 @@ enum class mapping
     getGameSettings,
     getObjectMouseOver,
     getTimer,
-    getRenderManager,
+    //getRenderManager,
 
     // objectmouseover
     getEntityHit,

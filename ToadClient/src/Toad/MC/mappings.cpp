@@ -56,7 +56,6 @@ namespace toadll::mappings
 
 			// WORLD
 			methods[mapping::getPlayerEntities] = { "bridge$getPlayerEntities", "()Ljava/util/List;" };
-			methods[mapping::getRenderManager] = { "getRenderManager", "()Lnet/minecraft/client/renderer/entity/RenderManager;" };
 			methods[mapping::isAirBlock] = { "isAirBlock", "(Lnet/minecraft/util/BlockPos;)Z" };
 			methods[mapping::rayTraceBlocks] = { "rayTraceBlocks", "(Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;Z)Lnet/minecraft/util/MovingObjectPosition;" };
 			methods[mapping::getBlockFromBlockState] = { "getBlock", "()Lnet/minecraft/block/Block;" };
@@ -217,10 +216,6 @@ namespace toadll::mappings
 			methods[mapping::getPlayerEntities] = { "bridge$getPlayerEntities", "()Ljava/util/List;" };
 			methods[mapping::isAirBlock] = { "isAirBlock", "(Lnet/minecraft/util/BlockPos;)Z" };
 
-			methods[mapping::getRenderManager] = { "bridge$getRenderManager", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getRenderManager, "bridge$getRenderManager", mcclass, env))
-				LOGERROR("[mappings] Can't find render manager");
-
 			fields[mappingFields::playerEntitiesField] = { "playerEntities", "Ljava/util/List;" };
 
 			// .Block
@@ -253,6 +248,7 @@ namespace toadll::mappings
 			fields[mappingFields::lastTickPosZField] = { "lastTickPosZ", "D" };
 
 			fields[mappingFields::renderPartialTickField] = { "renderPartialTicks", "F" };
+			fields[mappingFields::elapsedPartialTicks] = { "elapsedPartialTicks", "F" };
 
 			methods[mapping::getPos] = { "getPosition", "(F)Lnet/minecraft/util/Vec3;" };
 			methods[mapping::getBlockPosition] = { "getPosition", "()Lnet/minecraft/util/BlockPos;" };
