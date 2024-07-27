@@ -13,7 +13,7 @@ namespace toad
 {
 
 ImGuiWindow::ImGuiWindow(std::string window_title, int win_height, int win_width)
-	: m_window_name(std::move(window_title)), m_window_width(win_width), m_window_height(win_height) 
+	: m_windowName(std::move(window_title)), m_windowWidth(win_width), m_windowHeight(win_height) 
 {
 }
 
@@ -24,40 +24,40 @@ ImGuiWindow::~ImGuiWindow()
 
 void ImGuiWindow::StartWindow()
 {
-    std::cout << "Creating window with name: " << m_window_name << std::endl;
+    std::cout << "Creating window with name: " << m_windowName << std::endl;
 
-    if (!m_uifunc_set)
+    if (!m_uiFuncSet)
     {
         std::cout << "The UI function has not been set for this window " << std::endl;
     }
 
     // there should be no duplicate window names 
-    if (m_window_from_name.contains(m_window_name))
+    if (m_windowFromName.contains(m_windowName))
     {
-        std::cout << "Window " << m_window_name << " already exists! " << std::endl;
+        std::cout << "Window " << m_windowName << " already exists! " << std::endl;
         assert(0);
         m_running = false;
         return;
     }
 
     std::cout << "Starting window thread\n";
-    m_window_thread = std::thread(&ImGuiWindow::CreateImGuiWindow, this, m_window_name, m_window_height, m_window_width);
+    m_windowThread = std::thread(&ImGuiWindow::CreateImGuiWindow, this, m_windowName, m_windowHeight, m_windowWidth);
 }
 
 void ImGuiWindow::DestroyWindow()
 {
-    std::lock_guard lock(m_destroy_window_mutex);
+    std::lock_guard lock(m_destroyWindowMutex);
 
     if (!m_running) 
         return;
 
-    std::cout << "Closing window: " << m_window_name << std::endl;
+    std::cout << "Closing window: " << m_windowName << std::endl;
 
-    m_window_from_name.erase(m_window_name);
-    m_window_from_hwnd.erase(m_hwnd);
+    m_windowFromName.erase(m_windowName);
+    m_windowFromHWND.erase(m_hwnd);
 
-    if (m_window_thread.joinable())
-        m_window_thread.join();
+    if (m_windowThread.joinable())
+        m_windowThread.join();
 
     ImGui_ImplDX9_Shutdown();
     ImGui_ImplWin32_Shutdown();
@@ -65,7 +65,7 @@ void ImGuiWindow::DestroyWindow()
 
     CleanupDeviceD3D();
     ::DestroyWindow(m_hwnd);
-    ::UnregisterClassA(m_window_class_name.c_str(), m_wc.hInstance);
+    ::UnregisterClassA(m_windowClassName.c_str(), m_wc.hInstance);
 
     m_running = false;
 
@@ -73,7 +73,7 @@ void ImGuiWindow::DestroyWindow()
 
 ImGuiWindow::D3DProperties* ImGuiWindow::GetD3DProperties()
 {
-    return &m_d3d_properties;
+    return &m_d3dProperties;
 }
 
 HWND ImGuiWindow::GetHandle() const
@@ -83,36 +83,36 @@ HWND ImGuiWindow::GetHandle() const
 
 bool ImGuiWindow::IsActive() const
 {
-    return m_running && !m_should_close;
+    return m_running && !m_shouldClose;
 }
 
 bool ImGuiWindow::IsFontUpdated() const
 {
-    return !m_update_font;
+    return !m_updateFont;
 }
 
 void ImGuiWindow::SetUI(const std::function<void(ImGuiIO* io)>& ui_func)
 {
-    m_uifunc_set = true;
-    m_uifunc = ui_func;
+    m_uiFuncSet = true;
+    m_uiFunc = ui_func;
 }
 
 void ImGuiWindow::AddFontTTF(std::string_view pathTTF)
 {
-    m_update_font_path = pathTTF;
-    m_update_font = true;
+    m_updateFontPath = pathTTF;
+    m_updateFont = true;
 }
 
 void ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_height, int win_width)
 {
     RECT desktop_rect = {};
 
-    m_window_class_name = window_title + " class";
+    m_windowClassName = window_title + " class";
 
     GetWindowRect(GetDesktopWindow(), &desktop_rect);
     auto x = (desktop_rect.right - win_width) / 2;
     auto y = (desktop_rect.bottom - win_height) / 2;
-    m_wc = { sizeof(m_wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, m_window_class_name.c_str(), NULL };
+    m_wc = { sizeof(m_wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, m_windowClassName.c_str(), NULL };
     ::RegisterClassExA(&m_wc);
 
     std::cout << "Creating window \n";
@@ -168,13 +168,13 @@ void ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_hei
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(m_hwnd);
-    ImGui_ImplDX9_Init(m_d3d_properties.pD3DDevice);
+    ImGui_ImplDX9_Init(m_d3dProperties.pD3DDevice);
 
-    m_window_from_name.insert({ window_title.data(), this });
-    m_window_from_hwnd.insert({ m_hwnd, this });
+    m_windowFromName.insert({ window_title.data(), this });
+    m_windowFromHWND.insert({ m_hwnd, this });
     std::cout << "Window " << window_title << " has successfully been created " << std::endl;
 
-    while (m_running && !m_should_close)
+    while (m_running && !m_shouldClose)
     {
         UpdateMenu();
     }
@@ -182,19 +182,19 @@ void ImGuiWindow::CreateImGuiWindow(const std::string& window_title, int win_hei
 
 bool ImGuiWindow::CreateDeviceD3D()
 {
-    if ((m_d3d_properties.pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
+    if ((m_d3dProperties.pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
         return false;
 
     // Create the D3DDevice
-    ZeroMemory(&m_d3d_properties.pD3DParams, sizeof(m_d3d_properties.pD3DParams));
-    m_d3d_properties.pD3DParams.Windowed = TRUE;
-    m_d3d_properties.pD3DParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    m_d3d_properties.pD3DParams.BackBufferFormat = D3DFMT_UNKNOWN; // Need to use an explicit format with alpha if needing per-pixel alpha composition.
-    m_d3d_properties.pD3DParams.EnableAutoDepthStencil = TRUE;
-    m_d3d_properties.pD3DParams.AutoDepthStencilFormat = D3DFMT_D16;
-    m_d3d_properties.pD3DParams.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
+    ZeroMemory(&m_d3dProperties.pD3DParams, sizeof(m_d3dProperties.pD3DParams));
+    m_d3dProperties.pD3DParams.Windowed = TRUE;
+    m_d3dProperties.pD3DParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    m_d3dProperties.pD3DParams.BackBufferFormat = D3DFMT_UNKNOWN; // Need to use an explicit format with alpha if needing per-pixel alpha composition.
+    m_d3dProperties.pD3DParams.EnableAutoDepthStencil = TRUE;
+    m_d3dProperties.pD3DParams.AutoDepthStencilFormat = D3DFMT_D16;
+    m_d3dProperties.pD3DParams.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
     //m_d3dProperties.pD3DParams.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present without vsync, maximum unthrottled framerate
-    auto hres = m_d3d_properties.pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, m_hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &m_d3d_properties.pD3DParams, &m_d3d_properties.pD3DDevice);
+    auto hres = m_d3dProperties.pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, m_hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &m_d3dProperties.pD3DParams, &m_d3dProperties.pD3DDevice);
     if (hres != D3D_OK)
     {
         std::cout << "Failed to create D3D Device Error: ";
@@ -223,14 +223,14 @@ bool ImGuiWindow::CreateDeviceD3D()
 
 void ImGuiWindow::CleanupDeviceD3D()
 {
-    if (m_d3d_properties.pD3DDevice) { m_d3d_properties.pD3DDevice->Release(); m_d3d_properties.pD3DDevice = NULL; }
-    if (m_d3d_properties.pD3D) { m_d3d_properties.pD3D->Release(); m_d3d_properties.pD3D = NULL; }
+    if (m_d3dProperties.pD3DDevice) { m_d3dProperties.pD3DDevice->Release(); m_d3dProperties.pD3DDevice = NULL; }
+    if (m_d3dProperties.pD3D) { m_d3dProperties.pD3D->Release(); m_d3dProperties.pD3D = NULL; }
 }
 
 void ImGuiWindow::ResetDevice()
 {
     ImGui_ImplDX9_InvalidateDeviceObjects();
-    HRESULT hr = m_d3d_properties.pD3DDevice->Reset(&m_d3d_properties.pD3DParams);
+    HRESULT hr = m_d3dProperties.pD3DDevice->Reset(&m_d3dProperties.pD3DParams);
     if (hr == D3DERR_INVALIDCALL)
         IM_ASSERT(0);
     ImGui_ImplDX9_CreateDeviceObjects();
@@ -245,28 +245,28 @@ void ImGuiWindow::UpdateMenu()
         ::DispatchMessageA(&msg);
         if (msg.message == WM_QUIT)
         {
-            m_should_close = true;
+            m_shouldClose = true;
         }
     }
 
-    if (m_should_close)
+    if (m_shouldClose)
         return;
 
-    if (m_update_font)
+    if (m_updateFont)
     {
         ImFont* res = nullptr;
-        if (m_update_font_path == "Default")
+        if (m_updateFontPath == "Default")
         {
             res = m_io->Fonts->AddFontDefault();
         }
         else
         {
-            res = m_io->Fonts->AddFontFromFileTTF(m_update_font_path.c_str(), 30.f);
+            res = m_io->Fonts->AddFontFromFileTTF(m_updateFontPath.c_str(), 30.f);
         }
         assert(res != nullptr && "Adding font from path returned null");
 
         ImGui_ImplDX9_InvalidateDeviceObjects();
-        m_update_font = false;
+        m_updateFont = false;
     }
 
     // Start the Dear ImGui frame
@@ -275,24 +275,24 @@ void ImGuiWindow::UpdateMenu()
     ImGui::NewFrame();
 
     //ui
-    m_uifunc(m_io);
+    m_uiFunc(m_io);
 
     // Rendering
     ImGui::EndFrame();
 
-    m_d3d_properties.pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-    m_d3d_properties.pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-    m_d3d_properties.pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+    m_d3dProperties.pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+    m_d3dProperties.pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    m_d3dProperties.pD3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
 
     constexpr static auto clear_color = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     constexpr static D3DCOLOR clear_col_dx = D3DCOLOR_RGBA((int)(clear_color.x * clear_color.w * 255.0f), (int)(clear_color.y * clear_color.w * 255.0f), (int)(clear_color.z * clear_color.w * 255.0f), (int)(clear_color.w * 255.0f));
-    m_d3d_properties.pD3DDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
+    m_d3dProperties.pD3DDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
 
-    if (m_d3d_properties.pD3DDevice->BeginScene() >= 0)
+    if (m_d3dProperties.pD3DDevice->BeginScene() >= 0)
     {
         ImGui::Render();
         ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-        m_d3d_properties.pD3DDevice->EndScene();
+        m_d3dProperties.pD3DDevice->EndScene();
     }
 
     if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -301,10 +301,10 @@ void ImGuiWindow::UpdateMenu()
         ImGui::RenderPlatformWindowsDefault();
     }
 
-    HRESULT hres = m_d3d_properties.pD3DDevice->Present(nullptr, nullptr, nullptr, nullptr);
+    HRESULT hres = m_d3dProperties.pD3DDevice->Present(nullptr, nullptr, nullptr, nullptr);
 
     // Handle loss of D3D9 device
-    if (hres == D3DERR_DEVICELOST && m_d3d_properties.pD3DDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
+    if (hres == D3DERR_DEVICELOST && m_d3dProperties.pD3DDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
         ResetDevice();
 }
 
@@ -324,16 +324,16 @@ void ImGuiWindow::DefaultUIWindow(ImGuiIO* io)
 
 ImGuiWindow* ImGuiWindow::GetWindowInstance(std::string_view window_name)
 {
-    auto it = m_window_from_name.find(window_name.data());
-    if (it != m_window_from_name.end())
+    auto it = m_windowFromName.find(window_name.data());
+    if (it != m_windowFromName.end())
         return it->second;
     return nullptr;
 }
 
 ImGuiWindow* ImGuiWindow::GetWindowInstance(const HWND& hwnd)
 {
-    auto it = m_window_from_hwnd.find(hwnd);
-    if (it != m_window_from_hwnd.end())
+    auto it = m_windowFromHWND.find(hwnd);
+    if (it != m_windowFromHWND.end())
         return it->second;
     return nullptr;
 }

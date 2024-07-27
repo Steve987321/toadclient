@@ -20,6 +20,7 @@ private:
 	jclass m_vec3class = nullptr; // Vec3
 	jclass m_vec3iclass = nullptr; // Vec3i
 	jclass m_mopclass = nullptr; // moving object position 
+	jclass m_blockposclass = nullptr; // blockpos
 
 public:
 	explicit Minecraft() = default;
@@ -43,12 +44,12 @@ public:
 	jclass getVec3Class();
 	jclass getVec3iClass();
 	jclass getMovingObjPosClass();
+	jclass getBlockPosClass();
 
 	std::unique_ptr<ActiveRenderInfo> getActiveRenderInfo();
 	//std::unique_ptr<RenderManager> getRenderManager();
 
 	jobject getMc();
-	jobject getLocalPlayerObject();
 	jobject getWorld();
 	jobject getGameSettings();
 	jobject getMouseOverObject();

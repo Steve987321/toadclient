@@ -2,24 +2,27 @@
 
 #include "../../ToadClient/vendor/nlohmann/json.hpp"
 
-using namespace toad;
+namespace toad
+{
 
 // for ipc to dll 
-HANDLE hMapFile = nullptr;
+static HANDLE hMapFile = nullptr;
 
 // flag used to call init once
-std::once_flag init_once_flag;
+static std::once_flag init_once_flag;
 
 // threads for loader 
-inline std::thread updateSettingsThread;
+static std::thread update_settings_thread;
+static std::thread check_injected_window;
 
 // updates settings for dll 
 extern void update_settings();
 
 extern bool is_proc_mc(DWORD dwPID);
-extern BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam);
+extern BOOL CALLBACK EnumWindowCallback(HWND hwnd, LPARAM lparam);
+extern void check_injected_window_open(const Window& window);
 
-bool toad::init()
+bool init()
 {
 	// setup ipc
 	static bool once = false;
@@ -45,7 +48,7 @@ bool toad::init()
 		UnmapViewOfFile(pMem);
 
 		// update settings for ipc 
-		updateSettingsThread = std::thread([]
+		update_settings_thread = std::thread([]
 			{
 				while (g_is_running)
 				{
@@ -57,6 +60,22 @@ bool toad::init()
 		once = true;
 	}
 	return true;
+}
+
+void scan_windows()
+{
+	g_mc_window_list.clear();
+
+	static uint8_t checks = 0;
+	bool found_injected_window = false;
+	EnumWindows(EnumWindowCallback, (LPARAM)&found_injected_window);
+
+	if (g_injected_window.pid != 0 && !found_injected_window && checks++ >= 2)
+	{
+		g_is_verified = false;
+		checks = 0;
+		g_mc_window_list.clear();
+	}
 }
 
 void update_settings()
@@ -90,7 +109,6 @@ void update_settings()
 	json d_out;
 
 	// don't update these in a loop
-
 	if (d_in.contains("ui_internal_should_close"))
 	{
 		if (d_in["ui_internal_should_close"])
@@ -209,15 +227,48 @@ void update_settings()
 	UnmapViewOfFile(pmem);
 }
 
-void toad::stop_all_threads()
+void stop_all_threads()
 {
-	if (updateSettingsThread.joinable()) 
-		updateSettingsThread.join();
+	if (update_settings_thread.joinable()) 
+		update_settings_thread.join();
+
+	if (check_injected_window.joinable())
+		check_injected_window.join();
 }
 
-void toad::clean_up()
+void clean_up()
 {
 	CloseHandle(hMapFile);
+}
+
+void check_hotkey_press()
+{
+	if (GetAsyncKeyState(left_clicker::key) & 1)
+		left_clicker::enabled = !left_clicker::enabled;
+	if (GetAsyncKeyState(right_clicker::key) & 1)
+		right_clicker::enabled = !right_clicker::enabled;
+	if (GetAsyncKeyState(aa::key) & 1)
+		aa::enabled = !aa::enabled;
+	if (GetAsyncKeyState(velocity::key) & 1)
+		velocity::enabled = !velocity::enabled;
+	if (GetAsyncKeyState(bridge_assist::key) & 1)
+		bridge_assist::enabled = !bridge_assist::enabled;
+	if (GetAsyncKeyState(esp::key) & 1)
+		esp::enabled = !esp::enabled;
+	if (GetAsyncKeyState(block_esp::key) & 1)
+		block_esp::enabled = !block_esp::enabled;
+	if (GetAsyncKeyState(blink::key) & 1)
+		blink::enabled = !blink::enabled;
+	if (GetAsyncKeyState(chest_stealer::key) & 1)
+		chest_stealer::enabled = !chest_stealer::enabled;
+}
+
+void set_injected_window(const Window& window)
+{
+	if (check_injected_window.joinable())
+		check_injected_window.join();
+
+	check_injected_window = std::thread(check_injected_window_open, std::ref(window));
 }
 
 bool is_proc_mc(DWORD dwPID)
@@ -256,7 +307,7 @@ bool is_proc_mc(DWORD dwPID)
 	return false;
 }
 
-BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam)
+BOOL CALLBACK EnumWindowCallback(HWND hwnd, LPARAM lparam)
 {
 	DWORD PID = 0;
 	GetWindowThreadProcessId(hwnd, &PID);
@@ -276,7 +327,7 @@ BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam)
 	GetWindowTextA(hwnd, windowTitle, TITLE_SIZE);
 	const int win_name_length = GetWindowTextLength(hwnd);
 
-	if (!toad::g_is_verified) // we haven't injected yet
+	if (!g_is_verified) // we haven't injected yet
 	{
 		if (IsWindowVisible(hwnd) && win_name_length != 0) {
 			// convert window title to std::string
@@ -301,18 +352,13 @@ BOOL CALLBACK enumWindowCallback(HWND hwnd, LPARAM lparam)
 	return TRUE;
 }
 
-void toad::scan_windows()
+void check_injected_window_open(const Window& window)
 {
+	while (g_is_running && FindWindowA(NULL, window.title.c_str()) != NULL)
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
 	g_mc_window_list.clear();
+	g_is_verified = false;
+}
 
-	static uint8_t checks = 0;
-	bool found_injected_window = false;
-	EnumWindows(enumWindowCallback, (LPARAM)&found_injected_window);
-
-	if (g_injected_window.pid != 0 && !found_injected_window && checks++ >= 2)
-	{
-		g_is_verified = false;
-		checks = 0;
-		g_mc_window_list.clear();
-	}
 }

@@ -234,20 +234,24 @@ namespace toadll
 
     Vec3 to_vec3(jobject vecObj, JNIEnv* env)
     {
-        auto posclass = env->GetObjectClass(vecObj);
+        jclass posclass = env->GetObjectClass(vecObj);
 
-        static auto xposid = env->GetMethodID(posclass, mappings::methods[mapping::Vec3X].name.c_str(), "()D");
-        if (!xposid) return {-1, -1, -1};
+        static jfieldID xposid = get_fid(posclass, mappingFields::Vec3X, env);
+        if (!xposid)
+        {
+			env->DeleteLocalRef(posclass);
+			return { -1, -1, -1 };
+        }
 
-        static auto yposid = env->GetMethodID(posclass, mappings::methods[mapping::Vec3Y].name.c_str(), "()D");
-        static auto zposid = env->GetMethodID(posclass, mappings::methods[mapping::Vec3Z].name.c_str(), "()D");
+		static jfieldID yposid = get_fid(posclass, mappingFields::Vec3Y, env);
+		static jfieldID zposid = get_fid(posclass, mappingFields::Vec3Z, env);
 
         env->DeleteLocalRef(posclass);
 
         return {
-	        (float)env->CallDoubleMethod(vecObj, xposid), 
-            (float)env->CallDoubleMethod(vecObj, yposid),
-            (float)env->CallDoubleMethod(vecObj, zposid)
+			(float)env->GetDoubleField(vecObj, xposid),
+			(float)env->GetDoubleField(vecObj, yposid),
+			(float)env->GetDoubleField(vecObj, zposid)
         };
     }
 

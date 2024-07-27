@@ -48,6 +48,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,6 +155,11 @@
     <ClCompile Include="src\Toad\Modules\visuals\esp.cpp" />
     <ClCompile Include="src\Toad\Modules\visuals\of_screen_arrows.cpp" />
     <ClCompile Include="src\Toad\toadll.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JNIWrapper\JNIWrapper.vcxproj">
+      <Project>{8f138951-9b3d-4d50-b049-669f98d1020f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

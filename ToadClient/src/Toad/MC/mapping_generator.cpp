@@ -2,7 +2,7 @@
 #include "Toad/toadll.h"
 #include "mappings.h"
 #include "mapping_generator.h"
-
+#include "mcutils.h"
 #include "nlohmann/json.hpp"
 
 #include "../../Loader/src/Application/config.h"
@@ -104,27 +104,47 @@ void MappingGenerator::Generate(JNIEnv* env, jvmtiEnv* jvmti_env)
 		return;
 	}
 
-	jfieldID worldFid = get_fid(mc_class, mappingFields::theWorldField, env);
-	jobject world_obj = !worldFid ? nullptr : env->GetObjectField(mc_class, worldFid);
-	if (!world_obj)
+	jfieldID player_fid = get_fid(mc_class, mappingFields::thePlayerField, env);
+	jobject player_obj = !player_fid ? nullptr : env->GetObjectField(mc_class, player_fid);
+	if (!player_obj)
 	{
 		env->DeleteLocalRef(mc_class);
 		LOGDEBUG("[MappingGenerator] World class not found");
 		return;
 	}
-	jclass world_class = env->GetObjectClass(world_obj);
-	env->DeleteLocalRef(world_obj);
+	jclass player_class = env->GetObjectClass(player_obj);
+	env->DeleteLocalRef(player_obj);
 
+	jclass world_client_class = findclass("net.minecraft.client.multiplayer.WorldClient", env);
+	jclass world_class = findclass("net.minecraft.world.World", env);
+	jclass block_pos_class = findclass("net.minecraft.util.MovingObjectPosition", env);
 	int mc_class_index = -1;
 	int world_class_index = -1;
+	int world_client_class_index = -1;
+	int player_class_index = -1;
+	int block_pos_class_index = -1;
 	Mappings mc_mappings = GetMappingsForClass(env, jvmti_env, mc_class, mc_class_index);
+	Mappings world_client_mappings = GetMappingsForClass(env, jvmti_env, world_client_class, world_client_class_index);
 	Mappings world_mappings = GetMappingsForClass(env, jvmti_env, world_class, world_class_index);
+	Mappings player_mappings = GetMappingsForClass(env, jvmti_env, player_class, player_class_index);
+	Mappings block_pos_mappings = GetMappingsForClass(env, jvmti_env, block_pos_class, block_pos_class_index);
+	env->DeleteLocalRef(world_client_class);
+	env->DeleteLocalRef(mc_class);
+	env->DeleteLocalRef(player_class);
+	env->DeleteLocalRef(world_class);
+	env->DeleteLocalRef(block_pos_class);
 
 	json data;
 	data["mc"]["mappings"] = mc_mappings.Serialize();
 	data["mc"]["class_index"] = mc_class_index; 
+	data["worldclient"]["mappings"] = world_client_mappings.Serialize();
+	data["worldclient"]["class_index"] = world_client_class_index;
 	data["world"]["mappings"] = world_mappings.Serialize();
 	data["world"]["class_index"] = world_class_index;
+	data["player"]["mappings"] = player_mappings.Serialize();
+	data["player"]["class_index"] = player_class_index;
+	data["blockpos"]["mappings"] = block_pos_mappings.Serialize();
+	data["blockpos"]["class_index"] = block_pos_class_index;
 	std::ofstream file(std::filesystem::path(documents) / "mapping_gen_out.txt");
 	if (!file)
 	{
@@ -346,14 +366,14 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 	jint field_count = 0;
 	jfieldID* fields;
 
-	jvmtiError res;
+	jvmtiError jvmti_err;
 	//JVMTICALL(jvmti_env->GetClassFields, mc, &field_count, &fields)
-	res = jvmti_env->GetClassFields(klass, &field_count, &fields);
-	if (res != jvmtiError::JVMTI_ERROR_NONE)
+	jvmti_err = jvmti_env->GetClassFields(klass, &field_count, &fields);
+	if (jvmti_err != jvmtiError::JVMTI_ERROR_NONE)
 	{
-		LOGERROR("[MappingGenerator] Failed to call GetClassFields, {}", (int)res);
+		LOGERROR("[MappingGenerator] Failed to call GetClassFields, {}", (int)jvmti_err);
 		env->DeleteLocalRef(klass);
-		return;
+		return klass_mappings;
 	}
 
 	LOGDEBUG("[MappingGenerator] Fields");
@@ -364,14 +384,14 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 		char* generic = nullptr;
 		jint modifiers = 0;
 
-		if (res = jvmti_env->GetFieldName(klass, fields[i], &name, &sig, &generic); res != JVMTI_ERROR_NONE)
+		if (jvmti_err = jvmti_env->GetFieldName(klass, fields[i], &name, &sig, &generic); jvmti_err != JVMTI_ERROR_NONE)
 		{
-			LOGERROR("[MappingGenerator] Failed to call GetFieldName, {}", (int)res);
+			LOGERROR("[MappingGenerator] Failed to call GetFieldName, {}", (int)jvmti_err);
 			continue;
 		}
-		if (res = jvmti_env->GetFieldModifiers(klass, fields[i], &modifiers); res != JVMTI_ERROR_NONE)
+		if (jvmti_err = jvmti_env->GetFieldModifiers(klass, fields[i], &modifiers); jvmti_err != JVMTI_ERROR_NONE)
 		{
-			LOGERROR("[MappingGenerator] Failed to call GetFieldModifiers, {}", (int)res);
+			LOGERROR("[MappingGenerator] Failed to call GetFieldModifiers, {}", (int)jvmti_err);
 			continue;
 		}
 
@@ -389,12 +409,12 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 
 	jint method_count = 0;
 	jmethodID* methods;
-	res = jvmti_env->GetClassMethods(klass, &method_count, &methods);
-	if (res != jvmtiError::JVMTI_ERROR_NONE)
+	jvmti_err = jvmti_env->GetClassMethods(klass, &method_count, &methods);
+	if (jvmti_err != jvmtiError::JVMTI_ERROR_NONE)
 	{
-		LOGERROR("[MappingGenerator] Failed to call GetClassMethods, {}", (int)res);
+		LOGERROR("[MappingGenerator] Failed to call GetClassMethods, {}", (int)jvmti_err);
 		env->DeleteLocalRef(klass);
-		return;
+		return klass_mappings;
 	}
 	std::vector<unsigned char> bytecodes_vec;
 
@@ -407,19 +427,19 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 		char* generic = nullptr;
 		unsigned char* bytecodes = nullptr;
 
-		if (res = jvmti_env->GetBytecodes(methods[i], &bytecodes_count, &bytecodes); res != JVMTI_ERROR_NONE)
+		if (jvmti_err = jvmti_env->GetBytecodes(methods[i], &bytecodes_count, &bytecodes); jvmti_err != JVMTI_ERROR_NONE)
 		{
-			LOGERROR("[MappingGenerator] Failed to call GetBytecodes, {}", (int)res);
+			LOGERROR("[MappingGenerator] Failed to call GetBytecodes, {}", (int)jvmti_err);
 			continue;
 		}
-		if (res = jvmti_env->GetMethodModifiers(methods[i], &modifiers); res != JVMTI_ERROR_NONE)
+		if (jvmti_err = jvmti_env->GetMethodModifiers(methods[i], &modifiers); jvmti_err != JVMTI_ERROR_NONE)
 		{
-			LOGERROR("[MappingGenerator] Failed to call GetMethodModifiers, {}", (int)res);
+			LOGERROR("[MappingGenerator] Failed to call GetMethodModifiers, {}", (int)jvmti_err);
 			continue;
 		}
-		if (res = jvmti_env->GetMethodName(methods[i], &name, &sig, &generic); res != JVMTI_ERROR_NONE)
+		if (jvmti_err = jvmti_env->GetMethodName(methods[i], &name, &sig, &generic); jvmti_err != JVMTI_ERROR_NONE)
 		{
-			LOGERROR("[MappingGenerator] Failed to call GetMethodName, {}", (int)res);
+			LOGERROR("[MappingGenerator] Failed to call GetMethodName, {}", (int)jvmti_err);
 			continue;
 		}
 
@@ -443,14 +463,13 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 
 	jint class_count = 0;
 	jclass* classes;
-	res = jvmti_env->GetLoadedClasses(&class_count, &classes);
-	if (res != JVMTI_ERROR_NONE)
+	jvmti_err = jvmti_env->GetLoadedClasses(&class_count, &classes);
+	if (jvmti_err != JVMTI_ERROR_NONE)
 	{
 		env->DeleteLocalRef(klass);
-		return;
+		return klass_mappings;
 	}
 
-	int class_index = -1;
 	for (int i = 0; i < class_count; i++)
 	{
 		bool same_field_count = jvmfunc::oJVM_GetClassFieldsCount(env, classes[i]) == field_count;
@@ -463,6 +482,8 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 	}
 
 	jvmti_env->Deallocate((unsigned char*)classes);
+
+	return klass_mappings;
 }
 
 }

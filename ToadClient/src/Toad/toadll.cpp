@@ -244,10 +244,11 @@ DWORD WINAPI toadll::init()
 	//}
 
 	LOGDEBUG("[init] Client type {}", static_cast<int>(toad::g_curr_client));
-	std::filesystem::path generated_mappings_file = Logger::getDocumentsFolder();
+	
+	/*std::filesystem::path generated_mappings_file = Logger::getDocumentsFolder();
 	generated_mappings_file /= "mapping_gen_out.txt";
 	if (std::filesystem::exists(generated_mappings_file))
-		MappingGenerator::GetMappingsFromFile(g_env, g_jvmti_env, generated_mappings_file);
+		MappingGenerator::GetMappingsFromFile(g_env, g_jvmti_env, generated_mappings_file);*/
 
 	auto mcclass = Minecraft::getMcClass(g_env);
 	if (mcclass == nullptr)

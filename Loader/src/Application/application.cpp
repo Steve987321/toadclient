@@ -80,8 +80,9 @@ namespace toad
     {
         while (m_window->IsActive())
         {
-            scan_windows();
-			SLEEP(1500);
+            check_hotkey_press();
+          
+			SLEEP(1);
         }
     }
 

@@ -17,6 +17,6 @@ namespace toadll
 	public:
 		/// Returns the camera position,
 		///	ONLY WORKS ON 1.8.9
-		_NODISCARD Vec3 get_render_pos() const;
+		//_NODISCARD Vec3 get_render_pos() const;
 	};
 }

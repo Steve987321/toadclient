@@ -13,6 +13,7 @@ Minecraft::~Minecraft()
     if (m_ariclass != nullptr) env->DeleteGlobalRef(m_ariclass);
     if (m_vec3class != nullptr) env->DeleteGlobalRef(m_vec3class);
     if (m_mopclass != nullptr) env->DeleteGlobalRef(m_mopclass);
+    if (m_blockposclass != nullptr) env->DeleteGlobalRef(m_blockposclass);
 }
 
 jclass Minecraft::getMcClass(JNIEnv* env)
@@ -65,6 +66,15 @@ jclass Minecraft::getMovingObjPosClass()
     return m_mopclass;
 }
 
+jclass Minecraft::getBlockPosClass()
+{
+	if (m_blockposclass == nullptr)
+    {
+        m_blockposclass = (jclass)env->NewGlobalRef(findclass("net.minecraft.util.BlockPos", env));
+    }
+    return m_blockposclass;
+}
+
 std::unique_ptr<ActiveRenderInfo> Minecraft::getActiveRenderInfo()
 {
     if (m_ariclass == nullptr)
@@ -102,25 +112,19 @@ jobject Minecraft::getMc()
 std::shared_ptr<c_Entity> Minecraft::getLocalPlayer()
 {
     auto mc = getMc();
-    auto mId = get_mid(mc, mapping::getPlayer, env);
+    auto fid = get_fid(mc, mappingFields::thePlayerField, env);
 
-    if (!mId)
+    if (!fid)
     {
         env->DeleteLocalRef(mc);
         return nullptr;
     }
-    auto obj = env->CallObjectMethod(mc, mId);
+    auto obj = env->GetObjectField(mc, fid);
     if (!obj)
     {
         env->DeleteLocalRef(mc);
         return nullptr;
     }
-    /* auto fId = get_fid(mc, mappingFields::thePlayerField, env);
-     if (!fId)
-         return nullptr;
-     auto obj = env->GetObjectField(mc, fId);
-     if (!obj)
-         return nullptr;*/
     env->DeleteLocalRef(mc);
     return std::make_shared<c_Entity>(obj, env, getEntityLivingClass());
 }
@@ -274,27 +278,13 @@ void Minecraft::setLeftClickCounter(int val)
     env->SetIntField(mc, fId, val);
 }
 
-jobject Minecraft::getLocalPlayerObject()
-{
-    auto playermid = get_mid(getMcClass(), mapping::getPlayer, env);
-    if (!playermid)
-        return nullptr;
-    auto mc = this->getMc();
-    auto obj = env->CallObjectMethod(mc, playermid);
-    env->DeleteLocalRef(mc);
-    return obj;
-}
-
 jobject Minecraft::getWorld()
 {
-    auto mc = this->getMc();
+    auto mc = getMc();
     if (!mc)
         return nullptr;
     auto worldFid = get_fid(getMcClass(), mappingFields::theWorldField, env);
     auto obj = !worldFid ? nullptr : env->GetObjectField(mc, worldFid);
-    //auto worldmid = get_mid(mcclass, mapping::getWorld, env);
-    //auto obj = !worldmid ? nullptr : env->CallObjectMethod(mc, worldmid);
-
     env->DeleteLocalRef(mc);
 
     return obj;
@@ -303,13 +293,13 @@ jobject Minecraft::getWorld()
 jobject Minecraft::getGameSettings()
 {
     auto mc = getMc();
-    auto mId = get_mid(mc, mapping::getGameSettings, env);
-    if (!mId)
+    auto fid = get_fid(mc, mappingFields::gameSettings, env);
+    if (!fid)
     {
         env->DeleteLocalRef(mc);
         return nullptr;
     }
-    auto obj = env->CallObjectMethod(mc, mId);
+    auto obj = env->GetObjectField(mc, fid);
     env->DeleteLocalRef(mc);
     return obj;
 }
@@ -400,20 +390,20 @@ std::array<std::string, 27> Minecraft::GetChestContents()
 
 float Minecraft::getPartialTick()
 {
-    auto mc = getMc();
-    auto mId = get_mid(mc, mapping::getTimer, env);
-    if (!mId)
+    jobject mc = getMc();
+    jfieldID fid = get_fid(mc, mappingFields::timer, env);
+    if (!fid)
         return 1;
-    auto obj = env->CallObjectMethod(mc, mId);
+    jobject obj = env->GetObjectField(mc, fid);
     env->DeleteLocalRef(mc);
     if (!obj)
         return 1;
 
-    auto partialtick_fid = get_fid(obj, mappingFields::elapsedPartialTicks, env);
+    jfieldID partialtick_fid = get_fid(obj, mappingFields::elapsedPartialTicks, env);
     if (!partialtick_fid)
 		return 1;
 
-    auto res = env->GetFloatField(obj, partialtick_fid);
+    float res = env->GetFloatField(obj, partialtick_fid);
     env->DeleteLocalRef(obj);
     return res;
 }
@@ -421,13 +411,13 @@ float Minecraft::getPartialTick()
 float Minecraft::getRenderPartialTick()
 {
     auto mc = getMc();
-    auto mId = get_mid(mc, mapping::getTimer, env);
-    if (!mId)
+    auto fid = get_fid(mc, mappingFields::timer, env);
+    if (!fid)
     {
         env->DeleteLocalRef(mc);
         return 1;
     }
-    auto obj = env->CallObjectMethod(mc, mId);
+    auto obj = env->GetObjectField(mc, fid);
     env->DeleteLocalRef(mc);
     if (!obj)
     {
@@ -482,39 +472,50 @@ jobject Minecraft::getMouseOverObject()
 
 int Minecraft::getBlockIdAt(const Vec3i& pos)
 {
-    auto world = getWorld();
+    jobject world = getWorld();
     if (!world)
         return 0;
-    auto mId = get_mid(world, mapping::getBlockAt, env);
-    if (!mId)
+    
+    jclass block_pos_class = getBlockPosClass();
+    jmethodID block_pos_mid = get_mid(block_pos_class, mapping::Vec3IInit, env);
+    if (!block_pos_mid)
     {
         env->DeleteLocalRef(world);
+		return 0;
+    }
+    jobject block_pos = env->NewObject(block_pos_class, block_pos_mid, pos.x, pos.y, pos.z);
+    if (!block_pos)
+    {
+		env->DeleteLocalRef(world);
         return 0;
     }
 
-	auto blockatObj = env->CallObjectMethod(world, mId, pos.x, pos.y, pos.z);
+    jmethodID get_block_state_mid = get_mid(world, mapping::getBlockState, env);
+    if (!get_block_state_mid)
+    {
+		env->DeleteLocalRef(block_pos);
+		env->DeleteLocalRef(world);
+        return 0;
+    }
+    jobject block_state = env->CallObjectMethod(world, get_block_state_mid, block_pos);
 
-	//if (static bool once = true; once)
-	//{
-	//	auto klass = env->GetObjectClass(blockatObj);
-	//	auto super = env->GetSuperclass(klass);
-	//	auto super2 = env->GetSuperclass(super);
- //       if (super2)
- //       {
-	//		loop_through_class(super2, env);
-	//		env->DeleteLocalRef(super2);
- //       }
-	//	//loop_through_class(klass, env);
-	//	env->DeleteLocalRef(super);
-	//	env->DeleteLocalRef(klass);
-	//	once = false;
-	//}
+	env->DeleteLocalRef(world);
+	env->DeleteLocalRef(block_pos);
 
-    auto blockatkClass = env->GetObjectClass(blockatObj);
-    auto id = env->CallStaticIntMethod(blockatkClass, get_static_mid(blockatkClass, mapping::getIdFromBlockStatic, env), blockatObj);
-    env->DeleteLocalRef(world);
-    env->DeleteLocalRef(blockatObj);
-    env->DeleteLocalRef(blockatkClass);
+    jclass block_state_class = env->GetObjectClass(block_state);
+
+    jmethodID get_block_mid = get_mid(block_state_class, mapping::getBlock, env);
+    jobject block = env->CallObjectMethod(block_state, get_block_mid);
+    jclass block_class = env->GetObjectClass(block);
+    
+    jmethodID get_id_from_blockstate_mid = get_static_mid(block_class, mapping::getIdFromBlockStatic, env);
+    
+    int id = env->CallStaticIntMethod(block_class, get_id_from_blockstate_mid, block);
+    
+    env->DeleteLocalRef(block);
+    env->DeleteLocalRef(block_class);
+    env->DeleteLocalRef(block_state);
+    env->DeleteLocalRef(block_state_class);
 
     return id;
 }

@@ -111,8 +111,8 @@ namespace toad
 	void keybind_button(int& key)
 	{
 		int keys_size = IM_ARRAYSIZE(keys);
-		const char* no_key_label = "[none]";
-		static std::string name = keys[std::clamp(key, 0, keys_size)];
+		char name[18];
+		strncpy_s(name, keys[std::clamp(key, 0, keys_size)], 18);
 		static bool binding = false;
 
 		if (binding)
@@ -124,15 +124,11 @@ namespace toad
 				if (GetAsyncKeyState(i) & 0x8000)
 				{
 					if (i == VK_ESCAPE)
-					{
-						key = -1;
-					}
+						key = 0;
 					else
-					{
 						key = i;
-					}
 
-					name = keys[std::clamp(key, 0, keys_size)];
+					strncpy_s(name, keys[std::clamp(key, 0, keys_size)], 18);
 
 					binding = false;
 
@@ -142,14 +138,49 @@ namespace toad
 		}
 		else
 		{
-			const char* label = key == -1 ? no_key_label : name.c_str();
-
-			if (ImGui::Button(label))
-			{
+			if (ImGui::Button(name))
 				binding = true;
+		}
+	}
+
+	void keybind_label(int& key)
+	{
+		int keys_size = IM_ARRAYSIZE(keys);
+		char name[18];
+		strncpy_s(name, keys[std::clamp(key, 0, keys_size)], 18);
+		static bool binding = false;
+
+		if (binding)
+		{
+			ImGui::Text("[...]");
+
+			for (int i = 0; i < keys_size; i++)
+			{
+				if (GetAsyncKeyState(i) & 0x8000)
+				{
+					if (i == VK_ESCAPE)
+						key = 0;
+					else
+						key = i;
+
+					strncpy_s(name, keys[std::clamp(key, 0, keys_size)], 18);
+
+					binding = false;
+
+					break;
+				}
 			}
 		}
-	
+		else
+		{
+			ImGui::Text(name);
+
+			if (ImGui::IsItemHovered())
+			{
+				if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+					binding = true;
+			}
+		}
 	}
 
 	void center_text_multi(const ImVec4& col, std::string_view txt, center_text_flags flags)
@@ -310,7 +341,7 @@ namespace toad
 		return res;
 	}
 
-	bool checkbox_button(const char* name, const char* icon, bool* v)
+	bool checkbox_button(const char* name, const char* icon, bool* v, int* key_bind)
 	{
 		ImGuiContext& g = *GImGui;
 		const ImGuiStyle& style = g.Style;
@@ -337,10 +368,22 @@ namespace toad
 		ImGui::SetCursorPosY(oPosY + style.FramePadding.y);
 		ImGui::SetCursorPosX(oPosX + 25);
 		//ToggleButton(id.c_str(), v);
-		ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(icon).x / 2, oPosY + 28 });
-		ImGui::Text(icon);
-		ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(name).x / 2, oPosY + 48 });
-		ImGui::Text(name);
+		if (key_bind && *key_bind > 0)
+		{
+			ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(icon).x / 2, oPosY + 23 });
+			ImGui::Text(icon);
+			ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(keys[*key_bind]).x / 2, oPosY + 38 });
+			ImGui::TextColored({0.7f, 0.7f, 0.7f, 1.f}, keys[*key_bind]);
+			ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(name).x / 2, oPosY + 53 });
+			ImGui::Text(name);
+		}
+		else
+		{
+			ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(icon).x / 2, oPosY + 28 });
+			ImGui::Text(icon);
+			ImGui::SetCursorPos({ oPosX + 52 - ImGui::CalcTextSize(name).x / 2, oPosY + 48 });
+			ImGui::Text(name);
+		}
 
 		// green/red thing
 		ImGui::SetCursorPos({ oPosX, oPosY });
@@ -350,7 +393,7 @@ namespace toad
 		return res;
 	}
 
-	void setting_menu(const char* name, bool& opened, const std::function<void()>& components, bool use_extra_options, const std::function<void()>& extra_options_components)
+	void setting_menu(const char* name, bool& opened, const std::function<void()>& components, int* key_bind, bool use_extra_options, const std::function<void()>& extra_options_components)
 	{
 		if (!opened) 
 			return;
@@ -407,8 +450,14 @@ namespace toad
 		ImGui::SetCursorPos({ box_pos_X_smooth, mid.y - box_size_smooth.y / 2 });
 		ImGui::BeginChild(name, box_size_smooth, true, window_flags);
 		{
-			center_textX({ 1,1,1,1 }, name);
+			if (key_bind)
+			{
+				keybind_label(*key_bind);
+				ImGui::SameLine();
+			}
 
+			center_textX({ 1,1,1,1 }, name);
+			
 			if (use_extra_options)
 			{
 				ImGui::SameLine(0, box_size_smooth.x - (box_size_smooth.x / 2 + ImGui::CalcTextSize(name).x / 2) - 40);

@@ -38,14 +38,7 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;
 	}
 
-	const jmethodID blockatMID = get_mid(world, mapping::getBlockAt, env);
-	if (!blockatMID)
-	{
-		env->DeleteLocalRef(world);
-		SLEEP(100);
-		return;
-	}
-
+	static jclass blockAtClass = nullptr;
 	for (int x = static_cast<int>(lPos.x) - m_range; x < block_x_limit; x++)
 		for (int y = static_cast<int>(lPos.y) - m_range; y < block_y_limit; y++)
 			for (int z = static_cast<int>(lPos.z) - m_range; z < block_z_limit; z++)
@@ -53,12 +46,7 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				if (!CVarsUpdater::IsVerified)
 					break;
 
-				jobject blockatObj = env->CallObjectMethod(world, blockatMID, x, y, z);
-				jclass blockatkClass = env->GetObjectClass(blockatObj);
-				int id = env->CallStaticIntMethod(blockatkClass, get_static_mid(blockatkClass, mapping::getIdFromBlockStatic, env), blockatObj);
-
-				env->DeleteLocalRef(blockatObj);
-				env->DeleteLocalRef(blockatkClass);
+				int id = MC->getBlockIdAt({ x,y,z });
 
 				if (id == 0)
 					continue; // airblock

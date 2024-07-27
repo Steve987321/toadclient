@@ -246,6 +246,8 @@ enum class mappingFields
     theWorldField,
     objMouseOver, // Lnet/minecraft/util/MovingObjectPosition;
     leftClickCounterField,
+    gameSettings,
+    timer,
 
     // .World
     playerEntitiesField,
@@ -286,15 +288,17 @@ enum class mappingFields
     lowerChestInventory, // Lnet/minecraft/inventory/IInventory;
     upperChestInventory, // Lnet/minecraft/inventory/IInventory;
     itemDamage, // I
+
+    // .Vec3
+	Vec3X,
+	Vec3Y,
+	Vec3Z,
 };
 
 enum class mapping
 {
     // .Minecraft
     getPlayer,
-    getGameSettings,
-    getObjectMouseOver,
-    getTimer,
     getRenderManager,
 
     // objectmouseover
@@ -306,13 +310,16 @@ enum class mapping
 
     // .World
     getPlayerEntities,
-    getBlockAt,
+    getBlockState,
     isAirBlock,
     rayTraceBlocks, // args: (jobject Vec3 from, jobject Vec3 direction, bool stopOnLiquid) returns: jobject MovingObjectPosition if block hit else null
 
     // .Block
     getBlockFromBlockState,
     getIdFromBlockStatic,
+
+    // .BlockState
+    getBlock,
 
     // player
     getOpenContainer,
@@ -363,9 +370,6 @@ enum class mapping
 
     // .Vec3
     Vec3Init, // args: double x, double y, double z 
-    Vec3X,
-    Vec3Y,
-    Vec3Z,
 
     // .Vec3I
     Vec3IInit, // args: int x, int y, int z
