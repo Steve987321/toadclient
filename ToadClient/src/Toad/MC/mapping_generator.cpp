@@ -353,7 +353,7 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 	{
 		LOGERROR("[MappingGenerator] Failed to call GetClassFields, {}", (int)res);
 		env->DeleteLocalRef(klass);
-		return;
+		return klass_mappings;
 	}
 
 	LOGDEBUG("[MappingGenerator] Fields");
@@ -394,7 +394,7 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 	{
 		LOGERROR("[MappingGenerator] Failed to call GetClassMethods, {}", (int)res);
 		env->DeleteLocalRef(klass);
-		return;
+		return klass_mappings;
 	}
 	std::vector<unsigned char> bytecodes_vec;
 
@@ -447,10 +447,9 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 	if (res != JVMTI_ERROR_NONE)
 	{
 		env->DeleteLocalRef(klass);
-		return;
+		return klass_mappings;
 	}
 
-	int class_index = -1;
 	for (int i = 0; i < class_count; i++)
 	{
 		bool same_field_count = jvmfunc::oJVM_GetClassFieldsCount(env, classes[i]) == field_count;
@@ -463,6 +462,8 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 	}
 
 	jvmti_env->Deallocate((unsigned char*)classes);
+
+	return klass_mappings;
 }
 
 }
