@@ -53,17 +53,17 @@ void toadll::ActiveRenderInfo::getProjection(std::array<float, 16>& arr) const
 //	env->DeleteLocalRef(ibufklass);
 //}
 
-toadll::Vec3 toadll::ActiveRenderInfo::get_render_pos() const
-{
-	auto mid = get_static_mid(ariclass, mapping::getRenderPos, env);
-	if (!mid)
-		return {};
-
-	auto obj = env->CallStaticObjectMethod(ariclass, mid);
-
-	auto res = to_vec3(obj, env);
-
-	env->DeleteLocalRef(obj);
-
-	return res;
-}
+//toadll::Vec3 toadll::ActiveRenderInfo::get_render_pos() const
+//{
+//	auto mid = get_static_mid(ariclass, mapping::getRenderPos, env);
+//	if (!mid)
+//		return {};
+//
+//	auto obj = env->CallStaticObjectMethod(ariclass, mid);
+//
+//	auto res = to_vec3(obj, env);
+//
+//	env->DeleteLocalRef(obj);
+//
+//	return res;
+//}

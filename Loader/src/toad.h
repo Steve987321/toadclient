@@ -45,14 +45,18 @@ namespace toad
 
 	void clean_up();
 
+	void check_hotkey_press();
+
+	void set_injected_window(const Window& window);
+
 	// will be true when the program is in its main loop 
 	inline std::atomic_bool g_is_running = false;
 
 	// only updated when still in init screen
 	// contains the list of all minecraft windows that user can inject to  
-	inline std::vector<window> g_mc_window_list = {};
+	inline std::vector<Window> g_mc_window_list = {};
 
-	inline window g_injected_window{ {}, 0, {} };
+	inline Window g_injected_window{ {}, 0, {} };
 
 	// will be true when injection was succesfull
 	// will remain false if we haven't injected 

@@ -22,9 +22,9 @@
 namespace toad
 {
 
-struct window
+struct Window
 {
-	window(const std::string_view title, DWORD pid, const HWND& hwnd)
+	Window(const std::string_view title, DWORD pid, const HWND& hwnd)
 		: title(title), pid(pid), hwnd(hwnd) {}
 
 	std::string title;
@@ -130,6 +130,7 @@ std::vector<std::pair<T, std::string>> get_filtered_suggestions(const std::strin
 bool icon_button(const char* icon);
 
 void keybind_button(int& key);
+void keybind_label(int& key);
 
 // simple wrapper for centering a single line of text inside a box on the X axis
 template<typename ...Args>
@@ -162,16 +163,17 @@ void show_message_box(const char* title, const char* msg, bool& condition, bool 
 bool toggle_button(const char* str_id, bool* v);
 
 // returns whether button is right clicked
-bool checkbox_button(const char* name, const char* icon, bool* v);
+bool checkbox_button(const char* name, const char* icon, bool* v, int* key_bind = nullptr);
 
 /// used on modules
 ///
 ///	@param name the name of the module, also used as an id
 ///	@param opened will show the menu once this is true
 ///	@param components main settings components
+/// @param key_bind if not nullptr adds keybind_label button 
 ///	@param use_extra_options if true will show extra options window and option
 ///	@param extra_options_components what will show in the extra_options window
-void setting_menu(const char* name, bool& opened, const std::function<void()>& components, bool use_extra_options = false, const std::function<void()>& extra_options_components = {});
+void setting_menu(const char* name, bool& opened, const std::function<void()>& components, int* key_bind = nullptr, bool use_extra_options = false, const std::function<void()>& extra_options_components = {});
 
 /// Wrapper for drawing a group box.
 ///

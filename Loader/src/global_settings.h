@@ -104,6 +104,7 @@ namespace toad
 		inline bool update_rand_flag = false; 
 
 		inline bool enabled = false;
+		inline int key = 0;
 
 		inline int min_cps = 12;
 		inline int max_cps = 16;
@@ -160,6 +161,7 @@ namespace toad
 	namespace right_clicker
 	{
 		inline bool enabled = false;
+		inline int key = 0;
 		inline int cps = 15;
 
 		inline CLICK_CHECK click_check = CLICK_CHECK::ONLY_GAME; // checks when clicking should happen
@@ -171,6 +173,7 @@ namespace toad
 	namespace aa
 	{
 		inline bool enabled = false;
+		inline int key = 0;
 		inline bool use_item_whitelist = false;
 		inline bool horizontal_only = false;
 		inline bool invisibles = false;
@@ -190,6 +193,7 @@ namespace toad
 	namespace reach
 	{
 		inline bool enabled = false;
+		inline int key = 0;
 		inline float min_value = 3.00f;
 		inline float max_value = 3.50f;
 		inline int chance = 50;
@@ -198,6 +202,7 @@ namespace toad
 	namespace velocity
 	{
 		inline bool enabled = false;
+		inline int key = 0;
 
 		inline bool jump_reset = false; // uses jump reset instead, will ignore everything else and justs jumps on hit
 		inline int jump_press_chance = 70;
@@ -218,6 +223,7 @@ namespace toad
 	namespace esp
 	{
 		inline bool enabled = false;
+		inline int key = 0;
 		inline float line_col[4] = {1.0f, 0.0f, 0.0f, 1.0f};
 		inline float fill_col[4] = {1.0f, 1.0f, 1.0f, 0.1f};
 
@@ -245,17 +251,20 @@ namespace toad
 	namespace no_click_delay
 	{
 		inline bool enabled = false;
+		inline int key = 0;
 	}
 
 	namespace block_esp
 	{
 		inline bool enabled = false;
+		inline int key = 0;
 		inline std::unordered_map<int, ImVec4> block_list;
 	}
 
 	namespace bridge_assist
 	{
 		inline bool enabled = false;
+		inline int key = 0;
 		inline float pitch_check = 61.f; // only sneak when pitch is less
 		inline int block_check = 1; // only sneak when edge height is bigger then this value in blocks
 
@@ -265,7 +274,8 @@ namespace toad
 	namespace blink
 	{
 		inline bool enabled = false;
-		inline int key = 0; // key to be pressed/held to blink
+		inline int key = 0;
+		inline int hold_key = 0; // key to be pressed/held to blink
 		inline float limit_seconds = 5.f; // max limit in seconds for blink to be enabled
 		inline bool stop_rec_packets = false; // also stops/pauses incoming packets
 		inline bool show_trail = false; // renders a trail from the position when enabled to current position
@@ -274,7 +284,8 @@ namespace toad
 	namespace chest_stealer
 	{
 		inline bool enabled = false;
-		inline int steal_key = -1;
+		inline int key = 0;
+		inline int steal_key = 0;
 
 		inline bool show_slot_positions = false; // shows helper grid for setting the offsets
 		inline bool show_info = false;

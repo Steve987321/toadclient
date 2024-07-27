@@ -28,7 +28,7 @@ namespace toad::ui
     }
 
     // for the flickering of the possible minecraft windows
-    std::vector<window> shownWindowList = {};
+    std::vector<Window> shownWindowList = {};
 
     // ui when not injected 
     void ui_init(const ImGuiIO* io)
@@ -44,6 +44,8 @@ namespace toad::ui
 
         ImGui::Begin("select minecraft", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
         {
+			scan_windows();
+
             center_textX(ImVec4(0.3f, 0.3f, 0.3f, 1), "please select the minecraft window");
             ImGui::BeginChild("mc windows", ImVec2(0, 0), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
             {
@@ -107,7 +109,7 @@ namespace toad::ui
 										g_is_verified = true;
 
 									g_injected_window = window;
-
+                                    set_injected_window(g_injected_window);
 									loading = false;
 								});
                         }

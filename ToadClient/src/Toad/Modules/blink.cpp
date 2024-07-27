@@ -80,7 +80,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (!CVarsUpdater::IsInGui)
 	{
-		if (GetAsyncKeyState(blink::key) && m_can_enable)
+		if (GetAsyncKeyState(blink::hold_key) && m_can_enable)
 		{
 			HWSASend::StopSends = true;
 			if (blink::stop_rec_packets)
@@ -89,7 +89,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			m_timer.Start();
 			m_can_enable = false;
 		}
-		else if (!GetAsyncKeyState(blink::key))
+		else if (!GetAsyncKeyState(blink::hold_key))
 		{
 			DisableBlink();
 			m_can_enable = true;

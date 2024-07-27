@@ -157,7 +157,7 @@ bool LoadSettings(std::string_view jsonSettings, std::string& error_msg)
 
 		// blink
 		get_json_element(blink::enabled, data, "bl_enabled");
-		get_json_element(blink::key, data, "bl_key");
+		get_json_element(blink::hold_key, data, "bl_key");
 		get_json_element(blink::stop_rec_packets, data, "bl_stop_incoming_packets");
 		get_json_element(blink::show_trail, data, "bl_show_trail");
 		get_json_element(blink::limit_seconds, data, "bl_limit_seconds");
@@ -399,7 +399,7 @@ json SettingsToJson()
 
 	// blink
 	data["bl_enabled"] = blink::enabled;
-	data["bl_key"] = blink::key;
+	data["bl_key"] = blink::hold_key;
 	data["bl_stop_incoming_packets"] = blink::stop_rec_packets;
 	data["bl_show_trail"] = blink::show_trail;
 	data["bl_limit_seconds"] = blink::limit_seconds;

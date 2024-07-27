@@ -12,38 +12,18 @@ namespace toadll::mappings
 			fields[mappingFields::theWorldField] = { "theWorld", "Lnet/minecraft/client/multiplayer/WorldClient;" };
 			
 			fields[mappingFields::objMouseOver] = { "objectMouseOver", "Lnet/minecraft/util/MovingObjectPosition;" };
-			
-			jclass worldclass = findclass("net.minecraft.world.World", env);
-			if (!worldclass)
-			{
-				LOGERROR("[mappings] World class is null");
-				return;
-			}
+			fields[mappingFields::timer] = { "timer", "Lnet/minecraft/util/Timer;" };
 
-			methods[mapping::getBlockAt] = { "bridge$getBlockAt", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getBlockAt, "bridge$getBlockAt", worldclass, env))
-				LOGERROR("[mappings] Can't find getBlockAt");
+			methods[mapping::getBlockState] = { "getBlockState", "(Lnet/minecraft/util/BlockPos;)Lnet/minecraft/block/state/IBlockState;" };
+			methods[mapping::getBlock] = { "getBlock", "()Lnet/minecraft/block/Block;" };
 
-			//env->DeleteLocalRef(worldclass);
-
-			methods[mapping::getPlayer] = { "bridge$getPlayer", "SIGNATURE NOT FOUND" };
+		/*	methods[mapping::getPlayer] = { "bridge$getPlayer", "SIGNATURE NOT FOUND" };
 			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
-				LOGERROR("[mapping] Can't find getPlayer");
+				LOGERROR("[mapping] Can't find getPlayer");*/
 
 			fields[mappingFields::thePlayerField] = { "thePlayer", "Lnet/minecraft/client/entity/EntityPlayerSP;"};
-
-			methods[mapping::getGameSettings] = { "bridge$getGameSettings", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass, env))
-				LOGERROR("[mappings] Can't find gamesettings");
-
-			methods[mapping::getObjectMouseOver] = { "bridge$getObjectMouseOver", "SIGNATURE NOT FOUND"};
-			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
-				LOGERROR("[mappings] Can't find getObjectMouseOver");
-
-			methods[mapping::getTimer] = {"bridge$getTimer", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
-				LOGERROR("can't find timer");
-
+			fields[mappingFields::gameSettings] = { "gameSettings", "Lnet/minecraft/client/settings/GameSettings;" };
+			
 			fields[mappingFields::currentScreenField] = { "currentScreen", "Lnet/minecraft/client/gui/GuiScreen;" };
 			fields[mappingFields::leftClickCounterField] = { "leftClickCounter" , "I"};
 
@@ -146,9 +126,9 @@ namespace toadll::mappings
 
 			// Vec3 class
 			methods[mapping::Vec3Init] = { "<init>", "(DDD)V" };
-			methods[mapping::Vec3X] = { "bridge$xCoord", "()D" };
-			methods[mapping::Vec3Y] = { "bridge$yCoord", "()D" };
-			methods[mapping::Vec3Z] = { "bridge$zCoord", "()D" };
+			fields[mappingFields::Vec3X] = { "xCoord", "D" };
+			fields[mappingFields::Vec3Y] = { "yCoord", "D" };
+			fields[mappingFields::Vec3Z] = { "zCoord", "D" };
 
 			// Vec3I class
 			methods[mapping::Vec3IInit] = { "<init>", "(III)V" };
@@ -171,36 +151,19 @@ namespace toadll::mappings
 		else if (client == toad::MC_CLIENT::Lunar_171)
 		{
 			fields[mappingFields::theMcField] = { "theMinecraft", "Lnet/minecraft/client/Minecraft;" };
+			fields[mappingFields::timer] = { "timer", "Lnet/minecraft/util/Timer;" };
 
 			fields[mappingFields::theWorldField ] = { "theWorld", "Lnet/minecraft/client/multiplayer/WorldClient;" };
 			fields[mappingFields::objMouseOver] = { "objectMouseOver", "Lnet/minecraft/util/MovingObjectPosition;" };
 
-			// get world class (temp)
-			auto worldclass = findclass("net.minecraft.world.World", env);
+			methods[mapping::getBlock] = { "getBlock", "()Lnet/minecraft/block/Block;" };
 
-			methods[mapping::getBlockAt] = { "bridge$getBlockAt", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getBlockAt, "bridge$getBlockAt", worldclass, env))
-				LOGERROR("can't find getBlockAt");
-
-			env->DeleteLocalRef(worldclass);
-
-			methods[mapping::getPlayer] = { "bridge$getPlayer", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
-				LOGERROR("[mappings] Can't find player");// getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
+			//methods[mapping::getPlayer] = { "bridge$getPlayer", "SIGNATURE NOT FOUND" };
+			//if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
+			//	LOGERROR("[mappings] Can't find player");// getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
 
 			fields[mappingFields::thePlayerField] = { "thePlayer", "Lnet/minecraft/client/entity/EntityClientPlayerMP;" };
-
-			methods[mapping::getGameSettings] = { "bridge$getGameSettings", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getGameSettings, "bridge$getGameSettings", mcclass, env))
-				LOGERROR("[mappings] Can't find gamesettings");
-
-			methods[mapping::getObjectMouseOver] = { "bridge$getObjectMouseOver", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getObjectMouseOver, "bridge$getObjectMouseOver", mcclass, env))
-				LOGERROR("[mappings] Can't find getobjectmouseover");// getObjectMouseOver, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/CHOOIIHOCOHCHIIRIOHCIOCOH/IHRRCCOCORIIROHOCCCOCHCOI;" });
-
-			methods[mapping::getTimer] = { "bridge$getTimer", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getTimer, "bridge$getTimer", mcclass, env))
-				LOGERROR("[mappings] Can't find timer");
+			fields[mappingFields::gameSettings] = { "gameSettings", "Lnet/minecraft/client/settings/GameSettings;" };
 
 			fields[mappingFields::currentScreenField] = { "currentScreen", "Lnet/minecraft/client/gui/GuiScreen;" };
 			fields[mappingFields::leftClickCounterField] = { "leftClickCounter", "I" };
@@ -301,9 +264,9 @@ namespace toadll::mappings
 			methods[mapping::disableLightmap] = { "disableLightmap", "()V" };
 
 			// Vec3 class
-			methods[mapping::Vec3X] = { "bridge$xCoord", "()D" };
-			methods[mapping::Vec3Y] = { "bridge$yCoord", "()D" };
-			methods[mapping::Vec3Z] = { "bridge$zCoord", "()D" };
+			fields[mappingFields::Vec3X] = { "xCoord", "D" };
+			fields[mappingFields::Vec3Y] = { "yCoord", "D" };
+			fields[mappingFields::Vec3Z] = { "zCoord", "D" };
 
 			// Vec3I class
 			methods[mapping::Vec3IX] = { "getX", "()I" };

@@ -98,15 +98,20 @@ namespace toad::ui
                     static bool menu_rc = false;
                     static bool menu_aa = false;
                     static bool menu_vel = false;
-                    if (checkbox_button("Left Clicker", ICON_FA_MOUSE, &left_clicker::enabled)) menu_lc = true;
+                    if (checkbox_button("Left Clicker", ICON_FA_MOUSE, &left_clicker::enabled, &left_clicker::key)) 
+                        menu_lc = true;
                     if (g_curr_client == MC_CLIENT::Lunar_189)
                     {
                         ImGui::SameLine(0, 80);
                         checkbox_button("No Hit Delay", ICON_FA_CLOCK, &no_click_delay::enabled);
                     }
-                    if (checkbox_button("Right Clicker", ICON_FA_MOUSE, &right_clicker::enabled)) menu_rc = true;
-                    if (checkbox_button("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled)) menu_aa = true;
-                    if (checkbox_button("Velocity", ICON_FA_WIND, &velocity::enabled)) menu_vel = true;
+                    if (checkbox_button("Right Clicker", ICON_FA_MOUSE, &right_clicker::enabled, &right_clicker::key))
+                        menu_rc = true;
+                    if (checkbox_button("Aim Assist", ICON_FA_CROSSHAIRS, &aa::enabled, &aa::key))
+                        menu_aa = true;
+                    if (checkbox_button("Velocity", ICON_FA_WIND, &velocity::enabled, &velocity::key))
+                        menu_vel = true;
+                   
                     if (menu_lc)
                         setting_menu("LeftClicker", menu_lc, []
                         {
@@ -138,7 +143,7 @@ namespace toad::ui
                                 }
                                 ImGui::EndCombo();
                             }
-                        }, true, 
+                        }, &left_clicker::key, true,
                         []{
                             if (ImGui::Checkbox("Edit Boosts & Drops", &clicker_rand_edit))
                             {
@@ -183,7 +188,7 @@ namespace toad::ui
                                 }
                                 ImGui::EndCombo();
                             }
-		                });
+		                }, &right_clicker::key);
 
                     else if (menu_aa)
                         setting_menu("Aim Assist", menu_aa, []
@@ -206,7 +211,7 @@ namespace toad::ui
 			                    }
 			                    ImGui::EndCombo();
 			                }
-                        });
+                        }, &aa::key);
 
                     else if (menu_vel)
                         setting_menu("Velocity", menu_vel, []
@@ -228,7 +233,7 @@ namespace toad::ui
 		                        ImGui::SliderInt("Chance", &velocity::chance, 0, 100, "%d%%");
 		                        ImGui::SliderInt("Delay", &velocity::delay, 0, 10);
 		                    }
-                        });
+                        }, &velocity::key);
                 }
                 else if (tab == 1)
                 {
@@ -238,14 +243,14 @@ namespace toad::ui
                     static bool is_Blink = false;
                     static bool is_ArrayList = false;
                     static bool is_ChestStealer = false;
-                    if (checkbox_button("Auto Bridge", ICON_FA_CUBE, &bridge_assist::enabled)) is_Bridge = true;
+                    if (checkbox_button("Bridge Assist", ICON_FA_CUBE, &bridge_assist::enabled, &bridge_assist::key)) is_Bridge = true;
 					ImGui::SameLine(0, 80);
 					if (checkbox_button("Array List", ICON_FA_BARS, &ui::show_array_list)) is_ArrayList = true;
-                    if (checkbox_button("ESP", ICON_FA_EYE, &esp::enabled)) is_Esp = true;
+                    if (checkbox_button("ESP", ICON_FA_EYE, &esp::enabled, &esp::key)) is_Esp = true;
                     ImGui::SameLine(0, 80);
-					if (checkbox_button("Chest Stealer", ICON_FA_BOX_OPEN, &chest_stealer::enabled)) is_ChestStealer = true;
-                    if (checkbox_button("Block ESP", ICON_FA_CUBES, &block_esp::enabled)) is_BlockEsp = true;
-                    if (checkbox_button("Blink", ICON_FA_GHOST, &blink::enabled)) is_Blink = true;
+					if (checkbox_button("Chest Stealer", ICON_FA_BOX_OPEN, &chest_stealer::enabled, &chest_stealer::key)) is_ChestStealer = true;
+                    if (checkbox_button("Block ESP", ICON_FA_CUBES, &block_esp::enabled, &block_esp::key)) is_BlockEsp = true;
+                    if (checkbox_button("Blink", ICON_FA_GHOST, &blink::enabled, &blink::key)) is_Blink = true;
 
                     if (is_Bridge)
                     {
@@ -257,7 +262,7 @@ namespace toad::ui
                             ImGui::SliderInt("block height check", &bridge_assist::block_check, 0, 10);
 
                             ImGui::Checkbox("Only initiate when sneaking", &bridge_assist::only_initiate_when_sneaking);
-                        });
+                        }, &bridge_assist::key);
                     }
 
                     else if (is_Esp)
@@ -280,7 +285,7 @@ namespace toad::ui
                             }
 
                             ImGui::Checkbox("open esp settings", &esp_visuals_menu);
-                        });
+                        }, &esp::key);
                     }
 
                     else if (is_BlockEsp)
@@ -360,18 +365,18 @@ namespace toad::ui
 	                            }
 	                            ImGui::EndChild();
 	                        }
-                        });
+                        }, &block_esp::key);
                     }
 
                     else if (is_Blink)
                     {
                         setting_menu("Blink", is_Blink, []
                         {
-                            ImGui::InputInt("keycode", &blink::key);
+                            ImGui::InputInt("keycode", &blink::hold_key);
 	                        ImGui::InputFloat("max limit in seconds", &blink::limit_seconds, 0, 0, "%.1f");
 	                        ImGui::Checkbox("render trail", &blink::show_trail);
 	                        ImGui::Checkbox("pause incoming packets", &blink::stop_rec_packets);
-                        });
+                        }, &blink::key);
                     }
 
                     else if (is_ArrayList)
@@ -465,7 +470,7 @@ namespace toad::ui
                                 ImGui::PopID();
 
                                 center_text_multi({ 1, 1, 0, 0.5f }, "This feature is WIP. \n only works on small chests. \n Or not at all.");
-							});
+							}, &chest_stealer::key);
                     }
                 }
                 else if (tab == 2)
@@ -572,7 +577,8 @@ namespace toad::ui
                     }
 
                 }
-            } ImGui::EndChild();
+            } 
+            ImGui::EndChild();
 
             // side extra settings bar
 
