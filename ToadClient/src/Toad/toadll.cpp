@@ -516,6 +516,12 @@ bool UpdateSettings()
 	loaded_config = data["config"];
 
 	std::string error_msg;
+
+	// For clicker update delays 
+	float lmin_cps_old = left_clicker::min_cps;
+	float lmax_cps_old = left_clicker::max_cps;
+	float rcps_old = right_clicker::cps;
+
 	if (!config::LoadSettings(data.dump(), error_msg))
 	{
 		LOGERROR("Error loading settings: {}", error_msg);
@@ -532,8 +538,11 @@ bool UpdateSettings()
 	CBlockEsp::GetInstance()->UpdateEnabledState();
 	CEsp::GetInstance()->UpdateEnabledState();
 
-	CLeftAutoClicker::SetDelays(left_clicker::min_cps, left_clicker::max_cps);
-	CRightAutoClicker::SetDelays(right_clicker::cps);
+	if (left_clicker::min_cps != lmin_cps_old || left_clicker::max_cps != lmax_cps_old)
+		CLeftAutoClicker::SetDelays(left_clicker::min_cps, left_clicker::max_cps);
+
+	if (right_clicker::cps != rcps_old)
+		CRightAutoClicker::SetDelays(right_clicker::cps);
 
 	UnmapViewOfFile(pMem);
 	CloseHandle(hMapFile);

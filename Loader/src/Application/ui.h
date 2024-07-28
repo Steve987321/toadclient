@@ -115,14 +115,14 @@ namespace toad::ui
                     if (menu_lc)
                         setting_menu("LeftClicker", menu_lc, []
                         {
-                            if (ImGui::SliderInt("min cps", &left_clicker::min_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
+                            if (ImGui::SliderFloat("min cps", &left_clicker::min_cps, 5, 20, "%.1fcps", ImGuiSliderFlags_NoInput))
                             {
                                 // update rand delays
                                 left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);
                                 visual_clicker.SetRand(left_clicker::rand);
                             }
 
-                        	if (ImGui::SliderInt("max cps", &left_clicker::max_cps, 5, 20, "%dcps", ImGuiSliderFlags_NoInput))
+                        	if (ImGui::SliderFloat("max cps", &left_clicker::max_cps, 5, 20, "%.1fcps", ImGuiSliderFlags_NoInput))
                                 {
                                     // update rand delays
 									left_clicker::rand.UpdateDelays(left_clicker::min_cps, left_clicker::max_cps);

@@ -302,8 +302,8 @@ namespace toad::ui
                         ImGui::SliderFloat("amount", &b.amount_ms, -100.f, 100.f, "%.3f ms");
                         ImGui::SliderInt("duration", &b.duration, 5, 100, "%d clicks");
                         ImGui::SliderInt("transition duration", &b.transition_duration, 5, 100, "%d clicks");
-                        ImGui::SliderInt("freq min", &b.freq_min, 5, 200, "%d%%");
-                        ImGui::SliderInt("freq max", &b.freq_max, 5, 200, "%d%%");
+                        ImGui::SliderInt("freq min", &b.freq_min, 5, 200, "%d clicks");
+                        ImGui::SliderInt("freq max", &b.freq_max, 5, 200, "%d clicks");
 
                         ImGui::TreePop();
                     }

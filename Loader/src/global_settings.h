@@ -106,8 +106,9 @@ namespace toad
 		inline bool enabled = false;
 		inline int key = 0;
 
-		inline int min_cps = 12;
-		inline int max_cps = 16;
+		// base rand
+		inline float min_cps = 12;
+		inline float max_cps = 16;
 
 		//inline bool item_whitelist = false;
 		inline bool weapons_only = false; // only click when holding weapon
