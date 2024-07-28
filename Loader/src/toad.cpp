@@ -355,10 +355,25 @@ BOOL CALLBACK EnumWindowCallback(HWND hwnd, LPARAM lparam)
 void check_injected_window_open(const Window& window)
 {
 	while (g_is_running && FindWindowA(NULL, window.title.c_str()) != NULL)
+	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
+
+	int counter = 0;
+	while (counter++ < 5)
+	{
+		if (!g_is_running)
+			break;
+
+		if (FindWindowA(NULL, window.title.c_str()) != NULL)
+			break;
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
 
 	g_mc_window_list.clear();
 	g_is_verified = false;
+
 }
 
 }
