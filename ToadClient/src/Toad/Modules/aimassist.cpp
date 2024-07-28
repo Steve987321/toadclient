@@ -17,7 +17,6 @@ AimBoost::AimBoost(float speed_mult_min, float speed_mult_max, const Vec2& frequ
 	prev_speed_mult = speed_mult;
 }
 
-
 float AimBoost::Delay()
 {
 	if (timer.Elapsed<>() >= frequency_ms)
@@ -154,7 +153,7 @@ void CAimAssist::GetTarget(std::shared_ptr<c_Entity>& target, Vec3& target_pos, 
 		if (e->isInvisible() && !aa::invisibles) continue;
 
 		float yaw_diff = abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, entityPos).first)));
-		if (yaw_diff > aa::fov / 2)
+		if ((int)yaw_diff > aa::fov / 2)
 			continue;
 
 		distances.emplace_back(distance, std::make_pair(e, entityPos));
@@ -318,7 +317,7 @@ void CAimAssist::ApplyAimRand(const std::shared_ptr<LocalPlayer>& lPlayer, float
 
 	POINT pt; 
 	GetCursorPos(&pt);
-	SetCursorPos(pt.x + (int)yawdiff_speed, pt.y + (int)(pitchdiff_speed + pitchrandsmooth));
+	SetCursorPos(pt.x + (int)round(yawdiff_speed), pt.y + (int)round(pitchdiff_speed + pitchrandsmooth));
 }
 
 Vec3 CAimAssist::GetAimPoint(const std::shared_ptr<LocalPlayer>& lPlayer, const Vec3& target_pos, bool& success)
