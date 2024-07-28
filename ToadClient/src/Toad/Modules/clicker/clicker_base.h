@@ -27,11 +27,11 @@ protected:
 
 protected:
 	/// Returns the randomization struct defined inside the derived class
-	inline virtual Randomization& get_rand() = 0;
+	virtual Randomization& get_rand() = 0;
 
 	/// Returns whether a mouse button has been send (for preventing double clicking)
-	inline virtual bool mouse_down() = 0;
-	inline virtual void mouse_up() = 0;
+	virtual bool mouse_down() = 0;
+	virtual void mouse_up() = 0;
 
 protected:
 

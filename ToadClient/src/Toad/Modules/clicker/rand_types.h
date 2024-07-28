@@ -140,7 +140,7 @@ namespace toadll
 		float max_delay = 0;
 
 		float edited_min = 20;
-		float edited_max = 50;
+		float edited_max = 25;
 
 		float delay = 0;
 
