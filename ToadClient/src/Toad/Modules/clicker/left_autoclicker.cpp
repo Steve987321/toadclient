@@ -403,7 +403,7 @@ void CLeftAutoClicker::right_mouse_up()
 	PostMessage(g_hWnd, WM_RBUTTONUP, 0, LPARAM((pt.x, pt.y)));
 }
 
-void CLeftAutoClicker::SetDelays(int min_cps, int max_cps)
+void CLeftAutoClicker::SetDelays(float min_cps, float max_cps)
 {
 	m_rand.UpdateDelays(min_cps, max_cps);
 }
