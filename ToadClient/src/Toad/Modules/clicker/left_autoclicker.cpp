@@ -112,20 +112,33 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (left_clicker::targeting_affects_cps)
 		{
+			// so it toggles 
+			static int toggle_once = 3;
 			if (mouse_over_type == "ENTITY")
 			{
 				// lower delay
-				m_rand.edited_min = std::lerp(m_rand.edited_min, m_rand.min_delay - 2.5f, m_pTick / 2);
-				m_rand.edited_max = std::lerp(m_rand.edited_max, m_rand.max_delay - 2.5f, m_pTick / 3);
+				if (!toggle_once || toggle_once == 3)
+				{
+					m_rand.edited_min -= 2.5f;
+					m_rand.edited_max -= 2.5f;
+					toggle_once = true;
+				}
 			}
 			else
 			{
-				// higher delay
-				m_rand.edited_min = std::lerp(m_rand.edited_min, m_rand.min_delay + 2.5f, m_pTick / 3);
-				m_rand.edited_max = std::lerp(m_rand.edited_max, m_rand.max_delay + 2.5f, m_pTick / 2);
+				if (toggle_once || toggle_once == 3)
+				{
+					// higher delay
+					m_rand.edited_min += 2.5f;
+					m_rand.edited_max += 2.5f;
+					toggle_once = false;
+				}
+				
 			}
 		}
-
+		  
+		// trade assist 
+		/*
 		if (left_clicker::trade_assist)
 		{
 			static bool start_timer_flag = false;
@@ -204,10 +217,11 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				start_timer_flag = false;
 				enemy_hit_count = 0;
 				lplayer_hit_count = 0;
-				m_rand.edited_min = std::lerp(m_rand.edited_min, left_clicker::targeting_affects_cps ? m_rand.min_delay + 2.5f : m_rand.min_delay, m_pTick / 2);
-				m_rand.edited_max = std::lerp(m_rand.edited_max, left_clicker::targeting_affects_cps ? m_rand.max_delay + 2.5f : m_rand.max_delay, m_pTick / 3);
+				//m_rand.edited_min = std::lerp(m_rand.edited_min, left_clicker::targeting_affects_cps ? m_rand.min_delay + 2.5f : m_rand.min_delay, m_pTick / 2);
+				//m_rand.edited_max = std::lerp(m_rand.edited_max, left_clicker::targeting_affects_cps ? m_rand.max_delay + 2.5f : m_rand.max_delay, m_pTick / 3);
 			}
 		}
+		*/
 
 		if (!mouse_down())
 			return;
@@ -407,5 +421,34 @@ void CLeftAutoClicker::SetDelays(float min_cps, float max_cps)
 {
 	m_rand.UpdateDelays(min_cps, max_cps);
 }
+
+//void CLeftAutoClicker::OnImGuiRender(ImDrawList* draw)
+//{
+//	ImGui::Begin("rand", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+//
+//	ImGui::Text("min %f", m_rand.min_delay);
+//	ImGui::Text("edited min %f", m_rand.edited_min);
+//	ImGui::Text("max %f", m_rand.max_delay);
+//	ImGui::Text("edited max %f", m_rand.edited_max);
+//
+//	for (Boost& boost : m_rand.boosts)
+//	{
+//		ImGui::PushID(boost.id);
+//		ImGui::SetNextItemOpen(true);
+//		if (ImGui::TreeNode("boost"))
+//		{
+//			ImGui::Text("amount ms, %f", boost.amount_ms);
+//			ImGui::Text("counter %d", boost.counter);
+//			ImGui::Text("duration %d", boost.duration);
+//			ImGui::Text("freq counter %d", boost.frequency_counter);
+//			ImGui::Text("freq %d", boost.frequency);
+//			ImGui::Text("paused %d", boost.paused);
+//			ImGui::Text("started %d", boost.start);
+//		}
+//		ImGui::PopID();
+//	}
+//
+//	ImGui::End();
+//}
 
 }

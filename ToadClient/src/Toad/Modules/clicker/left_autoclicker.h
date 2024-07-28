@@ -11,6 +11,7 @@ public:
 public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
+	//void OnImGuiRender(ImDrawList* draw) override;
 
 public:
 	// returns a reference to current randomization values
