@@ -453,18 +453,12 @@ float Minecraft::getFov()
 
 jobject Minecraft::getMouseOverObject()
 {
-    auto mc = getMc();
-    /*auto mId = get_mid(mc, mapping::getObjectMouseOver, env);
-    if (!mId)
-    {
-        env->DeleteLocalRef(mc);
-        return nullptr;
-    }*/
-    auto fid = get_fid(getMcClass(), mappingFields::objMouseOver, env);
+    jobject mc = getMc();
+    jfieldID fid = get_fid(getMcClass(), mappingFields::objMouseOver, env);
     jobject res = nullptr;
+
     if (fid != nullptr)
         res = env->GetObjectField(mc, fid);
-    //auto obj = env->CallObjectMethod(mc, mId);
 
     env->DeleteLocalRef(mc);
     return res;
@@ -522,19 +516,19 @@ int Minecraft::getBlockIdAt(const Vec3i& pos)
 
 std::string Minecraft::getMouseOverStr()
 {
-    auto obj = getMouseOverObject();
+    jobject obj = getMouseOverObject();
     if (obj == nullptr)
         return "TYPE=null,";
-    auto mId = get_mid(obj, mapping::toString, env);
-    if (!mId)
+    jmethodID mid = get_mid(obj, mapping::toString, env);
+    if (!mid)
     {
         env->DeleteLocalRef(obj);
         return "TYPE=null,";
     }
 
-    auto jstr = static_cast<jstring>(env->CallObjectMethod(obj, mId));
+    jstring jstr = static_cast<jstring>(env->CallObjectMethod(obj, mid));
 
-    auto res = jstring2string(jstr, env);
+    std::string res = jstring2string(jstr, env);
     env->DeleteLocalRef(obj);
     env->DeleteLocalRef(jstr);
     return res;
@@ -542,40 +536,22 @@ std::string Minecraft::getMouseOverStr()
 
 std::shared_ptr<c_Entity> Minecraft::getMouseOverPlayer()
 {
-    auto str = getMouseOverStr();
-    if (str.find("ENTITY") == std::string::npos)
-        return nullptr;
+	jobject obj = getMouseOverObject();
 
-    auto obj = getMouseOverObject();
-    // TODO: ...
-    if (static bool init_map = false; !init_map)
-    {
-        auto klass = env->GetObjectClass(obj);
-        if (!klass)
-        {
-            env->DeleteLocalRef(obj);
-            return nullptr;
-        }
-        mappings::methods[mapping::getEntityHit] = { "bridge$getEntityHit", "SIGNATURE NOT FOUND"};
-        if (!mappings::getsig(mapping::getEntityHit, "bridge$getEntityHit", klass, env))
-            LOGERROR("can't find getEntityHit");
-        env->DeleteLocalRef(klass);
-        init_map = true;
-    }
-
-    auto mId = get_mid(obj, mapping::getEntityHit, env);
-    if (!mId)
+    jfieldID fid = get_fid(obj, mappingFields::entityHit, env);
+    if (!fid)
     {
         env->DeleteLocalRef(obj);
         return nullptr;
     }
 
-    auto entityObj = env->CallObjectMethod(obj, mId);
+    jobject entity = env->GetObjectField(obj, fid);
     env->DeleteLocalRef(obj);
-    if (entityObj == nullptr)
+
+    if (entity == nullptr)
         return nullptr;
 
-    return std::make_shared<c_Entity>(entityObj, env, getEntityLivingClass());
+    return std::make_shared<c_Entity>(entity, env, getEntityLivingClass());
 }
 
 bool Minecraft::isAirBlock(jobject blockobj)

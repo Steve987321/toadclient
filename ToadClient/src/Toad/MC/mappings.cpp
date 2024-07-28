@@ -27,15 +27,13 @@ namespace toadll::mappings
 			fields[mappingFields::currentScreenField] = { "currentScreen", "Lnet/minecraft/client/gui/GuiScreen;" };
 			fields[mappingFields::leftClickCounterField] = { "leftClickCounter" , "I"};
 
-			methods[mapping::getEntityHit] = {"bridge$getEntityHit", "SIGNATURE NOT FOUND" };
-			// methodsig is in minecraft.cpp
+			fields[mappingFields::entityHit] = { "entityHit", "Lnet/minecraft/entity/Entity;" };
 
 			// General
 			methods[mapping::toString] = { "toString", "()Ljava/lang/String;" };
 			methods[mapping::getDisplayName] = { "getDisplayName", "()Ljava/lang/String;" };
 
 			// WORLD
-			methods[mapping::getPlayerEntities] = { "bridge$getPlayerEntities", "()Ljava/util/List;" };
 			methods[mapping::isAirBlock] = { "isAirBlock", "(Lnet/minecraft/util/BlockPos;)Z" };
 			methods[mapping::rayTraceBlocks] = { "rayTraceBlocks", "(Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;Z)Lnet/minecraft/util/MovingObjectPosition;" };
 			methods[mapping::getBlockFromBlockState] = { "getBlock", "()Lnet/minecraft/block/Block;" };
@@ -168,7 +166,7 @@ namespace toadll::mappings
 			fields[mappingFields::currentScreenField] = { "currentScreen", "Lnet/minecraft/client/gui/GuiScreen;" };
 			fields[mappingFields::leftClickCounterField] = { "leftClickCounter", "I" };
 
-			methods[mapping::getEntityHit] = { "bridge$getEntityHit", "" };
+			fields[mappingFields::entityHit] = { "entityHit", "Lnet/minecraft/entity/Entity;" };
 			// methodsig is in minecraft.cpp
 
 			// General
@@ -176,7 +174,6 @@ namespace toadll::mappings
 			methods[mapping::getDisplayName] = { "getDisplayName", "()Ljava/lang/String;" };
 
 			// WORLD
-			methods[mapping::getPlayerEntities] = { "bridge$getPlayerEntities", "()Ljava/util/List;" };
 			methods[mapping::isAirBlock] = { "isAirBlock", "(Lnet/minecraft/util/BlockPos;)Z" };
 
 			fields[mappingFields::playerEntitiesField] = { "playerEntities", "Ljava/util/List;" };

@@ -249,6 +249,9 @@ enum class mappingFields
     gameSettings,
     timer,
 
+	// objectmouseover
+    entityHit,
+
     // .World
     playerEntitiesField,
 
@@ -299,17 +302,12 @@ enum class mapping
 {
     // .Minecraft
     getPlayer,
-    getRenderManager,
-
-    // objectmouseover
-    getEntityHit,
 
     // General
     toString,
     getDisplayName,
 
     // .World
-    getPlayerEntities,
     getBlockState,
     isAirBlock,
     rayTraceBlocks, // args: (jobject Vec3 from, jobject Vec3 direction, bool stopOnLiquid) returns: jobject MovingObjectPosition if block hit else null
