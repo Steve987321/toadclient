@@ -77,7 +77,7 @@ namespace config
 	nlohmann::json MergeJson(const nlohmann::json& a, const nlohmann::json& b);
 
 	/// Returns a json of the current settings
-	nlohmann::json SettingsToJson();
+	nlohmann::json SettingsToJson(bool include_keybinds = true);
 
 	/// Load a config from a file
 	///
@@ -90,8 +90,9 @@ namespace config
 	///
 	///	@param path the directory to save to
 	///	@param file_name the name of the file
+	/// @param save_keybinds whether to save keybinds to file
 	///	@param file_ext the extension of the file 
-	void SaveConfig(std::string_view path, std::string_view file_name, std::string_view file_ext = ".toad");
+	void SaveConfig(std::string_view path, std::string_view file_name, bool save_keybinds = true, std::string_view file_ext = ".toad");
 
 	/// Load a config from the clipboard 
 	bool LoadConfigFromClipBoard();

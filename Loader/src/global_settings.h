@@ -305,10 +305,11 @@ namespace toad
 		// for internal ui 
 		inline int show_menu_key = 0x2D; // INSERT
 
+		// show enabled modules
 		inline bool show_array_list = false;
+		inline int show_array_list_key = 0;
 
 		inline int array_list_size = 20;
-
 		inline bool show_water_mark = false;
 	}
 }
