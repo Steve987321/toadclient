@@ -152,6 +152,58 @@ struct Vec3i {
 	}
 };
 
+struct Vec3d {
+	Vec3d(double x, double y, double z) : x(x), y(y), z(z) {}
+	Vec3d() : x(0), y(0), z(0) {}
+
+	double x, y, z;
+
+	Vec3d operator+(const Vec3d& v) const {
+		return { x + v.x, y + v.y, z + v.z };
+	}
+
+	Vec3d operator-(const Vec3d& v) const {
+		return { x - v.x, y - v.y, z - v.z };
+	}
+
+	Vec3d operator*(int s) const {
+		return { x * s, y * s, z * s };
+	}
+
+	Vec3d operator/(int s) const {
+		return { x / s, y / s, z / s };
+	}
+
+	bool operator==(const Vec3d& v) const {
+        return fabs(x - v.x) < DBL_EPSILON && fabs(y - v.y) < DBL_EPSILON && fabs(z - v.z) < DBL_EPSILON;
+	}
+
+	float dist(const Vec3d& v) const {
+		return (float)sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y) + (z - v.z) * (z - v.z));
+	}
+
+	int dot(const Vec3d& v) const {
+		return x * v.x + y * v.y + z * v.z;
+	}
+
+	Vec3d cross(const Vec3d& v) const {
+		return
+		{
+				y * v.z - z * v.y,
+				z * v.x - x * v.z,
+				x * v.y - y * v.x
+		};
+	}
+
+	float length() const {
+		return (float)std::sqrt(x * x + y * y + z * z);
+	}
+
+	int length_squared() const {
+		return x * x + y * y + z * z;
+	}
+};
+
 struct Vec4 {
     Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
     Vec4() = default;

@@ -4,10 +4,44 @@
 
 namespace toadll
 {
+	struct args
+	{
+		args(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
+			: s(s), lpBuffers(lpBuffers), dwBufferCount(dwBufferCount), lpNumberOfBytesSent(lpNumberOfBytesSent), dwFlags(dwFlags), lpOverlapped(lpOverlapped), lpCompletionRoutine(lpCompletionRoutine)
+		{}
+
+		SOCKET s;
+		LPWSABUF lpBuffers;
+		DWORD dwBufferCount;
+		LPDWORD lpNumberOfBytesSent;
+		DWORD dwFlags;
+		LPWSAOVERLAPPED lpOverlapped;
+		LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine;
+	};
+	static std::vector <std::pair<args, Timer>> ok;
+
 	int HWSASend::Hook(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 	{
 		while (StopSends)
-		{
+		{/*
+			ok.emplace_back(args{ s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine }, Timer{});
+			std::cout << ok.size() << std::endl;
+
+			auto it = ok.begin();
+			while (it != ok.end())
+			{
+				auto& [arg, timer] = *it;
+
+				if (timer.Elapsed() > 100)
+				{
+					int res = oWSA_Send(arg.s, arg.lpBuffers, arg.dwBufferCount, arg.lpNumberOfBytesSent, arg.dwFlags, arg.lpOverlapped, arg.lpCompletionRoutine);
+					ok.erase(it);
+					return res;
+				}
+
+				it++;
+			}*/
+			//return oWSA_Send(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
 			SLEEP(1);
 		}
 		return oWSA_Send(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
