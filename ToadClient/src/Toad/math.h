@@ -10,7 +10,7 @@ namespace toadll::math
 
 	float wrap_to_180(float value);
 
-	Vec3 get_cam_pos(const std::array<float, 16>& modelView);
+	Vec3 get_cam_pos(const std::array<double, 16>& modelView);
 
 	void rotate_triangle(std::array<Vec2, 3>& points, float rotation_rad);
 	void rotate_triangle(std::array<glm::vec2, 3>& points, float rotation_rad);

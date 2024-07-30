@@ -29,7 +29,7 @@ namespace toadll::math
 		return res - 180;
 	}
 
-	Vec3 get_cam_pos(const std::array<float, 16>& modelView)
+	Vec3 get_cam_pos(const std::array<double, 16>& modelView)
 	{
 		auto modviewinverse = glm::inverse(glm::make_mat4(modelView.data()));
 		auto pos = glm::vec3(modviewinverse[3]);

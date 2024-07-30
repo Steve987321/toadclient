@@ -24,12 +24,12 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	std::vector<std::pair<BBox, Vec4>> blockPositions = {};
 
-	auto lastTickPos = lPlayer->LastTickPos;
-	auto lPos = lastTickPos + (lPlayer->Pos - lastTickPos) * CVarsUpdater::RenderPartialTick;
+	Vec3 lastTickPos = lPlayer->LastTickPos;
+	Vec3 lPos = lastTickPos + (lPlayer->Pos - lastTickPos) * CVarsUpdater::RenderPartialTick;
 
-	auto block_x_limit = static_cast<int>(lPos.x) + m_range * 2;
-	auto block_y_limit = static_cast<int>(lPos.y) + m_range * 2;
-	auto block_z_limit = static_cast<int>(lPos.z) + m_range * 2;
+	int block_x_limit = static_cast<int>(lPos.x) + m_range * 2;
+	int block_y_limit = static_cast<int>(lPos.y) + m_range * 2;
+	int block_z_limit = static_cast<int>(lPos.z) + m_range * 2;
 
 	const jobject world = MC->getWorld();
 	if (!world)
@@ -94,9 +94,9 @@ void toadll::CBlockEsp::OnRender()
 
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(CVarsUpdater::Projection.data());
+	glLoadMatrixd(CVarsUpdater::Projection.data());
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(CVarsUpdater::ModelView.data());
+	glLoadMatrixd(CVarsUpdater::ModelView.data());
 
 	glPushMatrix();
 	glEnable(GL_LINE_SMOOTH);
@@ -107,7 +107,7 @@ void toadll::CBlockEsp::OnRender()
 	glEnable(GL_BLEND);
 	glLineWidth(1.f);
 
-	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
+	Vec3 lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
 	
 	for (const auto& [block, col] : m_blocks)
 		draw3d_bbox_fill(BBox{ block.min - lPos, block.max - lPos }, col);

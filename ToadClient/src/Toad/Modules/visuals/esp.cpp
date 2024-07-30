@@ -60,9 +60,9 @@ void CEsp::OnRender()
 
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(CVarsUpdater::Projection.data());
+	glLoadMatrixd(CVarsUpdater::Projection.data());
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(CVarsUpdater::ModelView.data());
+	glLoadMatrixd(CVarsUpdater::ModelView.data());
 	
 	glPushMatrix();
 	glEnable(GL_LINE_SMOOTH);
@@ -121,9 +121,7 @@ void CEsp::OnRender()
 void CEsp::OnImGuiRender(ImDrawList* draw)
 {
 	if (!esp::enabled || !CVarsUpdater::IsVerified)
-	{
 		return;
-	}
 
 	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
 
@@ -174,12 +172,11 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 	}
 	else
 	{
-		for (const auto& ve : m_bboxes)
+		for (const VisualEntity& ve : m_bboxes)
 		{
 			drawPlayerInfo(draw, ve, lPos);
 		}
 	}
-	
 }
 
 
@@ -188,16 +185,16 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 	if (esp::show_name || esp::show_distance || esp::show_health)
 	{
 		// the center and top of player 
-		auto infoPos = (ve.bb.min + ve.bb.max) * 0.5f;
+		Vec3 infoPos = (ve.bb.min + ve.bb.max) * 0.5f;
 		infoPos.y += 1.f;
 
-		auto screenpos = world_to_screen(infoPos - lPlayerPos, renderPos);
+		Vec2 screenpos = world_to_screen(infoPos - lPlayerPos, renderPos);
 
 		if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
 		{
-			const auto font = HSwapBuffers::GetFont();
-			char text[30] = {};
-
+			const ImFont* font = HSwapBuffers::GetFont();
+			char text[50] = {};
+			
 			if (esp::show_name)
 			{
 				strncat_s(text, ve.name.c_str(), ve.name.length());
@@ -217,8 +214,8 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 			}
 
 			// draw our text
-
-			const auto textsize = font->CalcTextSizeA(esp::text_size, 500, 0, text);
+			//float text_size = esp::text_size;
+			const ImVec2 textsize = font->CalcTextSizeA(esp::text_size, 500, 0, text);
 
 			if (esp::show_txt_bg)
 			{

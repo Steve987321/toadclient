@@ -12,8 +12,8 @@ namespace toadll
 		explicit ActiveRenderInfo(jclass ariklass, JNIEnv* env) : ariclass(ariklass), env(env) {}
 
 	public:
-		void getModelView(std::array<float, 16>& arr) const;
-		void getProjection(std::array<float, 16>& arr) const;
+		void getModelView(std::array<double, 16>& arr) const;
+		void getProjection(std::array<double, 16>& arr) const;
 	public:
 		/// Returns the camera position,
 		///	ONLY WORKS ON 1.8.9
