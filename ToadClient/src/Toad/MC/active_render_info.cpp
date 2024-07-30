@@ -2,7 +2,7 @@
 #include "Toad/toadll.h"
 #include "active_render_info.h"
 
-void toadll::ActiveRenderInfo::getModelView(std::array<float, 16>& arr) const
+void toadll::ActiveRenderInfo::getModelView(std::array<double, 16>& arr) const
 {
 	auto fid = get_static_fid(ariclass, mappingFields::modelviewField, env);
 	if (!fid)
@@ -12,14 +12,14 @@ void toadll::ActiveRenderInfo::getModelView(std::array<float, 16>& arr) const
 	static auto getIndexBuf = env->GetMethodID(bufklass, "get", "(I)F");
 	for (int i = 0; i < 16; i++)
 	{
-		arr[i] = env->CallFloatMethod(obj, getIndexBuf, i);
+		arr[i] = (double)env->CallFloatMethod(obj, getIndexBuf, i);
 	}
 
 	env->DeleteLocalRef(obj);
 	env->DeleteLocalRef(bufklass);
 }
 
-void toadll::ActiveRenderInfo::getProjection(std::array<float, 16>& arr) const
+void toadll::ActiveRenderInfo::getProjection(std::array<double, 16>& arr) const
 {
 	auto fid = get_static_fid(ariclass, mappingFields::projectionField, env);
 	if (!fid)
@@ -30,7 +30,7 @@ void toadll::ActiveRenderInfo::getProjection(std::array<float, 16>& arr) const
 
 	for (int i = 0; i < 16; i++)
 	{
-		arr[i] = env->CallFloatMethod(obj, getIndexBuf, i);
+		arr[i] = (double)env->CallFloatMethod(obj, getIndexBuf, i);
 	}
 
 	env->DeleteLocalRef(obj);

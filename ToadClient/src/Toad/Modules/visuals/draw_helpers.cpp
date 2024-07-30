@@ -39,22 +39,12 @@ namespace toadll
 
 	Vec2 world_to_screen(const Vec3& world_pos, const Vec3& cam_pos)
 	{
-		GLdouble modelview[16];
-		GLdouble projection[16];
-
-		// convert to double types 
-		for (int i = 0; i < 16; i++)
-		{
-			modelview[i] = static_cast<GLdouble>(CVarsUpdater::ModelView[i]);
-			projection[i] = static_cast<GLdouble>(CVarsUpdater::Projection[i]);
-		}
-
 		double screenX, screenY, screenZ;
 		gluProject(world_pos.x, world_pos.y, world_pos.z,
-			modelview, projection, CVarsUpdater::Viewport.data(),
+			CVarsUpdater::ModelView.data(), CVarsUpdater::Projection.data(), CVarsUpdater::Viewport.data(),
 			&screenX, &screenY, &screenZ);
 
-		Vec3 cam_forward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
+		Vec3 cam_forward = { (float)CVarsUpdater::ModelView[2], (float)CVarsUpdater::ModelView[6], (float)CVarsUpdater::ModelView[10] };
 		Vec3 cam_pos_relative = world_pos - cam_pos;
 		float dot = cam_pos_relative.dot(Vec3::normalize(cam_forward));
 		
@@ -71,22 +61,12 @@ namespace toadll
 
 	Vec2 world_to_screen_no_behind_test(const Vec3& world_pos, const Vec3& camera_pos)
 	{
-		GLdouble modelview[16];
-		GLdouble projection[16];
-
-		// convert to double types 
-		for (int i = 0; i < 16; i++)
-		{
-			modelview[i] = static_cast<GLdouble>(CVarsUpdater::ModelView[i]);
-			projection[i] = static_cast<GLdouble>(CVarsUpdater::Projection[i]);
-		}
-
 		double screenX, screenY, screenZ;
 		gluProject(world_pos.x, world_pos.y, world_pos.z,
-			modelview, projection, CVarsUpdater::Viewport.data(),
+			CVarsUpdater::ModelView.data(), CVarsUpdater::Projection.data(), CVarsUpdater::Viewport.data(),
 			&screenX, &screenY, &screenZ);
 
-		Vec3 cam_forward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
+		Vec3 cam_forward = { (float)CVarsUpdater::ModelView[2], (float)CVarsUpdater::ModelView[6], (float)CVarsUpdater::ModelView[10] };
 		Vec3 cam_pos_relative = world_pos - camera_pos;
 		float dot = cam_pos_relative.dot(Vec3::normalize(cam_forward));
 		//std::cout << dotProduct << std::endl;
@@ -138,8 +118,8 @@ namespace toadll
 
 	void draw2d_bbox(const BBox& bbox, const Vec4& col_fill, const Vec4& col_line)
 	{
-		Vec3 cam_forward = { CVarsUpdater::ModelView[2], CVarsUpdater::ModelView[6], CVarsUpdater::ModelView[10] };
-		Vec3 cam_up = { CVarsUpdater::ModelView[1], CVarsUpdater::ModelView[5], CVarsUpdater::ModelView[9] };
+		Vec3 cam_forward = { (float)CVarsUpdater::ModelView[2], (float)CVarsUpdater::ModelView[6], (float)CVarsUpdater::ModelView[10] };
+		Vec3 cam_up = { (float)CVarsUpdater::ModelView[1], (float)CVarsUpdater::ModelView[5], (float)CVarsUpdater::ModelView[9] };
 		Vec3 cam_right = cam_forward.cross(cam_up);
 
 		Vec3 center = (bbox.min + bbox.max) * 0.5f;
@@ -156,7 +136,7 @@ namespace toadll
 		// fill
 		glColor4f(col_fill.x, col_fill.y, col_fill.z, col_fill.w);
 		glBegin(GL_QUADS);
-		for (const auto& v : vertices)
+		for (const Vec3& v : vertices)
 		{
 			glVertex3f(v.x, v.y, v.z);
 		}
@@ -165,11 +145,10 @@ namespace toadll
 		// outlines
 		glColor4f(col_line.x, col_line.y, col_line.z, col_line.w);
 		glBegin(GL_LINE_LOOP);
-		for (const auto& v : vertices)
+		for (const Vec3& v : vertices)
 		{
 			glVertex3f(v.x, v.y, v.z);
 		}
 		glEnd();
 	}
-
 }

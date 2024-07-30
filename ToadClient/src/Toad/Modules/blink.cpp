@@ -107,9 +107,9 @@ void toadll::CBlink::OnRender()
 
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(CVarsUpdater::Projection.data());
+	glLoadMatrixd(CVarsUpdater::Projection.data());
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(CVarsUpdater::ModelView.data());
+	glLoadMatrixd(CVarsUpdater::ModelView.data());
 
 	glPushMatrix();
 	glEnable(GL_LINE_SMOOTH);

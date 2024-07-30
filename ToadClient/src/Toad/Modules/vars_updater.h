@@ -24,8 +24,8 @@ public:
 	/// True when the player has any menu opened
 	static inline std::atomic_bool IsInGui = false;
 
-	static inline std::array<float, 16> ModelView = {};
-	static inline std::array<float, 16> Projection = {};
+	static inline std::array<double, 16> ModelView = {};
+	static inline std::array<double, 16> Projection = {};
 	static inline std::array<int, 4> Viewport = {};
 
 public:
