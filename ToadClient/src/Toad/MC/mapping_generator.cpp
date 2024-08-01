@@ -261,6 +261,7 @@ void MappingGenerator::InitMappings(JNIEnv* env, jvmtiEnv* jvmti_env, const std:
 	Mappings player_mappings = Mappings::Deserialize(player_data["mappings"]);
 
 	// #TODO: optimize later 
+
 	// #TODO: sorted methods count 
 	//std::queue<int> min_methods_count;
 	//min_methods_count.push(0);
@@ -268,35 +269,149 @@ void MappingGenerator::InitMappings(JNIEnv* env, jvmtiEnv* jvmti_env, const std:
 	std::string mc_class_name = FindClassTypes(env, jvmti_env, mc_mappings);
 	Minecraft::unsupported_mc_class_name = mc_class_name;
 	jclass minecraft = findclass(mc_class_name.c_str(), env);
-	jint methods_count;
+
+	jint mc_class_methods_count;
 	jmethodID* methods = nullptr;
-	jvmtiError err = jvmti_env->GetClassMethods(minecraft, &methods_count, &methods);
-	
+	jvmtiError err = jvmti_env->GetClassMethods(minecraft, &mc_class_methods_count, &methods);
+
+	// save score of mapped methods (so we can check later for better ones)
+	std::unordered_map<mapping, int> mapping_methods_scored;
+	std::unordered_map<mappingFields, int> mapping_fields_scored;
+
 	if (err == JVMTI_ERROR_NONE)
 	{
 		// match methods with minecraft methods
 
-		// get bytecodes
-		for (int i = 0; i < methods_count; i++)
+		for (int i = 0; i < mc_class_methods_count; i++)
 		{
-			jmethodID method = methods[i];
+			jmethodID method = methods[i];	
+			char* name;
+			char* sig;
+			char* generic;
+			err = jvmti_env->GetMethodName(method, &name, &sig, &generic);
+			if (err != JVMTI_ERROR_NONE)
+				continue;
 
-			for (const auto& m : mc_mappings.methods)
+			uint8_t* bytecodes;
+			jint bytecode_count = 0;
+			err = jvmti_env->GetBytecodes(method, &bytecode_count, &bytecodes);
+			if (err != JVMTI_ERROR_NONE)
+				continue;
+
+			std::vector<uint8_t> current_bytecodes(bytecodes, bytecodes + bytecode_count);
+			mapping max;
+			max = mapping::NONE;
+			float max_score = 0;
+
+			for (const MethodMapping& m : mc_mappings.methods)
 			{
 				if (m.method == mapping::NONE)
 					continue;
 
-				char* name;
-				char* sig;
-				char* generic;
-				err = jvmti_env->GetMethodName(method, &name, &sig, &generic);
-				if (err != JVMTI_ERROR_NONE) 
+				float similarity = math::jaccard_index(m.bytecodes, current_bytecodes);
+				if (similarity > max_score)
 				{
-					mappings::methods[m.method] = { name, sig };
-					break;
+					max_score = similarity;
+					max = m.method;
+				}
+			}
+
+			if (max != mapping::NONE)
+			{
+				auto it = mapping_methods_scored.find(max);
+				if (it != mapping_methods_scored.end())
+				{
+					if (max_score < it->second)
+					{
+						mappings::methods[max] = { name, sig };
+						it->second = max_score;
+					}
+				}
+				else
+				{
+					mappings::methods[max] = { name, sig };
+					mapping_methods_scored.emplace(max, max_score);
 				}
 			}
 		}
+		
+	}
+
+	jint mc_class_fields_count;
+	jfieldID* fields = nullptr;
+	err = jvmti_env->GetClassFields(minecraft, &mc_class_fields_count, &fields);
+
+	if (err == JVMTI_ERROR_NONE)
+	{
+		for (int i = 0; i < mc_class_fields_count; i++)
+		{
+			jfieldID field = fields[i];
+			char* name;
+			char* sig;
+			char* generic;
+			jint modifiers = -1;
+			err = jvmti_env->GetFieldName(minecraft, field, &name, &sig, &generic);
+			jvmti_env->GetFieldModifiers(minecraft, field, &modifiers);
+			if (err != JVMTI_ERROR_NONE)
+				continue;
+
+			mappingFields max;
+			max = mappingFields::NONE;
+			// the lower the better the score 
+			int min_score = std::numeric_limits<int>::max();
+			
+			for (const MappingField& f : mc_mappings.fields)
+			{
+				if (f.field == mappingFields::NONE)
+					continue;
+
+				int score = 0;
+				score += abs(f.index - i);
+				if (f.modifiers != modifiers)
+					score += 1;
+
+				LOGDEBUG("matching {} {}, score: {}", f.name, name, score);
+
+				if (score < min_score)
+				{
+					min_score = score;
+					max = f.field;
+				}
+			}
+
+			if (max != mappingFields::NONE)
+			{
+				auto it = mapping_fields_scored.find(max);
+				if (it != mapping_fields_scored.end())
+				{
+					if (min_score < it->second)
+					{
+						mappings::fields[max] = { name, sig };
+						it->second = min_score;
+					}
+				}
+				else
+				{
+					mappings::fields[max] = { name, sig };
+					mapping_fields_scored.emplace(max, min_score);
+				}
+			}
+		}
+	}
+
+	if (methods)
+		jvmti_env->Deallocate((unsigned char*)methods);
+	if (fields)
+		jvmti_env->Deallocate((unsigned char*)fields);
+
+	for (auto& [mapping, map] : mappings::methods)
+	{
+		LOGDEBUG("{} ({}, {})", (int)mapping, map.name, map.sig);
+	}	
+	
+	for (auto& [mapping, map] : mappings::fields)
+	{
+		LOGDEBUG("{} ({}, {})", (int)mapping, map.name, map.sig);
 	}
 }
 
@@ -340,11 +455,12 @@ std::string MappingGenerator::FindClassTypes(JNIEnv* env, jvmtiEnv* jvmti_env, c
 		jmethodID* methods = nullptr;
 		jvmtiError err = jvmti_env->GetClassMethods(classes[i], &methods_count, &methods);
 
-		if (err != JVMTI_ERROR_NONE)
+		if (err != JVMTI_ERROR_NONE || methods_count < (int)mappings.methods.size())
+		{
+			if (methods)
+				jvmti_env->Deallocate((unsigned char*)methods);
 			continue;
-
-		if (methods_count < 10)
-			continue;
+		}
 
 		float similarity_score = 0;
 		int similar_counter = 0;
@@ -464,14 +580,13 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 			continue;
 		}
 
-		static auto field_mappings = mappings::fields;
+		const auto& field_mappings = mappings::fields;
 		mappingFields mapping_field = mappingFields::NONE;
 		for (auto& [field_mapping, field_name] : field_mappings)
 		{
 			if (strcmp(name, field_name.name.c_str()) == 0)
 			{
 				mapping_field = field_mapping;
-				field_mappings.erase(field_mapping);
 				break;
 			}
 		}
@@ -531,14 +646,13 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 		for (int j = 0; j < bytecodes_count; j++)
 			bytecodes_vec.emplace_back(bytecodes[j]);
 
-		static auto method_mappings = mappings::methods;
+		const auto& method_mappings = mappings::methods;
 		mapping mapping_method = mapping::NONE;
 		for (auto& [method_mapping, method_name] : method_mappings)
 		{
 			if (strcmp(name, method_name.name.c_str()) == 0)
 			{
 				mapping_method = method_mapping;
-				method_mappings.erase(method_mapping);
 				break;
 			}
 		}

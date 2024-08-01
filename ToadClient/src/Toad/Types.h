@@ -356,9 +356,6 @@ enum class mapping
 {
     NONE,
 
-    // .Minecraft
-    getPlayer,
-
     // General
     toString,
     getDisplayName,

@@ -26,6 +26,7 @@ struct MethodMapping
 	int index;
 };
 
+// all classes that are being used 
 enum class MC_CLASS_TYPE
 {
 	MC,
@@ -57,7 +58,7 @@ public:
 	// use a different client with known mappings and check differences between them, will add wildcards 
 	//static void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
 
-	void InitMappings(JNIEnv* env, jvmtiEnv* jvmti_env, const std::filesystem::path& file);
+	static void InitMappings(JNIEnv* env, jvmtiEnv* jvmti_env, const std::filesystem::path& file);
 
 	// apply mappings from file
 	//static void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
