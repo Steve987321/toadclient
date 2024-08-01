@@ -120,9 +120,6 @@
     <ClInclude Include="src\Toad\Modules\chest_stealer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\MC\mapping_bytecodes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Toad\Utils\hash_map.h">
       <Filter>Header Files</Filter>
     </ClInclude>

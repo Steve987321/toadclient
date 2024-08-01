@@ -63,7 +63,6 @@
     <ClInclude Include="src\Toad\Hooks\get_raw_input_data.h" />
     <ClInclude Include="src\Toad\MC\mapping_generator.h" />
     <ClInclude Include="src\Toad\Utils\hash_map.h" />
-    <ClInclude Include="src\Toad\MC\mapping_bytecodes.h" />
     <ClInclude Include="src\Toad\Modules\chest_stealer.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Toad\helpers.h" />
