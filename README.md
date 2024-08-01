@@ -29,7 +29,7 @@ When logging is enabled it will enable the console for log messages and create a
 2.  After you're done close the loader and it will uninject. (this client is not *screenshare* proof)
 
 ## Features
-*Some features are unfinished/unstable as this project was abandoned. Most features will still work but are probably not fully polished.*
+*Some features are unfinished/unstable as this project is still WIP. Most features will still work but are probably not fully polished.*
 
 ### Combat 
 
@@ -41,8 +41,8 @@ When logging is enabled it will enable the console for log messages and create a
 -   trade assist (doesn't work/not tested)
 -   click check (Only in game, Only in inventory, Always click)
 -   extra options (the 3 dots on the top right, you can resize the two windows when you drag your mouse between them)
-    -   edit boosts & drops (opens a window where you can edit randomization behaviour, not recommended)
-    -   visualize randomization
+    -   edit boosts & drops (opens a window where you can edit clicking behavior)
+    -   visualize randomization (opens a window to view clicking behavior not recommended, still very limited)
     -   break blocks 
         -   start delay (when looking at a block while clicking it will invoke a small delay before it pauses clicking)
         -   stop delay (when looking away from a block while clicking it will invoke a small delay before resuming clicking)
@@ -69,6 +69,10 @@ When logging is enabled it will enable the console for log messages and create a
 
 **Velocity**
 -   use jump reset
+    -   press chance
+    -   only when moving
+    -   only when clicking
+    -   kite
 -   only when moving
 -   only when clicking
 -   kite
@@ -79,7 +83,7 @@ When logging is enabled it will enable the console for log messages and create a
 
 ### Misc
 
-**Auto Bridge**
+**Bridge Assist**
 -   pitch check (only enables when player is looking down below a certain pitch)
 -   block height check (only enables when player is on the edge of a certain height in blocks)
 -   only initiate when sneaking (only enables when player was holding down the sneak button)
@@ -106,8 +110,6 @@ When logging is enabled it will enable the console for log messages and create a
         -   font 
 
 **Block ESP**  
-
-
 -   search (search bar for blocks, is very limited to types of blocks. This will write the correct value to block ID)
 -   block id (value that is being read when press the **Add** button)
 -   List of blocks
@@ -130,20 +132,17 @@ Array List (draws enabled features, no customization settings were added for thi
 -   load (from file/clipboard)
 -   save (to file/clipboard)
 
-
 ### Other
 
 *Miscellaneous features that can be found by pressing the 3 stripes on the right top of the menu.*
 
 -   tooltips (not implemented)
+-   exclude from capture (only in external ui)
 -   internal/external ui (switches to internal/external ui, can be buggy when switching to internal. Use **INSERT** to hide/show the internal ui)
 
 
 ## GUI 
-(menu also wasn't fully finished)
-
 ![image](https://github.com/Steve987321/toadclient/assets/88980055/69bcf48c-4964-4bed-b8aa-cc6ec37d422a)
-
 ![image](https://github.com/Steve987321/toadclient/assets/88980055/659884ba-f57b-4eba-9248-a4de5ba39821)
 
 ## Disclaimer 
