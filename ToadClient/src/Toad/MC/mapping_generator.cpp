@@ -25,26 +25,29 @@ json Mappings::Serialize()
 	json methods_data;
 	json fields_data;
 
-	for (int i = 0; i < fields.size(); i++)
+	for (size_t i = 0; i < fields.size(); i++)
 	{
 		json field_data;
 
+		field_data["field"] = fields[i].field;
 		field_data["modifiers"] = fields[i].modifiers;
 		field_data["signature"] = fields[i].signature;
 		field_data["name"] = fields[i].name;
+		field_data["index"] = fields[i].index;
 
 		fields_data[i] = field_data;
 	}
 
-	for (int i = 0; i < methods.size(); i++)
+	for (size_t i = 0; i < methods.size(); i++)
 	{
 		json method_data;
-
+		method_data["method"] = methods[i].method;
 		method_data["modifiers"] = methods[i].modifiers;
 		method_data["signature"] = methods[i].signature;
 		method_data["name"] = methods[i].name;
 		method_data["bytecodes"] = methods[i].bytecodes;
-		
+		method_data["index"] = methods[i].index;
+
 		methods_data[i] = method_data;
 	}
 
@@ -62,25 +65,29 @@ Mappings Mappings::Deserialize(const json& data)
 	config::get_json_element(methods_data, data, "methods");
 	config::get_json_element(fields_data, data, "fields");
 
-	for (int i = 0; i < methods_data.size(); i++)
+	for (size_t i = 0; i < methods_data.size(); i++)
 	{
 		MethodMapping method;
 		json method_data = methods_data[i];
+		config::get_json_element(method.method, method_data, "method");
 		config::get_json_element(method.name, method_data, "name");
 		config::get_json_element(method.signature, method_data, "signature");
 		config::get_json_element(method.modifiers, method_data, "modifiers");
 		config::get_json_element(method.bytecodes, method_data, "bytecodes");
+		config::get_json_element(method.index, method_data, "index");
 
 		mappings.methods.emplace_back(method);
 	}
 
-	for (int i = 0; i < fields_data.size(); i++)
+	for (size_t i = 0; i < fields_data.size(); i++)
 	{
 		MappingField field;
-		json method_data = fields_data[i];
-		config::get_json_element(field.name, method_data, "name");
-		config::get_json_element(field.signature, method_data, "signature");
-		config::get_json_element(field.modifiers, method_data, "modifiers");
+		json field_data = fields_data[i];
+		config::get_json_element(field.field, field_data, "field");
+		config::get_json_element(field.name, field_data, "name");
+		config::get_json_element(field.signature, field_data, "signature");
+		config::get_json_element(field.modifiers, field_data, "modifiers");
+		config::get_json_element(field.index, field_data, "index");
 		mappings.fields.emplace_back(field);
 	}
 	
@@ -98,23 +105,7 @@ void MappingGenerator::Generate(JNIEnv* env, jvmtiEnv* jvmti_env)
 	}
 
 	jclass mc_class = Minecraft::getMcClass(env);
-	if (!mc_class)
-	{
-		LOGDEBUG("[MappingGenerator] Minecraft class not found");
-		return;
-	}
-
-	jfieldID player_fid = get_fid(mc_class, mappingFields::thePlayerField, env);
-	jobject player_obj = !player_fid ? nullptr : env->GetObjectField(mc_class, player_fid);
-	if (!player_obj)
-	{
-		env->DeleteLocalRef(mc_class);
-		LOGDEBUG("[MappingGenerator] World class not found");
-		return;
-	}
-	jclass player_class = env->GetObjectClass(player_obj);
-	env->DeleteLocalRef(player_obj);
-
+	jclass player_class = findclass(mappings::fields[mappingFields::thePlayerField].sig.c_str(), env);
 	jclass world_client_class = findclass("net.minecraft.client.multiplayer.WorldClient", env);
 	jclass world_class = findclass("net.minecraft.world.World", env);
 	jclass block_pos_class = findclass("net.minecraft.util.MovingObjectPosition", env);
@@ -155,86 +146,156 @@ void MappingGenerator::Generate(JNIEnv* env, jvmtiEnv* jvmti_env)
 	file.close();
 }
 
-void MappingGenerator::GetMappingsFromFile(JNIEnv* env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file)
-{
-	std::ifstream file(json_file);
-	if (!file)
-	{
-		LOGERROR("[MappingGenerator] Can't open: {}", json_file.string());
-		return;
-	}
-	std::stringstream ss;
-	ss << file.rdbuf();
-	file.close();
+//void MappingGenerator::GetMappingsFromFile(JNIEnv* env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file)
+//{
+//	std::ifstream file(json_file);
+//	if (!file)
+//	{
+//		LOGERROR("[MappingGenerator] Can't open: {}", json_file.string());
+//		return;
+//	}
+//	std::stringstream ss;
+//	ss << file.rdbuf();
+//	file.close();
+//
+//	json data;
+//	try
+//	{
+//		data = json::parse(ss.str());
+//	}
+//	catch (json::parse_error& e)
+//	{
+//		LOGERROR("[MappingGenerator] json parse error: {}", e.what());
+//		return;
+//	}
+//
+//	json mc_data;
+//	json mappings_data;
+//	if (!config::get_json_element(mc_data, data, "mc"))
+//	{
+//		LOGERROR("[MappingGenerator] No mc found in file: {}", json_file.string());
+//		return;
+//	}
+//	if (!config::get_json_element(mappings_data, mc_data, "mappings"))
+//	{
+//		LOGERROR("[MappingGenerator] No mappings found in file: {}", json_file.string());
+//		return;
+//	}
+//
+//	Mappings mc_mappings = Mappings::Deserialize(mappings_data);
+//
+//	jclass mc = Minecraft::getMcClass(env);
+//	std::string mc_class_name; 
+//	if (!mc)
+//	{
+//		mc_class_name = FindClassTypes(env, jvmti_env, mc_mappings);
+//
+//		mc = findclass(mc_class_name.c_str(), env);
+//
+//		if (!mc)
+//		{
+//			LOGERROR("[MappingGenerator] Minecraft class can't be found");
+//			return;
+//		}
+//	}
+//
+//	jint field_count = 0;
+//	jfieldID* fields;
+//
+//	jvmtiError res;
+//	res = jvmti_env->GetClassFields(mc, &field_count, &fields);
+//	if (res != jvmtiError::JVMTI_ERROR_NONE)
+//	{
+//		LOGERROR("[MappingGenerator] Failed to call GetClassFields, {}", (int)res);
+//		env->DeleteLocalRef(mc);
+//		return;
+//	}
+//
+//	//std::unordered_map<mapping, MCMap> methods;
+//	std::unordered_map<mappingFields, MCMap> mc_fields{};
+//
+//	for (int i = 0; i < field_count; i++)
+//	{
+//		char* name;
+//		char* sig;
+//		char* gen;
+//		if (jvmti_env->GetFieldName(mc, fields[i], &name, &sig, &gen) != JVMTI_ERROR_NONE)
+//			continue;
+//
+//		// theMinecraft
+//		if (strncmp(name, ('L' + mc_class_name + ';').c_str(), mc_class_name.size()) == 0)
+//		{
+//			mc_fields[mappingFields::theMcField] = MCMap{ name, sig };
+//		}
+//	}
+//}
 
-	json data;
+void MappingGenerator::InitMappings(JNIEnv* env, jvmtiEnv* jvmti_env, const std::filesystem::path& file)
+{
+	std::ifstream f(file);
+	if (!f)
+		return;
+
+	json data; 
 	try
 	{
-		data = json::parse(ss.str());
+		data = json::parse(f);
 	}
 	catch (json::parse_error& e)
 	{
-		LOGERROR("[MappingGenerator] json parse error: {}", e.what());
 		return;
 	}
 
 	json mc_data;
-	json mappings_data;
-	if (!config::get_json_element(mc_data, data, "mc"))
+	json player_data;
+	json world_data;
+	json world_client_data;
+	json block_pos_data;
+	config::get_json_element(mc_data, data, "mc");
+	config::get_json_element(world_client_data, data, "worldclient");
+	config::get_json_element(world_data, data, "world");
+	config::get_json_element(player_data, data, "player");
+	config::get_json_element(block_pos_data, data, "blockpos");
+
+	Mappings mc_mappings = Mappings::Deserialize(mc_data["mappings"]);
+	Mappings player_mappings = Mappings::Deserialize(player_data["mappings"]);
+
+	// #TODO: optimize later 
+	// #TODO: sorted methods count 
+	//std::queue<int> min_methods_count;
+	//min_methods_count.push(0);
+
+	std::string mc_class_name = FindClassTypes(env, jvmti_env, mc_mappings);
+	Minecraft::unsupported_mc_class_name = mc_class_name;
+	jclass minecraft = findclass(mc_class_name.c_str(), env);
+	jint methods_count;
+	jmethodID* methods = nullptr;
+	jvmtiError err = jvmti_env->GetClassMethods(minecraft, &methods_count, &methods);
+	
+	if (err == JVMTI_ERROR_NONE)
 	{
-		LOGERROR("[MappingGenerator] No mc found in file: {}", json_file.string());
-		return;
-	}
-	if (!config::get_json_element(mappings_data, mc_data, "mappings"))
-	{
-		LOGERROR("[MappingGenerator] No mappings found in file: {}", json_file.string());
-		return;
-	}
+		// match methods with minecraft methods
 
-	Mappings mc_mappings = Mappings::Deserialize(mappings_data);
-
-	jclass mc = Minecraft::getMcClass(env);
-	std::string mc_class_name; 
-	if (!mc)
-	{
-		mc_class_name = FindClassTypes(env, jvmti_env, mc_mappings);
-
-		mc = findclass(mc_class_name.c_str(), env);
-
-		if (!mc)
+		// get bytecodes
+		for (int i = 0; i < methods_count; i++)
 		{
-			LOGERROR("[MappingGenerator] Minecraft class can't be found");
-			return;
-		}
-	}
+			jmethodID method = methods[i];
 
-	jint field_count = 0;
-	jfieldID* fields;
+			for (const auto& m : mc_mappings.methods)
+			{
+				if (m.method == mapping::NONE)
+					continue;
 
-	jvmtiError res;
-	res = jvmti_env->GetClassFields(mc, &field_count, &fields);
-	if (res != jvmtiError::JVMTI_ERROR_NONE)
-	{
-		LOGERROR("[MappingGenerator] Failed to call GetClassFields, {}", (int)res);
-		env->DeleteLocalRef(mc);
-		return;
-	}
-
-	//std::unordered_map<mapping, MCMap> methods;
-	std::unordered_map<mappingFields, MCMap> mc_fields{};
-
-	for (int i = 0; i < field_count; i++)
-	{
-		char* name;
-		char* sig;
-		char* gen;
-		if (jvmti_env->GetFieldName(mc, fields[i], &name, &sig, &gen) != JVMTI_ERROR_NONE)
-			continue;
-
-		// theMinecraft
-		if (strncmp(name, ('L' + mc_class_name + ';').c_str(), mc_class_name.size()) == 0)
-		{
-			mc_fields[mappingFields::theMcField] = MCMap{ name, sig };
+				char* name;
+				char* sig;
+				char* generic;
+				err = jvmti_env->GetMethodName(method, &name, &sig, &generic);
+				if (err != JVMTI_ERROR_NONE) 
+				{
+					mappings::methods[m.method] = { name, sig };
+					break;
+				}
+			}
 		}
 	}
 }
@@ -261,14 +322,17 @@ std::string MappingGenerator::FindClassTypes(JNIEnv* env, jvmtiEnv* jvmti_env, c
 	mapping_method_bytecodes.reserve(mappings.methods.size());
 	for (const MethodMapping& method : mappings.methods)
 		mapping_method_bytecodes.emplace_back(method.bytecodes);
+
 	LOGDEBUG("[MappingGenerator] Mapping bytecodes size: {}", mapping_method_bytecodes.size());
-	const float threshold = 0.8f;
+
 	jint class_count = 0;
 	jclass* classes;
 	jvmti_env->GetLoadedClasses(&class_count, &classes);
 
 	LOGDEBUG("[MappingGenerator] Classes: {}", class_count);
-	std::vector<std::pair<std::string, float>> possible_mc_classes{};
+
+	std::vector<std::pair<std::string, float>> possible_classes{};
+
 	for (int i = 0; i < class_count; i++)
 	{
 		// get methods
@@ -303,7 +367,7 @@ std::string MappingGenerator::FindClassTypes(JNIEnv* env, jvmtiEnv* jvmti_env, c
 					continue;
 
 				float similarity = math::jaccard_index(current_bytecodes, mapping_method_bytecodes[k]);
-				if (similarity > 0.5f)
+				if (similarity > 0.7f)
 				{
 					similar_counter++;
 					similarity_score += similarity;
@@ -331,7 +395,7 @@ std::string MappingGenerator::FindClassTypes(JNIEnv* env, jvmtiEnv* jvmti_env, c
 			}
 
 			// add to possible minecraft class 
-			possible_mc_classes.emplace_back(jstring2string(klass_name, env), similarity_score);
+			possible_classes.emplace_back(jstring2string(klass_name, env), similarity_score);
 
 			env->DeleteLocalRef(klass_name);
 		}
@@ -339,12 +403,12 @@ std::string MappingGenerator::FindClassTypes(JNIEnv* env, jvmtiEnv* jvmti_env, c
 
 	jvmti_env->Deallocate((unsigned char*)classes);
 
-	LOGDEBUG("[MappingGenerator] Minecraft class possibilities: {}", possible_mc_classes.size());
+	LOGDEBUG("[MappingGenerator] Minecraft class possibilities: {}", possible_classes.size());
 	float max_score = 0;
 	int index = -1;
-	for (int i = 0; i < possible_mc_classes.size(); i++)
+	for (int i = 0; i < possible_classes.size(); i++)
 	{
-		const auto& [name, score] = possible_mc_classes[i];
+		const auto& [name, score] = possible_classes[i];
 		if (score > max_score)
 		{
 			index = i;
@@ -353,15 +417,20 @@ std::string MappingGenerator::FindClassTypes(JNIEnv* env, jvmtiEnv* jvmti_env, c
 	}
 
 	if (index != -1)
-		LOGDEBUG("[MappingGenerator] Found at {} with score {} name: {}", index, max_score, possible_mc_classes[index].first);
+		LOGDEBUG("[MappingGenerator] Found at {} with score {} name: {}", index, max_score, possible_classes[index].first);
 	else
 		LOGDEBUG("[MappingGenerator] Couldn't find minecraft class");
 
-	return possible_mc_classes[index].first;
+	return possible_classes[index].first;
 }
 
 Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env, jclass klass, int& class_index)
 {
+	if (!klass)
+	{
+		LOGERROR("[MappingGenerator] klass argument is null");
+		return {};
+	}
 	Mappings klass_mappings;
 	jint field_count = 0;
 	jfieldID* fields;
@@ -395,10 +464,24 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 			continue;
 		}
 
+		static auto field_mappings = mappings::fields;
+		mappingFields mapping_field = mappingFields::NONE;
+		for (auto& [field_mapping, field_name] : field_mappings)
+		{
+			if (strcmp(name, field_name.name.c_str()) == 0)
+			{
+				mapping_field = field_mapping;
+				field_mappings.erase(field_mapping);
+				break;
+			}
+		}
+
 		MappingField field;
+		field.field = mapping_field;
 		field.name = name;
 		field.signature = sig;
 		field.modifiers = modifiers;
+		field.index = i;
 		klass_mappings.fields.emplace_back(field);
 	}
 
@@ -448,11 +531,25 @@ Mappings MappingGenerator::GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env,
 		for (int j = 0; j < bytecodes_count; j++)
 			bytecodes_vec.emplace_back(bytecodes[j]);
 
+		static auto method_mappings = mappings::methods;
+		mapping mapping_method = mapping::NONE;
+		for (auto& [method_mapping, method_name] : method_mappings)
+		{
+			if (strcmp(name, method_name.name.c_str()) == 0)
+			{
+				mapping_method = method_mapping;
+				method_mappings.erase(method_mapping);
+				break;
+			}
+		}
+
 		MethodMapping method;
+		method.method = mapping_method;
 		method.name = name;
 		method.signature = sig;
 		method.modifiers = modifiers;
 		method.bytecodes = bytecodes_vec;
+		method.index = i;
 		klass_mappings.methods.emplace_back(method);
 	}
 

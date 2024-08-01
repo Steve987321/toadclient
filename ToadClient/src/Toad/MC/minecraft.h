@@ -37,6 +37,8 @@ public:
 	};
 
 public:
+	
+	inline static std::string unsupported_mc_class_name = "ave";
 	static jclass getMcClass(JNIEnv* env);
 
 	jclass getMcClass();
@@ -61,7 +63,7 @@ public:
 
 	float getPartialTick();
 	float getRenderPartialTick();
-	float getFov();
+	//float getFov();
 
 	std::string getMouseOverStr();
 
@@ -90,7 +92,7 @@ public:
 	std::string movingObjPosToStr(jobject mopObj);
 
 public:
-	void set_gamma(float val);
+	//void set_gamma(float val);
 	void setObjMouseOver(jobject newMopObj);
 	void setLeftClickCounter(int val);
 

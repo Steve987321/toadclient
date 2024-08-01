@@ -18,7 +18,7 @@ Minecraft::~Minecraft()
 
 jclass Minecraft::getMcClass(JNIEnv* env)
 {
-    return findclass(toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? "ave" : "net.minecraft.client.Minecraft", env);
+    return findclass(toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? unsupported_mc_class_name.c_str() : "net.minecraft.client.Minecraft", env);
 }
 
 jclass Minecraft::getMcClass()
@@ -242,18 +242,17 @@ std::string Minecraft::movingObjPosToStr(jobject mopObj)
     return res;
 }
 
-void Minecraft::set_gamma(float val)
-{
-    auto obj = getGameSettings();
-
-    auto mId = get_mid(obj, mapping::setGamma, env);
-    if (!mId)
-        return;
-
-    env->CallVoidMethod(obj, mId, val);
-
-    env->DeleteLocalRef(obj);
-}
+//void Minecraft::set_gamma(float val)
+//{
+//    auto obj = getGameSettings();
+//    auto mId = get_mid(obj, mapping::setGamma, env);
+//    if (!mId)
+//        return;
+//
+//    env->CallVoidMethod(obj, mId, val);
+//
+//    env->DeleteLocalRef(obj);
+//}
 
 void Minecraft::setObjMouseOver(jobject newMopObj)
 {
@@ -300,6 +299,16 @@ jobject Minecraft::getGameSettings()
         return nullptr;
     }
     auto obj = env->GetObjectField(mc, fid);
+
+    if (static bool once = true; once)
+    {
+        LOGDEBUG("GAMESETTINGS");
+        jclass klass = env->GetObjectClass(obj);
+        loop_through_class(klass, env);
+        env->DeleteLocalRef(klass);
+        once = false;
+    }
+
     env->DeleteLocalRef(mc);
     return obj;
 }
@@ -439,17 +448,17 @@ float Minecraft::getRenderPartialTick()
     return res;
 }
 
-float Minecraft::getFov()
-{
-    auto obj = getGameSettings();
-    auto fId = get_fid(obj, mappingFields::fovField, env);
-    if (!fId)
-        return 0;
-
-    auto res = env->GetFloatField(obj, fId);
-    env->DeleteLocalRef(obj);
-    return res;
-}
+//float Minecraft::getFov()
+//{
+//    auto obj = getGameSettings();
+//    auto fId = get_fid(obj, mappingFields::fovField, env);
+//    if (!fId)
+//        return 0;
+//
+//    auto res = env->GetFloatField(obj, fId);
+//    env->DeleteLocalRef(obj);
+//    return res;
+//}
 
 jobject Minecraft::getMouseOverObject()
 {

@@ -40,16 +40,16 @@ namespace toadll
 		bool isSneaking() const;
 
 		//[[nodiscard]] jobject get_open_container() const;
-		BBox get_BBox() const;
+		//BBox get_BBox() const;
 
 		std::array<std::string, 4> getArmor();
 
 	public:
-		void setRotationYaw(float newYaw) const;
-		void setPrevRotationYaw(float newYaw) const;
-		void setRotationPitch(float newPitch) const;
-		void setPrevRotationPitch(float newPitch) const;
-		void setRotation(float yaw, float pitch) const;
+		//void setRotationYaw(float newYaw) const;
+		//void setPrevRotationYaw(float newYaw) const;
+		//void setRotationPitch(float newPitch) const;
+		//void setPrevRotationPitch(float newPitch) const;
+		//void setRotation(float yaw, float pitch) const;
 		void setMotionX(float val) const;
 		void setMotionY(float val) const;
 		void setMotionZ(float val) const;

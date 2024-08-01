@@ -17,10 +17,6 @@ namespace toadll::mappings
 			methods[mapping::getBlockState] = { "getBlockState", "(Lnet/minecraft/util/BlockPos;)Lnet/minecraft/block/state/IBlockState;" };
 			methods[mapping::getBlock] = { "getBlock", "()Lnet/minecraft/block/Block;" };
 
-		/*	methods[mapping::getPlayer] = { "bridge$getPlayer", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
-				LOGERROR("[mapping] Can't find getPlayer");*/
-
 			fields[mappingFields::thePlayerField] = { "thePlayer", "Lnet/minecraft/client/entity/EntityPlayerSP;"};
 			fields[mappingFields::gameSettings] = { "gameSettings", "Lnet/minecraft/client/settings/GameSettings;" };
 			
@@ -42,15 +38,15 @@ namespace toadll::mappings
 			fields[mappingFields::playerEntitiesField] = { "playerEntities", "Ljava/util/List;" };
 
 			// .GameSettings
-			methods[mapping::setGamma] = { "bridge$setGamma", "(F)V" };
+			//methods[mapping::setGamma] = { "bridge$setGamma", "(F)V" };
 
-			fields[mappingFields::fovField] = { "fovSetting", "F" };
+			//fields[mappingFields::fovField] = { "fovSetting", "F" };
 
 			// ENTITY
 			fields[mappingFields::rotationYawField] = { "rotationYaw", "F" };
 			fields[mappingFields::rotationPitchField] = { "rotationPitch", "F" };
-			fields[mappingFields::prevRotationYawField] = { "prevRotationYaw", "F" };
-			fields[mappingFields::prevRotationPitchField] = { "prevRotationPitch", "F" };
+			//fields[mappingFields::prevRotationYawField] = { "prevRotationYaw", "F" };
+			//fields[mappingFields::prevRotationPitchField] = { "prevRotationPitch", "F" };
 
 			fields[mappingFields::motionXField] = { "motionX", "D" };
 			fields[mappingFields::motionYField] = {"motionY", "D"};
@@ -70,12 +66,14 @@ namespace toadll::mappings
 			methods[mapping::getBlockPosition] = {"getPosition", "()Lnet/minecraft/util/BlockPos;" };
 			methods[mapping::isSneaking] = {"isSneaking", "()Z" };
 
-			jclass movingblockklass = findclass("net.minecraft.util.MovingObjectPosition", env);
-			methods[mapping::getBlockPositionFromMovingBlock] = {"bridge$getBlockPosition", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition", movingblockklass, env))
-				LOGERROR("can't find bridge$getBlockPosition from moving block class");
+			methods[mapping::getBlockPos] = { "getBlockPos", "()Lnet/minecraft/util/BlockPos;" };
+			//jclass movingblockklass = findclass("net.minecraft.util.MovingObjectPosition", env);
+			//loop_through_class(movingblockklass, env);
+			//methods[mapping::getBlockPositionFromMovingBlock] = {"bridge$getBlockPosition", "SIGNATURE NOT FOUND" };
+			//if (!getsig(mapping::getBlockPositionFromMovingBlock, "bridge$getBlockPosition", movingblockklass, env))
+				//LOGERROR("can't find bridge$getBlockPosition from moving block class");
 
-			env->DeleteLocalRef(movingblockklass);
+			//env->DeleteLocalRef(movingblockklass);
 
 			fields[mappingFields::inventoryField] = { "inventory", "Lnet/minecraft/entity/player/InventoryPlayer;" };
 			fields[mappingFields::lowerChestInventory] = { "lowerChestInventory", "Lnet/minecraft/inventory/IInventory;" };
@@ -87,28 +85,28 @@ namespace toadll::mappings
 			methods[mapping::getInventory] = { "getInventory", "()[Lnet/minecraft/item/ItemStack;" };
 			methods[mapping::getBlockPos] = { "getBlockPos", "()Lnet/minecraft/util/BlockPos;" };
 
-			methods[mapping::getRotationYaw] = { "bridge$getRotationYaw", "()D" };
-			methods[mapping::getRotationPitch] = { "bridge$getRotationPitch", "()D" };
+			//methods[mapping::getRotationYaw] = { "bridge$getRotationYaw", "()D" };
+			//methods[mapping::getRotationPitch] = { "bridge$getRotationPitch", "()D" };
 
-			methods[mapping::getBBox] = { "bridge$getBoundingBox", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
-				LOGERROR("can't find bbox");
+			//methods[mapping::getBBox] = { "bridge$getBoundingBox", "SIGNATURE NOT FOUND" };
+			//if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
+			//	LOGERROR("can't find bbox");
 
 			methods[mapping::getName] = { "getName", "()Ljava/lang/String;" };
 
-			methods[mapping::getMotionX] = { "bridge$getMotionX", "()D" };
-			methods[mapping::getMotionY] = { "bridge$getMotionY", "()D" };
-			methods[mapping::getMotionZ] = { "bridge$getMotionZ", "()D" };
+			//methods[mapping::getMotionX] = { "bridge$getMotionX", "()D" };
+			//methods[mapping::getMotionY] = { "bridge$getMotionY", "()D" };
+			//methods[mapping::getMotionZ] = { "bridge$getMotionZ", "()D" };
 
-			methods[mapping::setRotationYaw] = { "bridge$setRotationPitch", "(D)V" };
-			methods[mapping::setRotationPitch] = { "bridge$setRotationYaw", "(D)V" };
-			methods[mapping::setRotation] = { "setRotation", "(FF)V" };
-			
+			//methods[mapping::setRotationYaw] = { "bridge$setRotationPitch", "(D)V" };
+			//methods[mapping::setRotationPitch] = { "bridge$setRotationYaw", "(D)V" };
+			//methods[mapping::setRotation] = { "setRotation", "(FF)V" };
+			//
 			methods[mapping::isInvisible] = { "isInvisible", "()Z" };
 
 			// .EntityBaseLiving
 			methods[mapping::getHeldItem] = { "getHeldItem", "()Lnet/minecraft/item/ItemStack;" };
-			methods[mapping::getHurtTime] = { "bridge$getHurtTime", "()I" };
+			//methods[mapping::getHurtTime] = { "bridge$getHurtTime", "()I" };
 			methods[mapping::getHealth] = { "getHealth", "()F" };
 
 			// .ActiveRenderInfo
@@ -135,12 +133,12 @@ namespace toadll::mappings
 			methods[mapping::Vec3IZ] = { "getZ", "()I" };
 
 			// bounding box
-			methods[mapping::bboxMinX] = { "bridge$getMinX", "()D"};
-			methods[mapping::bboxMinY] = { "bridge$getMinY", "()D"};
-			methods[mapping::bboxMinZ] = { "bridge$getMinZ", "()D"};
-			methods[mapping::bboxMaxX] = { "bridge$getMaxX", "()D"};
-			methods[mapping::bboxMaxY] = { "bridge$getMaxY", "()D"};
-			methods[mapping::bboxMaxZ] = { "bridge$getMaxZ", "()D"};
+			//methods[mapping::bboxMinX] = { "bridge$getMinX", "()D"};
+			//methods[mapping::bboxMinY] = { "bridge$getMinY", "()D"};
+			//methods[mapping::bboxMinZ] = { "bridge$getMinZ", "()D"};
+			//methods[mapping::bboxMaxX] = { "bridge$getMaxX", "()D"};
+			//methods[mapping::bboxMaxY] = { "bridge$getMaxY", "()D"};
+			//methods[mapping::bboxMaxZ] = { "bridge$getMaxZ", "()D"};
 
 			// Timer
 			fields[mappingFields::renderPartialTickField] = { "renderPartialTicks", "F" };
@@ -155,11 +153,6 @@ namespace toadll::mappings
 			fields[mappingFields::objMouseOver] = { "objectMouseOver", "Lnet/minecraft/util/MovingObjectPosition;" };
 
 			methods[mapping::getBlock] = { "getBlock", "()Lnet/minecraft/block/Block;" };
-
-			//methods[mapping::getPlayer] = { "bridge$getPlayer", "SIGNATURE NOT FOUND" };
-			//if (!getsig(mapping::getPlayer, "bridge$getPlayer", mcclass, env))
-			//	LOGERROR("[mappings] Can't find player");// getPlayer, "()Lcom/moonsworth/lunar/IRRRCCICICRRRCRRRCOCOCIHI/HRRCROCRCIIHIOORRIIORRHCC/CCCHHICHCROHROCICOHCHHCOI/IRCOHCCIHIHRRRRRIIRHCRIHR;" });
-
 			fields[mappingFields::thePlayerField] = { "thePlayer", "Lnet/minecraft/client/entity/EntityClientPlayerMP;" };
 			fields[mappingFields::gameSettings] = { "gameSettings", "Lnet/minecraft/client/settings/GameSettings;" };
 
@@ -183,15 +176,15 @@ namespace toadll::mappings
 			methods[mapping::getIdFromBlockStatic] = { "getIdFromBlock", "(Lnet/minecraft/block/Block;)I" };
 
 			// .GameSettings
-			methods[mapping::setGamma] = { "bridge$setGamma", "(F)V" };
+			//methods[mapping::setGamma] = { "bridge$setGamma", "(F)V" };
 
-			fields[mappingFields::fovField] = { "fovSetting", "F" };
+			//fields[mappingFields::fovField] = { "fovSetting", "F" };
 
 			// ENTITY
 			fields[mappingFields::rotationYawField] = { "rotationYaw", "F" };
 			fields[mappingFields::rotationPitchField] = { "rotationPitch", "F" };
-			fields[mappingFields::prevRotationYawField] = { "prevRotationYaw", "F" };
-			fields[mappingFields::prevRotationPitchField] = { "prevRotationPitch", "F" };
+			//fields[mappingFields::prevRotationYawField] = { "prevRotationYaw", "F" };
+			//fields[mappingFields::prevRotationPitchField] = { "prevRotationPitch", "F" };
 
 			fields[mappingFields::motionXField] = { "motionX", "D" };
 			fields[mappingFields::motionYField] = { "motionY", "D" };
@@ -225,28 +218,28 @@ namespace toadll::mappings
 
 			methods[mapping::getBlockPos] = { "getBlockPos", "()Lnet/minecraft/util/BlockPos;" };
 
-			methods[mapping::getRotationYaw] = { "bridge$getRotationYaw", "()D" };
-			methods[mapping::getRotationPitch] = { "bridge$getRotationPitch", "()D" };
+			//methods[mapping::getRotationYaw] = { "bridge$getRotationYaw", "()D" };
+			//methods[mapping::getRotationPitch] = { "bridge$getRotationPitch", "()D" };
 
-			methods[mapping::getBBox] = { "bridge$getBoundingBox", "SIGNATURE NOT FOUND" };
-			if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
-				LOGERROR("[mappings] can't find bbox");
+			//methods[mapping::getBBox] = { "bridge$getBoundingBox", "SIGNATURE NOT FOUND" };
+			//if (!getsig(mapping::getBBox, "bridge$getBoundingBox", entity_class, env))
+			//	LOGERROR("[mappings] can't find bbox");
 
 			methods[mapping::getName] = { "bridge$getDisplayName", "()Ljava/lang/String;" };
 
-			methods[mapping::getMotionX] = { "bridge$getMotionX", "()D" };
-			methods[mapping::getMotionY] = { "bridge$getMotionY", "()D" };
-			methods[mapping::getMotionZ] = { "bridge$getMotionZ", "()D" };
+			//methods[mapping::getMotionX] = { "bridge$getMotionX", "()D" };
+			//methods[mapping::getMotionY] = { "bridge$getMotionY", "()D" };
+			//methods[mapping::getMotionZ] = { "bridge$getMotionZ", "()D" };
 
-			methods[mapping::setRotationYaw] = { "bridge$setRotationPitch", "(D)V" };
-			methods[mapping::setRotationPitch] = { "bridge$setRotationYaw", "(D)V" };
-			methods[mapping::setRotation] = { "setRotation", "(FF)V" };
+			//methods[mapping::setRotationYaw] = { "bridge$setRotationPitch", "(D)V" };
+			//methods[mapping::setRotationPitch] = { "bridge$setRotationYaw", "(D)V" };
+			//methods[mapping::setRotation] = { "setRotation", "(FF)V" };
 
 			methods[mapping::isInvisible] = { "isInvisible", "()Z" };
 
 			// .EntityBaseLiving
 			methods[mapping::getHeldItem] = { "getHeldItem", "()Lnet/minecraft/item/ItemStack;" };
-			methods[mapping::getHurtTime] = { "bridge$getHurtTime", "()I" };
+			//methods[mapping::getHurtTime] = { "bridge$getHurtTime", "()I" };
 			methods[mapping::getHealth] = { "getHealth", "()F" };
 
 			// .ActiveRenderInfo
@@ -271,12 +264,12 @@ namespace toadll::mappings
 			methods[mapping::Vec3IZ] = { "getZ", "()I" };
 
 			// bounding box
-			methods[mapping::bboxMinX] = { "bridge$getMinX", "()D" };
-			methods[mapping::bboxMinY] = { "bridge$getMinY", "()D" };
-			methods[mapping::bboxMinZ] = { "bridge$getMinZ", "()D" };
-			methods[mapping::bboxMaxX] = { "bridge$getMaxX", "()D" };
-			methods[mapping::bboxMaxY] = { "bridge$getMaxY", "()D" };
-			methods[mapping::bboxMaxZ] = { "bridge$getMaxZ", "()D" };
+			//methods[mapping::bboxMinX] = { "bridge$getMinX", "()D" };
+			//methods[mapping::bboxMinY] = { "bridge$getMinY", "()D" };
+			//methods[mapping::bboxMinZ] = { "bridge$getMinZ", "()D" };
+			//methods[mapping::bboxMaxX] = { "bridge$getMaxX", "()D" };
+			//methods[mapping::bboxMaxY] = { "bridge$getMaxY", "()D" };
+			//methods[mapping::bboxMaxZ] = { "bridge$getMaxZ", "()D" };
 
 			// Timer
 			methods[mapping::partialTick] = { "bridge$partialTick", "()F" };

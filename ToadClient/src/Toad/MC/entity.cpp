@@ -139,14 +139,6 @@ std::string toadll::c_Entity::getSlotStr(int slot) const
 		return "NONE";
 	}
 
-	if (static bool once = true; once)
-	{
-		auto klass = env->GetObjectClass(inventory);
-		loop_through_class(klass, env);
-		env->DeleteLocalRef(klass);
-		once = false;
-	}
-
 	auto item_to_string_mid = get_mid(inventory, mapping::toString, env);
 	jstring str_obj = (jstring)env->CallObjectMethod(inventory, item_to_string_mid);
 	std::string res = jstring2string(str_obj, env);
@@ -223,22 +215,28 @@ bool toadll::c_Entity::isSneaking() const
 
 	return env->CallBooleanMethod(obj, mid);
 }
-
-toadll::BBox toadll::c_Entity::get_BBox() const
-{
-	auto bboxobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getBBox, env));
-
-	float minX = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinX, env));
-	float minY = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinY, env));
-	float minZ = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinZ, env));
-	float maxX = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxX, env));
-	float maxY = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxY, env));
-	float maxZ = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxZ, env));
-
-	env->DeleteLocalRef(bboxobj);
-
-	return { { minX, minY, minZ }, { maxX, maxY, maxZ } };
-}
+//
+//toadll::BBox toadll::c_Entity::get_BBox() const
+//{
+//	jobject bboxobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getBBox, env));
+//	if (static bool once = true; once)
+//	{
+//		jclass klass = env->GetObjectClass(bboxobj);
+//		loop_through_class(klass, env);
+//		env->DeleteLocalRef(klass);
+//		once = false;
+//	}
+//	float minX = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinX, env));
+//	float minY = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinY, env));
+//	float minZ = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMinZ, env));
+//	float maxX = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxX, env));
+//	float maxY = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxY, env));
+//	float maxZ = (float)env->CallDoubleMethod(bboxobj, get_mid(bboxobj, mapping::bboxMaxZ, env));
+//
+//	env->DeleteLocalRef(bboxobj);
+//
+//	return { { minX, minY, minZ }, { maxX, maxY, maxZ } };
+//}
 
 std::array<std::string, 4> toadll::c_Entity::getArmor()
 {
@@ -286,35 +284,35 @@ std::array<std::string, 4> toadll::c_Entity::getArmor()
 //{
 //	return env->CallObjectMethod(obj, get_mid(obj, mapping::getOpenContainer));
 //}
-
-void toadll::c_Entity::setRotationYaw(float newYaw) const
-{
-	env->SetFloatField(obj, get_fid(obj, mappingFields::rotationYawField, env), newYaw);
-	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
-}
-
-void toadll::c_Entity::setPrevRotationYaw(float newYaw) const
-{
-	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationYawField, env), newYaw);
-	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
-}
-
-void toadll::c_Entity::setRotationPitch(float newPitch) const
-{
-	env->SetFloatField(obj, get_fid(obj, mappingFields::rotationPitchField, env), newPitch);
-	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationPitch), newPitch);
-}
-
-void toadll::c_Entity::setPrevRotationPitch(float newPitch) const
-{
-	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationPitchField, env), newPitch);
-	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationPitch), newPitch);
-}
-
-void toadll::c_Entity::setRotation(float yaw, float pitch) const
-{
-	env->CallVoidMethod(obj, get_mid(obj, mapping::setRotation, env), yaw, pitch);
-}
+//
+//void toadll::c_Entity::setRotationYaw(float newYaw) const
+//{
+//	env->SetFloatField(obj, get_fid(obj, mappingFields::rotationYawField, env), newYaw);
+//	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
+//}
+//
+//void toadll::c_Entity::setPrevRotationYaw(float newYaw) const
+//{
+//	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationYawField, env), newYaw);
+//	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
+//}
+//
+//void toadll::c_Entity::setRotationPitch(float newPitch) const
+//{
+//	env->SetFloatField(obj, get_fid(obj, mappingFields::rotationPitchField, env), newPitch);
+//	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationPitch), newPitch);
+//}
+//
+//void toadll::c_Entity::setPrevRotationPitch(float newPitch) const
+//{
+//	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationPitchField, env), newPitch);
+//	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationPitch), newPitch);
+//}
+//
+//void toadll::c_Entity::setRotation(float yaw, float pitch) const
+//{
+//	env->CallVoidMethod(obj, get_mid(obj, mapping::setRotation, env), yaw, pitch);
+//}
 
 void toadll::c_Entity::setMotionX(float val) const
 {

@@ -25,6 +25,6 @@ class Minecraft : JavaClass
 public:
 	Player GetPlayer()
 	{
-		env->GetObjectField()
+		env->GetObjectField(m_class, "GetPlayer");
 	}
 };

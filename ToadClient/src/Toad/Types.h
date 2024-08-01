@@ -291,6 +291,8 @@ struct MCMap
 
 enum class mappingFields
 {
+    NONE,
+
     // .Minecraft
     theMcField,
     currentScreenField,
@@ -308,13 +310,13 @@ enum class mappingFields
     playerEntitiesField,
 
     // .GameSettings
-    fovField,
+    //fovField,
 
     // .Entity
     rotationYawField,
     rotationPitchField,
-    prevRotationYawField,
-    prevRotationPitchField,
+    //prevRotationYawField,
+    //prevRotationPitchField,
     lastTickPosXField,
     lastTickPosYField,
     lastTickPosZField,
@@ -352,6 +354,8 @@ enum class mappingFields
 
 enum class mapping
 {
+    NONE,
+
     // .Minecraft
     getPlayer,
 
@@ -375,29 +379,29 @@ enum class mapping
     getOpenContainer,
 
     // .GameSettings
-    setGamma,
+    //setGamma,
 
     // .Entity
     getPos,
-    getRotationYaw,
-    getRotationPitch,
+    //getRotationYaw,
+    //getRotationPitch,
 
     getBlockPosition,
     getBlockPos,
     getBlockPositionFromMovingBlock,
     isSneaking, // ()Z
 
-    setRotationYaw,
-    setRotationPitch,
-    setRotation,
+    //setRotationYaw,
+    //setRotationPitch,
+    //setRotation,
 
-    getBBox,
+    //getBBox,
 
     getName,
 
-    getMotionX,
-    getMotionY,
-    getMotionZ,
+    //getMotionX,
+    //getMotionY,
+    //getMotionZ,
 
     isInvisible,
 
@@ -412,7 +416,7 @@ enum class mapping
 
     // .EntityLivingBase
     getHeldItem,
-    getHurtTime,
+    //getHurtTime,
     getHealth,
 
     // .ActiveRenderInfo
@@ -428,12 +432,12 @@ enum class mapping
     Vec3IZ,
 
     // bounding box
-    bboxMinX,
-    bboxMinY,
-    bboxMinZ,
-    bboxMaxX,
-    bboxMaxY,
-    bboxMaxZ,
+    //bboxMinX,
+    //bboxMinY,
+    //bboxMinZ,
+    //bboxMaxX,
+    //bboxMaxY,
+    //bboxMaxZ,
 
     // Timer
     partialTick,
