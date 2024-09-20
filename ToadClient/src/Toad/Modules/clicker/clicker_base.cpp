@@ -80,7 +80,6 @@ namespace toadll
 				{
 					rand.edited_min -= boost.amount_ms / boost.transition_duration;
 					rand.edited_max -= boost.amount_ms / boost.transition_duration;
-					LOGDEBUG("boost up rand.edited_* -= {} edited_min = {}", boost.amount_ms / boost.transition_duration, rand.edited_min);
 				}
 
 				// boost down 
@@ -90,7 +89,6 @@ namespace toadll
 				{
 					rand.edited_min += boost.amount_ms / boost.transition_duration;
 					rand.edited_max += boost.amount_ms / boost.transition_duration;
-					LOGDEBUG("boost up rand.edited_* += {} edited_min = {}", boost.amount_ms / boost.transition_duration, rand.edited_min);
 				}
 
 				// reset this boost 
