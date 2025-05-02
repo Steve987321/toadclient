@@ -1,6 +1,6 @@
 #pragma once
 
-namespace toadll
+namespace toad
 {
 	/// Draws a filled 3d box
 	void draw3d_bbox_fill(const BBox& bbox, const Vec4& col);

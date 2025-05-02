@@ -1,12 +1,12 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "hook.h"
 
-namespace toadll
+namespace toad
 {
-	Hook::Hook()
+	void Hook::AddHook(Hook* hook)
 	{
-		hookInstances.emplace_back(this);
+		HookInstances.emplace_back(hook);
 	}
 
 	bool Hook::IsNull() const
@@ -32,28 +32,33 @@ namespace toadll
 			MH_DisableHook(m_oPtr);
 	}
 
+	bool Hook::Init()
+	{
+		return false;
+	}
+
 	void Hook::EnableAllHooks()
 	{
-		for (const auto& hook : hookInstances)
+		for (Hook* hook : HookInstances)
 			hook->Enable();
 	}
 
 	void Hook::DisableAllHooks()
 	{
-		for (const auto& hook : hookInstances)
+		for (Hook* hook : HookInstances)
 			hook->Disable();
 	}
 
 	void Hook::CleanAllHooks()
 	{
-		for (const auto& hook : hookInstances)
+		for (Hook* hook : HookInstances)
 			if (!hook->IsNull())
 				hook->Dispose();
 	}
 
 	void Hook::InitializeAllHooks()
 	{
-		for (const auto& hook : hookInstances)
+		for (Hook* hook : HookInstances)
 			hook->Init();
 	}
 

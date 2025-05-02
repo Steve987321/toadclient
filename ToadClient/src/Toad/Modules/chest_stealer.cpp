@@ -1,17 +1,11 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "chest_stealer.h"
 
 using namespace toad;
 
-namespace toadll
+namespace toad
 {
-
-CChestStealer::CChestStealer()
-{
-	Enabled = &chest_stealer::enabled;
-	UpdateSlotPosOffsets();
-}
 
 void CChestStealer::PreUpdate()
 {
@@ -22,12 +16,6 @@ void CChestStealer::PreUpdate()
 
 void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	if (!*Enabled)
-	{
-		SLEEP(100);
-		return;
-	}
-
 	static bool looting = false;
 	static int index = -1;
 	static int loot_item_counter = 0;
@@ -37,11 +25,11 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		if (m_isShiftDown)
 		{
-			send_key(VK_SHIFT, false);
+			SendKey(VK_SHIFT, false);
 			m_isShiftDown = false;
 		}
 
-		if (!GetAsyncKeyState(chest_stealer::steal_key))
+		if (!GetAsyncKeyState(settings.cs_steal_key))
 			stopped = false;
 
 		SLEEP(100);
@@ -51,7 +39,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static Timer aim_timer;
 	static POINT current_pos{};
 
-	if ((GetAsyncKeyState(chest_stealer::steal_key) & 0x8000 && CVarsUpdater::IsInGui) || looting /*(GetAsyncKeyState(VK_RBUTTON) & 1) && !GetAsyncKeyState(VK_SHIFT) && !chest_open*/)
+	if ((GetAsyncKeyState(settings.cs_steal_key) & 0x8000 && CVarsUpdater::IsInGui) || looting /*(GetAsyncKeyState(VK_RBUTTON) & 1) && !GetAsyncKeyState(VK_SHIFT) && !chest_open*/)
 	{		
 		UpdateSlotPosOffsets();
 
@@ -82,9 +70,9 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			loot_item_counter++;
 
 			// start holding shift and wait a bit
-			send_key(VK_SHIFT);
+			SendKey(VK_SHIFT);
 			m_isShiftDown = true;
-			SLEEP(rand_int(30, 50));
+			SLEEP(RandInt(30, 50));
 
 			// start timer and set starting mouse position
 			aim_timer.Start();
@@ -93,7 +81,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		if (index != -1)
 		{
-			if (loot_item_counter > 1 && ((GetAsyncKeyState(chest_stealer::steal_key) & 0x8000) || GetAsyncKeyState(0x45 /*E*/) & 0x8000 || GetAsyncKeyState(VK_ESCAPE) &0x8000))
+			if (loot_item_counter > 1 && ((GetAsyncKeyState(settings.cs_steal_key) & 0x8000) || GetAsyncKeyState(0x45 /*E*/) & 0x8000 || GetAsyncKeyState(VK_ESCAPE) &0x8000))
 			{
 				loot_item_counter = 0;
 				index = -1;
@@ -112,14 +100,14 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			pos.x += middle.x;
 			pos.y += middle.y;
 
-			if (aim_timer.Elapsed() > chest_stealer::average_slowness_ms)
+			if (aim_timer.Elapsed() > settings.cs_average_slowness_ms)
 			{
 				// make sure mouse is on slot and right click
 				SetCursorPos(pos.x, pos.y);
-				SLEEP(rand_int(50, 60));
+				SLEEP(RandInt(50, 60));
 
 				right_mouse_down(pos);
-				SLEEP(rand_int(35, 70));
+				SLEEP(RandInt(35, 70));
 				right_mouse_up(pos);
 
 				current_pos = pos;
@@ -134,9 +122,9 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			}
 			else
 			{
-				float t = std::clamp(aim_timer.Elapsed() / chest_stealer::average_slowness_ms, 0.f, 1.f);
-				int x_lerp = (int)slerp((float)current_pos.x, (float)pos.x, t);
-				int y_lerp = (int)slerp((float)current_pos.y, (float)pos.y, t);
+				float t = std::clamp(aim_timer.Elapsed() / settings.cs_average_slowness_ms, 0.f, 1.f);
+				int x_lerp = (int)Slerp((float)current_pos.x, (float)pos.x, t);
+				int y_lerp = (int)Slerp((float)current_pos.y, (float)pos.y, t);
 				SetCursorPos(x_lerp, y_lerp);
 			}
 		}
@@ -144,7 +132,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		{
 			if (m_isShiftDown)
 			{
-				send_key(VK_SHIFT, false);
+				SendKey(VK_SHIFT, false);
 				m_isShiftDown = false;
 			}
 
@@ -159,7 +147,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		if (m_isShiftDown)
 		{
-			send_key(VK_SHIFT, false);
+			SendKey(VK_SHIFT, false);
 			m_isShiftDown = false;
 		}
 		looting = false;
@@ -169,7 +157,7 @@ void CChestStealer::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
 		if (m_isShiftDown)
 		{
-			send_key(VK_SHIFT, false);
+			SendKey(VK_SHIFT, false);
 			m_isShiftDown = false;
 		}
 		looting = false;
@@ -188,10 +176,10 @@ void CChestStealer::SetupPath()
 			continue;
 		}
 
-		if (!chest_stealer::items_to_grab.empty())
+		if (!settings.cs_items_to_grab.empty())
 		{
 			bool found = false;
-			for (const auto& item : chest_stealer::items_to_grab)
+			for (const auto& item : settings.cs_items_to_grab)
 			{
 				if (name.find(item) != std::string::npos)
 				{
@@ -246,7 +234,7 @@ void CChestStealer::UpdateSlotPosOffsets()
 	
 	ChestStealerSlotLocationInfo* info = nullptr;
 
-	for (auto& i : chest_stealer::slot_info)
+	for (auto& i : settings.cs_slot_info)
 	{
 		if (i.res_x == g_screen_width && i.res_y == g_screen_height)
 		{
@@ -272,7 +260,7 @@ void CChestStealer::UpdateSlotPosOffsets()
 
 void CChestStealer::OnImGuiRender(ImDrawList* draw)
 {
-	if (CVarsUpdater::IsInGui && chest_stealer::show_slot_positions)
+	if (CVarsUpdater::IsInGui && settings.cs_show_slot_positions)
 	{
 		UpdateSlotPosOffsets();
 		

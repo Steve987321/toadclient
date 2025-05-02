@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 
 #include <glm/geometric.hpp>
 #include <glm/trigonometric.hpp>
@@ -7,14 +7,14 @@
 
 #include "of_screen_arrows.h"
 
-using namespace toadll::math;
+using namespace toad::math;
 
-void toadll::COfScreenArrows::PreUpdate()
+void toad::COfScreenArrows::PreUpdate()
 {
 	CModule::PreUpdate();
 }
 
-void toadll::COfScreenArrows::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
+void toad::COfScreenArrows::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	m_directions.clear();
 	for (const auto& e : MC->getPlayerList())
@@ -26,8 +26,8 @@ void toadll::COfScreenArrows::Update(const std::shared_ptr<LocalPlayer>& lPlayer
 		if (lPlayer->Pos.dist(entityPos) > 20)
 			continue;
 
-		float yaw_diff = wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, entityPos).first));
-		float pitch_diff = wrap_to_180(-(lPlayer->Pitch - get_angles(lPlayer->Pos, entityPos).second));
+		float yaw_diff = wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, entityPos).yaw));
+		float pitch_diff = wrap_to_180(-(lPlayer->Pitch - get_angles(lPlayer->Pos, entityPos).pitch));
 		if (abs(yaw_diff) > 70 || abs(pitch_diff) > 80)
 		{
 			auto yaw_rad = glm::radians(yaw_diff);
@@ -68,7 +68,7 @@ void toadll::COfScreenArrows::Update(const std::shared_ptr<LocalPlayer>& lPlayer
 	SLEEP(10);
 }
 
-void toadll::COfScreenArrows::OnImGuiRender(ImDrawList* draw)
+void toad::COfScreenArrows::OnImGuiRender(ImDrawList* draw)
 {
 	for (const auto & arrow : m_directions)
 	{

@@ -1,5 +1,5 @@
 #pragma once
-namespace toadll
+namespace toad
 {
 
 ///
@@ -7,25 +7,6 @@ namespace toadll
 ///
 class Minecraft
 {
-public:
-	JNIEnv* env = nullptr;
-
-private:
-	//jclass mcclass = nullptr;
-	jclass m_gsclass = nullptr; // game settings
-
-	jclass m_mcclass = nullptr; // minecraft 
-	jclass m_elbclass = nullptr; // entity living base
-	jclass m_ariclass = nullptr; // active render info
-	jclass m_vec3class = nullptr; // Vec3
-	jclass m_vec3iclass = nullptr; // Vec3i
-	jclass m_mopclass = nullptr; // moving object position 
-	jclass m_blockposclass = nullptr; // blockpos
-
-public:
-	explicit Minecraft() = default;
-	~Minecraft();
-
 public:
 	enum class RAYTRACE_BLOCKS_RESULT
 	{
@@ -36,8 +17,10 @@ public:
 		ERROR					// debugging purposes
 	};
 
-public:
-	
+	void Clean();
+
+	JNIEnv* env = nullptr;
+
 	inline static std::string unsupported_mc_class_name = "ave";
 	static jclass getMcClass(JNIEnv* env);
 
@@ -88,7 +71,6 @@ public:
 	///	@param stopOnAirBlocks whether the ray shouldn't continue if from is an airblock
 	RAYTRACE_BLOCKS_RESULT rayTraceBlocks(Vec3 from, Vec3 direction, Vec3& result, bool stopOnLiquid = false, bool stopOnAirBlocks = false, int subtractY = 2);
 
-public:
 	std::string movingObjPosToStr(jobject mopObj);
 
 public:
@@ -98,6 +80,19 @@ public:
 
 	//void disableLightMap() const;
 	//void enableLightMap() const;
+
+private:
+	//jclass mcclass = nullptr;
+	jclass m_gsclass = nullptr; // game settings
+
+	jclass m_mcclass = nullptr; // minecraft 
+	jclass m_elbclass = nullptr; // entity living base
+	jclass m_ariclass = nullptr; // active render info
+	jclass m_vec3class = nullptr; // Vec3
+	jclass m_vec3iclass = nullptr; // Vec3i
+	jclass m_mopclass = nullptr; // moving object position 
+	jclass m_blockposclass = nullptr; // blockpos
+
 };
 
 }

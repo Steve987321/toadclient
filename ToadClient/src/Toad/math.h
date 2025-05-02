@@ -3,11 +3,17 @@
 #include <glm/vec2.hpp>
 
 #include "Toad/types.h"
-#include "Logger/logger.h"
+#include <unordered_set>
 
-namespace toadll::math
+namespace toad::math
 {
-	std::pair<float, float> get_angles(const Vec3& pos1, const Vec3& pos2);
+	struct Rotation
+	{
+		float yaw; 
+		float pitch;
+	};
+
+	Rotation get_angles(const Vec3& pos1, const Vec3& pos2);
 
 	float wrap_to_180(float value);
 

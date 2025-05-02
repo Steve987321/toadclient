@@ -5,10 +5,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace toadll::math
+namespace toad::math
 {
 
-	std::pair<float, float> get_angles(const Vec3& pos1, const Vec3& pos2)
+	Rotation get_angles(const Vec3& pos1, const Vec3& pos2)
 	{
 		float d_x = pos2.x - pos1.x;
 		float d_y = pos2.y - pos1.y;
@@ -18,7 +18,7 @@ namespace toadll::math
 		float yaw = atan2(d_z, d_x) * 180.f / g_PI - 90.f;
 		float pitch = -atan2(d_y, hypothenuse) * 180 / g_PI;
 
-		return std::make_pair(yaw, pitch);
+		return { yaw, pitch };
 	}
 
 	float wrap_to_180(float value)

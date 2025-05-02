@@ -1,16 +1,11 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "bridge_assist.h"
 
 using namespace toad;
 
-namespace toadll
+namespace toad
 {
-
-CBridgeAssist::CBridgeAssist()
-{
-	Enabled = &bridge_assist::enabled;
-}
 
 void CBridgeAssist::PreUpdate()
 {
@@ -25,7 +20,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// will help against being stuck on sneaking
 	bool isSneaking = (bool)GetAsyncKeyState(VK_SHIFT);
 
-	if (!*Enabled)
+	if (!Enabled)
 	{
 		// when disabling this cheat module, make sure we aren't sneaking anymore
 		if (isSneaking)
@@ -49,7 +44,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		return;		
 	}
 
-	if (bridge_assist::only_initiate_when_sneaking)
+	if (settings.ba_only_initiate_when_sneaking)
 	{
 		if (!m_has_pressed_shift && isSneaking)
 		{
@@ -59,7 +54,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	//const bool standingOnBlock = diffY <= FLT_EPSILON;
 
-	if (lPlayer->Pitch < bridge_assist::pitch_check)
+	if (lPlayer->Pitch < settings.ba_pitch_check)
 	{
 		if (isSneaking)
 			UnSneak();
@@ -71,7 +66,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	}
 
 
-	if (bridge_assist::only_initiate_when_sneaking && !m_has_pressed_shift)
+	if (settings.ba_only_initiate_when_sneaking && !m_has_pressed_shift)
 	{
 		SLEEP(1);
 		return;
@@ -88,7 +83,7 @@ void CBridgeAssist::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	auto diffY = lPlayer->Pos.y - hitBlockPos.y;
 	diffY -= 1;
 
-	if (diffY != 0 && diffY <= bridge_assist::block_check)
+	if (diffY != 0 && diffY <= settings.ba_block_check)
 	{
 		SLEEP(1);
 		return;
@@ -141,7 +136,7 @@ void CBridgeAssist::Sneak()
 	m_is_edge = true;
 	if (!m_prev)
 	{
-		send_key(VK_SHIFT, true);
+		SendKey(VK_SHIFT, true);
 		m_prev = true;
 	}
 }
@@ -151,7 +146,7 @@ void CBridgeAssist::UnSneak()
 	m_is_edge = false;
 	if (m_prev)
 	{
-		send_key(VK_SHIFT, false);
+		SendKey(VK_SHIFT, false);
 		m_prev = false;
 	}
 }

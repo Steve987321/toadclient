@@ -1,14 +1,21 @@
 #include "pch.h"
 #include "mcutils.h"
 
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 
-namespace toadll
+namespace toad
 {
+    static jobject class_loader_obj = nullptr;
+
     jclass findclass(const char* clsName, JNIEnv* env)
     {
-        if (toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED)
+        if (settings.g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED)
             return env->FindClass(clsName);
+
+        if (class_loader_obj)
+        {
+
+        }
 
         jclass thread_clazz = env->FindClass("java/lang/Thread");
         static jmethodID curthread_mid = env->GetStaticMethodID(thread_clazz, "currentThread", "()Ljava/lang/Thread;");
@@ -25,7 +32,7 @@ namespace toadll
         jmethodID mid_getname = env->GetMethodID(thread_clazz, "getName", "()Ljava/lang/String;");
         jobject array_elements = env->GetObjectArrayElement(arrayD, 0);
         jmethodID threadclassloader = env->GetMethodID(thread_clazz, "getContextClassLoader", "()Ljava/lang/ClassLoader;");
-        if (threadclassloader != 0)
+        if (threadclassloader)
         {
             auto class_loader = env->CallObjectMethod(array_elements, threadclassloader);
             jclass launch_clazz = env->FindClass("net/minecraft/launchwrapper/Launch");
@@ -59,7 +66,7 @@ namespace toadll
         return env->FindClass(clsName);
     }
 
-    std::string jstring2string(jstring jStr, JNIEnv* env) {
+	std::string jstring2string(jstring jStr, JNIEnv* env) {
         if (!jStr)
             return "";
         auto name = env->GetStringUTFChars(jStr, nullptr);

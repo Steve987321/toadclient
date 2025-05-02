@@ -1,19 +1,18 @@
 #pragma once
 
-namespace toadll
+namespace toad
 {
 
-class CNoClickDelay SET_MODULE_CLASS(CNoClickDelay)
+class CNoClickDelay : public CModule
 {
 public:
-	CNoClickDelay();
+	using CModule::CModule;
 
-public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 
 public:
-	static void Invoke(const std::shared_ptr<Minecraft>& minecraft);
+	static void Invoke(Minecraft* minecraft);
 };
 
 }

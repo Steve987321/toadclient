@@ -1,14 +1,17 @@
 #pragma once
 #include <glm/vec3.hpp>
 
-namespace toadll
+namespace toad
 {
 
 ///
 /// IN TESTING
 ///
-class COfScreenArrows SET_MODULE_CLASS(COfScreenArrows)
+class COfScreenArrows : public CModule
 {
+public:
+	using CModule::CModule;
+
 	using arrow = std::array<ImVec2, 3>;
 
 public:

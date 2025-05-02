@@ -1,16 +1,12 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "left_autoclicker.h"
 
 using namespace toad;
-using namespace toadll::math;
+using namespace toad::math;
 
-namespace toadll {
-
-CLeftAutoClicker::CLeftAutoClicker()
+namespace toad 
 {
-	Enabled = &left_clicker::enabled;
-}
 
 void CLeftAutoClicker::PreUpdate()
 {
@@ -27,7 +23,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	static bool is_already_clicking = false;
 
 	/// randomized time in ms that the right button (for blocking) is held
-	static int block_hit_mdown_rand_ms = left_clicker::block_hit_ms;
+	static int block_hit_mdown_rand_ms = settings.lc_block_hit_ms;
 	static bool block_hit_timer_started = false;
 	static bool block_hit_allowed = true; 
 	static Timer block_hit_timer;
@@ -35,18 +31,12 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	// TODO: test trade assist 
 	static Timer trade_assist_timer;
 
-	if (!*Enabled)
-	{
-		SLEEP(250);
-		return;
-	}
-
-	if (CVarsUpdater::IsInGui && left_clicker::click_check == CLICK_CHECK::ONLY_GAME)
+	if (CVarsUpdater::IsInGui && settings.lc_click_check == CLICK_CHECK::ONLY_GAME)
 	{
 		SLEEP(10);
 		return;
 	}
-	if (!CVarsUpdater::IsInGui && left_clicker::click_check == CLICK_CHECK::ONLY_INVENTORY)
+	if (!CVarsUpdater::IsInGui && settings.lc_click_check == CLICK_CHECK::ONLY_INVENTORY)
 	{
 		SLEEP(10);
 		return;
@@ -75,7 +65,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		else
 		{
 			auto ePos = enemy->getPosition();
-			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, ePos).first)));
+			auto yawDiff = std::abs(wrap_to_180(-(lPlayer->Yaw - get_angles(lPlayer->Pos, ePos).yaw)));
 
 			// enemy is not valid anymore after it has gone out of these limits
 			if (ePos.dist(lPlayer->Pos) > 4.0f || yawDiff > 120)
@@ -93,7 +83,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			is_starting_click = true;
 		}
 
-		if (left_clicker::break_blocks && !is_already_clicking)
+		if (settings.lc_break_blocks && !is_already_clicking)
 		{
 			// spinlock while mouse is over block
 			while (mouse_over_type == "BLOCK" && GetAsyncKeyState(VK_LBUTTON))
@@ -104,13 +94,13 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			}
 		}
 
-		if (left_clicker::weapons_only)
+		if (settings.lc_weapons_only)
 		{
 			if (held_item.find("sword") == std::string::npos)
 				return;
 		}
 
-		if (left_clicker::targeting_affects_cps)
+		if (settings.lc_targeting_affects_cps)
 		{
 			// so it toggles 
 			static int toggle_once = 3;
@@ -139,7 +129,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		  
 		// trade assist 
 		/*
-		if (left_clicker::trade_assist)
+		if (settings.lc_trade_assist)
 		{
 			static bool start_timer_flag = false;
 			static bool is_trading = false;
@@ -207,8 +197,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 					else
 						is_player_hit = false;
 
-					m_rand.edited_min = std::lerp(m_rand.edited_min, left_clicker::targeting_affects_cps ? m_rand.min_delay + 2.5f : m_rand.min_delay, m_pTick / 2);
-					m_rand.edited_max = std::lerp(m_rand.edited_max, left_clicker::targeting_affects_cps ? m_rand.max_delay + 2.5f : m_rand.max_delay, m_pTick / 3);
+					m_rand.edited_min = std::lerp(m_rand.edited_min, settings.lc_targeting_affects_cps ? m_rand.min_delay + 2.5f : m_rand.min_delay, m_pTick / 2);
+					m_rand.edited_max = std::lerp(m_rand.edited_max, settings.lc_targeting_affects_cps ? m_rand.max_delay + 2.5f : m_rand.max_delay, m_pTick / 3);
 				}
 			}
 			else
@@ -217,8 +207,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				start_timer_flag = false;
 				enemy_hit_count = 0;
 				lplayer_hit_count = 0;
-				//m_rand.edited_min = std::lerp(m_rand.edited_min, left_clicker::targeting_affects_cps ? m_rand.min_delay + 2.5f : m_rand.min_delay, m_pTick / 2);
-				//m_rand.edited_max = std::lerp(m_rand.edited_max, left_clicker::targeting_affects_cps ? m_rand.max_delay + 2.5f : m_rand.max_delay, m_pTick / 3);
+				//m_rand.edited_min = std::lerp(m_rand.edited_min, settings.lc_targeting_affects_cps ? m_rand.min_delay + 2.5f : m_rand.min_delay, m_pTick / 2);
+				//m_rand.edited_max = std::lerp(m_rand.edited_max, settings.lc_targeting_affects_cps ? m_rand.max_delay + 2.5f : m_rand.max_delay, m_pTick / 3);
 			}
 		}
 		*/
@@ -226,7 +216,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		if (!mouse_down())
 			return;
 
-		if (left_clicker::block_hit && left_clicker::block_hit_stop_lclick)
+		if (settings.lc_block_hit && settings.lc_block_hit_stop_lclick)
 		{
 			if (block_hit_timer_started)
 			{
@@ -235,7 +225,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 			}
 		}
 
-		if (left_clicker::block_hit)
+		if (settings.lc_block_hit)
 		{
 			if (held_item.find("sword") != std::string::npos && mouse_over_type == "ENTITY")
 			{
@@ -248,7 +238,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 						// block
 						right_mouse_down();
 
-						block_hit_mdown_rand_ms = rand_int(left_clicker::block_hit_ms - 5, left_clicker::block_hit_ms + 5);
+						block_hit_mdown_rand_ms = RandInt(settings.lc_block_hit_ms - 5, settings.lc_block_hit_ms + 5);
 						block_hit_timer.Start();
 						block_hit_timer_started = true;
 						block_hit_allowed = false;
@@ -264,7 +254,7 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 		is_already_clicking = true;
 
-		if (left_clicker::break_blocks)
+		if (settings.lc_break_blocks)
 		{
 			static Timer start_break_blocks_timer;
 
@@ -280,10 +270,10 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				}
 				else
 				{
-					auto reactionms = left_clicker::start_break_blocks_reaction;
+					auto reactionms = settings.lc_start_break_blocks_reaction;
 
 					// reaction time in ms
-					if ((int)start_break_blocks_timer.Elapsed<>() > rand_int(reactionms - 10, reactionms + 30))
+					if ((int)start_break_blocks_timer.Elapsed<>() > RandInt(reactionms - 10, reactionms + 30))
 					{
 						break_blocks_flag = true;
 					}
@@ -300,8 +290,8 @@ void CLeftAutoClicker::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				{
 					Timer stop_break_blocks_timer;
 
-					const int reactionms = left_clicker::stop_break_blocks_reaction;
-					int randreaction = rand_int(reactionms - 10, reactionms + 30);
+					const int reactionms = settings.lc_stop_break_blocks_reaction;
+					int randreaction = RandInt(reactionms - 10, reactionms + 30);
 
 					// spinlock the reaction exit time
 					while ((int)stop_break_blocks_timer.Elapsed<>() < randreaction)
@@ -356,14 +346,14 @@ Randomization& CLeftAutoClicker::GetRand()
 
 bool CLeftAutoClicker::mouse_down()
 {
-	m_rand.delay = rand_float(m_rand.edited_min, m_rand.edited_max);
+	m_rand.delay = RandFloat(m_rand.edited_min, m_rand.edited_max);
 
 	apply_rand(m_rand.inconsistencies);
 
 	m_end = std::chrono::high_resolution_clock::now();
 	m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-	precise_sleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+	PreciseSleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 	if (!GetAsyncKeyState(VK_LBUTTON))
 		return false;
@@ -380,14 +370,14 @@ bool CLeftAutoClicker::mouse_down()
 
 void CLeftAutoClicker::mouse_up()
 {
-	m_rand.delay = rand_float(m_rand.edited_min, m_rand.edited_max);
+	m_rand.delay = RandFloat(m_rand.edited_min, m_rand.edited_max);
 
 	apply_rand(m_rand.inconsistencies2);
 
 	m_end = std::chrono::high_resolution_clock::now();
 	m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-	precise_sleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+	PreciseSleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 	POINT pt{};
 	GetCursorPos(&pt);
@@ -395,7 +385,7 @@ void CLeftAutoClicker::mouse_up()
 
 	m_start = std::chrono::high_resolution_clock::now();
 
-	if (no_click_delay::enabled)
+	if (settings.ncd_enabled)
 	{
 		CNoClickDelay::Invoke(MC);
 	}

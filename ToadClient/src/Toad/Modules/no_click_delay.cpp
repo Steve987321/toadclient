@@ -1,21 +1,16 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "no_click_delay.h"
 
-toadll::CNoClickDelay::CNoClickDelay()
-{
-	Enabled = &toad::no_click_delay::enabled;
-}
-
-void toadll::CNoClickDelay::PreUpdate()
+void toad::CNoClickDelay::PreUpdate()
 {
 	WaitIsEnabled();
 	WaitIsVerified();
 }
 
-void toadll::CNoClickDelay::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
+void toad::CNoClickDelay::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	if (toad::left_clicker::enabled)
+	if (toad::settings.lc_enabled)
 	{
 		SLEEP(100);
 		return;
@@ -29,7 +24,7 @@ void toadll::CNoClickDelay::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	SLEEP(10);
 }
 
-void toadll::CNoClickDelay::Invoke(const std::shared_ptr<Minecraft>& minecraft)
+void toad::CNoClickDelay::Invoke(Minecraft* minecraft)
 {
 	minecraft->setLeftClickCounter(0);
 }

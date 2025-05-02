@@ -1,25 +1,21 @@
 #pragma once
 
-namespace toadll
+namespace toad
 {
 
 class Hook
 {
 public:
-	Hook();
+	static inline std::vector<Hook*> HookInstances = {};
+	static void AddHook(Hook* hook);
 
-	static inline std::vector<Hook*> hookInstances = {};
-
-public:
 	bool IsNull() const;
 	virtual void Enable();
 	virtual void Disable();
 	virtual void Dispose();
 
-public:
-	virtual bool Init() = 0;
+	virtual bool Init();
 
-public:
 	/// calls Enable() on all hook instances
 	static void EnableAllHooks();
 
@@ -31,6 +27,13 @@ public:
 
 	/// calls Init() on all hook instances
 	static void InitializeAllHooks();
+
+	template<typename T> 
+	static T* GetInstance()
+	{
+		static T instance;
+		return &instance;
+	}
 
 protected:
 	bool m_isHookEnabled = false;
@@ -47,3 +50,5 @@ protected:
 };
 
 }
+
+#define REGISTER_HOOK(THOOK) Hook::AddHook(THOOK::GetInstance<THOOK>())

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Toad/types.h"
+#include <unordered_map>
 
-namespace toadll::mappings
+namespace toad::mappings
 {
 	struct MCMap
 	{
@@ -15,11 +16,6 @@ namespace toadll::mappings
 
 		std::string name;
 		std::string sig;
-	};
-
-	inline const char* klasses[] =
-	{
-		"net."
 	};
 
 	inline std::unordered_map<mapping, MCMap> methods;

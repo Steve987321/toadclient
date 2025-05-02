@@ -1,8 +1,12 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "entity.h"
+#include "Toad/MC/mcutils.h"
 
-toadll::c_Entity::c_Entity(jobject jobj, JNIEnv* env, jclass elclass)
+namespace toad
+{
+
+c_Entity::c_Entity(jobject jobj, JNIEnv* env, jclass elclass)
 	: env(env), elclass(elclass), obj(jobj)
 {
 	//static bool once = false;
@@ -15,12 +19,12 @@ toadll::c_Entity::c_Entity(jobject jobj, JNIEnv* env, jclass elclass)
 	//}
 }
 
-toadll::c_Entity::~c_Entity()
+c_Entity::~c_Entity()
 {
 	env->DeleteLocalRef(obj);
 }
 
-toadll::Vec3 toadll::c_Entity::getPosition() const
+Vec3 c_Entity::getPosition() const
 {
 	auto objklass = env->GetObjectClass(obj);
 	auto posXId = get_fid(objklass, mappingFields::EntityPosX, env);
@@ -40,7 +44,7 @@ toadll::Vec3 toadll::c_Entity::getPosition() const
 	};
 }
 
-toadll::Vec3 toadll::c_Entity::getLastTickPosition() const
+Vec3 c_Entity::getLastTickPosition() const
 {
 	auto x = get_fid(obj, mappingFields::lastTickPosXField, env);
 	if (!x)
@@ -54,7 +58,7 @@ toadll::Vec3 toadll::c_Entity::getLastTickPosition() const
 	};
 }
 
-float toadll::c_Entity::getRotationYaw() const
+float c_Entity::getRotationYaw() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getRotationYaw, env));
 	auto fId = get_fid(obj, mappingFields::rotationYawField, env);
@@ -63,7 +67,7 @@ float toadll::c_Entity::getRotationYaw() const
 	return env->GetFloatField(obj, fId);
 }
 
-float toadll::c_Entity::getRotationPitch() const
+float c_Entity::getRotationPitch() const
 {
 	auto fId = get_fid(obj, mappingFields::rotationPitchField, env);
 	if (!fId)
@@ -71,7 +75,7 @@ float toadll::c_Entity::getRotationPitch() const
 	return env->GetFloatField(obj, fId);
 }
 
-jobject toadll::c_Entity::getNameObj() const
+jobject c_Entity::getNameObj() const
 {
 	auto fId = get_mid(obj, mapping::getName, env);
 	if (!fId)
@@ -80,7 +84,7 @@ jobject toadll::c_Entity::getNameObj() const
 	return strobj;
 }
 
-std::string toadll::c_Entity::getName() const
+std::string c_Entity::getName() const
 {
 	auto mId = get_mid(obj, mapping::getName, env);
 	if (!mId)
@@ -92,7 +96,7 @@ std::string toadll::c_Entity::getName() const
 	return ret;
 }
 
-std::string toadll::c_Entity::getHeldItemStr() const
+std::string c_Entity::getHeldItemStr() const
 {
 	auto item = getHeldItem();
 	if (item == nullptr)
@@ -110,7 +114,7 @@ std::string toadll::c_Entity::getHeldItemStr() const
 	return ret;
 }
 
-jobject toadll::c_Entity::getHeldItem() const
+jobject c_Entity::getHeldItem() const
 {
 	auto mId = get_mid(obj, mapping::getHeldItem, env);
 	if (!mId) 
@@ -118,7 +122,7 @@ jobject toadll::c_Entity::getHeldItem() const
 	return env->CallObjectMethod(obj, mId);
 }
 
-std::string toadll::c_Entity::getSlotStr(int slot) const
+std::string c_Entity::getSlotStr(int slot) const
 {
 	auto fId = get_fid(obj, mappingFields::inventoryField, env);
 	if (!fId)
@@ -149,7 +153,7 @@ std::string toadll::c_Entity::getSlotStr(int slot) const
 	return res;
 }
 
-int toadll::c_Entity::getHurtTime() const
+int c_Entity::getHurtTime() const
 {
 	//auto mId = get_mid(elclass, mapping::getHurtTime, env);
 	//if (!mId)
@@ -164,7 +168,7 @@ int toadll::c_Entity::getHurtTime() const
 	return res;
 }
 
-float toadll::c_Entity::getHealth() const
+float c_Entity::getHealth() const
 {
 	auto mid = get_mid(obj, mapping::getHealth, env);
 	if (!mid)
@@ -172,7 +176,7 @@ float toadll::c_Entity::getHealth() const
 	return env->CallFloatMethod(obj, mid);
 }
 
-float toadll::c_Entity::getMotionX() const
+float c_Entity::getMotionX() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionX));
 	auto fId = get_fid(obj, mappingFields::motionXField, env);
@@ -181,7 +185,7 @@ float toadll::c_Entity::getMotionX() const
 	return (float)env->GetDoubleField(obj, fId);
 }
 
-float toadll::c_Entity::getMotionY() const
+float c_Entity::getMotionY() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionY));
 	auto fId = get_fid(obj, mappingFields::motionYField, env);
@@ -190,7 +194,7 @@ float toadll::c_Entity::getMotionY() const
 	return (float)env->GetDoubleField(obj, fId);
 }
 
-float toadll::c_Entity::getMotionZ() const
+float c_Entity::getMotionZ() const
 {
 	//return env->CallDoubleMethod(obj, get_mid(obj, mapping::getMotionZ));
 	auto fId = get_fid(obj, mappingFields::motionZField, env);
@@ -199,7 +203,7 @@ float toadll::c_Entity::getMotionZ() const
 	return (float)env->GetDoubleField(obj, fId);
 }
 
-bool toadll::c_Entity::isInvisible() const
+bool c_Entity::isInvisible() const
 {
 	auto mId = get_mid(obj, mapping::isInvisible, env);
 	if (!mId)
@@ -207,7 +211,7 @@ bool toadll::c_Entity::isInvisible() const
 	return env->CallBooleanMethod(obj, mId);
 }
 
-bool toadll::c_Entity::isSneaking() const
+bool c_Entity::isSneaking() const
 {
 	auto mid = get_mid(obj, mapping::isSneaking, env);
 	if (!mid)
@@ -216,7 +220,7 @@ bool toadll::c_Entity::isSneaking() const
 	return env->CallBooleanMethod(obj, mid);
 }
 //
-//toadll::BBox toadll::c_Entity::get_BBox() const
+//BBox c_Entity::get_BBox() const
 //{
 //	jobject bboxobj = env->CallObjectMethod(obj, get_mid(obj, mapping::getBBox, env));
 //	if (static bool once = true; once)
@@ -238,7 +242,7 @@ bool toadll::c_Entity::isSneaking() const
 //	return { { minX, minY, minZ }, { maxX, maxY, maxZ } };
 //}
 
-std::array<std::string, 4> toadll::c_Entity::getArmor()
+std::array<std::string, 4> c_Entity::getArmor()
 {
 	auto mid = get_mid(obj, mapping::getInventory, env);
 
@@ -280,51 +284,53 @@ std::array<std::string, 4> toadll::c_Entity::getArmor()
 	return res;
 }
 
-//jobject toadll::c_Entity::get_open_container() const
+//jobject c_Entity::get_open_container() const
 //{
 //	return env->CallObjectMethod(obj, get_mid(obj, mapping::getOpenContainer));
 //}
 //
-//void toadll::c_Entity::setRotationYaw(float newYaw) const
+//void c_Entity::setRotationYaw(float newYaw) const
 //{
 //	env->SetFloatField(obj, get_fid(obj, mappingFields::rotationYawField, env), newYaw);
 //	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
 //}
 //
-//void toadll::c_Entity::setPrevRotationYaw(float newYaw) const
+//void c_Entity::setPrevRotationYaw(float newYaw) const
 //{
 //	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationYawField, env), newYaw);
 //	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationYaw), newYaw);
 //}
 //
-//void toadll::c_Entity::setRotationPitch(float newPitch) const
+//void c_Entity::setRotationPitch(float newPitch) const
 //{
 //	env->SetFloatField(obj, get_fid(obj, mappingFields::rotationPitchField, env), newPitch);
 //	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationPitch), newPitch);
 //}
 //
-//void toadll::c_Entity::setPrevRotationPitch(float newPitch) const
+//void c_Entity::setPrevRotationPitch(float newPitch) const
 //{
 //	env->SetFloatField(obj, get_fid(obj, mappingFields::prevRotationPitchField, env), newPitch);
 //	//env->CallVoidMethod(obj, get_mid(obj, mapping::setRotationPitch), newPitch);
 //}
 //
-//void toadll::c_Entity::setRotation(float yaw, float pitch) const
+//void c_Entity::setRotation(float yaw, float pitch) const
 //{
 //	env->CallVoidMethod(obj, get_mid(obj, mapping::setRotation, env), yaw, pitch);
 //}
 
-void toadll::c_Entity::setMotionX(float val) const
+void c_Entity::setMotionX(float val) const
 {
 	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionXField, env), val);
 }
 
-void toadll::c_Entity::setMotionY(float val) const
+void c_Entity::setMotionY(float val) const
 {
 	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionYField, env), val);
 }
 
-void toadll::c_Entity::setMotionZ(float val) const
+void c_Entity::setMotionZ(float val) const
 {
 	env->SetDoubleField(obj, get_fid(obj, mappingFields::motionZField, env), val);
+}
+
 }

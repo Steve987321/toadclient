@@ -47,20 +47,25 @@
     <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin-Inter\$(ProjectName)-$(Platform)-$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)vendor\;$(ProjectDir)src\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)vendor\MinHook\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin-Inter\$(ProjectName)-$(Platform)-$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)vendor\;$(ProjectDir)src\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)vendor\MinHook\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TOAD_LOADER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;TOAD_LOADER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)vendor\;$(SolutionDir)ToadClient\src;$(ProjectDir)src;$(SolutionDir)vendor\JDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -73,58 +78,81 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);TOAD_LOADER</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;TOAD_LOADER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)vendor\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)vendor\;$(SolutionDir)ToadClient\src;$(ProjectDir)src;$(SolutionDir)vendor\JDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\mapping_object.h" />
-    <ClInclude Include="src\Application\config.h" />
-    <ClInclude Include="src\Application\ui.h" />
-    <ClInclude Include="src\inject\injector.h" />
+    <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Application\application.h" />
-    <ClInclude Include="src\Application\Fonts\fa-solid-900Font.h" />
-    <ClInclude Include="src\Application\Fonts\icons.h" />
-    <ClInclude Include="src\toad.h" />
-    <ClInclude Include="src\utils\block_map.h" />
-    <ClInclude Include="src\utils\file_dialog.h" />
-    <ClInclude Include="src\utils\helpers.h" />
-    <ClInclude Include="src\utils\imfilebrowser.h" />
-    <ClInclude Include="src\Application\imgui_window.h" />
-    <ClInclude Include="src\Application\VisualizeClicker\visualize_clicker.h" />
-    <ClInclude Include="src\utils\keys.h" />
+    <ClInclude Include="src\Application\ui.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\vendor\imgui\imgui.cpp" />
-    <ClCompile Include="..\vendor\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\vendor\imgui\imgui_impl_dx9.cpp" />
-    <ClCompile Include="..\vendor\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\vendor\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="..\vendor\implot\implot.cpp" />
-    <ClCompile Include="..\vendor\implot\implot_items.cpp" />
-    <ClCompile Include="src\mapping_object.cpp" />
-    <ClCompile Include="src\Application\config.cpp" />
-    <ClCompile Include="src\global_settings.h" />
-    <ClCompile Include="src\inject\injector.cpp" />
+    <ClCompile Include="..\ToadClient\src\Toad\ToadUI.cpp" />
+    <ClCompile Include="..\vendor\imgui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_impl_dx9.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\vendor\implot\implot.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\vendor\implot\implot_items.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="src\Application\application.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\toad.cpp" />
+    <ClCompile Include="src\main.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Application\ui.cpp" />
-    <ClCompile Include="src\utils\file_dialog.cpp" />
-    <ClCompile Include="src\utils\helpers.cpp" />
-    <ClCompile Include="src\Application\imgui_window.cpp" />
-    <ClCompile Include="src\Application\VisualizeClicker\visualize_clicker.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToadClient\ToadClient.vcxproj">
+      <Project>{3a854e09-05e7-4b2f-be40-ba9e21497298}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

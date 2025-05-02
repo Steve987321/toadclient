@@ -1,23 +1,28 @@
 #pragma once
 #include <gl/GLU.h>
 
-namespace toadll
+namespace toad
 {
 
-class CEsp SET_MODULE_CLASS(CEsp)
+class CEsp : public CModule
 {
 public:
-	CEsp();
+	using CModule::CModule;
 
-public:
 	// for visuals 
 	struct VisualEntity
 	{
+		VisualEntity(const BBox& bb, const Vec3& pos, const char* name, int health, bool sneaking = false)
+			: bb(bb), pos(pos), health(health), sneaking(sneaking)
+		{
+			strncpy_s(this->name, name, 32);
+		}
+
 		BBox bb;
-		Vec3 Pos;
-		std::string name;
+		Vec3 pos;
+		char name[32];
 		int health;
-		bool sneaking = false;
+		bool sneaking;
 	};
 
 public:
@@ -25,7 +30,7 @@ public:
 	void OnRender() override;
 	void PreUpdate() override;
 
-	void drawPlayerInfo(ImDrawList * draw, const VisualEntity& ve, const Vec3& lPlayerPos);
+	void DrawPlayerInfo(ImDrawList * draw, const VisualEntity& ve, const Vec3& lPlayerPos);
 	void OnImGuiRender(ImDrawList * draw) override;
 
 private:
@@ -35,7 +40,6 @@ private:
 private:
 	inline static std::mutex m_boxMutex;
 	inline static std::vector<VisualEntity> m_bboxes;
-
 private:
 	/// Returns a vector of bounding boxes of the player list.
 	/// 

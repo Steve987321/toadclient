@@ -13,10 +13,18 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #define _WINSOCKAPI_
-#include <windows.h>
-#include <winsock.h>
 #include <WinSock2.h>
 #include <shlobj_core.h>
+#include <windows.h>
+#include <TlHelp32.h>
+
+#include <gl/GL.h>
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "glu32.lib")
+
+#include <d3d9.h>
+#include <d3d9types.h>
+#pragma comment(lib, "d3d9.lib")
 
 #include <iostream>
 #include <string>
@@ -38,6 +46,9 @@
 #include <format>
 #include <fstream>
 #include <queue>
+#include <filesystem>
+#include <functional>
+#include <atomic>
 
 #include "jni.h"
 #include <jvmti.h>

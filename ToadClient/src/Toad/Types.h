@@ -1,6 +1,8 @@
 #pragma once
 
-namespace toadll
+#include "jni.h"
+
+namespace toad
 {
 
 struct Vec2 {
@@ -228,7 +230,11 @@ struct Vec4 {
 
 struct BBox
 {
-    BBox(const Vec3& min, const Vec3& max) : min(min), max(max) {}
+    BBox(const Vec3& vmin, const Vec3& vmax)
+    {
+        min = vmin;
+        max = vmax;
+    }
 
     Vec3 min, max;
 };
@@ -271,7 +277,6 @@ struct Entity
     float Yaw = 0;
 
     jobject Obj = nullptr;
-
 };
 
 struct LocalPlayer : Entity

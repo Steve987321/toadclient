@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "vars_updater.h"
 
-void toadll::CVarsUpdater::PreUpdate()
+void toad::CVarsUpdater::PreUpdate()
 {
 	static bool joiningWorld = false;
 
@@ -61,7 +61,7 @@ void toadll::CVarsUpdater::PreUpdate()
 	SLEEP(1);
 }
 
-void toadll::CVarsUpdater::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
+void toad::CVarsUpdater::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	static auto ari = MC->getActiveRenderInfo();
 	ari->getModelView(ModelView);

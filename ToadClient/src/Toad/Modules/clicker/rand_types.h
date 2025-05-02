@@ -1,30 +1,11 @@
 #pragma once
 
-#ifndef TOAD_LOADER
-#include "Toad/helpers.h"
 #include "Toad/Modules/clicker/rand_types.h"
-#endif
+#include "Toad/Utils/helpers.h"
+#include "Toad/Modules/clicker/rand_types.h"
 
-namespace toadll
+namespace toad
 {
-
-#ifdef TOAD_LOADER
-	inline int rand_int(int min, int max)
-	{
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_int_distribution<int> dis(min, max);
-		return dis(gen);
-	}
-	inline float rand_float(float min, float max)
-	{
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<float> dis(min, max);
-		return dis(gen);
-	}
-#endif
-
 	struct Inconsistency
 	{
 		Inconsistency(float min, float max, int chance, int frequency) :
@@ -36,7 +17,7 @@ namespace toadll
 		void Reset()
 		{
 			start = false;
-			frequency_counter = rand_int(frequency / 5, frequency / 4);
+			frequency_counter = RandInt(frequency / 5, frequency / 4);
 		}
 
 		/// True when this inconsistency should be applied to the rand
@@ -63,7 +44,7 @@ namespace toadll
 	struct Boost
 	{
 		Boost(float amount, int dur, int transition_dur, int freqmin, int freqmax, int id) :
-			id(id), amount_ms(amount), duration(dur), frequency(rand_int(freqmin, freqmax)), freq_min(freqmin), freq_max(freqmax), transition_duration(transition_dur) 
+			id(id), amount_ms(amount), duration(dur), frequency(RandInt(freqmin, freqmax)), freq_min(freqmin), freq_max(freqmax), transition_duration(transition_dur) 
 		{
 		}
 
@@ -73,7 +54,7 @@ namespace toadll
 			paused = false;
 			counter = 0;
 			frequency_counter = frequency_counter -= frequency_counter * (int)((float)frequency_counter / (float)frequency * 0.75f);
-			frequency = rand_int(freq_min, freq_max);
+			frequency = RandInt(freq_min, freq_max);
 		}
 
 		bool start = false;

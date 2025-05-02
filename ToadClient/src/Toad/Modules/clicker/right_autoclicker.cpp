@@ -1,15 +1,11 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "right_autoclicker.h"
 
 using namespace toad;
 
-namespace toadll
+namespace toad
 {
-	CRightAutoClicker::CRightAutoClicker()
-	{
-		Enabled = &right_clicker::enabled;
-	}
 
 	void CRightAutoClicker::PreUpdate()
 	{
@@ -21,18 +17,12 @@ namespace toadll
 	{
 		static bool is_starting_click = false;
 
-		if (!*Enabled)
-		{
-			SLEEP(250);
-			return;
-		}
-
-		if (CVarsUpdater::IsInGui && right_clicker::click_check == CLICK_CHECK::ONLY_GAME)
+		if (CVarsUpdater::IsInGui && settings.rc_click_check == CLICK_CHECK::ONLY_GAME)
 		{
 			SLEEP(10);
 			return;
 		}
-		if (!CVarsUpdater::IsInGui && right_clicker::click_check == CLICK_CHECK::ONLY_INVENTORY)
+		if (!CVarsUpdater::IsInGui && settings.rc_click_check == CLICK_CHECK::ONLY_INVENTORY)
 		{
 			SLEEP(10);
 			return;
@@ -50,7 +40,7 @@ namespace toadll
 				m_rand.edited_max = m_rand.max_delay;
 
 				Timer start_delay_timer;
-				while ((int)start_delay_timer.Elapsed<>() < right_clicker::start_delayms)
+				while ((int)start_delay_timer.Elapsed<>() < settings.rc_start_delayms)
 				{
 					if (!GetAsyncKeyState(VK_RBUTTON))
 						return;
@@ -59,7 +49,7 @@ namespace toadll
 				is_starting_click = true;
 			}
 
-			if (right_clicker::blocks_only)
+			if (settings.rc_blocks_only)
 				if (lPlayer->HeldItem.find("tile") == std::string::npos)
 					return;
 
@@ -96,14 +86,14 @@ namespace toadll
 
 	bool CRightAutoClicker::mouse_down()
 	{
-		m_rand.delay = rand_float(m_rand.edited_min, m_rand.edited_max);
+		m_rand.delay = RandFloat(m_rand.edited_min, m_rand.edited_max);
 
 		apply_rand(m_rand.inconsistencies);
 
 		m_end = std::chrono::high_resolution_clock::now();
 		m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-		precise_sleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+		PreciseSleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 		if (!GetAsyncKeyState(VK_RBUTTON))
 			return false;
@@ -119,14 +109,14 @@ namespace toadll
 
 	void CRightAutoClicker::mouse_up()
 	{
-		m_rand.delay = rand_float(m_rand.edited_min, m_rand.edited_max);
+		m_rand.delay = RandFloat(m_rand.edited_min, m_rand.edited_max);
 
 		apply_rand(m_rand.inconsistencies2);
 
 		m_end = std::chrono::high_resolution_clock::now();
 		m_delay_compensation = static_cast<float>(std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count()) / 1000.0f;
 
-		precise_sleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
+		PreciseSleep((m_rand.delay + m_rand.inconsistency_delay - m_delay_compensation) / 1000.f);
 
 		POINT pt{};
 		GetCursorPos(&pt);

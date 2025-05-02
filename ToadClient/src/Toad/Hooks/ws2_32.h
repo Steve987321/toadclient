@@ -1,8 +1,11 @@
 #pragma once
 
-namespace toadll {
+#include "hook.h"
 
-class HWSASend SET_HOOK_CLASS(HWSASend)
+namespace toad 
+{
+
+class HWSASend : public Hook
 {
 private:
 	typedef int (WINAPI* tWSA_Send)(SOCKET, LPWSABUF, DWORD, LPDWORD, DWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
@@ -17,7 +20,7 @@ public:
 	bool Init() override;
 };
 
-class HWSARecv SET_HOOK_CLASS(HWSARecv)
+class HWSARecv : public Hook
 {
 private:
 	typedef int (WINAPI* tWSA_Recv)(SOCKET, LPWSABUF, DWORD, LPDWORD, LPDWORD, LPWSAOVERLAPPED, LPWSAOVERLAPPED_COMPLETION_ROUTINE);

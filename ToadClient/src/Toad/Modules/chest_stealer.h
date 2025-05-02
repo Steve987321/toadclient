@@ -1,14 +1,17 @@
 #pragma once
 
-namespace toadll
+#include <deque>
+#include <mutex>
+#include <array>
+
+namespace toad
 {
 
-class CChestStealer SET_MODULE_CLASS(CChestStealer)
+class CChestStealer : public CModule
 {
 public:
-	CChestStealer();
+	using CModule::CModule;
 
-public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 	void OnImGuiRender(ImDrawList * draw) override;

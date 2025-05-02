@@ -24,7 +24,7 @@
     <ClInclude Include="src\Toad\Hooks\ws2_32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\Logger\logger.h">
+    <ClInclude Include="src\Toad\logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Toad\MC\active_render_info.h">
@@ -69,9 +69,6 @@
     <ClInclude Include="src\Toad\Modules\aimassist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\Modules\autopot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Toad\Modules\blink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,16 +81,13 @@
     <ClInclude Include="src\Toad\Modules\no_click_delay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\Modules\reach.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Toad\Modules\vars_updater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Toad\Modules\velocity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\helpers.h">
+    <ClInclude Include="src\Toad\Utils\helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Toad\math.h">
@@ -102,13 +96,10 @@
     <ClInclude Include="src\Toad\module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\singleton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Toad\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\toadll.h">
+    <ClInclude Include="src\Toad\toad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Toad\types.h">
@@ -120,13 +111,55 @@
     <ClInclude Include="src\Toad\Modules\chest_stealer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Toad\Utils\hash_map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Toad\MC\mapping_generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Toad\Hooks\get_raw_input_data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Utils\windump.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\imgui_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Fonts\fa-solid-900Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Fonts\icons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Utils\block_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Utils\file_dialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Utils\ui_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Utils\keys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Modules\VisualizeClicker\visualize_clicker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\ToadUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Inject\injector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Utils\ipc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\toad_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Toad\Utils\random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -137,7 +170,7 @@
     <ClCompile Include="src\Toad\Hooks\ws2_32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Toad\Logger\logger.cpp">
+    <ClCompile Include="src\Toad\logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Toad\MC\active_render_info.cpp">
@@ -179,9 +212,6 @@
     <ClCompile Include="src\Toad\Modules\aimassist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Toad\Modules\autopot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Toad\Modules\blink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -192,9 +222,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Toad\Modules\no_click_delay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Toad\Modules\reach.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Toad\Modules\vars_updater.cpp">
@@ -209,7 +236,7 @@
     <ClCompile Include="src\Toad\module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Toad\toadll.cpp">
+    <ClCompile Include="src\Toad\toad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\dllmain.cpp">
@@ -239,9 +266,6 @@
     <ClCompile Include="src\Toad\Modules\chest_stealer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Toad\Utils\hash_map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Toad\MC\mapping_generator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -255,6 +279,42 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\vendor\implot\implot_items.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Utils\windump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\imgui_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Utils\file_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Utils\ui_helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Modules\VisualizeClicker\visualize_clicker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Utils\helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\ToadUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Inject\injector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_impl_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Utils\ipc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\Utils\random.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Toad\config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

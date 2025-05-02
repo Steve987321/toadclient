@@ -1,14 +1,13 @@
 #pragma once
 
-namespace toadll
+namespace toad
 {
 
-class CLeftAutoClicker SET_MODULE_CLASS(CLeftAutoClicker), public CClickerBase
+class CLeftAutoClicker : public CModule, public CClickerBase
 {
 public:
-	CLeftAutoClicker();
+	using CModule::CModule;
 
-public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 	//void OnImGuiRender(ImDrawList* draw) override;
@@ -62,8 +61,8 @@ private:
 
 private:
 	// mouse press functions with randomization 
-	inline bool mouse_down() override;
-	inline void mouse_up() override;
+	bool mouse_down() override;
+	void mouse_up() override;
 
 	// No randomization on these, because they are used for block hitting and not for clicking
 	static inline void right_mouse_down();

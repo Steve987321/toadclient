@@ -4,8 +4,9 @@
 
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_win32.h"
+#include "toad/config.h"
 
-namespace toadll {
+namespace toad {
 
 ///
 /// Interface for Cheat Modules
@@ -13,27 +14,31 @@ namespace toadll {
 class CModule
 {
 public:
-	CModule();
+	CModule(std::string_view name, const bool& enabled, bool is_exposed = true, bool only_rendering = false)
+		: Name(name), Enabled(enabled), IsExposed(is_exposed), IsOnlyRendering(only_rendering)
+	{
+	}
 
 public:
 	inline static std::vector<CModule*> ModuleInstances = {};
 	std::condition_variable EnabledCV;
 
 	std::string Name; 
-
 	// will skip creating a thread for this module on initialization
 	bool IsOnlyRendering = false;
 	bool Initialized = false;
-	bool* Enabled = nullptr;
+	const bool& Enabled;
 	bool EnabledPrev = false;
+	bool IsExposed = false;
 
 public:
-	static std::vector<CModule*> GetEnabledModules();
+	static void AddModule(CModule* mod);
+	static void UpdateModuleEnableStates();
 
 	void SetEnv(JNIEnv* Env);
 
 	/// Moves a newly made unique instance of Minecraft to this Cheat Module
-	void SetMC(std::unique_ptr<Minecraft>& mc);
+	void SetMC(Minecraft& mc);
 
 	void UpdateEnabledState();
 
@@ -55,18 +60,26 @@ public:
 	///	@see HSwapBuffers
 	virtual void OnImGuiRender(ImDrawList* draw);
 
+	template<typename T>
+	static T* GetInstance(std::string_view name, const bool& enabled, bool is_exposed = true, bool only_rendering = false)
+	{
+		static T instance(name, enabled, is_exposed, only_rendering);
+		return &instance;
+	}
+
 protected:
 	void WaitIsVerified();
 	void WaitIsEnabled();
-
+	
 protected:
 	std::mutex verified_mutex;
 	std::mutex enabled_mutex;
 	std::mutex enabled_update_mutex;
 
 	JNIEnv* env = nullptr;
-	std::shared_ptr<Minecraft> MC = nullptr;
+	Minecraft* MC = nullptr;
 };
 
 }
 
+#define REGISTER_CMODULE(TMOD, ...) CModule::AddModule(TMOD::GetInstance<TMOD>(__VA_ARGS__))

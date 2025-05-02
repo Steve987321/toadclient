@@ -1,35 +1,30 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "block_esp.h"
 
 #include "draw_helpers.h"
 
 using namespace toad;
 
-namespace toadll
+namespace toad
 {
 
-CBlockEsp::CBlockEsp()
-{
-	Enabled = &block_esp::enabled;
-}
-
-void toadll::CBlockEsp::PreUpdate()
+void toad::CBlockEsp::PreUpdate()
 {
 	WaitIsEnabled();
 	WaitIsVerified();
 }
 
-void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
+void toad::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
 	std::vector<std::pair<BBox, Vec4>> blockPositions = {};
 
 	Vec3 lastTickPos = lPlayer->LastTickPos;
 	Vec3 lPos = lastTickPos + (lPlayer->Pos - lastTickPos) * CVarsUpdater::RenderPartialTick;
 
-	int block_x_limit = static_cast<int>(lPos.x) + m_range * 2;
-	int block_y_limit = static_cast<int>(lPos.y) + m_range * 2;
-	int block_z_limit = static_cast<int>(lPos.z) + m_range * 2;
+	int block_x_limit = (int)lPos.x + m_range * 2;
+	int block_y_limit = (int)lPos.y + m_range * 2;
+	int block_z_limit = (int)lPos.z + m_range * 2;
 
 	const jobject world = MC->getWorld();
 	if (!world)
@@ -39,9 +34,9 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	}
 
 	static jclass blockAtClass = nullptr;
-	for (int x = static_cast<int>(lPos.x) - m_range; x < block_x_limit; x++)
-		for (int y = static_cast<int>(lPos.y) - m_range; y < block_y_limit; y++)
-			for (int z = static_cast<int>(lPos.z) - m_range; z < block_z_limit; z++)
+	for (int x = (int)lPos.x - m_range; x < block_x_limit; x++)
+		for (int y = (int)lPos.y - m_range; y < block_y_limit; y++)
+			for (int z = (int)lPos.z - m_range; z < block_z_limit; z++)
 			{
 				if (!CVarsUpdater::IsVerified)
 					break;
@@ -51,7 +46,7 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 				if (id == 0)
 					continue; // airblock
 
-				if (block_esp::block_list.contains(id))
+				if (settings.besp_block_list.contains(id))
 				{
 					blockPositions.emplace_back(
 						BBox{
@@ -70,10 +65,10 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 								}
 						},
 						Vec4{
-							block_esp::block_list[id].x,
-							block_esp::block_list[id].y,
-							block_esp::block_list[id].z,
-							block_esp::block_list[id].w,
+							settings.besp_block_list[id].x,
+							settings.besp_block_list[id].y,
+							settings.besp_block_list[id].z,
+							settings.besp_block_list[id].w,
 						}
 					);
 				}
@@ -84,9 +79,9 @@ void toadll::CBlockEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	SLEEP(100);
 }
 
-void toadll::CBlockEsp::OnRender()
+void toad::CBlockEsp::OnRender()
 {
-	if (!block_esp::enabled || !CVarsUpdater::IsVerified)
+	if (!settings.besp_enabled || !CVarsUpdater::IsVerified)
 	{
 		m_blocks.clear();
 		return;

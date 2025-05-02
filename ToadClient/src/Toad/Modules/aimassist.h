@@ -1,7 +1,7 @@
 #pragma once
 #include "visuals/draw_helpers.h"
 
-namespace toadll
+namespace toad
 {
 
 class AimBoost
@@ -29,12 +29,11 @@ private:
 	Timer timer;
 };
 
-class CAimAssist SET_MODULE_CLASS(CAimAssist)
+class CAimAssist : public CModule
 {
 public:
-	CAimAssist();
+	using CModule::CModule;
 
-public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 

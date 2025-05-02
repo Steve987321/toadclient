@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "mappings.h"
 
-namespace toadll::mappings
+namespace toad::mappings
 {
 	void init_map(JNIEnv* env, jclass mcclass, jclass entity_class, toad::MC_CLIENT client)
 	{

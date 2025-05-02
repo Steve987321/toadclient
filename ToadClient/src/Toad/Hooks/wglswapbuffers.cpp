@@ -1,11 +1,11 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "wglswapbuffers.h"
 
 #include <array>
 
-#include "../Loader/src/Application/Fonts/icons.h"
-#include "../Loader/src/Application/Fonts/fa-solid-900Font.h"
+#include "Toad/Fonts/icons.h"
+#include "Toad/Fonts/fa-solid-900Font.h"
 
 #include "imgui/imgui_impl_opengl2.h"
 #include "imgui/imgui_impl_win32.h"
@@ -14,7 +14,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 
 constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
 
-namespace toadll
+namespace toad
 {
 	LONG_PTR WINAPI HSwapBuffers::WndProcHook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
@@ -43,11 +43,12 @@ namespace toadll
 			}
 		}
 		
-		if (GetForegroundWindow() == hwnd && toad::g_is_ui_internal && CInternalUI::MenuIsOpen && m_is_imgui_initialized)
+		if (GetForegroundWindow() == hwnd && settings.g_is_ui_internal && CInternalUI::MenuIsOpen && m_is_imgui_initialized)
 		{
 			ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam);
 			return true;
 		}
+
 		return CallWindowProc(oWndProc, hwnd, msg, wParam, lParam);
 	}
 
@@ -85,7 +86,6 @@ namespace toadll
 					ImGui_ImplOpenGL2_Init();
 				}
 			}
-			
 
 			g_hWnd = m_hwnd;
 		}
@@ -110,7 +110,7 @@ namespace toadll
 		//	once = true;
 		//}
 
-		for (const auto& Module : CModule::ModuleInstances)
+		for (CModule* Module : CModule::ModuleInstances)
 			Module->OnRender();
 
 		if (init_stage == 0)
@@ -155,13 +155,13 @@ namespace toadll
 
 		if (m_esp_font_update)
 		{
-			if (toad::esp::font_path == "Default")
+			if (toad::settings.esp_font_path == "Default")
 			{
 				m_esp_font = io.Fonts->Fonts[0];
 			}
 			else
 			{
-				m_esp_font = io.Fonts->AddFontFromFileTTF(toad::esp::font_path.c_str(), 30.f);
+				m_esp_font = io.Fonts->AddFontFromFileTTF(toad::settings.esp_font_path.c_str(), 30.f);
 				if (!m_esp_font)
 				{
 					LOGERROR("font was invalid");
@@ -172,14 +172,14 @@ namespace toadll
 
 			ImGui_ImplOpenGL2_CreateFontsTexture();
 
-			LOGDEBUG("changing to font: {}", toad::esp::font_path, (void*)m_esp_font);
+			LOGDEBUG("changing to font: {}", toad::settings.esp_font_path, (void*)m_esp_font);
 
 			m_esp_font_update = false;
 		}
 
-		const auto draw = ImGui::GetForegroundDrawList();
-		for (const auto& Module : CModule::ModuleInstances)
-			Module->OnImGuiRender(draw);
+		ImDrawList* draw = ImGui::GetForegroundDrawList();
+		for (CModule* m : CModule::ModuleInstances)
+			m->OnImGuiRender(draw);
 
 		ImGui::EndFrame();
 		ImGui::Render();

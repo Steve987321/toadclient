@@ -1,14 +1,13 @@
 #pragma once
 
-namespace toadll
+namespace toad
 {
 
-class CRightAutoClicker SET_MODULE_CLASS(CRightAutoClicker), public CClickerBase
+class CRightAutoClicker : public CModule, public CClickerBase
 {
 public:
-	CRightAutoClicker();
+	using CModule::CModule;
 
-public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 

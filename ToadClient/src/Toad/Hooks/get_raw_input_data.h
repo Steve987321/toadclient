@@ -1,12 +1,12 @@
 #pragma once
-namespace toadll
+namespace toad
 {
 	/// Hooks USER32.GetRawInputData 
 	/// 
 	/// WIP, need to trigger input event polling before this is of any use (jinput_raw_64_Java_net_java_games_input_RawInputEventQueue_nPoll)
 	/// This adds a new way to move the mouse
 	/// This method of moving the mouse works when raw mouse input is enabled in the settings.
-	class HGetRawInputData SET_HOOK_CLASS(HGetRawInputData)
+	class HGetRawInputData : public Hook
 	{
 	public:
 		bool Init() override;

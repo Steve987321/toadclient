@@ -1,9 +1,11 @@
 #pragma once
 
-namespace toadll
+#include "hook.h"
+
+namespace toad
 {
 
-class HSwapBuffers SET_HOOK_CLASS(HSwapBuffers)
+class HSwapBuffers : public Hook
 {
 public:
 	bool Init() override;

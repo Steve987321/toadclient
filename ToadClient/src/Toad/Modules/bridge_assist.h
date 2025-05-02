@@ -1,13 +1,13 @@
 #pragma once
-namespace toadll
+
+namespace toad
 {
 
-class CBridgeAssist SET_MODULE_CLASS(CBridgeAssist)
+class CBridgeAssist : public CModule
 {
 public:
-	CBridgeAssist();
+	using CModule::CModule;
 
-public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>&lPlayer) override;
 
@@ -24,7 +24,7 @@ private:
 	// m_prev will store the previous value of m_isEdge, this will help when player has entered or left an edge
 	bool m_is_edge = false, m_prev = false; 
 
-	// used for block_esp::only_initiate_when_sneaking
+	// used for settings.besp_only_initiate_when_sneaking
 	bool m_has_pressed_shift = false;
 };
 

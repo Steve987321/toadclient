@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
@@ -16,9 +20,16 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
+    <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -29,8 +40,17 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LibraryPath>$(SolutionDir)vendor\MinHook\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin-Inter\$(ProjectName)-$(Platform)-$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)vendor;$(SolutionDir)vendor\JDK\include;$(SolutionDir)vendor\JDK\include\win32;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(SolutionDir)vendor\MinHook\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin-Inter\$(ProjectName)-$(Platform)-$(Configuration)\</IntDir>
@@ -39,37 +59,74 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;TOADCLIENT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TOADCLIENT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(ProjectDir)src;$(SolutionDir)Loader\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;TOADCLIENT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(SolutionDir)Loader\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <OmitFramePointers>false</OmitFramePointers>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Toad\Utils\random.h" />
+    <ClInclude Include="src\Toad\toad_defs.h" />
+    <ClInclude Include="src\Toad\Utils\ipc.h" />
+    <ClInclude Include="src\Toad\Fonts\fa-solid-900Font.h" />
+    <ClInclude Include="src\Toad\Fonts\icons.h" />
+    <ClInclude Include="src\Toad\config.h" />
     <ClInclude Include="src\Toad\Hooks\get_raw_input_data.h" />
+    <ClInclude Include="src\Toad\imgui_window.h" />
+    <ClInclude Include="src\Toad\Inject\injector.h" />
     <ClInclude Include="src\Toad\MC\mapping_generator.h" />
-    <ClInclude Include="src\Toad\Utils\hash_map.h" />
     <ClInclude Include="src\Toad\Modules\chest_stealer.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\Toad\helpers.h" />
+    <ClInclude Include="src\Toad\Utils\helpers.h" />
     <ClInclude Include="src\Toad\Hooks\hook.h" />
     <ClInclude Include="src\Toad\Hooks\wglswapbuffers.h" />
     <ClInclude Include="src\Toad\Hooks\ws2_32.h" />
-    <ClInclude Include="src\Toad\Logger\logger.h" />
+    <ClInclude Include="src\Toad\logger.h" />
     <ClInclude Include="src\Toad\math.h" />
     <ClInclude Include="src\Toad\MC\active_render_info.h" />
     <ClInclude Include="src\Toad\MC\entity.h" />
@@ -78,7 +135,6 @@
     <ClInclude Include="src\Toad\MC\mcutils.h" />
     <ClInclude Include="src\Toad\module.h" />
     <ClInclude Include="src\Toad\Modules\aimassist.h" />
-    <ClInclude Include="src\Toad\Modules\autopot.h" />
     <ClInclude Include="src\Toad\Modules\blink.h" />
     <ClInclude Include="src\Toad\Modules\bridge_assist.h" />
     <ClInclude Include="src\Toad\Modules\clicker\clicker_base.h" />
@@ -87,55 +143,78 @@
     <ClInclude Include="src\Toad\Modules\clicker\right_autoclicker.h" />
     <ClInclude Include="src\Toad\Modules\internal_ui.h" />
     <ClInclude Include="src\Toad\Modules\no_click_delay.h" />
-    <ClInclude Include="src\Toad\Modules\reach.h" />
     <ClInclude Include="src\Toad\Modules\vars_updater.h" />
     <ClInclude Include="src\Toad\Modules\velocity.h" />
+    <ClInclude Include="src\Toad\Modules\VisualizeClicker\visualize_clicker.h" />
     <ClInclude Include="src\Toad\Modules\visuals\block_esp.h" />
     <ClInclude Include="src\Toad\Modules\visuals\draw_helpers.h" />
     <ClInclude Include="src\Toad\Modules\visuals\esp.h" />
     <ClInclude Include="src\Toad\Modules\visuals\of_screen_arrows.h" />
-    <ClInclude Include="src\Toad\singleton.h" />
     <ClInclude Include="src\Toad\timer.h" />
-    <ClInclude Include="src\Toad\toadll.h" />
+    <ClInclude Include="src\Toad\toad.h" />
     <ClInclude Include="src\Toad\types.h" />
+    <ClInclude Include="src\Toad\ToadUI.h" />
+    <ClInclude Include="src\Toad\Utils\block_map.h" />
+    <ClInclude Include="src\Toad\Utils\file_dialog.h" />
+    <ClInclude Include="src\Toad\Utils\ui_helpers.h" />
+    <ClInclude Include="src\Toad\Utils\keys.h" />
+    <ClInclude Include="src\Toad\Utils\windump.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vendor\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\vendor\imgui\imgui_draw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\vendor\imgui\imgui_impl_dx9.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\vendor\imgui\imgui_impl_opengl2.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\vendor\imgui\imgui_impl_win32.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\vendor\imgui\imgui_tables.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\vendor\imgui\imgui_widgets.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\vendor\implot\implot.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\vendor\implot\implot_items.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Toad\config.cpp" />
+    <ClCompile Include="src\Toad\Utils\random.cpp" />
+    <ClCompile Include="src\Toad\Utils\ipc.cpp" />
+    <ClCompile Include="src\Toad\Utils\helpers.cpp" />
     <ClCompile Include="src\Toad\Hooks\get_raw_input_data.cpp" />
     <ClCompile Include="src\Toad\Hooks\hook.cpp" />
+    <ClCompile Include="src\Toad\imgui_window.cpp" />
+    <ClCompile Include="src\Toad\Inject\injector.cpp" />
     <ClCompile Include="src\Toad\MC\mapping_generator.cpp" />
-    <ClCompile Include="src\Toad\Utils\hash_map.cpp" />
     <ClCompile Include="src\Toad\Modules\chest_stealer.cpp" />
     <ClCompile Include="src\dllmain.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Toad\Hooks\wglswapbuffers.cpp" />
     <ClCompile Include="src\Toad\Hooks\ws2_32.cpp" />
-    <ClCompile Include="src\Toad\Logger\logger.cpp" />
+    <ClCompile Include="src\Toad\logger.cpp" />
     <ClCompile Include="src\Toad\math.cpp" />
     <ClCompile Include="src\Toad\MC\active_render_info.cpp" />
     <ClCompile Include="src\Toad\MC\entity.cpp" />
@@ -144,7 +223,6 @@
     <ClCompile Include="src\Toad\MC\mcutils.cpp" />
     <ClCompile Include="src\Toad\module.cpp" />
     <ClCompile Include="src\Toad\Modules\aimassist.cpp" />
-    <ClCompile Include="src\Toad\Modules\autopot.cpp" />
     <ClCompile Include="src\Toad\Modules\blink.cpp" />
     <ClCompile Include="src\Toad\Modules\bridge_assist.cpp" />
     <ClCompile Include="src\Toad\Modules\clicker\clicker_base.cpp" />
@@ -152,14 +230,18 @@
     <ClCompile Include="src\Toad\Modules\clicker\right_autoclicker.cpp" />
     <ClCompile Include="src\Toad\Modules\internal_ui.cpp" />
     <ClCompile Include="src\Toad\Modules\no_click_delay.cpp" />
-    <ClCompile Include="src\Toad\Modules\reach.cpp" />
     <ClCompile Include="src\Toad\Modules\vars_updater.cpp" />
     <ClCompile Include="src\Toad\Modules\velocity.cpp" />
+    <ClCompile Include="src\Toad\Modules\VisualizeClicker\visualize_clicker.cpp" />
     <ClCompile Include="src\Toad\Modules\visuals\block_esp.cpp" />
     <ClCompile Include="src\Toad\Modules\visuals\draw_helpers.cpp" />
     <ClCompile Include="src\Toad\Modules\visuals\esp.cpp" />
     <ClCompile Include="src\Toad\Modules\visuals\of_screen_arrows.cpp" />
-    <ClCompile Include="src\Toad\toadll.cpp" />
+    <ClCompile Include="src\Toad\toad.cpp" />
+    <ClCompile Include="src\Toad\ToadUI.cpp" />
+    <ClCompile Include="src\Toad\Utils\file_dialog.cpp" />
+    <ClCompile Include="src\Toad\Utils\ui_helpers.cpp" />
+    <ClCompile Include="src\Toad\Utils\windump.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

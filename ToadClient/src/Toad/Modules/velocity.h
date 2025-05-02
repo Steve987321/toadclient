@@ -1,14 +1,13 @@
 #pragma once
 
-namespace toadll
+namespace toad
 {
 
-	class CVelocity SET_MODULE_CLASS(CVelocity)
+	class CVelocity : public CModule
 	{
 	public:
-		CVelocity();
+		using CModule::CModule;
 
-	public:
 		void PreUpdate() override;
 		void Update(const std::shared_ptr<LocalPlayer>& lPlayer) override;
 

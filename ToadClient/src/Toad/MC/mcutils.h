@@ -4,7 +4,7 @@
 
 #include "Toad/types.h"
 
-namespace toadll
+namespace toad
 {
     // jvm functions
     namespace jvmfunc

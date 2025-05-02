@@ -1,24 +1,19 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "module.h"
 
-namespace toadll
+namespace toad
 {
 
-CModule::CModule()
+void CModule::AddModule(CModule* mod)
 {
-	ModuleInstances.emplace_back(this);
+	ModuleInstances.emplace_back(mod);
 }
 
-std::vector<CModule*> CModule::GetEnabledModules()
+void CModule::UpdateModuleEnableStates()
 {
-	std::vector<CModule*> res = {};
-	for (const auto& m : ModuleInstances)
-	{
-		if (m->Enabled)
-			res.push_back(m);
-	}
-	return res;
+	for (auto& m : ModuleInstances)
+		m->UpdateEnabledState();
 }
 
 void CModule::SetEnv(JNIEnv* Env)
@@ -26,20 +21,18 @@ void CModule::SetEnv(JNIEnv* Env)
 	env = Env;
 }
 
-void CModule::SetMC(std::unique_ptr<Minecraft>& mc)
+void CModule::SetMC(Minecraft& mc)
 {
-	MC = std::move(mc);
+	MC = &mc;
 }
 
 void CModule::UpdateEnabledState()
 {
 	std::lock_guard lock(enabled_update_mutex);
-	if (EnabledPrev != *Enabled)
-	{
+	if (EnabledPrev != Enabled)
 		EnabledCV.notify_one();
-	}
 
-	EnabledPrev = *Enabled;
+	EnabledPrev = Enabled;
 }
 
 void CModule::PreUpdate()

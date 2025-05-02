@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "get_raw_input_data.h"
 
-namespace toadll
+namespace toad
 {
 
 	bool HGetRawInputData::Init()

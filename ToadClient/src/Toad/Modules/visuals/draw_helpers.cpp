@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "draw_helpers.h"
 
-namespace toadll
+namespace toad
 {
 	void draw3d_bbox_lines(const BBox& bbox, const Vec4& col)
 	{
@@ -124,7 +124,7 @@ namespace toadll
 
 		Vec3 center = (bbox.min + bbox.max) * 0.5f;
 		Vec3 extents = (bbox.max - bbox.min) * 0.5f;
-		extents.x += toad::esp::static_esp_width;
+		extents.x += toad::settings.esp_static_esp_width;
 
 		Vec3 vertices[4] = {
 				center + cam_right * extents.x - cam_up * extents.y,

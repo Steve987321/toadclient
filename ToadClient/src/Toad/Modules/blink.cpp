@@ -1,34 +1,23 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "blink.h"
 
 using namespace toad;
 
-toadll::CBlink::CBlink()
-{
-	Enabled = &blink::enabled;
-}
-
-void toadll::CBlink::PreUpdate()
+void toad::CBlink::PreUpdate()
 {
 	WaitIsEnabled();
 	WaitIsVerified();
 	SLEEP(10);
 }
 
-void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
+void toad::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	if (!*Enabled)
-	{
-		SLEEP(250);
-		return;
-	}
-
 	static std::vector<Vec3> tmpPositions = {};
 
 	if (HWSASend::StopSends)
 	{
-		if (blink::show_trail)
+		if (settings.bl_show_trail)
 		{
 			static Timer savePosTimer;
 
@@ -53,7 +42,7 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 		}
 
 		// check if blink has been enabled longer than the specified limit
-		if (m_timer.Elapsed<>() >= blink::limit_seconds * 1000)
+		if (m_timer.Elapsed<>() >= settings.bl_limit_seconds * 1000)
 		{
 			DisableBlink();
 			m_can_enable = false;
@@ -80,16 +69,16 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 	if (!CVarsUpdater::IsInGui)
 	{
-		if (GetAsyncKeyState(blink::hold_key) && m_can_enable)
+		if (GetAsyncKeyState(settings.bl_hold_key) && m_can_enable)
 		{
 			HWSASend::StopSends = true;
-			if (blink::stop_rec_packets)
+			if (settings.bl_stop_rec_packets)
 				HWSARecv::StopRecvs = true;
 
 			m_timer.Start();
 			m_can_enable = false;
 		}
-		else if (!GetAsyncKeyState(blink::hold_key))
+		else if (!GetAsyncKeyState(settings.bl_hold_key))
 		{
 			DisableBlink();
 			m_can_enable = true;
@@ -100,9 +89,9 @@ void toadll::CBlink::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	SLEEP(1);
 }
 
-void toadll::CBlink::OnRender()
+void toad::CBlink::OnRender()
 {
-	if (!blink::show_trail || !blink::enabled || !HWSASend::StopSends || m_positions.empty())
+	if (!settings.bl_show_trail || !settings.bl_enabled || !HWSASend::StopSends || m_positions.empty())
 		return;
 
 	glPushMatrix();
@@ -149,7 +138,7 @@ void toadll::CBlink::OnRender()
 	glPopMatrix();
 }
 
-void toadll::CBlink::DisableBlink()
+void toad::CBlink::DisableBlink()
 {
 	HWSASend::StopSends = false;
 	if (HWSARecv::StopRecvs)

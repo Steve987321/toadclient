@@ -1,16 +1,18 @@
 #pragma once
 
-namespace toadll
+#include <array>
+#include <mutex>
+
+namespace toad
 {
 
 struct LocalPlayer;
 
-class CVarsUpdater SET_MODULE_CLASS(CVarsUpdater)
+class CVarsUpdater : public CModule
 {
 public:
-	CVarsUpdater() = default;
+	using CModule::CModule;
 
-public:
 	/// True when player is in a world and the local player is valid.
 	static inline bool IsVerified = false;
 

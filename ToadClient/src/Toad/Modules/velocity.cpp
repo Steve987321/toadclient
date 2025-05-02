@@ -1,17 +1,12 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "velocity.h"
 
 using namespace toad;
-using namespace toadll::math;
+using namespace toad::math;
 
-namespace toadll
+namespace toad
 {
-	CVelocity::CVelocity()
-	{
-		Enabled = &velocity::enabled;
-	}
-
 	void CVelocity::PreUpdate()
 	{
 		WaitIsEnabled();
@@ -21,37 +16,31 @@ namespace toadll
 
 	void CVelocity::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 	{
-		if (!*Enabled)
-		{
-			SLEEP(250);
-			return;
-		}
-
 		// A flag to stop execution of the velocity or jump reset.
 		// Is resetted after local player is ready to receive a hit again
 		static bool StopFlag = false;
 
-		if (velocity::jump_reset)
+		if (settings.vel_jump_reset)
 		{
 			// jumping won't have any effect
 			if (lPlayer->Motion.y < -0.1f)
 				return;
 
-			if (velocity::only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
+			if (settings.vel_only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
 				return;
 
-			if (velocity::only_when_clicking && !GetAsyncKeyState(VK_LBUTTON))
+			if (settings.vel_only_when_clicking && !GetAsyncKeyState(VK_LBUTTON))
 				return;
 
 			if (lPlayer->HurtTime > 0 && !StopFlag)
 			{
-				if (velocity::jump_press_chance < rand_int(0, 100))
+				if (settings.vel_jump_press_chance < RandInt(0, 100))
 				{
 					StopFlag = true;
 					return;
 				}
 
-				if (velocity::kite)
+				if (settings.vel_kite)
 				{
 					auto yaw = wrap_to_180(lPlayer->Yaw - 90);
 					if (isDirectionAligned(yaw, lPlayer->Motion.x, lPlayer->Motion.z))
@@ -63,9 +52,9 @@ namespace toadll
 				}
 
 				StopFlag = true;
-				send_key(VK_SPACE);
-				SLEEP(rand_int(40, 70));
-				send_key(VK_SPACE, false);
+				SendKey(VK_SPACE);
+				SLEEP(RandInt(40, 70));
+				SendKey(VK_SPACE, false);
 			}
 			else if (lPlayer->HurtTime == 0)
 				StopFlag = false;
@@ -79,29 +68,29 @@ namespace toadll
 		// the hurttime value on player hit
 		static int begin_hurt_time = 0;
 
-		if (velocity::only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
+		if (settings.vel_only_when_moving && std::fabs(lPlayer->Motion.x + lPlayer->Motion.z) < FLT_EPSILON)
 			return;
 
-		if (velocity::only_when_clicking && !GetAsyncKeyState(VK_LBUTTON))
+		if (settings.vel_only_when_clicking && !GetAsyncKeyState(VK_LBUTTON))
 			return;
 
 		if (int hurttime = lPlayer->HurtTime; hurttime > 0 && !StopFlag)
 		{
 			if (begin_hurt_time < hurttime) begin_hurt_time = hurttime;
 
-			if (hurttime != begin_hurt_time - velocity::delay)
+			if (hurttime != begin_hurt_time - settings.vel_delay)
 			{
 				SLEEP(1);
 				return;
 			}
-			if (rand_int(0, 100) > velocity::chance)
+			if (RandInt(0, 100) > settings.vel_chance)
 			{
 				StopFlag = true;
 				SLEEP(1);
 				return;
 			}
 
-			//if (velocity::delay > 0) toad::preciseSleep(velocity::delay * 0.05f);
+			//if (settings.vel_delay > 0) toad::preciseSleep(settings.vel_delay * 0.05f);
 			// get updated
 
 			auto EditableLocalPlayer = MC->getLocalPlayer();
@@ -109,7 +98,7 @@ namespace toadll
 			auto motionX = EditableLocalPlayer->getMotionX();
 			auto motionZ = EditableLocalPlayer->getMotionZ();
 
-			if (velocity::kite)
+			if (settings.vel_kite)
 			{
 				auto yaw = wrap_to_180(lPlayer->Yaw - 90);
 				if (isDirectionAligned(yaw, motionX, motionZ))
@@ -120,8 +109,8 @@ namespace toadll
 				}
 			}
 
-			auto newMotionX = motionX * (velocity::horizontal / 100); /* std::lerp(motionX, motionX * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
-			auto newMotionZ = motionZ * (velocity::horizontal / 100); /*std::lerp(motionZ, motionZ * (velocity::horizontal / 100.f), 0.3f * partialTick);*/
+			auto newMotionX = motionX * (settings.vel_horizontal / 100); /* std::lerp(motionX, motionX * (settings.vel_horizontal / 100.f), 0.3f * partialTick);*/
+			auto newMotionZ = motionZ * (settings.vel_horizontal / 100); /*std::lerp(motionZ, motionZ * (settings.vel_horizontal / 100.f), 0.3f * partialTick);*/
 
 			if (abs(motionX) > 0)
 				EditableLocalPlayer->setMotionX(newMotionX);
@@ -129,9 +118,9 @@ namespace toadll
 				EditableLocalPlayer->setMotionZ(newMotionZ);
 
 			constexpr auto vcheck = (100.f - 0.1f);
-			if (velocity::vertical <= vcheck && lPlayer->Motion.y > 0) // normal velocity when going down 
+			if (settings.vel_vertical <= vcheck && lPlayer->Motion.y > 0) // normal velocity when going down 
 			{
-				EditableLocalPlayer->setMotionY(lPlayer->Motion.y * (velocity::vertical / 100.f));
+				EditableLocalPlayer->setMotionY(lPlayer->Motion.y * (settings.vel_vertical / 100.f));
 			}
 			StopFlag = true;
 		}

@@ -1,18 +1,13 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "esp.h"
 
 #include "draw_helpers.h"
 
 using namespace toad;
-using namespace toadll::math;
+using namespace toad::math;
 
-namespace toadll {
-
-CEsp::CEsp()
-{
-	Enabled = &esp::enabled;
-}
+namespace toad {
 
 void CEsp::PreUpdate()
 {
@@ -22,12 +17,6 @@ void CEsp::PreUpdate()
 
 void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 {
-	if (!*Enabled || !CVarsUpdater::IsVerified)
-	{
-		SLEEP(250);
-		return;
-	}
-
 	renderPos = get_cam_pos(CVarsUpdater::ModelView);
 	playerPos = lPlayer->Pos;
 
@@ -42,14 +31,14 @@ void CEsp::Update(const std::shared_ptr<LocalPlayer>& lPlayer)
 
 void CEsp::OnRender()
 {
-	if (!esp::enabled || !CVarsUpdater::IsVerified)
+	if (!settings.esp_enabled || !CVarsUpdater::IsVerified)
 	{
 		std::lock_guard lock(m_boxMutex);
 		m_bboxes.clear();
 		return;
 	}
 
-	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
+	if (settings.esp_esp_mode == ESP_MODE::BOX2D_DYNAMIC)
 		return;
 
 	std::unique_lock lock(m_boxMutex);
@@ -79,16 +68,16 @@ void CEsp::OnRender()
 	{
 		auto bb = BBox{e.bb.min - lPos, e.bb.max - lPos};
 
-		switch (esp::esp_mode)
+		switch (settings.esp_esp_mode)
 		{
 		case ESP_MODE::BOX3D:
 			draw3d_bbox_fill(
 				bb,
-				{ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] }
+				{ settings.esp_fill_col[0], settings.esp_fill_col[1], settings.esp_fill_col[2], settings.esp_fill_col[3] }
 			);
 			draw3d_bbox_lines(
 				bb,
-				{ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] }
+				{ settings.esp_line_col[0], settings.esp_line_col[1], settings.esp_line_col[2], settings.esp_line_col[3] }
 			);
 			break;
 
@@ -98,8 +87,8 @@ void CEsp::OnRender()
 		case ESP_MODE::BOX2D_STATIC:
 			draw2d_bbox(
 				bb,
-				{ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] },
-				{ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] }
+				{ settings.esp_fill_col[0], settings.esp_fill_col[1], settings.esp_fill_col[2], settings.esp_fill_col[3] },
+				{ settings.esp_line_col[0], settings.esp_line_col[1], settings.esp_line_col[2], settings.esp_line_col[3] }
 			);
 			break;
 
@@ -120,13 +109,14 @@ void CEsp::OnRender()
 
 void CEsp::OnImGuiRender(ImDrawList* draw)
 {
-	if (!esp::enabled || !CVarsUpdater::IsVerified)
+	if (!settings.esp_enabled || !CVarsUpdater::IsVerified)
 		return;
 
-	auto lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
+	Vec3 lPos = CVarsUpdater::theLocalPlayer->LastTickPos + (CVarsUpdater::theLocalPlayer->Pos - CVarsUpdater::theLocalPlayer->LastTickPos) * CVarsUpdater::RenderPartialTick;
 
-	if (esp::esp_mode == ESP_MODE::BOX2D_DYNAMIC)
+	if (settings.esp_esp_mode == ESP_MODE::BOX2D_DYNAMIC)
 	{
+		std::unique_lock lock(m_boxMutex);
 		for (const auto& ve : m_bboxes)
 		{
 			// get vertices from bounding box 
@@ -152,12 +142,12 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 			if ((int)minY * 10 == -10 && maxY > g_screen_height) continue;
 
 			// convert color config
-			auto line_col = ImGui::ColorConvertFloat4ToU32({ esp::line_col[0], esp::line_col[1], esp::line_col[2], esp::line_col[3] });
-			auto fill_col = ImGui::ColorConvertFloat4ToU32({ esp::fill_col[0], esp::fill_col[1], esp::fill_col[2], esp::fill_col[3] });
+			auto line_col = ImGui::ColorConvertFloat4ToU32({ settings.esp_line_col[0], settings.esp_line_col[1], settings.esp_line_col[2], settings.esp_line_col[3] });
+			auto fill_col = ImGui::ColorConvertFloat4ToU32({ settings.esp_fill_col[0], settings.esp_fill_col[1], settings.esp_fill_col[2], settings.esp_fill_col[3] });
 
 			// draw box 
 
-			if (esp::show_border)
+			if (settings.esp_show_border)
 			{
 				// double sided border (inside and outside outline)
 				draw->AddRect({ minX - 1, minY - 1 }, { maxX + 1, maxY + 1 }, IM_COL32_BLACK);
@@ -167,22 +157,22 @@ void CEsp::OnImGuiRender(ImDrawList* draw)
 			draw->AddRectFilled({ minX - 1, minY - 1 }, { maxX + 1, maxY + 1 }, fill_col);
 			draw->AddRect({ minX, minY }, { maxX, maxY }, line_col);
 
-			drawPlayerInfo(draw, ve, lPos);
+			DrawPlayerInfo(draw, ve, lPos);
 		}
 	}
 	else
 	{
+		std::unique_lock lock(m_boxMutex);
 		for (const VisualEntity& ve : m_bboxes)
 		{
-			drawPlayerInfo(draw, ve, lPos);
+			DrawPlayerInfo(draw, ve, lPos);
 		}
 	}
 }
 
-
-void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& lPlayerPos)
+void CEsp::DrawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& lPlayerPos)
 {
-	if (esp::show_name || esp::show_distance || esp::show_health)
+	if (settings.esp_show_name || settings.esp_show_distance || settings.esp_show_health)
 	{
 		// the center and top of player 
 		Vec3 infoPos = (ve.bb.min + ve.bb.max) * 0.5f;
@@ -193,53 +183,51 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 		if ((int)screenpos.x * 10 != -10 && (int)screenpos.y * 10 != -10)
 		{
 			const ImFont* font = HSwapBuffers::GetFont();
-			char text[50] = {};
+			std::string text;
 			
-			if (esp::show_name)
+			if (settings.esp_show_name)
 			{
-				strncat_s(text, ve.name.c_str(), ve.name.length());
+				text += ve.name;
 			}
-			if (esp::show_distance)
+			if (settings.esp_show_distance)
 			{
-				auto distStr = " [" + std::to_string(playerPos.dist(ve.Pos)).substr(0, 3) + ']';
-				strncat_s(text, distStr.c_str(), distStr.length());
+				text += " [" + std::to_string(playerPos.dist(ve.pos)).substr(0, 3) + ']';
 			}
-			if (esp::show_sneaking)
+			if (settings.esp_show_sneaking)
 			{
 				if (ve.sneaking)
 				{
-					const size_t slen = strlen("(sneaking)");
-					strncat_s(text, "(sneaking)", slen);
+					text += "(sneaking)";
 				}
 			}
 
 			// draw our text
-			//float text_size = esp::text_size;
-			const ImVec2 textsize = font->CalcTextSizeA(esp::text_size, 500, 0, text);
+			//float text_size = settings.esp_text_size;
+			const ImVec2 textsize = font->CalcTextSizeA(settings.esp_text_size, 500, 0, text.c_str());
 
-			if (esp::show_txt_bg)
+			if (settings.esp_show_txt_bg)
 			{
 				draw->AddRectFilled(
 					{ screenpos.x - textsize.x / 2, screenpos.y - 5 - textsize.y},
 					{ screenpos.x + textsize.x / 2, screenpos.y - 5},
-					ImGui::GetColorU32({ esp::text_bg_col[0], esp::text_bg_col[1], esp::text_bg_col[2], esp::text_bg_col[3] })
+					ImGui::GetColorU32({ settings.esp_text_bg_col[0], settings.esp_text_bg_col[1], settings.esp_text_bg_col[2], settings.esp_text_bg_col[3] })
 				);
 			}
 
-			auto text_col_imu32 = ImGui::ColorConvertFloat4ToU32({ esp::text_col[0], esp::text_col[1], esp::text_col[2], esp::text_col[3] });
+			auto text_col_imu32 = ImGui::ColorConvertFloat4ToU32({ settings.esp_text_col[0], settings.esp_text_col[1], settings.esp_text_col[2], settings.esp_text_col[3] });
 
 			// text position (positioned inside the background box)
-			auto boxPosYText = std::lerp(screenpos.y - 5 - textsize.y, screenpos.y - 5, 0.9f) - esp::text_size;
+			auto boxPosYText = std::lerp(screenpos.y - 5 - textsize.y, screenpos.y - 5, 0.9f) - settings.esp_text_size;
 
-			if (esp::text_shadow)
+			if (settings.esp_text_shadow)
 			{
-				draw->AddText(font, esp::text_size, { screenpos.x - textsize.x / 2 - 1, boxPosYText - 1 }, IM_COL32_BLACK, text);
-				draw->AddText(font, esp::text_size, { screenpos.x - textsize.x / 2 + 1, boxPosYText + 1 }, IM_COL32_BLACK, text);
+				draw->AddText(font, settings.esp_text_size, { screenpos.x - textsize.x / 2 - 1, boxPosYText - 1 }, IM_COL32_BLACK, text.c_str());
+				draw->AddText(font, settings.esp_text_size, { screenpos.x - textsize.x / 2 + 1, boxPosYText + 1 }, IM_COL32_BLACK, text.c_str());
 			}
 
-			draw->AddText(font, esp::text_size, { screenpos.x - textsize.x / 2, boxPosYText }, text_col_imu32, text);
+			draw->AddText(font, settings.esp_text_size, { screenpos.x - textsize.x / 2, boxPosYText }, text_col_imu32, text.c_str());
 
-			if (esp::show_health)
+			if (settings.esp_show_health)
 			{
 				// get vertices from bounding box 
 				auto vertices = GetBBoxVertices(ve.bb.min - lPlayerPos, ve.bb.max - lPlayerPos);
@@ -263,7 +251,8 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 
 				float t = ((float)ve.health / 20.f);
 
-				if (t < 0) t = 0;
+				if (t < 0) 
+					t = 0;
 
 				// t starts with 1 
 				ImVec2 rightTop = { maxX + 3.f, std::lerp(maxY, minY, t) };
@@ -283,7 +272,7 @@ void CEsp::drawPlayerInfo(ImDrawList* draw, const VisualEntity& ve, const Vec3& 
 					col.y = std::lerp(0.f, 1.f, t / 0.5f);
 				}
 
-				if (esp::show_border)
+				if (settings.esp_show_border)
 				{
 					draw->AddRectFilled({rightTop.x - 1, rightTop.y - 1}, {rightDown.x + 1, rightDown.y + 1}, IM_COL32_BLACK);
 				}
@@ -330,13 +319,16 @@ std::vector<CEsp::VisualEntity> CEsp::GetBBoxes()
 		b_box.max.x = lasttickpos.x + (pos.x - lasttickpos.x) * CVarsUpdater::RenderPartialTick + 0.3f;
 		b_box.max.y = lasttickpos.y + (pos.y - lasttickpos.y) * CVarsUpdater::RenderPartialTick + 1.8f;
 		b_box.max.z = lasttickpos.z + (pos.z - lasttickpos.z) * CVarsUpdater::RenderPartialTick + 0.3f;
+		
+		std::string name = entity->getName();
 
 		res.emplace_back(
 			b_box,
 			pos, 
-			esp::show_name ? entity->getName() : "", 
-			esp::show_health ? entity->getHealth() : -1,
-			esp::show_sneaking ? entity->isSneaking() : false);
+			settings.esp_show_name ? name.c_str() : "",
+			settings.esp_show_health ? entity->getHealth() : -1,
+			settings.esp_show_sneaking ? entity->isSneaking() : false);
+
 	}
 
 	return res;

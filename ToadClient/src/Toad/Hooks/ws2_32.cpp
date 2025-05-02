@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "ws2_32.h"
 
-namespace toadll
+namespace toad
 {
 	struct args
 	{
@@ -23,25 +23,7 @@ namespace toadll
 	int HWSASend::Hook(SOCKET s, LPWSABUF lpBuffers, DWORD dwBufferCount, LPDWORD lpNumberOfBytesSent, DWORD dwFlags, LPWSAOVERLAPPED lpOverlapped, LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine)
 	{
 		while (StopSends)
-		{/*
-			ok.emplace_back(args{ s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine }, Timer{});
-			std::cout << ok.size() << std::endl;
-
-			auto it = ok.begin();
-			while (it != ok.end())
-			{
-				auto& [arg, timer] = *it;
-
-				if (timer.Elapsed() > 100)
-				{
-					int res = oWSA_Send(arg.s, arg.lpBuffers, arg.dwBufferCount, arg.lpNumberOfBytesSent, arg.dwFlags, arg.lpOverlapped, arg.lpCompletionRoutine);
-					ok.erase(it);
-					return res;
-				}
-
-				it++;
-			}*/
-			//return oWSA_Send(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
+		{			
 			SLEEP(1);
 		}
 		return oWSA_Send(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
@@ -60,20 +42,6 @@ namespace toadll
 		}
 
 		int result = oWSA_Recv(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd, lpFlags, lpOverlapped, lpCompletionRoutine);
-
-		//if (result == 0 && *lpNumberOfBytesRecvd > 0) 
-		//{
-		//	char* packetData = lpBuffers->buf;
-		//	DWORD packetSize = *lpNumberOfBytesRecvd;
-
-		//	std::cout << "Received Packet: ";
-		//	for (DWORD i = 0; i < packetSize; i++) {
-		//		printf("[%d] %d\n", i, (unsigned char)packetData[i]);
-		//	}
-
-		//	//std::string readable(packetData, packetSize);
-		//	//std::cout << "Packet as ASCII: " << readable << std::endl;
-		//}
 
 		return result;
 		return oWSA_Recv(s, lpBuffers, dwBufferCount, lpNumberOfBytesRecvd, lpFlags, lpOverlapped, lpCompletionRoutine);

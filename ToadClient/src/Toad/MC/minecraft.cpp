@@ -1,31 +1,31 @@
 #include "pch.h"
-#include "Toad/toadll.h"
+#include "Toad/toad.h"
 #include "Toad/MC/mcutils.h"
 #include "minecraft.h"
 
-namespace toadll
+namespace toad
 {
 
-Minecraft::~Minecraft()
+void Minecraft::Clean()
 {
-    if (m_mcclass != nullptr) env->DeleteGlobalRef(m_mcclass);
-    if (m_elbclass != nullptr) env->DeleteGlobalRef(m_elbclass);
-    if (m_ariclass != nullptr) env->DeleteGlobalRef(m_ariclass);
-    if (m_vec3class != nullptr) env->DeleteGlobalRef(m_vec3class);
-    if (m_mopclass != nullptr) env->DeleteGlobalRef(m_mopclass);
-    if (m_blockposclass != nullptr) env->DeleteGlobalRef(m_blockposclass);
+	if (m_mcclass != nullptr) env->DeleteGlobalRef(m_mcclass);
+	if (m_elbclass != nullptr) env->DeleteGlobalRef(m_elbclass);
+	if (m_ariclass != nullptr) env->DeleteGlobalRef(m_ariclass);
+	if (m_vec3class != nullptr) env->DeleteGlobalRef(m_vec3class);
+	if (m_mopclass != nullptr) env->DeleteGlobalRef(m_mopclass);
+	if (m_blockposclass != nullptr) env->DeleteGlobalRef(m_blockposclass);
 }
 
 jclass Minecraft::getMcClass(JNIEnv* env)
 {
-    return findclass(toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? unsupported_mc_class_name.c_str() : "net.minecraft.client.Minecraft", env);
+    return findclass(settings.g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? unsupported_mc_class_name.c_str() : "net.minecraft.client.Minecraft", env);
 }
 
 jclass Minecraft::getMcClass()
 {
     if (m_mcclass == nullptr)
     {
-        m_mcclass = (jclass)env->NewGlobalRef(findclass(toad::g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? "ave" : "net.minecraft.client.Minecraft", env));
+        m_mcclass = (jclass)env->NewGlobalRef(findclass(settings.g_curr_client == toad::MC_CLIENT::NOT_SUPPORTED ? "ave" : "net.minecraft.client.Minecraft", env));
     }
     return m_mcclass;
 }
@@ -323,7 +323,7 @@ jobject Minecraft::getGameSettings()
 
 bool Minecraft::isInGui()
 {
-    if (toad::g_is_ui_internal && CInternalUI::MenuIsOpen)
+    if (settings.g_is_ui_internal && CInternalUI::MenuIsOpen)
         return true;
 
     jobject mc = getMc();
@@ -437,10 +437,7 @@ float Minecraft::getRenderPartialTick()
     auto obj = env->GetObjectField(mc, fid);
     env->DeleteLocalRef(mc);
     if (!obj)
-    {
-        env->DeleteLocalRef(mc);
         return 1;
-    }
 
     auto fId = get_fid(obj, mappingFields::renderPartialTickField, env);
     if (!fId)
@@ -488,6 +485,9 @@ int Minecraft::getBlockIdAt(const Vec3i& pos)
         return 0;
     
     jclass block_pos_class = getBlockPosClass();
+    if (!block_pos_class)
+        return 0;
+
     jmethodID block_pos_mid = get_mid(block_pos_class, mapping::Vec3IInit, env);
     if (!block_pos_mid)
     {

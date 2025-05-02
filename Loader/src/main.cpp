@@ -1,21 +1,19 @@
-#include "toad.h"
+#include "pch.h"
 #include "Application/application.h"
 
 using namespace toad;
 
 int main(int argc, char** argv)
 {
-	Application app;
-	
 	// init window & toad
-	if (!app.Init())
+	if (!Application::Init())
 		return 1;
 
 	// main loop 
-	app.MainLoop();
+	Application::MainLoop();
 
 	// clean up and exit 
-	app.Exit();
+	Application::Exit();
 
 	return 0;
 }

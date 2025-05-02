@@ -1,13 +1,13 @@
 #pragma once
-namespace toadll
+
+namespace toad
 {
 
-class CBlink SET_MODULE_CLASS(CBlink)
+class CBlink : public CModule
 {
 public:
-	CBlink();
+	using CModule::CModule;
 
-public:
 	void PreUpdate() override;
 	void Update(const std::shared_ptr<LocalPlayer>&lPlayer) override;
 	void OnRender() override;
@@ -20,7 +20,7 @@ private:
 	/// extra flag that gets checked for when trying to enable blink
 	bool m_can_enable = true;
 
-	/// when having blink::show_trail enabled,
+	/// when having settings.bl_show_trail enabled,
 	/// positions of the trail are stored here
 	std::vector<Vec3> m_positions = {}; 
 

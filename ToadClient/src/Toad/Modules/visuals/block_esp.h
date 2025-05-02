@@ -1,5 +1,5 @@
 #pragma once
-namespace toadll
+namespace toad
 {
 
 ///
@@ -7,12 +7,11 @@ namespace toadll
 ///
 ///	TODO: It is very slow
 ///
-class CBlockEsp SET_MODULE_CLASS(CBlockEsp)
+class CBlockEsp : public CModule
 {
 public:
-	CBlockEsp();
+	using CModule::CModule;
 
-public:
 	void PreUpdate() override;
 
 	// update the positions of the blocks

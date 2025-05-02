@@ -1,16 +1,18 @@
 #pragma once
-namespace toadll
-{
 
+namespace toad
+{
 ///
 /// Handles The Internal UI.
 /// Shows when pressing switch to internal in the loader
 ///
-class CInternalUI SET_MODULE_CLASS(CInternalUI)
+class CInternalUI : public CModule
 {
 public:
+	using CModule::CModule;
+
 	/// used in CSwapBuffers::WndProcHook
-	inline static int& ShowMenuKey = toad::ui::show_menu_key;
+	inline static int& ShowMenuKey = Config::Get().ui_show_menu_key;
 
 	inline static bool MenuIsOpen = true;
 

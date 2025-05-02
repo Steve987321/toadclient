@@ -2,7 +2,7 @@
 
 #include "nlohmann/json.hpp"
 
-namespace toadll
+namespace toad
 {
 
 using json = nlohmann::json;
@@ -54,26 +54,21 @@ struct FoundMappingKlassName
 
 // generate mapping patterns based on a minecraft version where there is hardcoded mappings already correct
 // Use Generate after intializing mappings 
-class MappingGenerator
+namespace MappingGenerator
 {
-public:
 	// create a mapping file 
-	static void Generate(JNIEnv* jni_env, jvmtiEnv* jvmti_env);
+	void Generate(JNIEnv* jni_env, jvmtiEnv* jvmti_env);
 
 	// #TODO: maybe not needed because just use similarity check
 	// use a different client with known mappings and check differences between them, will add wildcards 
-	//static void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
+	//void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
 
-	static void InitMappings(JNIEnv* env, jvmtiEnv* jvmti_env, const std::filesystem::path& file);
+	void InitMappings(JNIEnv* env, jvmtiEnv* jvmti_env, const std::filesystem::path& file);
 
 	// apply mappings from file
-	//static void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
+	//void GetMappingsFromFile(JNIEnv* jni_env, jvmtiEnv* jvmti_env, const std::filesystem::path& json_file);
 
-	static std::vector<FoundMappingKlassName> FindClassTypes(JNIEnv* env, jvmtiEnv* jvmti_env, const std::vector<Mappings>& mappings);
-private:
-	static Mappings GetMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env, jclass klass, int& class_index);
-
-	static void InitMappingsForClass(JNIEnv* env, jvmtiEnv* jvmti_env, jclass klass, const Mappings& mappings);
+	std::vector<FoundMappingKlassName> FindClassTypes(JNIEnv* env, jvmtiEnv* jvmti_env, const std::vector<Mappings>& mappings);
 };
 
 }
